@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+  // previewFeatures: ["clientExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// should generate RPG-esque so that user levels up 
+// for every book read?
+
+model Log {
+  id           Int       @id @default(autoincrement())
+  date         DateTime  @default(now())
+  start        Int
+  end          Int
+  dayOfTheWeek String
+  bookId       String
+  userId       String
+  finished     Finished? @relation(fields: [bookId, userId], references: [bookId, userId], map: "finished_books")
+  reading      Reading?  @relation(fields: [bookId, userId], references: [bookId, userId], map: "reading_books")
+  user         User      @relation(fields: [userId], references: [id])
+
+  @@map("reading_logs")
+}
+
+// THOUGHTS: the book has access to the Library. But the library does not have access to the bookId 
+// so whenever accessing through the book, can access trhough the library
+model Book {
+  id                  String
+  userId              String
+  title               String
+  subtitle            String?
+  publishedDate       DateTime  @map("pub_date")
+  categories          String[]
+  language            String?
+  pageCount           Int?
+  industryIdentifiers Json?
+  imageLinks          Json?
+  authors             String[]
+  dateDeleted         DateTime?
+  want                Want?
+  reading             Reading?
+  finished            Finished?
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade) // should it reference two?
+
+  @@unique([id, userId])
+  @@index([id], type: Hash)
+  @@map("books")
+}
+
+model Want {
+  dateAdded   DateTime @default(now())
+  dateUpdated DateTime @updatedAt
+  userId      String
+  bookId      String
+  // does this mean deleting from the library or book deletes or becomes null when deleted from here?
+  book        Book?    @relation(fields: [bookId, userId], references: [id, userId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([bookId, userId])
+  @@map("want")
+}
+
+model Finished {
+  // remove finishedDate?
+  finishedDate  DateTime? @map("finished_date")
+  finishedYear  Int?      @map("finished_year")
+  finishedMonth Int?      @map("finished_month")
+  finishedDay   Int?      @map("finished_day")
+  totalDaysRead Int?      @map("total_days_read")
+  // reReading     Finished[] @relation("RereadingBooks", fields: [bookId, libraryId], references: [id]) 
+  userId        String
+  bookId        String
+  book          Book?     @relation(fields: [bookId, userId], references: [id, userId], onDelete: Cascade, onUpdate: Cascade)
+  log           Log[]
+
+  @@unique([bookId, userId])
+  @@map("finished")
+}
+
+model Reading {
+  dateAdded    DateTime  @default(now())
+  primary      Boolean   @default(false)
+  primaryAdded DateTime?
+  bookmarkId   String?
+  userId       String
+  bookId       String
+  book         Book?     @relation(fields: [bookId, userId], references: [id, userId])
+  log          Log[]
+  Bookmark     Bookmark? @relation(fields: [bookmarkId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([bookId, userId])
+  @@unique([primary, bookmarkId]) // for one primary there is one bookmarkId
+  @@map("reading")
+}
+
+// QUESTION: how will each bookmark be generated? determined by its url?
+// should the bookmark have date?
+// have to test this one out later **
+model Bookmark {
+  id      String    @id @default(cuid())
+  name    String?
+  userId  String
+  // does the bookmark require libraryId & library? dont think its necessary?
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Reading Reading[]
+
+  @@unique([name, userId])
+  @@index([userId], type: Hash)
+  @@map("bookmarks")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  name          String?
+  email         String?    @unique
+  emailVerified DateTime?
+  birthOfDate   DateTime?  @map("bod")
+  image         String?
+  password      String?
+  username      String?    @unique
+  account       Account[]
+  sessions      Session[]
+  book          Book[]
+  log           Log[]
+  Bookmark      Bookmark[]
+
+  @@index([id], type: Hash)
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
