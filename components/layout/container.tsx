@@ -1,5 +1,37 @@
-const Container = ({ children }: { children: React.ReactNode }) => {
-  return <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">{children}</div>;
-};
+import { forwardRef } from 'react';
+import clsx from 'clsx';
+
+export const ContainerOuter = forwardRef<
+   React.ElementRef<'div'>,
+   React.ComponentPropsWithoutRef<'div'>
+>(function OuterContainer({ className, children, ...props }, ref) {
+   return (
+      <div ref={ref} className={clsx('sm:px-8', className)} {...props}>
+         <div className='mx-auto w-full lg:px-6'>{children}</div>
+      </div>
+   );
+});
+
+export const ContainerInner = forwardRef<
+   React.ElementRef<'div'>,
+   React.ComponentPropsWithoutRef<'div'>
+>(function InnerContainer({ className, children, ...props }, ref) {
+   return (
+      <div ref={ref} className={clsx('relative px-2 lg:px-6', className)} {...props}>
+         <div className='mx-auto max-w-2xl lg:max-w-6xl'>{children}</div>
+      </div>
+   );
+});
+
+export const Container = forwardRef<
+   React.ElementRef<typeof ContainerOuter>,
+   React.ComponentPropsWithoutRef<typeof ContainerOuter>
+>(function Container({ children, ...props }, ref) {
+   return (
+      <ContainerOuter ref={ref} {...props}>
+         <ContainerInner>{children}</ContainerInner>
+      </ContainerOuter>
+   );
+});
 
 export default Container;

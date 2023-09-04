@@ -42,7 +42,7 @@ const BookCards = ({ data, userId }: BookCardsProps) => {
       // when clicked change => cancel & save changes
       //
       <>
-         {/* <ShowCurrentBooks data={data} mutate={() => mutate()} /> */}
+         {/* <ShowCurrentBooks  data={data} mutate={() => mutate()} /> */}
          {/* if the image is undefined then thumbnail */}
       </>
    );
