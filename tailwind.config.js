@@ -14,6 +14,16 @@ const notFirst = plugin(({ addVariant, e }) => {
 });
 
 module.exports = {
+   theme: {
+      extend: {
+         colors: {
+            beige: '#faf3e0',
+            dilutedbeige: '#f5e6c4',
+            charcoal: '#2c2c2c',
+            'dark-charcoal': '#1b1b1b',
+         },
+      },
+   },
    content: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
    darkMode: 'class',
    extend: {

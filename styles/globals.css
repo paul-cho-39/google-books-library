@@ -12,17 +12,16 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:text-indigo-500 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2 lg:text-base
+    @apply inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:text-indigo-500 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2 lg:text-base;
   }; 
   .btn-transparent {
-    @apply inline-flex items-center rounded-md border border-transparent bg-white text-slate-100 px-4 py-2 text-sm font-medium hover:bg-slate-100 focus:outline-none  lg:text-base
-  }
+    @apply inline-flex items-center rounded-md border border-transparent bg-white text-slate-100 px-4 py-2 text-sm font-medium hover:bg-slate-100 focus:outline-none lg:text-base
+  };
   .btn-alert {
     @apply inline-flex items-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 lg:text-base
   };
 }
   
-
 
 
 html,
@@ -74,8 +73,6 @@ a {
   min-height: 44px;
   margin: 0 22px 0 22px;
 }
-
-
 
 .react-datepicker__year-wrapper {
   display: grid;

@@ -13,9 +13,9 @@ export const ThemeToggler = ({ theme, setTheme, className }: ThemeContextStylePa
    return (
       <button onClick={toggleTheme} className='p-2 rounded-full focus:outline-none focus:ring'>
          {theme === 'light' ? (
-            <SunIcon className={className} />
+            <SunIcon className={clsx('stroke-yellow-500 fill-yellow-300', className)} />
          ) : (
-            <MoonIcon className={className} />
+            <MoonIcon className={clsx('stroke-slate-100', className)} />
          )}
       </button>
    );

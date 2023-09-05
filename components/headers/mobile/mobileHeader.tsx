@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react';
-import Link from 'next/link';
 import { Menu, Dialog, Transition } from '@headlessui/react';
 import { signOut, useSession } from 'next-auth/react';
 import { Close, MenuBars } from '../../icons/openCloseIcons';
@@ -9,47 +8,32 @@ import IconProviders from '../../icons/headerIcons';
 import getUserId from '../../../lib/helper/getUserId';
 
 import useDarkMode from '../../../lib/hooks/useDarkMode';
-import classNames from 'classnames';
-import { CloseButton } from 'react-bootstrap';
+import { ThemeToggler } from '../../buttons/themeToggler';
 
 const MobileNavigation = () => {
    const { data: user, status } = useSession();
    const { theme, setTheme } = useDarkMode();
-
-   const [isOpen, setOpen] = useState(false);
    const [icons] = useState(IconProviders);
 
    // TODO // turn this into a function and into a class that returns a url?
    const userId = user && getUserId(user as object, 'id');
    const url = '/profile/' + userId;
 
-   // append the beginning of href with [id]?
-   console.log('is it open? ', isOpen);
-
    return (
-      <div className='flex h-16 w-full mb-5 lg:hidden bg-slate-100 dark:bg-slate-800'>
+      <div className='flex h-16 w-full mb-5 lg:hidden bg-beige dark:bg-charcoal'>
          {/* off canvas menu for mobile */}
          {/* menu opener */}
          <Menu as='div' role='dialog' className='relative inset-0 z-40' aria-modal='true'>
-            <Menu.Button
-               //  onClick={() => setOpen(!isOpen)}
-               className='z-50 relative p-3 ml-2 focus:outline-none focus:ring-1 focus-visible:ring-slate-200 focus-visible:ring-opacity-75 rounded-full'
-            >
+            <Menu.Button className='z-40 relative p-3 ml-2 focus:outline-none focus:ring-1 focus-visible:ring-slate-200 focus-visible:ring-opacity-75 rounded-full'>
                {({ open }) => (
                   <>
                      <span className='sr-only'>{!open ? 'Close menu' : 'Open menu'}</span>
                      {open ? <Close className='h-8 w-8' /> : <MenuBars className='h-8 w-8' />}
-                     <div className='absolute z-50 top-60 left-48'>
-                        It is: {open ? 'open' : 'closed'}
-                     </div>
                   </>
                )}
             </Menu.Button>
             <Transition as='div'>
-               {/* <div className='fixed inset-0 bg-gray-200/40' /> */}
-
                <div className='fixed inset-0 flex bg-gray-200/40 bg-opacity-30'>
-                  {/* closing button not showing up as of now? */}
                   <Transition.Child
                      enter='transition ease-in duration-150 transform'
                      enterFrom='opacity-0 -translate-x-10'
@@ -58,7 +42,7 @@ const MobileNavigation = () => {
                      leaveFrom='transform opacity-100 translate-x-20'
                      leaveTo='transform opacity-0 -translate-x-10'
                   >
-                     <div className='relative bg-slate-100 flex h-full w-96 max-w-sm flex-1 flex-col bg- focus:outline-none dark:slate-800'>
+                     <div className='relative z-50 bg-[#F5E6C4] flex h-full w-96 max-w-sm flex-1 flex-col bg- focus:outline-none dark:bg-dark-charcoal'>
                         <div className='pt-5 pb-4'>
                            <Menu.Items
                               as='nav'
@@ -71,14 +55,13 @@ const MobileNavigation = () => {
                                     <Menu.Item key={icon.name}>
                                        {({ active }) => (
                                           <button
-                                             // change the color
+                                             role='link'
                                              className={`${
                                                 active
-                                                   ? 'bg-indigo-100 text-slate-800'
+                                                   ? 'bg-orange-200 text-slate-800 dark:bg-slate-100/10'
                                                    : 'text-gray-900'
                                              } group flex w-full items-center rounded-md px-8 py-6 text-lg`}
                                           >
-                                             {/* figure out WHERE and HOW to implement session here */}
                                              {active ? (
                                                 <IconLink
                                                    Icon={icon.icon}
@@ -108,19 +91,25 @@ const MobileNavigation = () => {
                                  ))}
                                  <span className='mb-2 block border-b-2 border-slate-200'></span>
                                  {/* most likely move the logic to pass to a component */}
-                                 <div className='flex flex-col gap-y-2 overflow-hidden md:gap-y-5 bg-orange-500'>
-                                    <div
-                                       role='button'
-                                       className='inline-flex justify-center items-center '
-                                    >
-                                       {!user ? (
-                                          <div aria-label='Sign in' className='flex'>
-                                             <IsSession name='Sign in' href='/auth/signin' />
-                                          </div>
-                                       ) : (
-                                          <IsSession name='Sign out' signOut={signOut} />
-                                       )}
-                                    </div>
+                                 <div className='flex flex-col items-center justify-center gap-y-6 overflow-hidden md:gap-y-5'>
+                                    {!user ? (
+                                       <IsSession
+                                          className='py-2'
+                                          name='sign in'
+                                          href='/auth/signin'
+                                       />
+                                    ) : (
+                                       <IsSession
+                                          className='py-2'
+                                          name='Sign out'
+                                          signOut={signOut}
+                                       />
+                                    )}
+                                    <ThemeToggler
+                                       className='h-10 w-10'
+                                       theme={theme}
+                                       setTheme={setTheme}
+                                    />
                                  </div>
                               </div>
                            </Menu.Items>
