@@ -80,7 +80,7 @@ const MagnifyingGlass = () => {
    );
 };
 
-type IconProps = {
+export type IconProps = {
    [key: string]: Icons;
 };
 

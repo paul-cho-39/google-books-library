@@ -7,9 +7,9 @@ import RefreshTokenHandler from '../lib/auth/refreshTokenHandler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Container from '../components/layout/container';
-import MobileNavigation from '../components/headers/mobile/mobileHeader';
 import { ColorTheme } from '../lib/types/theme';
 import ThemeProvider from '../lib/context/ThemeContext';
+import Navigation from '../components/headers';
 
 const queryClient = new QueryClient({
    defaultOptions: {
@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps }) {
       <QueryClientProvider client={queryClient}>
          <ThemeProvider>
             <SessionProvider session={pageProps.session} refetchInterval={interval}>
-               <MobileNavigation />
+               <Navigation />
                <Container>
                   <Component {...pageProps} />
                </Container>

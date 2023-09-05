@@ -9,18 +9,18 @@ import getUserId from '../../../lib/helper/getUserId';
 
 import useDarkMode from '../../../lib/hooks/useDarkMode';
 import { ThemeToggler } from '../../buttons/themeToggler';
+import { NavigationProps } from '../../../lib/types/theme';
 
-const MobileNavigation = () => {
-   const { data: user, status } = useSession();
-   const { theme, setTheme } = useDarkMode();
-   const [icons] = useState(IconProviders);
-
-   // TODO // turn this into a function and into a class that returns a url?
-   const userId = user && getUserId(user as object, 'id');
-   const url = '/profile/' + userId;
-
+export const MobileNavigation = ({
+   user,
+   userId,
+   icons,
+   darkTheme,
+   url,
+   signOut,
+}: NavigationProps) => {
    return (
-      <div className='flex h-16 w-full mb-5 lg:hidden bg-beige dark:bg-charcoal'>
+      <>
          {/* off canvas menu for mobile */}
          {/* menu opener */}
          <Menu as='div' role='dialog' className='relative inset-0 z-40' aria-modal='true'>
@@ -107,8 +107,8 @@ const MobileNavigation = () => {
                                     )}
                                     <ThemeToggler
                                        className='h-10 w-10'
-                                       theme={theme}
-                                       setTheme={setTheme}
+                                       theme={darkTheme.theme}
+                                       setTheme={darkTheme.setTheme}
                                     />
                                  </div>
                               </div>
@@ -119,8 +119,6 @@ const MobileNavigation = () => {
                </div>
             </Transition>
          </Menu>
-      </div>
+      </>
    );
 };
-
-export default MobileNavigation;
