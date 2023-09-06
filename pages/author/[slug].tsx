@@ -1,10 +1,10 @@
-import { InferGetServerSidePropsType, InferGetStaticPropsType } from "next";
-import fetcher, { getAuthorUrl } from "../../lib/helper/books/fetchGoogleUrl";
-import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
-import doFetch from "../../lib/helper/books/fetchWikiUrl";
-import Image from "next/image";
-import { useEffect } from "react";
+import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
+import googleApi, { fetcher } from '../../lib/helper/books/fetchGoogleUrl';
+import { useRouter } from 'next/router';
+import { useQuery } from '@tanstack/react-query';
+import doFetch from '../../lib/helper/books/fetchWikiUrl';
+import Image from 'next/image';
+import { useEffect } from 'react';
 
 // find ways to sort the author:
 // 1) have users report when the image is incorrect*
@@ -12,49 +12,43 @@ import { useEffect } from "react";
 // 3) come up with extensive lists or keywords that can satisfy MOST filters
 
 export default function Author({}) {
-  // console.log(props);
-  const router = useRouter();
-  const { slug } = router.query;
-  const { data: authors } = useQuery(["getauthors", { slug }], () =>
-    fetcher(getAuthorUrl(slug as string))
-  );
-  const { data: example } = useQuery([`irrelvant`, { slug }], () =>
-    doFetch(slug as string)
-  );
-  console.log(authors);
+   // console.log(props);
+   const router = useRouter();
+   const { slug } = router.query;
+   const { data: authors } = useQuery(['getauthors', { slug }], () =>
+      fetcher(googleApi.getUrlByAuthor(slug as string))
+   );
+   const { data: example } = useQuery([`irrelvant`, { slug }], () => doFetch(slug as string));
+   console.log(authors);
 
-  useEffect(() => {
-    if (!router.isReady) return;
-    console.log(authors);
-  }, [router.isReady]);
-  // the wikipage is the primary for now, but have to hold onto this page
-  // need to find a way to filter an author
+   useEffect(() => {
+      if (!router.isReady) return;
+      console.log(authors);
+   }, [router.isReady]);
+   // the wikipage is the primary for now, but have to hold onto this page
+   // need to find a way to filter an author
 
-  //
+   //
 
-  // is there a method to skip out on the details?
-  // too much information and cannot skim through all of them
-  // includes const descriptors = ["journalist", "writer", "historian", "novelist", "author"];
-  const getThumbnail = () => {
-    const thumbnail =
-      example && example?.pages.map((page) => page.thumbnail)[0];
-    const thumbnailUrl = thumbnail && thumbnail.url.toString();
-    const replacedThumbnail =
-      thumbnailUrl && thumbnailUrl.replace("/60px", "/240px");
-    return thumbnail
-      ? "https:" + replacedThumbnail
-      : "/unavailableThumbnail.png";
-  };
+   // is there a method to skip out on the details?
+   // too much information and cannot skim through all of them
+   // includes const descriptors = ["journalist", "writer", "historian", "novelist", "author"];
+   const getThumbnail = () => {
+      const thumbnail = example && example?.pages.map((page) => page.thumbnail)[0];
+      const thumbnailUrl = thumbnail && thumbnail.url.toString();
+      const replacedThumbnail = thumbnailUrl && thumbnailUrl.replace('/60px', '/240px');
+      return thumbnail ? 'https:' + replacedThumbnail : '/unavailableThumbnail.png';
+   };
 
-  // console.log(getThumbnail());
+   // console.log(getThumbnail());
 
-  // console.log(authors);
-  return (
-    <div>
-      <h2>Testing Images</h2>
-      <Image src={getThumbnail()} alt="Jupiter" width={360} height={300} />
-    </div>
-  );
+   // console.log(authors);
+   return (
+      <div>
+         <h2>Testing Images</h2>
+         <Image src={getThumbnail()} alt='Jupiter' width={360} height={300} />
+      </div>
+   );
 }
 
 // should it be getStaticSideProps?

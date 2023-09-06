@@ -39,6 +39,11 @@ interface PublishedDate {
    end?: string;
 }
 
+export interface MetaProps {
+   maxResultNumber: number;
+   pageIndex: number;
+}
+
 class GoogleBookApi {
    private static URL_BASE = 'https://www.googleapis.com/books/v1/volumes?q=';
 
@@ -114,10 +119,9 @@ class GoogleBookApi {
       const url = `${GoogleBookApi.URL_BASE}subject:${subject}`;
       return this.appendCommonParams(url);
    }
-   public addMeta(url: string, maxResultNumber?: number, pageIndex?: number) {
+   public addMeta(url: string, meta: MetaProps) {
       this.checkUrl(url);
-
-      return this.appendCommonParams(url, maxResultNumber, pageIndex);
+      return this.appendCommonParams(url, meta.maxResultNumber, meta.pageIndex);
    }
    public addPublishedDate(
       url: string,

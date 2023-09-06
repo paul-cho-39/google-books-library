@@ -26,7 +26,7 @@ export const LargeNavigation = ({
                {Object.values(icons).map((icon) => (
                   <div
                      key={icon.name}
-                     className='h-full w-full inline-flex items-center justify-center px-5 hover:ring-1 hover:bg-orange-200 focus:ring-1 focus-visible:ring-orange-200 focus-visible:ring-opacity-75 dark:hover:bg-slate-100/10 dark:focus-visible:ring-bg-slate-100/10'
+                     className='h-full w-full inline-flex items-center justify-center px-5 cursor-pointer hover:ring-1 hover:bg-orange-200 focus:ring-1 focus-visible:ring-orange-200 focus-visible:ring-opacity-75 dark:hover:bg-slate-100/10 dark:focus-visible:ring-bg-slate-100/10'
                   >
                      <Link
                         href={icon.name === 'Home' ? icon.href : url + icon.href}
