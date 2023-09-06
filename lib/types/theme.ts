@@ -16,6 +16,7 @@ export interface NavigationProps {
    user: Session | null;
    userId: string | null;
    icons: IconProps;
-   theme: ThemeContextParams;
+   darkTheme: ThemeContextParams;
    url: string;
+   signOut: () => void;
 }

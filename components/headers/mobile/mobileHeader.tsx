@@ -1,13 +1,8 @@
 import React, { Fragment, useState } from 'react';
 import { Menu, Dialog, Transition } from '@headlessui/react';
-import { signOut, useSession } from 'next-auth/react';
 import { Close, MenuBars } from '../../icons/openCloseIcons';
 import IconLink from '../linksToIcon';
 import IsSession from '../../Login/isSession';
-import IconProviders from '../../icons/headerIcons';
-import getUserId from '../../../lib/helper/getUserId';
-
-import useDarkMode from '../../../lib/hooks/useDarkMode';
 import { ThemeToggler } from '../../buttons/themeToggler';
 import { NavigationProps } from '../../../lib/types/theme';
 
@@ -23,7 +18,7 @@ export const MobileNavigation = ({
       <>
          {/* off canvas menu for mobile */}
          {/* menu opener */}
-         <Menu as='div' role='dialog' className='relative inset-0 z-40' aria-modal='true'>
+         <Menu as='div' role='dialog' className='relative bg-beige inset-0 z-40' aria-modal='true'>
             <Menu.Button className='z-40 relative p-3 ml-2 focus:outline-none focus:ring-1 focus-visible:ring-slate-200 focus-visible:ring-opacity-75 rounded-full'>
                {({ open }) => (
                   <>
@@ -42,7 +37,7 @@ export const MobileNavigation = ({
                      leaveFrom='transform opacity-100 translate-x-20'
                      leaveTo='transform opacity-0 -translate-x-10'
                   >
-                     <div className='relative z-50 bg-[#F5E6C4] flex h-full w-96 max-w-sm flex-1 flex-col bg- focus:outline-none dark:bg-dark-charcoal'>
+                     <div className='relative z-50 bg-dilutedbeige flex h-full w-96 max-w-sm flex-1 flex-col bg- focus:outline-none dark:bg-dark-charcoal'>
                         <div className='pt-5 pb-4'>
                            <Menu.Items
                               as='nav'
