@@ -46,12 +46,13 @@ export interface MetaProps {
 
 class GoogleBookApi {
    private static URL_BASE = 'https://www.googleapis.com/books/v1/volumes?q=';
+   private static KEY = process.env.NEXT_PUBLIC_GOOGLE_KEY || '';
 
    private appendCommonParams(
       url: string,
       maxResultNumber: number = 15,
       pageIndex: number = 0,
-      key: string = process.env.NEXT_PUBLIC_GOOGLE_KEY || ''
+      key: string = GoogleBookApi.KEY
    ) {
       if (key == '') {
          throw console.warn(
@@ -118,6 +119,9 @@ class GoogleBookApi {
    public getUrlBySubject(subject: Categories) {
       const url = `${GoogleBookApi.URL_BASE}subject:${subject}`;
       return this.appendCommonParams(url);
+   }
+   public getUrlByBookId(id: string) {
+      return GoogleBookApi.URL_BASE + id;
    }
    public addMeta(url: string, meta: MetaProps) {
       this.checkUrl(url);

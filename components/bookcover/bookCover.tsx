@@ -1,5 +1,5 @@
 import { ImageLinks, SingleBook } from '../../lib/types/googleBookTypes';
-import SingleOrMultipleAuthors from '../bookcards/getEachAuthor';
+import SingleOrMultipleAuthors from './authors';
 import { filterDates } from '../../lib/helper/books/editBookPageHelper';
 import BookImage from './bookImages';
 import Categories from './categories';
@@ -14,7 +14,12 @@ const BookCover = ({ bookData, children }: BookDataProps) => {
    return (
       <div className='mx-auto px-2 pt-4'>
          {/* image have div parent */}
-         <BookImage bookImage={bookData.imageLinks as ImageLinks} title={bookData.title} />
+         <BookImage
+            bookImage={bookData.imageLinks as ImageLinks}
+            title={bookData.title}
+            width={132}
+            height={185}
+         />
          <div>
             <div>
                <h1 className='font-semibold text-lg font-serif'>

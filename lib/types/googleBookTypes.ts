@@ -5,7 +5,8 @@ export interface Data<T extends Record<string, string>> {
 
 export interface Pages<T extends Record<string, string>> {
    items: Array<Items<T>>;
-   totalItems?: number;
+   kind: string;
+   totalItems: number;
 }
 
 export interface Items<T extends Record<string, string>> {
@@ -23,6 +24,7 @@ export type VolumeInfo = {
    authors: string[];
    averageRating?: number;
    categories?: string[];
+   description?: string;
    pageCount?: number;
    publishedDate?: string;
    publisher?: string;
@@ -48,7 +50,7 @@ export interface SingleBook {
    authors: string[];
    categories: string[];
    description: string;
-   imageLinks?: Partial<ImageLinks>;
+   imageLinks?: ImageLinks;
    industryIdentifiers: IndustryIdentifiers[];
    language: string;
    pageCount: number;
