@@ -36,4 +36,16 @@ export const categories = [
    'YOUNG ADULT FICTION',
 ] as const;
 
+export const topCategories = [
+   'FICTION',
+   'BIOGRAPHY & AUTOBIOGRAPHY',
+   'BUSINESS & ECONOMICS',
+   'SELF-HELP',
+   'HISTORY',
+   'SCIENCE',
+   'RELIGION',
+   'TECHNOLOGY & ENGINEERING',
+];
+
 export type Categories = (typeof categories)[keyof typeof categories];
+export type TopCateogry = (typeof topCategories)[number];

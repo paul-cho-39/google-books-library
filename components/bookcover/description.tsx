@@ -118,7 +118,10 @@ const CollapsedDescription = ({
    // textSize?: TextSize;
 }) => (
    <div className={classNames(isLink ? 'mb-0' : 'mb-5', 'relative')}>
-      <p aria-label='Collapsed book description' className={clsx(`${lineClamp} `, className)}>
+      <p
+         aria-label='Collapsed book description'
+         className={clsx(`${lineClamp} dark:text-slate-100 `, className)}
+      >
          {descriptionLimit ? description.slice(0, descriptionLimit) + '...' : description}
       </p>
       <div
@@ -138,7 +141,10 @@ const ExpandedDescription = ({
    description: string;
    textSize?: TextSize;
 }) => (
-   <p className={classNames(`${textSize}`)} aria-label='Expanded book description'>
+   <p
+      className={classNames(`${textSize}, dark:text-slate-100`)}
+      aria-label='Expanded book description'
+   >
       {description}
    </p>
 );

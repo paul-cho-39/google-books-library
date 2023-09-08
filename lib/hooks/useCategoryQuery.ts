@@ -1,13 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
-import { Categories } from '../../constants/categories';
+import { UseQueryResult, useQueries, useQuery } from '@tanstack/react-query';
+import { Categories, TopCateogry, topCategories } from '../../constants/categories';
 import queryKeys from '../queryKeys';
 import googleApi, { MetaProps, fetcher } from '../helper/books/fetchGoogleUrl';
 import { Pages, Items } from '../types/googleBookTypes';
+import { CategoriesDataParams } from '../../pages';
 
-// will be using useQueries to fetch multiple categories at once
-// change the name where and more params will be added
-// plus make it a bit more abstract
-
+type CategoriesQueries = Record<TopCateogry, Items<any>>;
 export default function useCategoryQuery(category: Categories, meta?: MetaProps) {
    // this is a test -- should be using useQueries
    const data = useQuery<Pages<any>, unknown, Items<any>[]>(
@@ -20,7 +18,7 @@ export default function useCategoryQuery(category: Categories, meta?: MetaProps)
             return fetcher(url);
          }
       },
-      // TODO: may have to play around with some of these numbers;
+      // TODO: may have to play around with properties
       {
          enabled: !!category,
          select: (data) => data.items,
@@ -32,4 +30,26 @@ export default function useCategoryQuery(category: Categories, meta?: MetaProps)
    }
 
    return data;
+}
+
+// add an enabler here -- let's say something loaded then enable this to be loaded
+export function useCategoriesQueries(data: CategoriesDataParams) {
+   const categoryKeys = topCategories.map((category, index) => {
+      return {
+         queryKey: queryKeys.categories(category),
+         initialData: data[category.toLowerCase()],
+         select: (data: Pages<any>) => data.items,
+      };
+   });
+
+   const categoryData = useQueries<unknown[]>({
+      queries: [...categoryKeys, {}],
+   });
+
+   const dataWithKeys = topCategories.reduce((acc, category, index) => {
+      acc[category.toLowerCase()] = categoryData[index]?.data;
+      return acc;
+   }, {} as { [key: TopCateogry]: unknown });
+
+   return { dataWithKeys, categoryData };
 }

@@ -5,13 +5,19 @@ import getUserId from '../lib/helper/getUserId';
 
 import Link from 'next/link';
 import { ReadingGetter } from '../lib/prisma/class/get/bookgetter';
-import useCategoryQuery from '../lib/hooks/useCategoryQuery';
+import useCategoryQuery, { useCategoriesQueries } from '../lib/hooks/useCategoryQuery';
 import HomeLayout from '../components/layout/page/home';
 import { CategoryDescription, CategoryDisplay } from '../components/home/categories';
 import BookImage from '../components/bookcover/bookImages';
-import { ImageLinks } from '../lib/types/googleBookTypes';
+import { ImageLinks, Items, Pages } from '../lib/types/googleBookTypes';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../lib/hooks/useDisableBreakPoints';
+import googleApi, { fetcher } from '../lib/helper/books/fetchGoogleUrl';
+import { Categories, TopCateogry, categories, topCategories } from '../constants/categories';
+import createUniqueDataSets, { createUniqueData } from '../lib/helper/books/filterUniqueData';
+
+export type CategoriesDataParams = Record<TopCateogry, Pages<any> | null>;
+export type CategoriesQueries = Record<TopCateogry, Items<any>[]>;
 
 export type CurrentOrReadingProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -23,12 +29,12 @@ type HoveredProps = {
 };
 
 const SMALL_SCREEN = 768;
-export const HEIGHT = 150;
-const PADDING = 8;
-export const CONTAINER_HEIGHT = 150;
+const PADDING = 8; // have to add margin from the components
+const WIDTH_RATIO = 3.2;
+const HEIGHT = 150;
+const CONTAINER_HEIGHT = 150;
 
 // the width ratio depends on the size;
-const WIDTH_RATIO = 3.2;
 export const getWidth = (
    height: number,
    type: 'image' | 'container' = 'image',
@@ -51,7 +57,6 @@ const changeDirection = (
 
    if (currentIndex >= threshold) {
       const mult = totalColumns + 1 - currentIndex;
-      console.log('multiplier: ', mult);
       return {
          right: (PADDING + width) * mult,
          left: 0,
@@ -62,13 +67,14 @@ const changeDirection = (
 };
 
 const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-   const { data, userId } = props;
-   const education = useCategoryQuery('ART');
-   // console.log('here is the result of the data: ', education.data);
-   // console.log('--------------------');
-   // console.log('the status of data: ', education.status);
+   // const { data, userId } = props;
+   const { data } = props;
+   const { dataWithKeys } = useCategoriesQueries(data);
 
-   const gridRef = useRef<HTMLDivElement>(null);
+   // console.log('the categories here listed are', dataWithKeys);
+   console.log('UNIQUE DATA SETS', createUniqueData(data['self-help']));
+   console.log('the data contains categories of the following: ', data);
+
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
    const [dateValue, setDateValue] = useState<Date>(new Date());
@@ -133,15 +139,12 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
          isHovered.index &&
          isHovered.hovered &&
          floatingRef.current &&
-         imageRefs.current &&
-         gridRef.current
+         imageRefs.current
       ) {
-         const totalWidth = gridRef.current.clientWidth;
          const el = imageRefs.current[isHovered.id]?.getBoundingClientRect();
 
          if (el) {
             const position = changeDirection(
-               totalWidth,
                el.width,
                isHovered.index,
                NUMBER_OF_COLS,
@@ -149,99 +152,129 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
             );
             const top = el.top - el.height - 27;
 
+            floatingRef.current.style.top = `${0}px`; // have to fix this number;
+            floatingRef.current.style.position = 'absolute';
+
             if (position.right > 0) {
                floatingRef.current.style.right = `${position.right}px`;
-               floatingRef.current.style.top = `${top}px`; // have to fix this number;
-               floatingRef.current.style.position = 'absolute';
             } else {
                floatingRef.current.style.left = `${position.left}px`;
-               floatingRef.current.style.top = `${top}px`; // have to fix this number;
-               floatingRef.current.style.position = 'absolute';
             }
          }
       }
    }, [NUMBER_OF_COLS, isHovered]);
 
-   // TESTING
-   if (!data) {
-      return (
-         // "track your data here" w/ link to the book page
-         <Link as={`/profile/${userId}/searchbook`} href={`/profile/[id]/searchbook`}></Link>
-      );
-   }
-
    return (
       <HomeLayout>
-         <CategoryDisplay forwardRef={gridRef} category='EDUCATION'>
-            {education &&
-               education?.data?.map((book, index) => {
-                  const hoveredEl = isHovered.id == book.id &&
-                     (isHovered.hovered || isHovered.isFloatHovered) && (
-                        <div
-                           ref={floatingRef}
-                           onMouseLeave={onMouseLeaveDescription}
-                           style={{
-                              height: CONTAINER_HEIGHT,
-                              width: getWidth(HEIGHT, 'container', largeEnabled),
-                           }}
-                           className='absolute z-50 rounded-lg'
-                        >
-                           <CategoryDescription
-                              id={book.id}
+         {Object.entries(dataWithKeys).map(([key, value]) => (
+            <CategoryDisplay key={key} category={key as Categories}>
+               {value &&
+                  value?.map((book, index) => {
+                     const hoveredEl = isHovered.id == book.id &&
+                        (isHovered.hovered || isHovered.isFloatHovered) && (
+                           <div
+                              ref={floatingRef}
+                              onMouseLeave={onMouseLeaveDescription}
+                              style={{
+                                 height: CONTAINER_HEIGHT,
+                                 width: getWidth(HEIGHT, 'container', largeEnabled),
+                              }}
+                              className='absolute z-50 rounded-lg'
+                           >
+                              <CategoryDescription
+                                 id={book.id}
+                                 title={book.volumeInfo.title}
+                                 subtitle={book.volumeInfo.subtitle}
+                                 authors={book.volumeInfo.authors}
+                                 description={book.volumeInfo.description}
+                              />
+                           </div>
+                        );
+                     return (
+                        <>
+                           <BookImage
+                              key={book.id}
+                              bookImage={book.volumeInfo.imageLinks as ImageLinks}
+                              width={getWidth(HEIGHT, 'image', largeEnabled)}
+                              height={HEIGHT}
+                              forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
                               title={book.volumeInfo.title}
-                              subtitle={book.volumeInfo.subtitle}
-                              authors={book.volumeInfo.authors}
-                              description={book.volumeInfo.description}
+                              onMouseEnter={() => onMouseEnter(book.id, index)}
+                              onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e)}
+                              className={classNames(
+                                 // index % 2 ? 'bg-blue-100' : 'bg-red-100',
+                                 'col-span-1 cursor-pointer'
+                              )}
                            />
-                        </div>
+                           {hoveredEl}
+                        </>
                      );
-                  return (
-                     <>
-                        <BookImage
-                           key={book.id}
-                           bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                           width={getWidth(HEIGHT, 'image', largeEnabled)}
-                           height={HEIGHT}
-                           forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
-                           title={book.volumeInfo.title}
-                           onMouseEnter={() => onMouseEnter(book.id, index)}
-                           onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e)}
-                           className={classNames(
-                              index % 2 ? 'bg-blue-100' : 'bg-red-100',
-                              'col-span-1 cursor-pointer'
-                           )}
-                        />
-                        {hoveredEl}
-                     </>
-                  );
-               })}
-         </CategoryDisplay>
+                  })}
+            </CategoryDisplay>
+         ))}
       </HomeLayout>
    );
 };
 
 export default Home;
 
+export const getServerSideProps = async () => {
+   const data: CategoriesDataParams = {};
+   const uniqueData: CategoriesQueries = {};
+
+   for (let category of topCategories) {
+      category = category.toLocaleLowerCase();
+      const url = googleApi.getUrlBySubject(category as Categories, {
+         maxResultNumber: 6,
+         pageIndex: 0,
+      });
+      const json = await fetcher(url);
+
+      if (!json) {
+         data[category] = null;
+         // uniqueData[category] = null;
+      }
+
+      // uniqueData[category] = createUniqueDataSets(json);
+      data[category] = json;
+   }
+
+   return {
+      props: { data },
+   };
+};
+
 // using getServerSideProps to access google api
 // and store it in the client side because the data will
 // be static(?) and will retrieve by the results to retrieve almost all of the queries
 // and prefetch the data
 
-export const getServerSideProps = async (context: any) => {
-   const getUser = await getSession(context);
-   const userId = getUserId(getUser as object, 'id');
-   // const bookGetter = new BookGetter(userId);
-   // const data = await bookGetter.getCurrentOrPrimary();
+// export const getServerSideProps = async (context: any) => {
+//    const getUser = await getSession(context);
+//    const userId = getUserId(getUser as object, 'id');
+//    // const bookGetter = new BookGetter(userId);
+//    // const data = await bookGetter.getCurrentOrPrimary();
 
-   const getter = new ReadingGetter(userId);
-   const data = await getter.getEditPrimaryData();
-   return {
-      props: {
-         userId: userId,
-         data: data,
-      },
-   };
-};
+//    const getter = new ReadingGetter(userId);
+//    const data = await getter.getEditPrimaryData();
+//    return {
+//       props: {
+//          userId: userId,
+//          data: data,
+//       },
+//    };
+// };
+
+// TESTING
+// if (!data) {
+//    return (
+//       // "track your data here" w/ link to the book page
+//       <Link as={`/profile/${userId}/searchbook`} href={`/profile/[id]/searchbook`}></Link>
+//    );
+// }
+
+// here even for some categoires can prefetch and cache it no?
+// and use initialData defined by its queryKeys to work with all of this
 
 // this wont happen with recommended lists or best sellers(?)
 // see NYT bestsellers lists for more
