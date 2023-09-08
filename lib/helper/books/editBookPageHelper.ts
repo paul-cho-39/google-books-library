@@ -4,7 +4,7 @@ import { ImageLinks, ImageLinksPairs, VolumeInfo } from '../../types/googleBookT
 // if the return type is not specified, it will return any. This function should return string;
 export function getAvailableThumbnail<T extends ImageLinks | ImageLinksPairs>(
    imageLinks: T | undefined
-): string {
+) {
    if (!imageLinks) {
       return isThumbnailAvailable(imageLinks);
    }
@@ -35,13 +35,17 @@ function isThumbnailAvailable<T extends ImageLinks | ImageLinksPairs>(image: T |
 }
 
 // description
-export function removeHtmlTags(description: string) {
+export function removeHtmlTags(description: string | undefined) {
+   if (!description) return;
+
    const breakDescription = description.split('<br><br>');
    const regex = /(<[^>]*>)/gi;
    return breakDescription.map((description) => description.replaceAll(regex, '').trim());
 }
 
-export function sliceDescription(description: string[], sliced: number = 150) {
+export function sliceDescription(description: string[] | undefined, sliced: number = 150) {
+   if (!description) return;
+
    return description.toString().substring(0, sliced);
 }
 

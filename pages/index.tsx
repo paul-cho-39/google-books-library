@@ -1,25 +1,65 @@
 import type { InferGetServerSidePropsType, NextPage } from 'next';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { getSession } from 'next-auth/react';
 import getUserId from '../lib/helper/getUserId';
-import { useQuery } from '@tanstack/react-query';
-import queryKeys from '../lib/queryKeys';
-import bookApiUpdate from '../lib/helper/books/bookApiUpdate';
-// import { BookGetter } from '../lib/prisma/class/bookGetter';
+
 import Link from 'next/link';
-import BookCards from '../components/home/bookCards';
 import { ReadingGetter } from '../lib/prisma/class/get/bookgetter';
-import fetcher from '../lib/helper/books/fetchGoogleUrl';
 import useCategoryQuery from '../lib/hooks/useCategoryQuery';
-import Container from '../components/layout/container';
 import HomeLayout from '../components/layout/page/home';
-import { CategoryDescription, CategoryDisplay } from '../components/home/basicCards';
+import { CategoryDescription, CategoryDisplay } from '../components/home/categories';
 import BookImage from '../components/bookcover/bookImages';
 import { ImageLinks } from '../lib/types/googleBookTypes';
+import classNames from 'classnames';
+import { useDisableBreakPoints } from '../lib/hooks/useDisableBreakPoints';
 
 export type CurrentOrReadingProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-type HoveredProps = { id: string | null; hovered: boolean; isFloatHovered: boolean };
+type HoveredProps = {
+   id: string | null;
+   hovered: boolean;
+   isFloatHovered: boolean;
+   index: number | null;
+};
+
+const SMALL_SCREEN = 768;
+export const HEIGHT = 150;
+const PADDING = 8;
+export const CONTAINER_HEIGHT = 150;
+
+// the width ratio depends on the size;
+const WIDTH_RATIO = 3.2;
+export const getWidth = (
+   height: number,
+   type: 'image' | 'container' = 'image',
+   isLargeScreen: boolean
+) => {
+   const ratio = isLargeScreen ? WIDTH_RATIO : WIDTH_RATIO - 1;
+   return type === 'container' ? height * ratio : height * (3 / 4.25);
+};
+
+const changeDirection = (
+   width: number,
+   itemIndex: number,
+   totalColumns: number,
+   threshold: number = totalColumns
+) => {
+   const currentIndex =
+      itemIndex === totalColumns || itemIndex % totalColumns === 0
+         ? totalColumns
+         : itemIndex % totalColumns;
+
+   if (currentIndex >= threshold) {
+      const mult = totalColumns + 1 - currentIndex;
+      console.log('multiplier: ', mult);
+      return {
+         right: (PADDING + width) * mult,
+         left: 0,
+      };
+   }
+
+   return { left: (PADDING + width) * currentIndex, right: 0 };
+};
 
 const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
    const { data, userId } = props;
@@ -28,6 +68,7 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
    // console.log('--------------------');
    // console.log('the status of data: ', education.status);
 
+   const gridRef = useRef<HTMLDivElement>(null);
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
    const [dateValue, setDateValue] = useState<Date>(new Date());
@@ -37,6 +78,7 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
       id: null,
       hovered: false,
       isFloatHovered: false,
+      index: null,
    });
    const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout>(null!);
 
@@ -44,12 +86,18 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
       if (imageRefs.current) imageRefs.current[id] = el;
    }, []);
 
-   const onMouseEnter = (id: string) => {
+   // getting number of grids
+   const largeEnabled = useDisableBreakPoints();
+   const smallEnabled = useDisableBreakPoints(SMALL_SCREEN);
+   const NUMBER_OF_COLS = largeEnabled ? 6 : smallEnabled ? 4 : 3;
+
+   const onMouseEnter = (id: string, index: number) => {
       if (!id) return;
+
       clearTimeout(hoverTimer);
       setHoverTimer(
          setTimeout(() => {
-            setIsHovered({ id, hovered: true, isFloatHovered: false });
+            setIsHovered({ id, hovered: true, isFloatHovered: false, index: index + 1 });
          }, 350)
       );
    };
@@ -68,32 +116,51 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
 
       clearTimeout(hoverTimer);
       if (isHovered.id !== null) {
-         setIsHovered({ id: null, hovered: false, isFloatHovered: false });
+         setIsHovered({ id: null, hovered: false, isFloatHovered: false, index: null });
       }
    };
 
    const onMouseLeaveDescription = () => {
       clearTimeout(hoverTimer);
       if (isHovered.id !== null) {
-         setIsHovered({ id: null, hovered: false, isFloatHovered: false });
+         setIsHovered({ id: null, hovered: false, isFloatHovered: false, index: null });
       }
    };
 
    useEffect(() => {
-      if (isHovered.id && isHovered.hovered && floatingRef.current && imageRefs.current) {
+      if (
+         isHovered.id &&
+         isHovered.index &&
+         isHovered.hovered &&
+         floatingRef.current &&
+         imageRefs.current &&
+         gridRef.current
+      ) {
+         const totalWidth = gridRef.current.clientWidth;
          const el = imageRefs.current[isHovered.id]?.getBoundingClientRect();
 
          if (el) {
-            const offsetWidth = el.width + 16 + 24 - 10; // px-4 and gap-x-6;
-            floatingRef.current.style.position = 'absolute';
-            floatingRef.current.style.left = `${el.right - offsetWidth}px`;
-            floatingRef.current.style.top = `${0}px`; // have to fix this number;
-            floatingRef.current.style.height = `${el.height}px`;
+            const position = changeDirection(
+               totalWidth,
+               el.width,
+               isHovered.index,
+               NUMBER_OF_COLS,
+               NUMBER_OF_COLS - 1
+            );
+            const top = el.top - el.height - 27;
+
+            if (position.right > 0) {
+               floatingRef.current.style.right = `${position.right}px`;
+               floatingRef.current.style.top = `${top}px`; // have to fix this number;
+               floatingRef.current.style.position = 'absolute';
+            } else {
+               floatingRef.current.style.left = `${position.left}px`;
+               floatingRef.current.style.top = `${top}px`; // have to fix this number;
+               floatingRef.current.style.position = 'absolute';
+            }
          }
       }
-   }, [isHovered, imageRefs, floatingRef]);
-
-   // separate the grid, if (TOTAL_NUMBER_OF_GRID / 3) < x ? 'show_left' : 'show_right';
+   }, [NUMBER_OF_COLS, isHovered]);
 
    // TESTING
    if (!data) {
@@ -105,16 +172,19 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
 
    return (
       <HomeLayout>
-         <CategoryDisplay category='EDUCATION'>
+         <CategoryDisplay forwardRef={gridRef} category='EDUCATION'>
             {education &&
-               education?.data?.map((book) => {
+               education?.data?.map((book, index) => {
                   const hoveredEl = isHovered.id == book.id &&
                      (isHovered.hovered || isHovered.isFloatHovered) && (
                         <div
                            ref={floatingRef}
-                           itemID='descriptionIdentifier'
                            onMouseLeave={onMouseLeaveDescription}
-                           className='absolute z-50 bg-slate-100 w-20 lg:w-64 xl:w-72'
+                           style={{
+                              height: CONTAINER_HEIGHT,
+                              width: getWidth(HEIGHT, 'container', largeEnabled),
+                           }}
+                           className='absolute z-50 rounded-lg'
                         >
                            <CategoryDescription
                               id={book.id}
@@ -130,13 +200,16 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
                         <BookImage
                            key={book.id}
                            bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                           width={120}
-                           height={180}
+                           width={getWidth(HEIGHT, 'image', largeEnabled)}
+                           height={HEIGHT}
                            forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
                            title={book.volumeInfo.title}
-                           onMouseEnter={() => onMouseEnter(book.id)}
+                           onMouseEnter={() => onMouseEnter(book.id, index)}
                            onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e)}
-                           className='col-span-1 cursor-pointer'
+                           className={classNames(
+                              index % 2 ? 'bg-blue-100' : 'bg-red-100',
+                              'col-span-1 cursor-pointer'
+                           )}
                         />
                         {hoveredEl}
                      </>

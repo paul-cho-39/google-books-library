@@ -1,52 +1,146 @@
-import { useState } from "react";
-import {
-  removeHtmlTags,
-  sliceDescription,
-} from "../../lib/helper/books/editBookPageHelper";
-import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
+import { useState } from 'react';
+import { removeHtmlTags, sliceDescription } from '../../lib/helper/books/editBookPageHelper';
+import { ArrowDownIcon, ArrowUpIcon, ArrowRightIcon } from '@heroicons/react/20/solid';
+import Link, { LinkProps } from 'next/link';
+import classNames from 'classnames';
+import clsx from 'clsx';
 
-const BookDescription = ({ description }: { description: string }) => {
-  const filteredDescription = removeHtmlTags(description);
-  const displayedDescription = sliceDescription(filteredDescription, 200);
-  const minimumDescriptionChar = filteredDescription.toString().length;
-  const [toggleDescription, setToggleDescription] = useState(false);
-  return (
-    <>
-      {!filteredDescription ? (
-        <span className="font-mono">No description provided</span>
-      ) : // create another condition where if it does NOT exceed certain length
-      !toggleDescription ? (
-        <div className="relative mb-5">
-          <p className="overflow-hidden line-clamp-3">{displayedDescription}</p>
-          <div className="bg-gradient-to-b from-slate-100/5 to-[#ffffff] top-7 w-full absolute h-14"></div>
-          <span
-            onClick={() => setToggleDescription(true)}
-            className={`${
-              minimumDescriptionChar < 200
-                ? "hidden"
-                : "flex items-center justify-center font-semibold mt-2.5 transition-opacity duration-300 hover:cursor-pointer"
-            }`}
-          >
-            See More <ArrowDownIcon height="25" width="20" />{" "}
-          </span>
-        </div>
-      ) : (
-        filteredDescription.map((description, index) => (
-          <p key={index}>{description}</p>
-        ))
-      )}
+type LineClamp =
+   | 'line-clamp-1'
+   | 'line-clamp-2'
+   | 'line-clamp-3'
+   | 'line-clamp-4'
+   | 'line-clamp-5'
+   | 'line-clamp-6';
+
+type TextSize = 'text-xs' | 'text-sm' | 'text-md' | 'text-lg' | 'text-xl'; // add more if needed
+
+interface DescriptionProps extends LinkProps {
+   description: string | undefined;
+   descriptionLimit?: number;
+   isLink?: boolean;
+   lineClamp?: LineClamp;
+   textSize?: TextSize;
+   className?: string;
+}
+
+const BookDescription = ({
+   description,
+   descriptionLimit = 200,
+   isLink = false,
+   lineClamp = 'line-clamp-3',
+   textSize = 'text-sm',
+   className,
+   ...props
+}: DescriptionProps) => {
+   const [toggleDescription, setToggleDescription] = useState(false);
+
+   const filteredDescription = removeHtmlTags(description);
+
+   const displayedDescription = sliceDescription(filteredDescription, descriptionLimit);
+   const minimumDescriptionChar = filteredDescription?.toString().length;
+
+   const isDescriptionEmpty = !filteredDescription || !displayedDescription;
+
+   const SeeMoreElement = isLink ? (
+      <Link {...props}>
+         <a
+            aria-label='See more about this book'
+            className='w-full inline-flex items-center justify-end px-2 hover:translate-x-1 hover:text-slate-300 transition-all duration-200'
+         >
+            <span className='text-blue-500 text-xs'>See More</span>{' '}
+            <ArrowRightIcon color='rgb(59, 130, 246)' height='10' width='10' />{' '}
+         </a>
+      </Link>
+   ) : (
       <span
-        onClick={() => setToggleDescription(false)}
-        className={`${
-          !toggleDescription
-            ? "hidden"
-            : "flex font-semibold hover:cursor-pointer"
-        }  py-2`}
+         aria-expanded={toggleDescription}
+         role='button'
+         onClick={() => setToggleDescription(true)}
+         className={`${
+            minimumDescriptionChar && minimumDescriptionChar < descriptionLimit
+               ? 'hidden'
+               : 'flex items-center justify-center font-semibold mt-2.5 transition-opacity duration-300 hover:cursor-pointer'
+         }`}
       >
-        See Less <ArrowUpIcon height="25" width="20" />{" "}
+         See More <ArrowDownIcon height='25' width='20' />{' '}
       </span>
-    </>
-  );
+   );
+
+   return (
+      <>
+         {isDescriptionEmpty ? (
+            <NoDescription />
+         ) : (
+            <>
+               {!toggleDescription ? (
+                  <CollapsedDescription
+                     description={displayedDescription}
+                     descriptionLimit={descriptionLimit}
+                     lineClamp={lineClamp}
+                     isLink={isLink}
+                     className={className}
+                  />
+               ) : (
+                  <ExpandedDescription description={displayedDescription} />
+               )}
+               {SeeMoreElement}
+            </>
+         )}
+         <span
+            role='button'
+            aria-expanded={toggleDescription}
+            onClick={() => setToggleDescription(false)}
+            className={`${
+               !toggleDescription ? 'hidden' : 'flex font-semibold hover:cursor-pointer'
+            } py-2`}
+         >
+            See Less <ArrowUpIcon height='25' width='20' />
+         </span>
+      </>
+   );
 };
+
+const NoDescription = () => <p className='text-lg'>No description provided</p>;
+
+const CollapsedDescription = ({
+   description,
+   descriptionLimit,
+   isLink,
+   lineClamp,
+   className,
+}: {
+   description: string;
+   isLink?: boolean;
+   descriptionLimit?: number;
+   className?: string;
+   lineClamp?: LineClamp;
+   // textSize?: TextSize;
+}) => (
+   <div className={classNames(isLink ? 'mb-0' : 'mb-5', 'relative')}>
+      <p aria-label='Collapsed book description' className={clsx(`${lineClamp} `, className)}>
+         {descriptionLimit ? description.slice(0, descriptionLimit) + '...' : description}
+      </p>
+      <div
+         className={classNames(
+            isLink
+               ? 'hidden'
+               : 'absolute h-14 w-full top-7 bg-gradient-to-b from-slate-100/5 to-[#ffffff]'
+         )}
+      ></div>
+   </div>
+);
+
+const ExpandedDescription = ({
+   description,
+   textSize,
+}: {
+   description: string;
+   textSize?: TextSize;
+}) => (
+   <p className={classNames(`${textSize}`)} aria-label='Expanded book description'>
+      {description}
+   </p>
+);
 
 export default BookDescription;
