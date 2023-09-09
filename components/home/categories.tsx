@@ -3,6 +3,7 @@ import { Categories } from '../../constants/categories';
 import { capitalizeWords } from '../../lib/utils/transformChar';
 import SingleOrMultipleAuthors from '../bookcover/authors';
 import BookDescription from '../bookcover/description';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
 // TEST THIS ONE
 type BookSection = 'Best Seller' | 'Recommended';
@@ -31,20 +32,15 @@ export const CategoryDisplay = ({ category, children, forwardRef }: CategoryDisp
             {/* map over the images here */}
             <div
                ref={forwardRef}
-               className='relative grid grid-cols-3 gap-x-0 md:grid-cols-4 lg:grid-cols-6'
+               className='relative whitespace-nowrap overflow-x-auto grid grid-rows-1 grid-cols-3 gap-x-0 md:grid-cols-4 lg:overflow-x-hidden lg:grid-cols-6'
             >
                {children}
             </div>
+            <div className='text-right bg-blue-200'>
+               <ShowMoreCategory category={category} />
+            </div>
          </div>
       </article>
-   );
-};
-
-export const CategoryHeader = ({ category }: { category: CategoryHeaderParams }) => {
-   return (
-      <h2 className='py-4 text-xl lg:text-2xl text-slate-800 dark:text-slate-100'>
-         {capitalizeWords(category)}
-      </h2>
    );
 };
 
@@ -102,4 +98,28 @@ export const CategoryDescription = ({
    );
 };
 
-// ** For images use book cards **
+const CategoryHeader = ({ category }: { category: CategoryHeaderParams }) => {
+   return (
+      <h2 className='py-4 text-xl lg:text-2xl text-slate-800 dark:text-slate-100'>
+         {capitalizeWords(category)}
+      </h2>
+   );
+};
+
+const ShowMoreCategory = ({ category }: { category: CategoryHeaderParams }) => {
+   return (
+      <Link
+         aria-label='Show more categories'
+         as={`/categories/${category}`}
+         href={'/categories/[slug]'}
+         passHref
+      >
+         <a
+            className='inline-flex text-md'
+            // className='flex flex-row items-center justify-end text-md after:contents-["..."] text-slate-800 dark:text-slate-100'
+         >
+            <span>More {category} books</span>
+         </a>
+      </Link>
+   );
+};
