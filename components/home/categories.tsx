@@ -31,7 +31,7 @@ export const CategoryDisplay = ({ category, children, forwardRef }: CategoryDisp
             {/* map over the images here */}
             <div
                ref={forwardRef}
-               className='relative grid grid-cols-3 gap-x-2 md:grid-cols-4 lg:grid-cols-6'
+               className='relative grid grid-cols-3 gap-x-0 md:grid-cols-4 lg:grid-cols-6'
             >
                {children}
             </div>
@@ -43,8 +43,7 @@ export const CategoryDisplay = ({ category, children, forwardRef }: CategoryDisp
 export const CategoryHeader = ({ category }: { category: CategoryHeaderParams }) => {
    return (
       <h2 className='py-4 text-xl lg:text-2xl text-slate-800 dark:text-slate-100'>
-         {/* {capitalizeWords(category)} */}
-         {category}
+         {capitalizeWords(category)}
       </h2>
    );
 };

@@ -17,7 +17,7 @@ import { Categories, TopCateogry, categories, topCategories } from '../constants
 import createUniqueDataSets, { createUniqueData } from '../lib/helper/books/filterUniqueData';
 
 export type CategoriesDataParams = Record<TopCateogry, Pages<any> | null>;
-export type CategoriesQueries = Record<TopCateogry, Items<any>[]>;
+export type CategoriesQueries = Record<TopCateogry, Items<any>[] | null>;
 
 export type CurrentOrReadingProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -29,7 +29,7 @@ type HoveredProps = {
 };
 
 const SMALL_SCREEN = 768;
-const PADDING = 8; // have to add margin from the components
+const PADDING = 1; // have to add margin from the components
 const WIDTH_RATIO = 3.2;
 const HEIGHT = 150;
 const CONTAINER_HEIGHT = 150;
@@ -50,6 +50,7 @@ const changeDirection = (
    totalColumns: number,
    threshold: number = totalColumns
 ) => {
+   const offsetBy = 5;
    const currentIndex =
       itemIndex === totalColumns || itemIndex % totalColumns === 0
          ? totalColumns
@@ -58,22 +59,18 @@ const changeDirection = (
    if (currentIndex >= threshold) {
       const mult = totalColumns + 1 - currentIndex;
       return {
-         right: (PADDING + width) * mult,
+         right: (PADDING + width) * mult + offsetBy,
          left: 0,
       };
    }
 
-   return { left: (PADDING + width) * currentIndex, right: 0 };
+   return { left: (PADDING + width) * currentIndex - offsetBy, right: 0 };
 };
 
 const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
    // const { data, userId } = props;
    const { data } = props;
    const { dataWithKeys } = useCategoriesQueries(data);
-
-   // console.log('the categories here listed are', dataWithKeys);
-   console.log('UNIQUE DATA SETS', createUniqueData(data['self-help']));
-   console.log('the data contains categories of the following: ', data);
 
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -219,24 +216,27 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
 export default Home;
 
 export const getServerSideProps = async () => {
-   const data: CategoriesDataParams = {};
-   const uniqueData: CategoriesQueries = {};
+   const maxResultNumber = 6;
+   const data: CategoriesQueries = {};
+   // const data: CategoriesDataParams = {};
 
+   // the caveat here is the number of calls to google book api
+   // however given that this application is not to scale this should be fine
    for (let category of topCategories) {
       category = category.toLocaleLowerCase();
       const url = googleApi.getUrlBySubject(category as Categories, {
-         maxResultNumber: 6,
+         maxResultNumber: 15,
          pageIndex: 0,
       });
+
       const json = await fetcher(url);
 
       if (!json) {
          data[category] = null;
-         // uniqueData[category] = null;
       }
 
-      // uniqueData[category] = createUniqueDataSets(json);
-      data[category] = json;
+      const uniqueData = createUniqueData(json) as Items<any>[];
+      data[category] = uniqueData?.slice(0, 6);
    }
 
    return {
