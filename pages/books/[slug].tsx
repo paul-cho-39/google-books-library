@@ -1,7 +1,7 @@
 import { getSession } from 'next-auth/react';
 import getUserId from '../../lib/helper/getUserId';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import googleApi, { fetcher } from '../../lib/helper/books/fetchGoogleUrl';
+import googleApi, { fetcher } from '../../models/_api/fetchGoogleUrl';
 import { useEffect } from 'react';
 import filterBookInfo from '../../lib/helper/books/filterBookInfo';
 import queryKeys from '../../lib/queryKeys';

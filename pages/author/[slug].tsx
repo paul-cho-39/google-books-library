@@ -1,5 +1,5 @@
 import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
-import googleApi, { fetcher } from '../../lib/helper/books/fetchGoogleUrl';
+import googleApi, { fetcher } from '../../models/_api/fetchGoogleUrl';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import doFetch from '../../lib/helper/books/fetchWikiUrl';

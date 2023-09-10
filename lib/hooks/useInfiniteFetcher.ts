@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import googleApi, { fetcher } from '../helper/books/fetchGoogleUrl';
+import googleApi, { fetcher } from '../../models/_api/fetchGoogleUrl';
 import queryKeys from '../queryKeys';
 
 interface FetcherProps {

@@ -1,10 +1,6 @@
 import type { InferGetServerSidePropsType, NextPage } from 'next';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { getSession } from 'next-auth/react';
-import getUserId from '../lib/helper/getUserId';
 
-import Link from 'next/link';
-import { ReadingGetter } from '../lib/prisma/class/get/bookgetter';
 import useCategoryQuery, { useCategoriesQueries } from '../lib/hooks/useCategoryQuery';
 import HomeLayout from '../components/layout/page/home';
 import { CategoryDescription, CategoryDisplay } from '../components/home/categories';
@@ -12,7 +8,7 @@ import BookImage from '../components/bookcover/bookImages';
 import { ImageLinks, Items, Pages } from '../lib/types/googleBookTypes';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../lib/hooks/useDisableBreakPoints';
-import googleApi, { fetcher } from '../lib/helper/books/fetchGoogleUrl';
+import googleApi, { fetcher } from '../models/_api/fetchGoogleUrl';
 import { Categories, TopCateogry, categories, topCategories } from '../constants/categories';
 import createUniqueDataSets, { createUniqueData } from '../lib/helper/books/filterUniqueData';
 
@@ -32,7 +28,7 @@ const SMALL_SCREEN = 768;
 const PADDING = 1; // have to add margin from the components
 const WIDTH_RATIO = 3.2;
 const HEIGHT = 150;
-const CONTAINER_HEIGHT = 150;
+const CONTAINER_HEIGHT = 150; // may subject to change
 
 // the width ratio depends on the size;
 export const getWidth = (
@@ -162,7 +158,7 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
    }, [NUMBER_OF_COLS, isHovered]);
 
    return (
-      <HomeLayout>
+      <>
          {Object.entries(dataWithKeys).map(([key, value]) => (
             <CategoryDisplay key={key} category={key as Categories}>
                {value &&
@@ -200,7 +196,7 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
                               onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e)}
                               className={classNames(
                                  // index % 2 ? 'bg-blue-100' : 'bg-red-100',
-                                 'col-span-1 cursor-pointer'
+                                 'lg:col-span-1 px-1 lg:px-0 cursor-pointer'
                               )}
                            />
                            {hoveredEl}
@@ -209,19 +205,18 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
                   })}
             </CategoryDisplay>
          ))}
-      </HomeLayout>
+      </>
    );
 };
 
 export default Home;
 
 export const getServerSideProps = async () => {
-   const maxResultNumber = 6;
    const data: CategoriesQueries = {};
    // const data: CategoriesDataParams = {};
 
-   // the caveat here is the number of calls to google book api
-   // however given that this application is not to scale this should be fine
+   // the caveat here is that this is not full proof of parsing duplicated items
+   // however given that it will only have six columns each it should be okay
    for (let category of topCategories) {
       category = category.toLocaleLowerCase();
       const url = googleApi.getUrlBySubject(category as Categories, {

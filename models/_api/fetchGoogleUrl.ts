@@ -1,4 +1,4 @@
-import { Categories } from '../../../constants/categories';
+import { Categories } from '../../constants/categories';
 
 interface QueryQualifiers {
    inauthor?: string;
@@ -131,46 +131,3 @@ export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
 
 const googleApi = new GoogleBookApi();
 export default googleApi;
-
-// // TODO: refactor this part to filter out the result
-// // maybe make this into a class?
-
-// const URL_BASE = "https://www.googleapis.com/books/v1/volumes?q=";
-// export const getCompleteUrl = (
-//   search: string,
-//   maxResultNumber: number = 15,
-//   pageIndex: number = 0
-// ): string => {
-//   const index = `&startIndex=${pageIndex}`;
-//   const maxResult = `&maxResults=${maxResultNumber}`;
-//   const rest = `&orderBy=relevance&printType=books&key=${process.env.NEXT_PUBLIC_GOOGLE_KEY}`;
-
-//   return URL_BASE + search + index + maxResult + rest;
-// };
-
-// export const getAuthorUrl = (author: string) => {
-//   const authorUrl = `+inauthor:${author}`;
-//   const rest = `&orderBy=relevance&printType=books&key=${process.env.NEXT_PUBLIC_GOOGLE_KEY}`;
-
-//   return URL_BASE + authorUrl + rest;
-// };
-
-// // add key but a different one?
-// export const getGoogleByIsbn = (isbn: string, maxResultNumber: number = 20) => {
-//   const getIsbn = `isbn:${isbn}`;
-//   const maxResult = `&maxResults=${maxResultNumber}`;
-
-//   return URL_BASE + getIsbn + maxResult;
-// };
-
-// // have the subject into either .json or objects and have them into types
-// export const getDataBySubect = (subject: Categories) => {
-//   const subjectUrl = `subject:${subject}`;
-//   return URL_BASE + subjectUrl +
-// }
-
-// // add key but a different one?
-// export const getDataByVolumeId = (id: string) => {
-//   const keys = `&key=${process.env.NEXT_PUBLIC_GOOGLE_KEY}`;
-//   return URL_BASE + id;
-// };

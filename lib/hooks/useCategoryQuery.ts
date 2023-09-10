@@ -1,7 +1,7 @@
 import { UseQueryResult, useQueries, useQuery } from '@tanstack/react-query';
 import { Categories, TopCateogry, topCategories } from '../../constants/categories';
 import queryKeys from '../queryKeys';
-import googleApi, { MetaProps, fetcher } from '../helper/books/fetchGoogleUrl';
+import googleApi, { MetaProps, fetcher } from '../../models/_api/fetchGoogleUrl';
 import { Pages, Items } from '../types/googleBookTypes';
 import { CategoriesDataParams, CategoriesQueries } from '../../pages';
 import { createUniqueData } from '../helper/books/filterUniqueData';
