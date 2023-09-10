@@ -1,12 +1,14 @@
 import { UseQueryResult, useQueries, useQuery } from '@tanstack/react-query';
 import { Categories, TopCateogry, topCategories } from '../../constants/categories';
 import queryKeys from '../queryKeys';
-import googleApi, { MetaProps, fetcher } from '../../models/_api/fetchGoogleUrl';
+import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import { Pages, Items } from '../types/googleBookTypes';
 import { CategoriesDataParams, CategoriesQueries } from '../../pages';
 import { createUniqueData } from '../helper/books/filterUniqueData';
+import { fetcher } from '../../utils/fetchData';
 
-export default function useCategoryQuery(category: Categories, meta?: MetaProps) {
+// enable loader here(?) so whenever the data is loaded it will enable the data;
+export default function useGetCategoryQuery(category: Categories, meta?: MetaProps) {
    // this is a test -- should be using useQueries
    const data = useQuery<Pages<any>, unknown, Items<any>[]>(
       queryKeys.categories(category as string),
@@ -33,15 +35,15 @@ export default function useCategoryQuery(category: Categories, meta?: MetaProps)
 }
 
 // add an enabler here -- let's say something loaded then enable this to be loaded
-export function useCategoriesQueries(data: CategoriesQueries) {
+export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProps) {
    const categoryKeys = topCategories.map((category, index) => {
       return {
          queryKey: queryKeys.categories(category),
          queryFn: async () => {
             if (!data) {
                const url = googleApi.getUrlBySubject(category as Categories, {
-                  maxResultNumber: 6,
-                  pageIndex: 0,
+                  maxResultNumber: meta?.maxResultNumber ?? 15,
+                  pageIndex: meta?.maxResultNumber ?? 0,
                });
                const json = await fetcher(url);
                const uniqueData = createUniqueData(json) as Items<any>[];

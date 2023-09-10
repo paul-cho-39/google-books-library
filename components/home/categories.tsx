@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Categories } from '../../constants/categories';
-import { capitalizeWords } from '../../lib/utils/transformChar';
+import { capitalizeWords } from '../../utils/transformChar';
 import SingleOrMultipleAuthors from '../bookcover/authors';
 import BookDescription from '../bookcover/description';
 import styles from './../../styles/Home.module.css';
@@ -37,7 +37,7 @@ export const CategoryDisplay = ({ category, children, forwardRef }: CategoryDisp
             >
                {children}
             </div>
-            <div className='text-right -my-6'>
+            <div className='text-right'>
                <ShowMoreCategory category={category} />
             </div>
          </div>

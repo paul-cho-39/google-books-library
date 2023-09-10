@@ -1,7 +1,7 @@
 import type { InferGetServerSidePropsType, NextPage } from 'next';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import useCategoryQuery, { useCategoriesQueries } from '../lib/hooks/useCategoryQuery';
+import { useGetCategoriesQueries } from '../lib/hooks/useGetCategoryQuery';
 import HomeLayout from '../components/layout/page/home';
 import { CategoryDescription, CategoryDisplay } from '../components/home/categories';
 import BookImage from '../components/bookcover/bookImages';
@@ -65,8 +65,9 @@ const changeDirection = (
 
 const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
    // const { data, userId } = props;
+
    const { data } = props;
-   const { dataWithKeys } = useCategoriesQueries(data);
+   const { dataWithKeys } = useGetCategoriesQueries(data);
 
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});

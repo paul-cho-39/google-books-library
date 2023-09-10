@@ -22,7 +22,7 @@ async function fetchApiData<T>({
    options = {
       shouldRoute: true,
       routeTo: '/',
-      delay: 2500,
+      delay: 0,
    },
 }: ParamProps<T>) {
    const apiBaseUrl = '/api';
@@ -44,5 +44,18 @@ async function fetchApiData<T>({
       }
    });
 }
+
+export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
+   try {
+      console.log('the url is: ', input);
+      const res = await fetch(input, init);
+      if (!res.ok || res.status === 400) {
+         throw new Error('Cannot be fetched');
+      }
+      return res.json();
+   } catch (error) {
+      console.log(error);
+   }
+};
 
 export default fetchApiData;

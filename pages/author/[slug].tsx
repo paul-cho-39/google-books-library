@@ -1,10 +1,11 @@
 import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
-import googleApi, { fetcher } from '../../models/_api/fetchGoogleUrl';
+import googleApi from '../../models/_api/fetchGoogleUrl';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import doFetch from '../../lib/helper/books/fetchWikiUrl';
 import Image from 'next/image';
 import { useEffect } from 'react';
+import { fetcher } from '../../utils/fetchData';
 
 // find ways to sort the author:
 // 1) have users report when the image is incorrect*

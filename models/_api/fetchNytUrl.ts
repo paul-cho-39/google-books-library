@@ -6,7 +6,7 @@ interface ReviewQualifiers {
    title?: string;
 }
 
-interface DateQualifiers {
+export interface DateQualifiers {
    publishedDate?: string;
 }
 
@@ -15,22 +15,35 @@ interface CategoryQualifiers {
    format: 'hardcover' | 'paperback' | 'combined-print-and-e-book';
 }
 
-interface NewYorkTimesQualifiers {
+export interface NewYorkTimesQualifiers {
    reviews: ReviewQualifiers;
    publisheDate: DateQualifiers | 'current';
    category: CategoryQualifiers;
 }
 
 class NewYorkTimesApi {
-   private static URL_BASE = '`https://api.nytimes.com/svc/books/v3';
-   private static BEST_SELLER_LISTS = '/lists/current/';
+   private static URL_BASE = `https://api.nytimes.com/svc/books/v3`;
+   private static BEST_SELLER_LISTS = '/lists/';
    private static BOOK_REVIEWS = '/reviews.json';
-   private static KEY = process.env.NEW_YORK_TIMES_KEY || '';
+   private static KEY = process.env.NEXT_PUBLIC_NYT_KEY || '';
 
    public getUrlByCategory(
-      category: CategoryQualifiers = { type: 'fiction', format: 'combined-print-and-e-book' }
+      category: CategoryQualifiers = { type: 'fiction', format: 'combined-print-and-e-book' },
+      publishedDate: DateQualifiers | 'current' = 'current'
    ) {
-      const combinedCategory = `${category.type}-${category.format}`;
+      const year =
+         publishedDate !== 'current' && Number(publishedDate.publishedDate?.split('-')[0]);
+      // Return false if the date is before 2008
+      //   The api date returns to 2008
+      if (year && year < 2008) {
+         console.warn(
+            'The New York Times best-seller list data is available for years after 2008.'
+         );
+      }
+
+      const date = this.getUrlByPublishedDate(publishedDate);
+      const combinedCategory = `${date}/${category.format}-${category.type}?`;
+
       return this.appendApiKey(
          `${NewYorkTimesApi.URL_BASE}${NewYorkTimesApi.BEST_SELLER_LISTS}${combinedCategory}.json`
       );
@@ -38,31 +51,20 @@ class NewYorkTimesApi {
 
    public getReviewUrl(qualifiers: ReviewQualifiers) {
       let query = '';
-      if (qualifiers.author) query += `author=${qualifiers.author}&`;
+      if (qualifiers.author) query += `author=${encodeURIComponent(qualifiers.author)}&`;
       if (qualifiers.isbn) query += `isbn=${qualifiers.isbn}&`;
-      if (qualifiers.title) query += `title=${qualifiers.title}&`;
+      if (qualifiers.title) query += `title=${encodeURIComponent(qualifiers.title)}&`;
       return this.appendApiKey(
          `${NewYorkTimesApi.URL_BASE}${NewYorkTimesApi.BOOK_REVIEWS}?${query}`
       );
    }
 
-   public getUrlByPublishedDate(publishedDate: DateQualifiers | 'current') {
+   private getUrlByPublishedDate(publishedDate: DateQualifiers | 'current') {
       if (publishedDate === 'current') {
-         return this.getUrlByCategory();
+         return publishedDate;
       } else {
          const date = publishedDate.publishedDate;
-         const year = Number(publishedDate.publishedDate?.split('-')[0]);
-         // Return false if the date is before 2008
-         //   The api date returns to 2008
-         if (year && year < 2008) {
-            console.warn(
-               'The New York Times best-seller list data is available for years after 2008.'
-            );
-            return false;
-         }
-         return this.appendApiKey(
-            `${NewYorkTimesApi.URL_BASE}${NewYorkTimesApi.BEST_SELLER_LISTS}?publishedDate=${date}`
-         );
+         return `publishedDate=${date}`;
       }
    }
 
@@ -73,7 +75,8 @@ class NewYorkTimesApi {
          );
          return url;
       }
-      return `${url}&api-key=${NewYorkTimesApi.KEY}`;
+      console.log('url is: ', url);
+      return `${url}api-key=${NewYorkTimesApi.KEY}`;
    }
 }
 

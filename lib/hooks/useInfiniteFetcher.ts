@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import googleApi, { fetcher } from '../../models/_api/fetchGoogleUrl';
+import googleApi from '../../models/_api/fetchGoogleUrl';
 import queryKeys from '../queryKeys';
+import { fetcher } from '../../utils/fetchData';
 
 interface FetcherProps {
    search: string;

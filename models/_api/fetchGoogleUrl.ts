@@ -117,17 +117,5 @@ class GoogleBookApi {
    }
 }
 
-export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
-   try {
-      const res = await fetch(input, init);
-      if (!res.ok || res.status === 400) {
-         throw new Error('Cannot be fetched');
-      }
-      return res.json();
-   } catch (error) {
-      console.log(error);
-   }
-};
-
 const googleApi = new GoogleBookApi();
 export default googleApi;
