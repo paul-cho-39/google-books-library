@@ -1,3 +1,8 @@
+import { CategoryQualifiers, ReviewQualifiers } from '../models/_api/fetchNytUrl';
+
+type NytDataType = CategoryQualifiers['type'];
+type ReviewType = keyof ReviewQualifiers;
+
 const queryKeys = {
    books: ['books'] as const,
    bookLibrary: ['booklibrary'] as const,
@@ -7,8 +12,8 @@ const queryKeys = {
    currentlyReading: ['bookLibrary', 'currentlyReading'] as const,
    finished: ['booklibrary', 'finished'] as const,
    categories: (category: string | string[]) => ['category', { type: category }] as const,
-   nytReview: (key: 'author' | 'isbn' | 'title', value: string) => [key, { value }] as const,
-   nytBestSellers: (type: 'fiction' | 'non-fiction' | 'children', date: string | 'current') =>
+   nytReview: (key: ReviewType, value: string) => [key, { value }] as const,
+   nytBestSellers: (type: NytDataType, date: string | 'current') =>
       ['bestSellers', { type: type }, { date: date }] as const,
    singleBook: (bookId: string) => ['singebook', { bookId }],
    bookSearch: (search: string) => [...queryKeys.books, { search }] as const,

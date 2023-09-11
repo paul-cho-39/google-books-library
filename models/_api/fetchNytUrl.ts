@@ -1,6 +1,6 @@
 // some qualifiers include published dates
 // book review resources
-interface ReviewQualifiers {
+export interface ReviewQualifiers {
    author?: string;
    isbn?: number;
    title?: string;
@@ -10,8 +10,8 @@ export interface DateQualifiers {
    publishedDate?: string;
 }
 
-interface CategoryQualifiers {
-   type: 'fiction' | 'non-fiction' | 'children';
+export interface CategoryQualifiers {
+   type: 'fiction' | 'nonfiction' | 'trade-fiction';
    format: 'hardcover' | 'paperback' | 'combined-print-and-e-book';
 }
 
@@ -40,22 +40,26 @@ class NewYorkTimesApi {
             'The New York Times best-seller list data is available for years after 2008.'
          );
       }
-
+      const { type, format } = this.processCategory(category) as CategoryQualifiers;
+      const query = this.combineCategory(type, format);
       const date = this.getUrlByPublishedDate(publishedDate);
-      const combinedCategory = `${date}/${category.format}-${category.type}?`;
+      const combinedCategory = `${date}/${query}`;
 
       return this.appendApiKey(
-         `${NewYorkTimesApi.URL_BASE}${NewYorkTimesApi.BEST_SELLER_LISTS}${combinedCategory}.json`
+         `${NewYorkTimesApi.URL_BASE}${NewYorkTimesApi.BEST_SELLER_LISTS}${combinedCategory}.json?`
       );
    }
 
    public getReviewUrl(qualifiers: ReviewQualifiers) {
-      let query = '';
-      if (qualifiers.author) query += `author=${encodeURIComponent(qualifiers.author)}&`;
-      if (qualifiers.isbn) query += `isbn=${qualifiers.isbn}&`;
-      if (qualifiers.title) query += `title=${encodeURIComponent(qualifiers.title)}&`;
+      const queryParts = [
+         qualifiers.author && `author=${encodeURIComponent(qualifiers.author)}`,
+         qualifiers.isbn && `isbn=${qualifiers.isbn}`,
+         qualifiers.title && `title=${encodeURIComponent(qualifiers.title)}`,
+      ]
+         .filter(Boolean)
+         .join('&');
       return this.appendApiKey(
-         `${NewYorkTimesApi.URL_BASE}${NewYorkTimesApi.BOOK_REVIEWS}?${query}`
+         `${NewYorkTimesApi.URL_BASE}${NewYorkTimesApi.BOOK_REVIEWS}?${queryParts}`
       );
    }
 
@@ -77,6 +81,23 @@ class NewYorkTimesApi {
       }
       console.log('url is: ', url);
       return `${url}api-key=${NewYorkTimesApi.KEY}`;
+   }
+
+   private processCategory(category: CategoryQualifiers) {
+      if (category.type === 'trade-fiction') {
+         return { type: category.type, format: 'paperback' };
+      }
+      if (category.type === 'fiction' && category.format === 'paperback') {
+         return { type: 'trade-fiction', format: 'paperback' };
+      }
+      return category;
+   }
+   private combineCategory(type: CategoryQualifiers['type'], format: CategoryQualifiers['format']) {
+      const combinedQuery =
+         format === 'paperback' && type === 'trade-fiction'
+            ? `${type}-${format}`
+            : `${format}-${type}`;
+      return combinedQuery;
    }
 }
 

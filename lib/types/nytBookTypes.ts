@@ -1,13 +1,8 @@
-export interface BestSellerData {
-   books: Books[];
-   display_name: string;
-   published_date: string;
-}
-
-export interface ReviewData {
+export interface ReviewData<NyData extends BookReview[] | BestSellerData> {
    copyright: string;
    num_results: number;
-   results: BookReview[];
+   results: NyData;
+   //    results: BookReview[] | BestSellerData;
 }
 
 export interface BookReview {
@@ -17,6 +12,13 @@ export interface BookReview {
    publication_dt: string;
    summary: string;
    url: string;
+}
+
+export interface BestSellerData {
+   bestsellers_date: string;
+   books: Books[];
+   display_name: string;
+   published_date: string;
 }
 
 export interface Books {

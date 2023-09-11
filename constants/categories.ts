@@ -43,8 +43,6 @@ export const topCategories = [
    'SELF-HELP',
    'HISTORY',
    'SCIENCE',
-   'RELIGION',
-   'TECHNOLOGY & ENGINEERING',
 ];
 
 export type Categories = (typeof categories)[keyof typeof categories];
