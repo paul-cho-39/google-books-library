@@ -7,6 +7,9 @@ import queryKeys from '../../lib/queryKeys';
 import nytApi from '../../models/_api/fetchNytUrl';
 import { fetcher } from '../../utils/fetchData';
 import useGetNytBestSeller from '../../lib/hooks/useGetNytBestSeller';
+import { CategoryDescription, CategoryDisplay } from '../../components/home/categories';
+import BookImage from '../../components/bookcover/bookImages';
+import Image from 'next/image';
 
 const BookCategories = () =>
    // props: InferGetServerSidePropsType<typeof getServerSideProps>
@@ -17,40 +20,39 @@ const BookCategories = () =>
       // 2) possibly create another class that combines the result for google and nyt
       // 3) see what kind of data are connected and data that it can call(?)
 
-      const nytData = useGetNytBestSeller({
+      const { data } = useGetNytBestSeller({
          category: { format: 'hardcover', type: 'trade-fiction' },
          date: 'current',
       });
 
-      console.log('the data is: ', nytData);
-      console.log('the status is: ', nytData.status);
-      console.log('the failure reasion is: ', nytData.failureReason);
-      console.log('the nytDatad result: ', nytData.data);
+      console.log('the datad result: ', data);
 
+      // next step --
+      // 1) correct display of CategoryDisplay
+      // 2) book author & image
+      // 3) set priority
       return (
          <>
-            <div
-               // style={{
-               //    display: 'flex',
-               //    padding: '12px',
-               //    marginRight: '20px',
-               // }}
-               className={styles.book}
-               //  className='bg-slate-100 flex overflow-x-auto space-x-14 border-gray-300 p-4'
-            >
-               {/* <div className='bg-red-200 px-2 '>Item 1</div>
-            <div className='bg-red-200 px-2 '>Item 2</div>
-            <div className='bg-red-200 px-2 '>Item 3</div>
-            <div className='bg-red-200 px-2 '>Item 4</div>
-            <div className='bg-red-200 px-2 '>Item 5</div>
-            <div className='bg-red-200 px-2 '>Item 6</div> */}
-            </div>
-            <Sample />
+            <CategoryDisplay category='ART'>
+               {data?.books.map((book, index) => (
+                  <>
+                     <BookImage
+                        bookImage={book.book_image}
+                        title={book.title}
+                        height={150}
+                        width={115}
+                        priority
+                     />
+                  </>
+               ))}
+            </CategoryDisplay>
          </>
       );
    };
 
 export default BookCategories;
+
+// if the book is in isbn13 then retrieve the results using isbn from googleApi
 
 // export const getServerSideProps = async (context: any) => {
 //    const query = context.params.slug;

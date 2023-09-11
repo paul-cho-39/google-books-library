@@ -3,10 +3,12 @@ import { Categories, TopCateogry, topCategories } from '../../constants/categori
 import queryKeys from '../queryKeys';
 import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import { Pages, Items } from '../types/googleBookTypes';
-import { CategoriesDataParams, CategoriesQueries } from '../../pages';
 import { createUniqueData } from '../helper/books/filterUniqueData';
 import { fetcher } from '../../utils/fetchData';
+import { CategoriesQueries } from '../types/serverPropsTypes';
 
+// also enable other book data as well here
+// using useQuery to pair with different categories as well
 // enable loader here(?) so whenever the data is loaded it will enable the data;
 export default function useGetCategoryQuery(category: Categories, meta?: MetaProps) {
    // this is a test -- should be using useQueries

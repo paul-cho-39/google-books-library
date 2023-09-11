@@ -52,9 +52,9 @@ class NewYorkTimesApi {
 
    public getReviewUrl(qualifiers: ReviewQualifiers) {
       const queryParts = [
-         qualifiers.author && `author=${encodeURIComponent(qualifiers.author)}`,
-         qualifiers.isbn && `isbn=${qualifiers.isbn}`,
-         qualifiers.title && `title=${encodeURIComponent(qualifiers.title)}`,
+         qualifiers.author && `?author=${encodeURIComponent(qualifiers.author)}`,
+         qualifiers.isbn && `?isbn=${qualifiers.isbn}`,
+         qualifiers.title && `?title=${encodeURIComponent(qualifiers.title)}`,
       ]
          .filter(Boolean)
          .join('&');

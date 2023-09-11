@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import nytApi, {
    CategoryQualifiers,
    DateQualifiers,
@@ -7,21 +7,24 @@ import nytApi, {
 import { fetcher } from '../../utils/fetchData';
 import queryKeys from '../queryKeys';
 import { BestSellerData, BookReview, Books, ReviewData } from '../types/nytBookTypes';
+import { CategoriesNytQueries } from '../types/serverPropsTypes';
 
 interface NytBookQueryParams {
    category: CategoryQualifiers;
    date: DateQualifiers | 'current';
+   initialData?: ReviewData<BestSellerData>;
 }
 
 // if filtered then refetch the methods?
 export default function useGetNytBestSeller({
    category = { type: 'fiction', format: 'combined-print-and-e-book' },
    date,
+   initialData,
 }: NytBookQueryParams) {
    const data = useQuery<ReviewData<BestSellerData>, unknown, BestSellerData>(
       queryKeys.nytBestSellers(category.type, category.format),
-      async () => {
-         const res = await fetcher(nytApi.getUrlByCategory(category, date), {
+      () => {
+         const res = fetcher(nytApi.getUrlByCategory(category, date), {
             headers: { 'Content-Type': 'application/json' },
             method: 'GET',
          });
@@ -29,7 +32,8 @@ export default function useGetNytBestSeller({
       },
       {
          select: (data) => data.results,
-         enabled: true, // loader here(?)
+         enabled: true, // loader here(?),
+         initialData: initialData,
       }
    );
 
@@ -59,6 +63,21 @@ export function useGetNytBookReview(qualifiers: ReviewQualifiers, key: keyof Rev
    if (data.isError) {
       throw new Error(`${data.failureReason}`);
    }
+
+   return data;
+}
+
+export function useGetNytBestSellers(initialData: CategoriesNytQueries, date: string) {
+   const queries = ['fiction', 'nonfiction'].map((key) => {
+      return {
+         queryKey: queryKeys.nytBestSellers(key as CategoryQualifiers['type'], date),
+         initialData: initialData[key],
+      };
+   });
+
+   const data = useQueries({
+      queries: [...queries],
+   });
 
    return data;
 }

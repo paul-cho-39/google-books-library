@@ -1,28 +1,39 @@
 import Link from 'next/link';
+import { transformStrToArray } from '../../utils/transformChar';
 
 type Authors = string[];
 
-interface AuthorProps {
-   authors: string[];
+interface AuthorProps<T extends string[] | string> {
+   authors: T;
    indexLimit?: number;
    textLimit?: number;
 }
 
-const SingleOrMultipleAuthors = ({ authors, indexLimit = 3, textLimit = 30 }: AuthorProps) => {
-   const numberOfAuthors = authors?.length;
+const SingleOrMultipleAuthors = <T extends string[] | string>({
+   authors,
+   indexLimit = 3,
+   textLimit = 30,
+}: AuthorProps<T>) => {
+   const transformedAuthor =
+      typeof authors === 'string' ? transformStrToArray(authors) : (authors as string[]);
+   const numberOfAuthors = transformedAuthor?.length;
 
    return (
       <>
          {numberOfAuthors && numberOfAuthors > 1 ? (
-            <MultipleAuthors authors={authors} indexLimit={indexLimit} textLimit={textLimit} />
+            <MultipleAuthors
+               authors={transformedAuthor}
+               indexLimit={indexLimit}
+               textLimit={textLimit}
+            />
          ) : (
-            <SingleAuthor authors={authors} textLimit={textLimit} />
+            <SingleAuthor authors={transformedAuthor} textLimit={textLimit} />
          )}
       </>
    );
 };
 
-const MultipleAuthors = ({ authors, indexLimit = 3, textLimit }: AuthorProps) => (
+const MultipleAuthors = ({ authors, indexLimit = 3, textLimit }: AuthorProps<string[]>) => (
    <>
       {authors.map((author, index) => (
          <Link key={index} href={`/author/${author}`} passHref>
@@ -38,7 +49,7 @@ const MultipleAuthors = ({ authors, indexLimit = 3, textLimit }: AuthorProps) =>
    </>
 );
 
-const SingleAuthor = ({ authors, textLimit }: Exclude<AuthorProps, 'indexLimit'>) => {
+const SingleAuthor = ({ authors, textLimit }: Exclude<AuthorProps<string[]>, 'indexLimit'>) => {
    const authorToString = authors.join(', ');
    return (
       <Link href={`/author/${authorToString}`} passHref>
@@ -50,45 +61,5 @@ const SingleAuthor = ({ authors, textLimit }: Exclude<AuthorProps, 'indexLimit'>
       </Link>
    );
 };
-
-// const SingleOrMultipleAuthors: React.FunctionComponent<{
-//   authors: Authors;
-// }> = ({ authors }) => {
-//   const numberOfAuthors = authors?.length;
-//   const authorToString = authors?.toString();
-//   return (
-//     <>
-//       {numberOfAuthors && numberOfAuthors > 1 ? (
-//         <>
-//           {authors?.map((author, index) => (
-//             <Link
-//               key={index}
-//               href="/author/[slug]"
-//               as={`/author/${author}`}
-//               passHref
-//             >
-//               <a className=" after:content-[',_'] last-of-type:after:content-[''] text-ellipsis">
-//                 {index < 3 ? author : "..."}
-//               </a>
-//             </Link>
-//           ))}
-//         </>
-//       ) : (
-//         <Link
-//           href="/author/[slug]"
-//           as={`/author/${authors}`}
-//           scroll={false}
-//           passHref
-//         >
-//           <a className="text-clip">
-//             {authors && authorToString.length < 30
-//               ? authorToString
-//               : authorToString?.slice(0, 29) + "..."}
-//           </a>
-//         </Link>
-//       )}
-//     </>
-//   );
-// };
 
 export default SingleOrMultipleAuthors;

@@ -26,9 +26,11 @@ export interface Books {
    book_image: string;
    description: string;
    isbn: Isbn[];
+   primary_isbn13: string;
    publisher: string;
-   rank: number;
    title: string;
+   rank: number;
+   rank_last_week: number;
    weeks_on_list: number;
 }
 

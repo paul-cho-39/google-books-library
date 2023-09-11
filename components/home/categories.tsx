@@ -9,7 +9,7 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
 // TEST THIS ONE
 type BookSection = 'Best Seller' | 'Recommended';
-type CategoryHeaderParams = BookSection & Categories;
+type CategoryHeaderParams = BookSection | Categories;
 
 type CategoryDescriptionParams = {
    id: string;
@@ -28,7 +28,7 @@ interface CategoryDisplayProps {
 
 export const CategoryDisplay = ({ category, children, forwardRef }: CategoryDisplayProps) => {
    return (
-      <article id={category}>
+      <article id={category as string}>
          <CategoryHeader category={category} />
          <div className='px-1 py-1 rounded-md lg:px-2 lg:py-2'>
             <div
@@ -102,7 +102,7 @@ export const CategoryDescription = ({
 const CategoryHeader = ({ category }: { category: CategoryHeaderParams }) => {
    return (
       <h2 className='mt-4 py-3 text-xl lg:text-2xl text-slate-800 dark:text-slate-100'>
-         {capitalizeWords(category)}
+         {capitalizeWords(category as string)}
       </h2>
    );
 };
@@ -119,7 +119,7 @@ const ShowMoreCategory = ({ category }: { category: CategoryHeaderParams }) => {
             className='cursor-pointer inline-flex text-sm overflow-auto'
             // className='flex flex-row items-center justify-end text-md after:contents-["..."] text-slate-800 dark:text-slate-100'
          >
-            <span>More {category} books...</span>
+            <span>More {capitalizeWords(category as string)} books...</span>
          </a>
       </Link>
    );

@@ -8,12 +8,17 @@ import BookImage from '../components/bookcover/bookImages';
 import { ImageLinks, Items, Pages } from '../lib/types/googleBookTypes';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../lib/hooks/useDisableBreakPoints';
-import googleApi, { fetcher } from '../models/_api/fetchGoogleUrl';
+import googleApi from '../models/_api/fetchGoogleUrl';
 import { Categories, TopCateogry, categories, topCategories } from '../constants/categories';
 import createUniqueDataSets, { createUniqueData } from '../lib/helper/books/filterUniqueData';
+import { fetcher } from '../utils/fetchData';
+import nytApi, { CategoryQualifiers } from '../models/_api/fetchNytUrl';
+import { BestSellerData, ReviewData } from '../lib/types/nytBookTypes';
 
+// TODO: put this in another file
 export type CategoriesDataParams = Record<TopCateogry, Pages<any> | null>;
 export type CategoriesQueries = Record<TopCateogry, Items<any>[] | null>;
+export type CategoriesNytQueries = Record<string, BestSellerData>;
 
 export type CurrentOrReadingProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -31,7 +36,7 @@ const HEIGHT = 150;
 const CONTAINER_HEIGHT = 150; // may subject to change
 
 // the width ratio depends on the size;
-export const getWidth = (
+const getWidth = (
    height: number,
    type: 'image' | 'container' = 'image',
    isLargeScreen: boolean
@@ -64,23 +69,23 @@ const changeDirection = (
 };
 
 const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-   // const { data, userId } = props;
-
-   const { data } = props;
+   // combine the two data(?)
+   const { data, bestSellerData } = props;
    const { dataWithKeys } = useGetCategoriesQueries(data);
+
+   console.log('the best seller data is: ', bestSellerData);
 
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
-   const [dateValue, setDateValue] = useState<Date>(new Date());
 
    // make this into a hook
+   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout>(null!);
    const [isHovered, setIsHovered] = useState<HoveredProps>({
       id: null,
       hovered: false,
       isFloatHovered: false,
       index: null,
    });
-   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout>(null!);
 
    const setImageRef = useCallback((id: string, el: HTMLDivElement | null) => {
       if (imageRefs.current) imageRefs.current[id] = el;
@@ -193,6 +198,7 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
                               height={HEIGHT}
                               forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
                               title={book.volumeInfo.title}
+                              priority // set the priorioty a bit different for later indexes
                               onMouseEnter={() => onMouseEnter(book.id, index)}
                               onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e)}
                               className={classNames(
@@ -214,6 +220,7 @@ export default Home;
 
 export const getServerSideProps = async () => {
    const data: CategoriesQueries = {};
+   const bestSellerData: CategoriesNytQueries = {};
    // const data: CategoriesDataParams = {};
 
    // the caveat here is that this is not full proof of parsing duplicated items
@@ -235,8 +242,25 @@ export const getServerSideProps = async () => {
       data[category] = uniqueData?.slice(0, 6);
    }
 
+   const promises = ['fiction', 'nonfiction'].map(async (key) => {
+      const url = nytApi.getUrlByCategory({
+         format: 'combined-print-and-e-book',
+         type: key as CategoryQualifiers['type'],
+      });
+      const json = (await fetcher(url)) as ReviewData<BestSellerData>;
+      bestSellerData[key] = {
+         ...json.results,
+         books: json.results.books.slice(0, 6),
+      };
+   });
+
+   await Promise.all(promises);
+
    return {
-      props: { data },
+      props: {
+         data,
+         bestSellerData,
+      },
    };
 };
 
