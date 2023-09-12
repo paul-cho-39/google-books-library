@@ -37,7 +37,6 @@ export const categories = [
 ] as const;
 
 export const topCategories = [
-   'FICTION',
    'BIOGRAPHY & AUTOBIOGRAPHY',
    'BUSINESS & ECONOMICS',
    'SELF-HELP',

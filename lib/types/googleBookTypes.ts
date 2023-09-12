@@ -16,7 +16,7 @@ export interface Items<T extends Record<string, string>> {
    readonly kind?: string;
    saleInfo?: T;
    searchInfo?: T;
-   readonly selfLink: string;
+   readonly selfLink?: string;
    volumeInfo: VolumeInfo;
 }
 

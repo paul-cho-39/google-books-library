@@ -1,6 +1,4 @@
-import type { InferGetServerSidePropsType, NextPage } from 'next';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-
 import { useGetCategoriesQueries } from '../lib/hooks/useGetCategoryQuery';
 import HomeLayout from '../components/layout/page/home';
 import { CategoryDescription, CategoryDisplay } from '../components/home/categories';
@@ -14,13 +12,12 @@ import createUniqueDataSets, { createUniqueData } from '../lib/helper/books/filt
 import { fetcher } from '../utils/fetchData';
 import nytApi, { CategoryQualifiers } from '../models/_api/fetchNytUrl';
 import { BestSellerData, ReviewData } from '../lib/types/nytBookTypes';
-
-// TODO: put this in another file
-export type CategoriesDataParams = Record<TopCateogry, Pages<any> | null>;
-export type CategoriesQueries = Record<TopCateogry, Items<any>[] | null>;
-export type CategoriesNytQueries = Record<string, BestSellerData>;
-
-export type CurrentOrReadingProps = InferGetServerSidePropsType<typeof getServerSideProps>;
+import {
+   CategoriesNytQueries,
+   CategoriesQueries,
+   InferServerSideProps,
+} from '../lib/types/serverPropsTypes';
+import useGetNytBestSeller, { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
 
 type HoveredProps = {
    id: string | null;
@@ -68,12 +65,13 @@ const changeDirection = (
    return { left: (PADDING + width) * currentIndex - offsetBy, right: 0 };
 };
 
-const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Home = (props: InferServerSideProps) => {
    // combine the two data(?)
    const { data, bestSellerData } = props;
-   const { dataWithKeys } = useGetCategoriesQueries(data);
+   const { dataWithKeys: googleData } = useGetCategoriesQueries(data);
+   const { transformedData: nytData } = useGetNytBestSellers({ initialData: bestSellerData });
 
-   console.log('the best seller data is: ', bestSellerData);
+   const combinedData = { ...googleData, ...nytData } as CategoriesQueries;
 
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -149,9 +147,8 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
                NUMBER_OF_COLS,
                NUMBER_OF_COLS - 1
             );
-            const top = el.top - el.height - 27;
 
-            floatingRef.current.style.top = `${0}px`; // have to fix this number;
+            floatingRef.current.style.top = `${0}px`;
             floatingRef.current.style.position = 'absolute';
 
             if (position.right > 0) {
@@ -165,7 +162,7 @@ const Home = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => 
 
    return (
       <>
-         {Object.entries(dataWithKeys).map(([key, value]) => (
+         {Object.entries(combinedData).map(([key, value]) => (
             <CategoryDisplay key={key} category={key as Categories}>
                {value &&
                   value?.map((book, index) => {
@@ -221,10 +218,10 @@ export default Home;
 export const getServerSideProps = async () => {
    const data: CategoriesQueries = {};
    const bestSellerData: CategoriesNytQueries = {};
-   // const data: CategoriesDataParams = {};
 
    // the caveat here is that this is not full proof of parsing duplicated items
-   // however given that it will only have six columns each it should be okay
+   // however given that it will only have six books it will be highly unlikely for
+   // having mulitple duplicated books
    for (let category of topCategories) {
       category = category.toLocaleLowerCase();
       const url = googleApi.getUrlBySubject(category as Categories, {

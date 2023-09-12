@@ -60,6 +60,7 @@ export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProp
       queries: [...categoryKeys, {}],
    });
 
+   // create a function for this
    const dataWithKeys = topCategories.reduce((acc, category, index) => {
       const queryData = categoryData[index];
       if (queryData.isError) {

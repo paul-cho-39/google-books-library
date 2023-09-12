@@ -7,11 +7,19 @@ import nytApi, {
 import { fetcher } from '../../utils/fetchData';
 import queryKeys from '../queryKeys';
 import { BestSellerData, BookReview, Books, ReviewData } from '../types/nytBookTypes';
-import { CategoriesNytQueries } from '../types/serverPropsTypes';
+import { CategoriesNytQueries, CategoriesQueries } from '../types/serverPropsTypes';
+import { transformStrToArray } from '../../utils/transformChar';
 
 interface NytBookQueryParams {
    category: CategoryQualifiers;
    date: DateQualifiers | 'current';
+}
+
+interface NytBookMultiQueries extends Partial<NytBookQueryParams> {
+   initialData: CategoriesNytQueries;
+}
+
+interface NytBookSingleQuery extends NytBookQueryParams {
    initialData?: ReviewData<BestSellerData>;
 }
 
@@ -20,7 +28,7 @@ export default function useGetNytBestSeller({
    category = { type: 'fiction', format: 'combined-print-and-e-book' },
    date,
    initialData,
-}: NytBookQueryParams) {
+}: NytBookSingleQuery) {
    const data = useQuery<ReviewData<BestSellerData>, unknown, BestSellerData>(
       queryKeys.nytBestSellers(category.type, category.format),
       () => {
@@ -67,10 +75,18 @@ export function useGetNytBookReview(qualifiers: ReviewQualifiers, key: keyof Rev
    return data;
 }
 
-export function useGetNytBestSellers(initialData: CategoriesNytQueries, date: string) {
-   const queries = ['fiction', 'nonfiction'].map((key) => {
+export function useGetNytBestSellers({ initialData, category, date }: NytBookMultiQueries) {
+   const type = ['fiction', 'nonfiction'];
+
+   const queries = type.map((key) => {
       return {
-         queryKey: queryKeys.nytBestSellers(key as CategoryQualifiers['type'], date),
+         queryKey: queryKeys.nytBestSellers(key as CategoryQualifiers['type'], date as string),
+         queryFn: () => {
+            if (!initialData[key]) {
+               const res = nytApi.getUrlByCategory(category, date);
+               return res;
+            }
+         },
          initialData: initialData[key],
       };
    });
@@ -79,5 +95,43 @@ export function useGetNytBestSellers(initialData: CategoriesNytQueries, date: st
       queries: [...queries],
    });
 
-   return data;
+   // transform data
+   const dataWithKeys = type.reduce((acc, cat, index) => {
+      const queryData = data[index];
+      if (queryData.isError) {
+         throw new Error(`${category} data failed to fetch.`);
+      }
+
+      acc[cat] = queryData?.data as BestSellerData;
+      return acc;
+   }, {} as { [key: string]: unknown } as CategoriesNytQueries);
+
+   const transformedData = transformData(dataWithKeys);
+
+   return { data, dataWithKeys, transformedData };
+}
+
+// either change the nyt data structure and rearrange them so its more like the google data
+// or adding it into a component (having it as a component may be better(?))
+function transformData<T extends CategoriesNytQueries>(data: T) {
+   const adapted: CategoriesQueries = {};
+   for (const [key, value] of Object.entries(data)) {
+      adapted[key] = value.books.map((book) => ({
+         id: book.primary_isbn13,
+         volumeInfo: {
+            authors: transformStrToArray(book.author),
+            title: book.title,
+            description: book.description,
+            publisher: book.publisher,
+            imageLinks: {
+               thumbnail: book.book_image,
+               smallThumbnail: '',
+            },
+         },
+         bestsellers_date: value.bestsellers_date,
+         weeks_on_list: book.weeks_on_list,
+         displayName: value.display_name,
+      }));
+   }
+   return adapted;
 }
