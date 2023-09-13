@@ -18,6 +18,7 @@ import {
    InferServerSideProps,
 } from '../lib/types/serverPropsTypes';
 import useGetNytBestSeller, { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
+import { getBookWidth, getContainerWidth } from '../utils/getBookWidth';
 
 type HoveredProps = {
    id: string | null;
@@ -31,16 +32,6 @@ const PADDING = 1; // have to add margin from the components
 const WIDTH_RATIO = 3.2;
 const HEIGHT = 150;
 const CONTAINER_HEIGHT = 150; // may subject to change
-
-// the width ratio depends on the size;
-const getWidth = (
-   height: number,
-   type: 'image' | 'container' = 'image',
-   isLargeScreen: boolean
-) => {
-   const ratio = isLargeScreen ? WIDTH_RATIO : WIDTH_RATIO - 1;
-   return type === 'container' ? height * ratio : height * (3 / 4.25);
-};
 
 const changeDirection = (
    width: number,
@@ -173,7 +164,7 @@ const Home = (props: InferServerSideProps) => {
                               onMouseLeave={onMouseLeaveDescription}
                               style={{
                                  height: CONTAINER_HEIGHT,
-                                 width: getWidth(HEIGHT, 'container', largeEnabled),
+                                 width: getContainerWidth(HEIGHT, WIDTH_RATIO, largeEnabled),
                               }}
                               className='absolute z-50 rounded-lg'
                            >
@@ -191,7 +182,7 @@ const Home = (props: InferServerSideProps) => {
                            <BookImage
                               key={book.id}
                               bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                              width={getWidth(HEIGHT, 'image', largeEnabled)}
+                              width={getBookWidth(HEIGHT)}
                               height={HEIGHT}
                               forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
                               title={book.volumeInfo.title}

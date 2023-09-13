@@ -1,4 +1,3 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Menu, Dialog, Transition, Disclosure } from '@headlessui/react';
 import { Close, MenuBars } from '../../icons/openCloseIcons';
 import IconLink from '../linksToIcon';
@@ -7,8 +6,8 @@ import { ThemeToggler } from '../../buttons/themeToggler';
 import { NavigationProps } from '../../../lib/types/theme';
 import { IconProps, Icons, Navigation } from '../../icons/headerIcons';
 import Link from 'next/link';
-import { ChevronRightIcon, ChevronUpIcon } from '@heroicons/react/20/solid';
-import classNames from 'classnames';
+import { ChevronUpIcon } from '@heroicons/react/20/solid';
+import SearchInput from '../../inputs/search';
 
 export const MobileNavigation = ({
    user,
@@ -22,7 +21,12 @@ export const MobileNavigation = ({
       <>
          {/* off canvas menu for mobile */}
          {/* menu opener */}
-         <Menu as='div' role='dialog' className='relative bg-beige inset-0 z-40' aria-modal='true'>
+         <Menu
+            as='div'
+            role='dialog'
+            className='relative bg-beige inset-0 z-40 dark:bg-charcoal'
+            aria-modal='true'
+         >
             <Menu.Button className='z-40 relative p-3 ml-2 focus:outline-none focus:ring-1 focus-visible:ring-slate-200 focus-visible:ring-opacity-75 rounded-full'>
                {({ open }) => (
                   <>
@@ -31,7 +35,6 @@ export const MobileNavigation = ({
                   </>
                )}
             </Menu.Button>
-            <div className='bg-red-500'>Hello</div>
             <Transition appear as='div'>
                <div className='fixed inset-0 flex bg-gray-200/40 bg-opacity-30'>
                   <Transition.Child
@@ -50,7 +53,7 @@ export const MobileNavigation = ({
                               aria-label='Navigation-bar'
                               className='mb-4 mt-12 py-4 w-full h-full'
                            >
-                              <div className='space-y-4 pr-3 bg-blue-100 overflow-y-auto'>
+                              <div className='space-y-4 pr-3 overflow-y-auto'>
                                  <Section icons={icons} url={url} />
                                  <span className='mb-2 block border-b-2 border-slate-200'></span>
                                  {/* most likely move the logic to pass to a component */}
@@ -82,7 +85,9 @@ export const MobileNavigation = ({
                </div>
             </Transition>
          </Menu>
-         <div className='bg-yellow-500'>Yellow</div>
+         <div className='relative top-0 left-[10%] p-1 max-w-xs w-full md:max-w-sm'>
+            <SearchInput />
+         </div>
       </>
    );
 };
@@ -145,7 +150,7 @@ const DisclosureItem = ({
    <Disclosure>
       {({ open }) => (
          <>
-            <Disclosure.Button className='group flex w-full items-center rounded-md px-8 py-6 text-lg'>
+            <Disclosure.Button className='group flex w-full items-center rounded-md px-8 py-6 text-lg dark:text-slate-100'>
                <IconLink url={url} iconsProp={icon} />
                <ChevronUpIcon
                   className={`${
@@ -153,7 +158,7 @@ const DisclosureItem = ({
                   } h-6 w-6 dark:slate-200 transition-all duration-200 ease-linear`}
                />
             </Disclosure.Button>
-            <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm text-gray-500'>
+            <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm text-slate-700 dark:text-slate-100'>
                <Subsection subsections={subsections} />
             </Disclosure.Panel>
          </>
@@ -163,7 +168,10 @@ const DisclosureItem = ({
 
 const MenuItemButton = ({ icon, url }: { icon: Icons; url: string }) => (
    <Menu.Item>
-      <button role='link' className='group flex w-full items-center rounded-md px-8 py-6 text-lg'>
+      <button
+         role='link'
+         className='group flex w-full items-center rounded-md px-8 py-6 text-lg text-slate-700 dark:text-slate-100'
+      >
          <IconLink url={url} iconsProp={icon} />
       </button>
    </Menu.Item>

@@ -13,10 +13,14 @@ const SingleOrMultipleAuthors = <T extends string[] | string>({
    authors,
    indexLimit = 3,
    textLimit = 30,
-}: AuthorProps<T>) => {
+}: Partial<AuthorProps<T>>) => {
    const transformedAuthor =
       typeof authors === 'string' ? transformStrToArray(authors) : (authors as string[]);
    const numberOfAuthors = transformedAuthor?.length;
+
+   if (!authors || numberOfAuthors < 1) {
+      return <span>Unknown author</span>;
+   }
 
    return (
       <>

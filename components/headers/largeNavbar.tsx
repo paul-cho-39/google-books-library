@@ -45,6 +45,7 @@ export const LargeNavigation = ({
                <SearchInput />
             </div>
 
+            {/* maybe here it will be the profile so clickable with profile related (?) */}
             <div className='flex items-center ml-auto space-x-6'>
                {!user ? (
                   <IsSession

@@ -28,7 +28,7 @@ export function createUniqueData<TData extends Pages<any> | Items<any>[]>(data: 
             return arr;
          }, []);
    } else {
-      data.reduce((arr: Items<any>[], curr) => {
+      newData = data.reduce((arr: Items<any>[], curr) => {
          if (!arr.some((idx) => idx.id === curr.id)) {
             arr.push(curr);
          }

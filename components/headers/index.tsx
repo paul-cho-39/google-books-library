@@ -29,7 +29,7 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
             <LargeNavigation {...navProps} />
             <SideNavigation sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
          </div>
-         <div className='flex h-16 w-full mb-5 lg:hidden bg-beige dark:bg-charcoal'>
+         <div className='flex h-16 w-full lg:hidden bg-beige dark:bg-charcoal'>
             <MobileNavigation {...navProps} />
          </div>
       </header>

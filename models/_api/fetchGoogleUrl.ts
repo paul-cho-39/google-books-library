@@ -20,7 +20,7 @@ export interface MetaProps {
 
 class GoogleBookApi {
    private static URL_BASE = 'https://www.googleapis.com/books/v1/volumes?q=';
-   private static KEY = process.env.GOOGLE_BOOK_KEY || '';
+   private static KEY = process.env.NEXT_PUBLIC_GOOGLE_KEY || '';
 
    public getCompleteUrlWithQualifiers(
       qualifiers: QueryQualifiers,
