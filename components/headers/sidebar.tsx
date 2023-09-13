@@ -9,6 +9,7 @@ import {
 import classNames from 'classnames';
 import { capitalizeWords } from '../../utils/transformChar';
 import { useScrollDirection } from '../../lib/hooks/useScrollDirection';
+import Link from 'next/link';
 
 export interface SideNavigationProps {
    sidebarOpen: boolean;
@@ -71,17 +72,23 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                               <ul role='list' className='-mx-2 space-y-1'>
                                  {navigation.map((item) => (
                                     <li key={item.name}>
-                                       <a
-                                          href={item.href}
-                                          className={classNames(
-                                             item.current
-                                                ? 'bg-gray-50  dark:text-slate-100 dark:bg-slate-700'
-                                                : 'text-gray-700 hover:text-indigo-200 hover:bg-gray-50 dark:hover:bg-slate-600',
-                                             'group flex gap-x-3 rounded-md p-2 text-md leading-6 font-semibold'
-                                          )}
+                                       <Link
+                                          passHref
+                                          as={`/categories/${item.name?.toLocaleLowerCase()}`}
+                                          href={'/categories/[slug]'}
                                        >
-                                          {capitalizeWords(item.name as string)}
-                                       </a>
+                                          <a
+                                             href={item.href}
+                                             className={classNames(
+                                                item.current
+                                                   ? 'bg-gray-50  dark:text-slate-100 dark:bg-slate-700'
+                                                   : 'text-gray-700 hover:text-indigo-200 hover:bg-gray-50 dark:hover:bg-slate-600',
+                                                'group flex gap-x-3 rounded-md p-2 text-md leading-6 font-semibold'
+                                             )}
+                                          >
+                                             {capitalizeWords(item.name as string)}
+                                          </a>
+                                       </Link>
                                     </li>
                                  ))}
                               </ul>

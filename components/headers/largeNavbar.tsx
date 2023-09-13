@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ThemeToggler } from '../buttons/themeToggler';
 import IsSession from '../Login/isSession';
 import { NavigationProps } from '../../lib/types/theme';
+import SearchInput from '../inputs/search';
 
 export const LargeNavigation = ({
    user,
@@ -13,7 +14,7 @@ export const LargeNavigation = ({
 }: NavigationProps) => {
    return (
       <>
-         <div className='flex items-center w-full px-8'>
+         <div className='flex items-center w-full h-full px-8'>
             {/* Home Link */}
             <div className='mr-auto'>
                <Link href='/'>
@@ -22,7 +23,7 @@ export const LargeNavigation = ({
             </div>
 
             {/* Menu Items */}
-            <nav className='h-full flex justify-center items-center space-x-1'>
+            {/* <nav className='h-full flex justify-center items-center space-x-1'>
                {Object.values(icons).map((icon) => (
                   <div
                      key={icon.name}
@@ -38,7 +39,11 @@ export const LargeNavigation = ({
                      </Link>
                   </div>
                ))}
-            </nav>
+            </nav> */}
+
+            <div className='h-full flex justify-center items-center w-[450px]'>
+               <SearchInput />
+            </div>
 
             <div className='flex items-center ml-auto space-x-6'>
                {!user ? (

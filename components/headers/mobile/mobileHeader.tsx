@@ -5,7 +5,7 @@ import IconLink from '../linksToIcon';
 import IsSession from '../../Login/isSession';
 import { ThemeToggler } from '../../buttons/themeToggler';
 import { NavigationProps } from '../../../lib/types/theme';
-import { IconProps, Navigation } from '../../icons/headerIcons';
+import { IconProps, Icons, Navigation } from '../../icons/headerIcons';
 import Link from 'next/link';
 import { ChevronRightIcon, ChevronUpIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
@@ -31,6 +31,7 @@ export const MobileNavigation = ({
                   </>
                )}
             </Menu.Button>
+            <div className='bg-red-500'>Hello</div>
             <Transition appear as='div'>
                <div className='fixed inset-0 flex bg-gray-200/40 bg-opacity-30'>
                   <Transition.Child
@@ -41,7 +42,8 @@ export const MobileNavigation = ({
                      leaveFrom='transform opacity-100 translate-x-20'
                      leaveTo='transform opacity-0 -translate-x-10'
                   >
-                     <div className='relative z-50 bg-dilutedbeige flex h-full w-96 max-w-sm flex-1 flex-col bg- focus:outline-none dark:bg-dark-charcoal'>
+                     {/* can create a separate component here too for readability and maintainability */}
+                     <div className='relative z-40 bg-dilutedbeige flex h-full w-96 max-w-sm flex-1 flex-col overflow-y-scroll focus:outline-none dark:bg-dark-charcoal'>
                         <div className='pt-5 pb-4'>
                            <Menu.Items
                               as='nav'
@@ -80,6 +82,7 @@ export const MobileNavigation = ({
                </div>
             </Transition>
          </Menu>
+         <div className='bg-yellow-500'>Yellow</div>
       </>
    );
 };
@@ -88,58 +91,25 @@ interface SessionProps {
    subsections: Navigation[];
 }
 
-const Section = ({ url, icons }: { url: string; icons: IconProps }) => {
-   const [openSubsection, setOpenSubsection] = useState(false);
-   // use ref to open it up then?
-   const handleSubsection = (name: string) => {
-      if (name === 'Categories') {
-         setOpenSubsection(!openSubsection);
-      }
-   };
+const Section = ({ url, icons }: { url: string; icons: IconProps }) => (
+   <>
+      {Object.values(icons).map((icon) => {
+         const isCategory = icon.name.toLowerCase() === 'categories';
+         return isCategory ? (
+            <DisclosureItem
+               key={icon.name}
+               icon={icon}
+               url={url}
+               subsections={icons['categories'].subsection || []}
+            />
+         ) : (
+            <MenuItemButton key={icon.name} icon={icon} url={url} />
+         );
+      })}
+   </>
+);
 
-   return (
-      <>
-         {Object.values(icons).map((icon) => {
-            if (icon.name.toLowerCase() === 'categories') {
-               return (
-                  <Disclosure key={icon.name}>
-                     {({ open }) => (
-                        <>
-                           <Disclosure.Button className='group flex w-full items-center rounded-md px-8 py-6 text-lg'>
-                              <IconLink url={url} iconsProp={icon} />
-                              <ChevronUpIcon
-                                 className={`${
-                                    open ? 'rotate-180 transform' : ''
-                                 } h-6 w-6 dark:slate-200 transition-all duration-200 ease-linear`}
-                              />
-                           </Disclosure.Button>
-                           <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm text-gray-500'>
-                              <Subsection subsections={icons['categories'].subsection || []} />
-                           </Disclosure.Panel>
-                        </>
-                     )}
-                  </Disclosure>
-               );
-            } else {
-               return (
-                  <Menu.Item key={icon.name}>
-                     <button
-                        role='link'
-                        className={classNames(
-                           'group flex w-full items-center rounded-md px-8 py-6 text-lg'
-                        )}
-                     >
-                        <IconLink url={url} iconsProp={icon} />
-                     </button>
-                  </Menu.Item>
-               );
-            }
-         })}
-      </>
-   );
-};
-
-export const Subsection = ({ subsections }: SessionProps) => {
+const Subsection = ({ subsections }: SessionProps) => {
    return (
       <>
          <ul
@@ -148,15 +118,53 @@ export const Subsection = ({ subsections }: SessionProps) => {
             className='flex flex-col items-center justify-center w-full h-full'
          >
             {subsections.map((section) => (
-               <>
-                  <li key={section.name}>
-                     <Link passHref href={'/'}>
-                        <a>{section.name}</a>
-                     </Link>
-                  </li>
-               </>
+               <li className='py-[6px] bg-transparent' key={section.name}>
+                  <Link
+                     passHref
+                     as={`/categories/${section.name?.toLocaleLowerCase()}`}
+                     href={'/categories/[slug]'}
+                  >
+                     <a>{section.name}</a>
+                  </Link>
+               </li>
             ))}
          </ul>
       </>
    );
 };
+
+const DisclosureItem = ({
+   icon,
+   url,
+   subsections,
+}: {
+   icon: Icons;
+   url: string;
+   subsections: any;
+}) => (
+   <Disclosure>
+      {({ open }) => (
+         <>
+            <Disclosure.Button className='group flex w-full items-center rounded-md px-8 py-6 text-lg'>
+               <IconLink url={url} iconsProp={icon} />
+               <ChevronUpIcon
+                  className={`${
+                     open ? 'rotate-180 transform' : ''
+                  } h-6 w-6 dark:slate-200 transition-all duration-200 ease-linear`}
+               />
+            </Disclosure.Button>
+            <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm text-gray-500'>
+               <Subsection subsections={subsections} />
+            </Disclosure.Panel>
+         </>
+      )}
+   </Disclosure>
+);
+
+const MenuItemButton = ({ icon, url }: { icon: Icons; url: string }) => (
+   <Menu.Item>
+      <button role='link' className='group flex w-full items-center rounded-md px-8 py-6 text-lg'>
+         <IconLink url={url} iconsProp={icon} />
+      </button>
+   </Menu.Item>
+);

@@ -82,17 +82,16 @@ const MagnifyingGlass = () => {
    );
 };
 
-interface Navigation {
+export interface Navigation {
    name?: string;
    href?: string;
    current?: boolean;
 }
 
-export type IconProps = {
-   [key: string]: Icons;
-};
+export type NavigationParams = 'home' | 'profile' | 'categories';
+export type IconProps = Record<NavigationParams, Icons>;
 
-type Icons = {
+export type Icons = {
    icon: () => JSX.Element;
    href: string;
    name: string;
