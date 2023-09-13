@@ -71,7 +71,7 @@ const Home = (props: InferServerSideProps) => {
    const { dataWithKeys: googleData } = useGetCategoriesQueries(data);
    const { transformedData: nytData } = useGetNytBestSellers({ initialData: bestSellerData });
 
-   const combinedData = { ...googleData, ...nytData } as CategoriesQueries;
+   const combinedData = { ...nytData, ...googleData } as CategoriesQueries;
 
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});

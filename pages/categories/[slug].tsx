@@ -12,6 +12,8 @@ import BookImage from '../../components/bookcover/bookImages';
 import Image from 'next/image';
 import { BestSellerData, ReviewData } from '../../lib/types/nytBookTypes';
 import { CategoriesNytQueries, InferServerSideProps } from '../../lib/types/serverPropsTypes';
+import SideNavigation from '../../components/headers/sidebar';
+import HomeLayout from '../../components/layout/page/home';
 
 const BookCategories = (props: InferServerSideProps) => {
    const { bestSellerData } = props;
@@ -36,7 +38,7 @@ const BookCategories = (props: InferServerSideProps) => {
    // 3) set priority
    // 4) change category
    return (
-      <>
+      <HomeLayout>
          <CategoryDisplay category='ART'>
             {data?.books.map((book, index) => (
                <>
@@ -50,7 +52,7 @@ const BookCategories = (props: InferServerSideProps) => {
                </>
             ))}
          </CategoryDisplay>
-      </>
+      </HomeLayout>
    );
 };
 

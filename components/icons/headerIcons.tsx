@@ -1,3 +1,5 @@
+import { categories } from '../../constants/categories';
+
 export interface ReactIconProps extends React.SVGProps<SVGSVGElement> {
    className?: string;
 }
@@ -80,6 +82,12 @@ const MagnifyingGlass = () => {
    );
 };
 
+interface Navigation {
+   name?: string;
+   href?: string;
+   current?: boolean;
+}
+
 export type IconProps = {
    [key: string]: Icons;
 };
@@ -88,6 +96,7 @@ type Icons = {
    icon: () => JSX.Element;
    href: string;
    name: string;
+   subsection?: Navigation[];
 };
 
 const IconProviders: IconProps = {
@@ -96,21 +105,30 @@ const IconProviders: IconProps = {
       href: '/',
       name: 'Home',
    },
-   book: {
-      icon: Book,
-      href: '/dashboard',
-      name: 'Library',
-   },
-   search: {
-      icon: MagnifyingGlass,
-      href: '/searchbooks',
-      name: 'Search',
-   },
    profile: {
       icon: Profile,
       href: '/settings',
       name: 'Profile',
    },
+   categories: {
+      icon: Book,
+      href: '/categories',
+      name: 'Categories',
+      subsection: getNavigation(categories),
+   },
+   // search: {
+   //    icon: MagnifyingGlass,
+   //    href: '/searchbooks',
+   //    name: 'Search',
+   // },
 };
+
+function getNavigation(categories: readonly string[]) {
+   return categories.map((category) => ({
+      name: category,
+      href: category,
+      current: false,
+   }));
+}
 
 export default IconProviders;

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Categories } from '../../constants/categories';
-import { capitalizeWords } from '../../utils/transformChar';
+import { capitalizeWords, formatCategoryName } from '../../utils/transformChar';
 import SingleOrMultipleAuthors from '../bookcover/authors';
 import BookDescription from '../bookcover/description';
 import styles from './../../styles/Home.module.css';
@@ -100,9 +100,10 @@ export const CategoryDescription = ({
 };
 
 const CategoryHeader = ({ category }: { category: CategoryHeaderParams }) => {
+   const formattedCategory = formatCategoryName(category as string);
    return (
       <h2 className='mt-4 py-3 text-xl lg:text-2xl text-slate-800 dark:text-slate-100'>
-         {capitalizeWords(category as string)}
+         {capitalizeWords(formattedCategory)}
       </h2>
    );
 };

@@ -10,6 +10,7 @@ import Container from '../components/layout/container';
 import { ColorTheme } from '../lib/types/theme';
 import ThemeProvider from '../lib/context/ThemeContext';
 import Navigation from '../components/headers';
+import HomeLayout from '../components/layout/page/home';
 
 const queryClient = new QueryClient({
    defaultOptions: {
@@ -28,15 +29,17 @@ function MyApp({ Component, pageProps }) {
    // adjusting proper time as it refreshes the refreshtoken
    // may be expired { PROVIDE URL HERE }
    const [interval, setInterval] = useState(0);
+   const [isSidebarOpen, setSidebarOpen] = useState(false);
+   // set isSidebarOpen here and if it is open then the layout is shrunk
 
    return (
       <QueryClientProvider client={queryClient}>
          <ThemeProvider>
             <SessionProvider session={pageProps.session} refetchInterval={interval}>
-               <Navigation />
-               <Container>
+               <Navigation sidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
+               <HomeLayout isOpen={isSidebarOpen}>
                   <Component {...pageProps} />
-               </Container>
+               </HomeLayout>
                <RefreshTokenHandler setInterval={setInterval} />
                <ReactQueryDevtools initialIsOpen={true} />
             </SessionProvider>

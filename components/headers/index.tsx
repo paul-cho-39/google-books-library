@@ -5,8 +5,9 @@ import IconProviders from '../icons/headerIcons';
 import getUserId from '../../lib/helper/getUserId';
 import { LargeNavigation } from './largeNavbar';
 import { MobileNavigation } from './mobile/mobileHeader';
+import SideNavigation, { SideNavigationProps } from './sidebar';
 
-const Navigation = () => {
+const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
    const { data: user } = useSession();
    const darkTheme = useDarkMode();
    const [icons] = useState(IconProviders);
@@ -26,6 +27,7 @@ const Navigation = () => {
       <header>
          <div className='hidden lg:flex h-16 w-full bg-beige dark:bg-charcoal'>
             <LargeNavigation {...navProps} />
+            <SideNavigation sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
          </div>
          <div className='flex h-16 w-full mb-5 lg:hidden bg-beige dark:bg-charcoal'>
             <MobileNavigation {...navProps} />

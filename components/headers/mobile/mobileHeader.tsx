@@ -5,6 +5,10 @@ import IconLink from '../linksToIcon';
 import IsSession from '../../Login/isSession';
 import { ThemeToggler } from '../../buttons/themeToggler';
 import { NavigationProps } from '../../../lib/types/theme';
+import { IconProps, Navigation } from '../../icons/headerIcons';
+import Link from 'next/link';
+import { ChevronRightIcon } from '@heroicons/react/20/solid';
+import classNames from 'classnames';
 
 export const MobileNavigation = ({
    user,
@@ -14,6 +18,19 @@ export const MobileNavigation = ({
    url,
    signOut,
 }: NavigationProps) => {
+   const [openSubsection, setOpenSubsection] = useState(false);
+   const handleIcon = (icon: IconProps) => {
+      // if (icon.name.toLocaleLowerCase() !== 'categories') return;
+      if (icon.categories) {
+         console.log('this is the icon category');
+
+         // const subsection = icon.categories.subsection;
+         setOpenSubsection(true);
+      }
+
+      return;
+   };
+
    return (
       <>
          {/* off canvas menu for mobile */}
@@ -44,46 +61,8 @@ export const MobileNavigation = ({
                               aria-label='Navigation-bar'
                               className='mb-4 mt-12 py-4 w-full h-full'
                            >
-                              <div className='space-y-4 pr-3'>
-                                 {/* pass props here */}
-                                 {Object.values(icons).map((icon) => (
-                                    <Menu.Item key={icon.name}>
-                                       {({ active }) => (
-                                          <button
-                                             role='link'
-                                             className={`${
-                                                active
-                                                   ? 'bg-orange-200 text-slate-800 dark:bg-slate-100/10'
-                                                   : 'text-gray-900'
-                                             } group flex w-full items-center rounded-md px-8 py-6 text-lg`}
-                                          >
-                                             {active ? (
-                                                <IconLink
-                                                   Icon={icon.icon}
-                                                   href={
-                                                      icon.name === 'Home'
-                                                         ? icon.href
-                                                         : url + icon.href
-                                                   }
-                                                >
-                                                   {icon.name}
-                                                </IconLink>
-                                             ) : (
-                                                <IconLink
-                                                   Icon={icon.icon}
-                                                   href={
-                                                      icon.name === 'Home'
-                                                         ? icon.href
-                                                         : url + icon.href
-                                                   }
-                                                >
-                                                   {icon.name}
-                                                </IconLink>
-                                             )}
-                                          </button>
-                                       )}
-                                    </Menu.Item>
-                                 ))}
+                              <div className='space-y-4 pr-3 bg-blue-100 overflow-y-auto'>
+                                 <Section icons={icons} url={url} />
                                  <span className='mb-2 block border-b-2 border-slate-200'></span>
                                  {/* most likely move the logic to pass to a component */}
                                  <div className='flex flex-col items-center justify-center gap-y-6 overflow-hidden md:gap-y-5'>
@@ -114,6 +93,72 @@ export const MobileNavigation = ({
                </div>
             </Transition>
          </Menu>
+      </>
+   );
+};
+
+interface SessionProps {
+   openSubsection: boolean;
+   subsections: Navigation[];
+}
+
+const Section = ({ url, icons }: { url: string; icons: IconProps }) => {
+   const [openSubsection, setOpenSubsection] = useState(false);
+
+   return (
+      <>
+         {Object.values(icons).map((icon) => (
+            <Menu.Items
+               onClick={() => {
+                  if (icon.name === 'Categories') {
+                     setOpenSubsection(!openSubsection);
+                  }
+               }}
+               key={icon.name}
+            >
+               {/* {({ active }) => ( */}
+               <button
+                  role='link'
+                  className={classNames(
+                     // active
+                     // ? 'bg-orange-200 text-slate-800 dark:bg-slate-100/10'
+                     // : 'text-gray-900',
+                     'group flex w-full items-center rounded-md px-8 py-6 text-lg'
+                  )}
+               >
+                  <IconLink url={url} openSubsection={openSubsection} iconsProp={icon} />
+                  {/* </IconLink> */}
+               </button>
+               {/* )} */}
+            </Menu.Items>
+         ))}
+         {openSubsection && (
+            <Subsection
+               openSubsection={openSubsection}
+               subsections={icons['categories'].subsection || []}
+            />
+         )}
+      </>
+   );
+};
+
+export const Subsection = ({ openSubsection, subsections }: SessionProps) => {
+   return (
+      <>
+         {openSubsection && (
+            <Menu.Items className='flex flex-col items-center justify-center w-full h-full bg-red-500'>
+               {subsections.map((section) => (
+                  <>
+                     <Menu.Item key={section.name}>
+                        <Link passHref href={'/'}>
+                           <a>{section.name}</a>
+                        </Link>
+                     </Menu.Item>
+                  </>
+               ))}
+            </Menu.Items>
+            // )))}
+         )}
       </>
    );
 };
