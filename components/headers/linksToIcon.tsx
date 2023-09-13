@@ -7,11 +7,10 @@ import { Subsection } from './mobile/mobileHeader';
 interface LinkProps {
    iconsProp: Icons;
    url: string;
-   openSubsection: boolean;
-   children: React.ReactNode;
+   children?: React.ReactNode;
 }
 
-const IconLink = ({ iconsProp, url, openSubsection, children }: LinkProps) => {
+const IconLink = ({ iconsProp, url, children }: LinkProps) => {
    const { name, href, icon: Icon } = iconsProp;
 
    const getHomeRef = (name: string, href: string) => {
@@ -23,9 +22,7 @@ const IconLink = ({ iconsProp, url, openSubsection, children }: LinkProps) => {
          <div className='flex items-center'>
             <Icon />
             {name}
-            {children}
          </div>
-         <ChevronRightIcon className={`h-6 w-6 transform ${openSubsection ? 'rotate-90' : ''}`} />
       </div>
    );
 

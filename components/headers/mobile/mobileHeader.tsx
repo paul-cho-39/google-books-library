@@ -1,5 +1,5 @@
-import React, { Fragment, useState } from 'react';
-import { Menu, Dialog, Transition } from '@headlessui/react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { Menu, Dialog, Transition, Disclosure } from '@headlessui/react';
 import { Close, MenuBars } from '../../icons/openCloseIcons';
 import IconLink from '../linksToIcon';
 import IsSession from '../../Login/isSession';
@@ -7,7 +7,7 @@ import { ThemeToggler } from '../../buttons/themeToggler';
 import { NavigationProps } from '../../../lib/types/theme';
 import { IconProps, Navigation } from '../../icons/headerIcons';
 import Link from 'next/link';
-import { ChevronRightIcon } from '@heroicons/react/20/solid';
+import { ChevronRightIcon, ChevronUpIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
 
 export const MobileNavigation = ({
@@ -18,19 +18,6 @@ export const MobileNavigation = ({
    url,
    signOut,
 }: NavigationProps) => {
-   const [openSubsection, setOpenSubsection] = useState(false);
-   const handleIcon = (icon: IconProps) => {
-      // if (icon.name.toLocaleLowerCase() !== 'categories') return;
-      if (icon.categories) {
-         console.log('this is the icon category');
-
-         // const subsection = icon.categories.subsection;
-         setOpenSubsection(true);
-      }
-
-      return;
-   };
-
    return (
       <>
          {/* off canvas menu for mobile */}
@@ -44,7 +31,7 @@ export const MobileNavigation = ({
                   </>
                )}
             </Menu.Button>
-            <Transition as='div'>
+            <Transition appear as='div'>
                <div className='fixed inset-0 flex bg-gray-200/40 bg-opacity-30'>
                   <Transition.Child
                      enter='transition ease-in duration-150 transform'
@@ -98,67 +85,78 @@ export const MobileNavigation = ({
 };
 
 interface SessionProps {
-   openSubsection: boolean;
    subsections: Navigation[];
 }
 
 const Section = ({ url, icons }: { url: string; icons: IconProps }) => {
    const [openSubsection, setOpenSubsection] = useState(false);
+   // use ref to open it up then?
+   const handleSubsection = (name: string) => {
+      if (name === 'Categories') {
+         setOpenSubsection(!openSubsection);
+      }
+   };
 
    return (
       <>
-         {Object.values(icons).map((icon) => (
-            <Menu.Items
-               onClick={() => {
-                  if (icon.name === 'Categories') {
-                     setOpenSubsection(!openSubsection);
-                  }
-               }}
-               key={icon.name}
-            >
-               {/* {({ active }) => ( */}
-               <button
-                  role='link'
-                  className={classNames(
-                     // active
-                     // ? 'bg-orange-200 text-slate-800 dark:bg-slate-100/10'
-                     // : 'text-gray-900',
-                     'group flex w-full items-center rounded-md px-8 py-6 text-lg'
-                  )}
-               >
-                  <IconLink url={url} openSubsection={openSubsection} iconsProp={icon} />
-                  {/* </IconLink> */}
-               </button>
-               {/* )} */}
-            </Menu.Items>
-         ))}
-         {openSubsection && (
-            <Subsection
-               openSubsection={openSubsection}
-               subsections={icons['categories'].subsection || []}
-            />
-         )}
+         {Object.values(icons).map((icon) => {
+            if (icon.name.toLowerCase() === 'categories') {
+               return (
+                  <Disclosure key={icon.name}>
+                     {({ open }) => (
+                        <>
+                           <Disclosure.Button className='group flex w-full items-center rounded-md px-8 py-6 text-lg'>
+                              <IconLink url={url} iconsProp={icon} />
+                              <ChevronUpIcon
+                                 className={`${
+                                    open ? 'rotate-180 transform' : ''
+                                 } h-6 w-6 dark:slate-200 transition-all duration-200 ease-linear`}
+                              />
+                           </Disclosure.Button>
+                           <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm text-gray-500'>
+                              <Subsection subsections={icons['categories'].subsection || []} />
+                           </Disclosure.Panel>
+                        </>
+                     )}
+                  </Disclosure>
+               );
+            } else {
+               return (
+                  <Menu.Item key={icon.name}>
+                     <button
+                        role='link'
+                        className={classNames(
+                           'group flex w-full items-center rounded-md px-8 py-6 text-lg'
+                        )}
+                     >
+                        <IconLink url={url} iconsProp={icon} />
+                     </button>
+                  </Menu.Item>
+               );
+            }
+         })}
       </>
    );
 };
 
-export const Subsection = ({ openSubsection, subsections }: SessionProps) => {
+export const Subsection = ({ subsections }: SessionProps) => {
    return (
       <>
-         {openSubsection && (
-            <Menu.Items className='flex flex-col items-center justify-center w-full h-full bg-red-500'>
-               {subsections.map((section) => (
-                  <>
-                     <Menu.Item key={section.name}>
-                        <Link passHref href={'/'}>
-                           <a>{section.name}</a>
-                        </Link>
-                     </Menu.Item>
-                  </>
-               ))}
-            </Menu.Items>
-            // )))}
-         )}
+         <ul
+            aria-label='book categories link list'
+            role='list'
+            className='flex flex-col items-center justify-center w-full h-full'
+         >
+            {subsections.map((section) => (
+               <>
+                  <li key={section.name}>
+                     <Link passHref href={'/'}>
+                        <a>{section.name}</a>
+                     </Link>
+                  </li>
+               </>
+            ))}
+         </ul>
       </>
    );
 };
