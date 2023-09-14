@@ -43,10 +43,10 @@ function PopOverButtons({ userId, book }: ButtonProps) {
                      onClick={handleClick}
                      className={`
                 ${open ? 'ring-black ring-2' : 'text-opacity-90'}
-                -top-[1.25rem] relative inline-flex items-center rounded-r-2xl border border-slate-400 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-10 focus:border-black focus:outline-none focus:ring-1 focus:ring-black`}
+                -top-[1.25rem] relative inline-flex items-center rounded-r-2xl border border-slate-400 bg-white dark:bg-slate-700 px-2 py-2 text-sm font-medium text-gray-500 dark:text-slate-200 hover:bg-gray-50 focus:z-10 focus:border-black focus:outline-none focus:ring-1 focus:ring-black`}
                   >
                      <ChevronDownIcon
-                        className='h-5 w-5 text-violet-200 hover:text-violet-100'
+                        className='h-5 w-5 text-violet-200 hover:text-violet-100 dark:text-slate-200'
                         aria-hidden='true'
                      />
                   </Popover.Button>

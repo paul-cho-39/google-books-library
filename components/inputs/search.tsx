@@ -36,20 +36,10 @@ const SearchInput = ({ filterQuery }: SearchInputInterface) => {
             />
             <button type='submit'>
                <MagnifyingGlassIcon
-                  className='cursor-pointer relative top-0 right-8 h-5 w-5 text-slate-600 dark:text-slate-200'
+                  className='cursor-pointer relative top-0 right-8 h-5 w-5 text-slate-600'
                   aria-hidden='true'
                />
             </button>
-            {/* <div
-               className={classNames(
-                  isFocus ? 'invisible' : 'opacity absolute inset-y-0 right-0 flex py-1.5 pr-1.5',
-                  'transition-opacity duration-200'
-               )}
-            >
-               <kbd className='inline-flex items-center rounded border border-gray-200 px-1 font-sans text-xs text-gray-400'>
-                  ⌘K
-               </kbd>
-            </div> */}
          </div>
       </form>
    );

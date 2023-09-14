@@ -11,7 +11,7 @@ type Library = {
 
 export type QueryData = { library: Library };
 
-export default function useGetBookData(userId?: string) {
+export default function useGetBookData(userId?: string | null) {
    if (!userId) return;
 
    // eslint-disable-next-line react-hooks/rules-of-hooks

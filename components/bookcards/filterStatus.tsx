@@ -1,44 +1,58 @@
-import { useMemo } from "react";
-import { isBookInData } from "../../lib/helper/books/isBooksInLibrary";
-import { CheckBadgeIcon, CheckIcon } from "@heroicons/react/20/solid";
-import React from "react";
+import { useMemo } from 'react';
+import { isBookInData } from '../../lib/helper/books/isBooksInLibrary';
+import { CheckIcon } from '@heroicons/react/20/solid';
+import React from 'react';
+
+interface FilterStatusProps {
+   bookId: string;
+   finishedData?: string[];
+   currentlyReading?: string[];
+   wantToRead?: string[];
+}
 
 const FilterStatus = ({
-  bookId,
-  finishedData,
-  currentlyReading,
-  wantToRead,
-}: {
-  bookId: string;
-  finishedData: string[] | undefined;
-  currentlyReading: string[] | undefined;
-  wantToRead: string[] | undefined;
-}) => {
-  const readingStatus = useMemo(
-    () =>
-      // may be better to use switch but at the same time only want
-      // one status in this order??
-      isBookInData(bookId, finishedData) ? (
-        <>
-          <CheckBadgeIcon height="20" width="20" fill="green" stroke="green" />
-          <span>Finished reading</span>
-        </>
-      ) : isBookInData(bookId, currentlyReading) ? (
-        <>
-          <CheckIcon height="20" width="20" stroke="green" />
-          <span>Currently reading</span>
-        </>
-      ) : isBookInData(bookId, wantToRead) ? (
-        <>
-          <CheckIcon height="20" width="20" stroke="white" />
-          <span>Currently reading</span>
-        </>
-      ) : null,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [finishedData, currentlyReading, wantToRead]
-  );
+   bookId,
+   finishedData,
+   currentlyReading,
+   wantToRead,
+}: FilterStatusProps) => {
+   const readingStatusMap = {
+      finished: {
+         data: finishedData,
+         text: 'Finished reading',
+         iconProps: { fill: 'green', stroke: 'green' },
+      },
+      current: {
+         data: currentlyReading,
+         text: 'Currently reading',
+         iconProps: { fill: 'green', stroke: 'green' },
+      },
+      wantToRead: {
+         data: wantToRead,
+         text: 'Want to read',
+         iconProps: { fill: 'white', stroke: 'white' },
+      },
+   };
 
-  return <div className="inline-flex flex-row">{readingStatus}</div>;
+   const readingStatus = useMemo(() => {
+      for (const statusKey in readingStatusMap) {
+         const status = readingStatusMap[statusKey as keyof typeof readingStatusMap];
+         if (isBookInData(bookId, status.data)) {
+            return status;
+         }
+      }
+      return null;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [bookId, finishedData, currentlyReading, wantToRead]);
+
+   if (!readingStatus) return null;
+
+   return (
+      <div className='inline-flex flex-row'>
+         <CheckIcon height='20' width='20' {...readingStatus.iconProps} />
+         <span>{readingStatus.text}</span>
+      </div>
+   );
 };
 
 export default FilterStatus;

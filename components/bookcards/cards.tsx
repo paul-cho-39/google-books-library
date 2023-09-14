@@ -9,18 +9,19 @@ import FilterStatus from './filterStatus';
 import useGetBookData, { QueryData } from '../../lib/hooks/useGetBookData';
 import { getBookWidth } from '../../utils/getBookWidth';
 import BookImage from '../bookcover/bookImages';
+import SignInRequiredButton from '../Login/requireUser';
 
 const HEIGHT = 125;
 
 const Cards: React.FunctionComponent<{
    books: Array<Items<any>> | undefined;
    totalItems: number;
-   userId?: string;
+   userId: string | null;
 }> = ({ books, userId, totalItems }) => {
    const dataBooks = useGetBookData(userId);
-   // const finishedData = dataBooks?.library?.finished;
-   // const currentlyReading = dataBooks?.library?.currentlyReading;
-   // const wantToRead = dataBooks?.library?.wantToRead;
+   const finishedData = dataBooks?.library?.finished;
+   const currentlyReading = dataBooks?.library?.currentlyReading;
+   const wantToRead = dataBooks?.library?.wantToRead;
 
    return (
       <>
@@ -31,7 +32,7 @@ const Cards: React.FunctionComponent<{
             <div className='relative flex justify-center'>
                <div className='absolute border-t-[1.5px] border-gray-200 w-full' />
             </div>
-            <div className='mx-auto w-full'>
+            <div className='mx-auto w-full lg:max-w-2xl'>
                <ul
                   aria-label='lists of book result'
                   role='listbox'
@@ -50,6 +51,7 @@ const Cards: React.FunctionComponent<{
                                     title={book.volumeInfo.title}
                                  />
                               </div>
+                              {/* title + author + button */}
                               <div className='relative px-4 md:px-6 lg:px-8'>
                                  <div className='grid grid-rows-2 gap-0'>
                                     <h3 className='text-lg font-medium text-gray-900 dark:text-slate-200 lg:text-2xlg row-start-1 row-end-2 md:max-w-sm'>
@@ -71,16 +73,31 @@ const Cards: React.FunctionComponent<{
                                     </p>
                                  </div>
                                  {/* dropdown buttons for large */}
-                                 {/* <div className='flex flex-row items-end mt-8 pr-5'>
-                                          <SaveAsFinishedButton book={book} userId={userId} />
-                                          <PopOverButtons userId={userId} book={book} />
-                                       </div> */}
-                                 {/* <FilterStatus
-                                          bookId={book.id}
-                                          currentlyReading={currentlyReading}
-                                          finishedData={finishedData}
-                                          wantToRead={wantToRead}
-                                       /> */}
+                                 <div className='flex flex-row items-end w-full mt-8 pr-5'>
+                                    <SignInRequiredButton
+                                       type='finished'
+                                       userId={userId}
+                                       signedInActiveButton={
+                                          <SaveAsFinishedButton
+                                             book={book}
+                                             userId={userId as string}
+                                          />
+                                       }
+                                    />
+                                    <SignInRequiredButton
+                                       type='popover'
+                                       userId={userId}
+                                       signedInActiveButton={
+                                          <PopOverButtons book={book} userId={userId as string} />
+                                       }
+                                    />
+                                 </div>
+                                 <FilterStatus
+                                    bookId={book.id}
+                                    currentlyReading={currentlyReading}
+                                    finishedData={finishedData}
+                                    wantToRead={wantToRead}
+                                 />
                               </div>
                            </div>
                         </li>
