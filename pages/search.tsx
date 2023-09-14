@@ -1,14 +1,15 @@
 import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
 import { getSession } from 'next-auth/react';
-import { useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useMemo, useRef, useState } from 'react';
 import createUniqueDataSets from '../lib/helper/books/filterUniqueData';
 import useInteractionObserver from '../lib/hooks/useIntersectionObserver';
-import Cards from '../components/bookcards/cards';
 import useInfiniteFetcher from '../lib/hooks/useInfiniteFetcher';
 import BookSearchSkeleton from '../components/loaders/bookcardsSkeleton';
 import { useRouter } from 'next/router';
 import { Items } from '../lib/types/googleBookTypes';
-import { DefaultSession } from 'next-auth';
+import { CustomSession } from '../lib/types/serverPropsTypes';
+
+const Cards = lazy(() => import('../components/bookcards/cards'));
 
 export default function Search(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const { userId } = props;
@@ -44,10 +45,12 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
          <div>
             <div>
                {isFetching && isLoading ? (
-                  <BookSearchSkeleton books={uniqueDataSets} />
+                  <BookSearchSkeleton books={5} />
                ) : (
                   isSuccess && (
-                     <Cards books={uniqueDataSets} userId={userId} totalItems={totalItems} />
+                     <Suspense fallback={<BookSearchSkeleton books={5} />}>
+                        <Cards books={uniqueDataSets} userId={userId} totalItems={totalItems} />
+                     </Suspense>
                   )
                )}
             </div>
@@ -56,10 +59,6 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
          <div ref={pageLoader}></div>
       </div>
    );
-}
-
-interface CustomSession extends DefaultSession {
-   id: string | null | undefined;
 }
 
 export const getServerSideProps = async (context: any) => {

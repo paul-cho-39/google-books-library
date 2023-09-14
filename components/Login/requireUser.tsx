@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router';
-import { ButtonProps } from '../bookcards/currentReadingButton';
 import classNames from 'classnames';
 import { ChevronDownIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { Suspense } from 'react';
+import { ButtonSkeleton } from '../loaders/bookcardsSkeleton';
 
 interface SignInRequiredButtonProps {
    type: 'finished' | 'popover';
@@ -9,8 +10,8 @@ interface SignInRequiredButtonProps {
    userId?: string | null;
 }
 
-// TODO: this is a wrapper component but the button styling has to be the same
-// so have the styling same as the buttons
+// CONSIDER: this is a wrapper component but the button styling has to be the same
+// so have the styling same as the buttons -- would it be more pragmatic to have this global.css?
 const SignInRequiredButton = ({
    type,
    userId,
@@ -28,7 +29,7 @@ const SignInRequiredButton = ({
          : '-top-[1.25rem] relative inline-flex items-center rounded-r-2xl border border-slate-400 bg-white dark:bg-slate-700 px-2 py-2 text-sm font-medium text-gray-500 dark:text-slate-200 hover:bg-gray-50 focus:z-10 focus:border-black focus:outline-none focus:ring-1 focus:ring-black';
 
    return userId ? (
-      signedInActiveButton
+      <Suspense fallback={<ButtonSkeleton />}>{signedInActiveButton}</Suspense>
    ) : (
       <button onClick={handlePress} className={classNames(style)}>
          {type === 'finished' ? (

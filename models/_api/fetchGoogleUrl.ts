@@ -33,7 +33,7 @@ class GoogleBookApi {
    }
 
    public getUrlByQuery(query: string, maxResultNumber?: number, pageIndex?: number) {
-      const url = `${GoogleBookApi.URL_BASE}+inauthor:${query}`;
+      const url = `${GoogleBookApi.URL_BASE}+${query}`;
       return this.appendCommonParams(url, maxResultNumber, pageIndex);
    }
 

@@ -1,10 +1,7 @@
-import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Items } from '../../lib/types/googleBookTypes';
 import SingleOrMultipleAuthors from '../bookcover/authors';
-import SaveAsFinishedButton from './finishedButton';
-import PopOverButtons from './popover/popoverButtons';
 import FilterStatus from './filterStatus';
 import useGetBookData, { QueryData } from '../../lib/hooks/useGetBookData';
 import { getBookWidth } from '../../utils/getBookWidth';
@@ -12,6 +9,9 @@ import BookImage from '../bookcover/bookImages';
 import SignInRequiredButton from '../Login/requireUser';
 
 const HEIGHT = 125;
+
+const SaveAsFinishedButton = lazy(() => import('./finishedButton'));
+const PopOverButtons = lazy(() => import('./popover/popoverButtons'));
 
 const Cards: React.FunctionComponent<{
    books: Array<Items<any>> | undefined;
@@ -52,8 +52,8 @@ const Cards: React.FunctionComponent<{
                                  />
                               </div>
                               {/* title + author + button */}
-                              <div className='relative px-4 md:px-6 lg:px-8'>
-                                 <div className='grid grid-rows-2 gap-0'>
+                              <div className='relative grid grid-rows-5 px-4 md:px-6 lg:px-8'>
+                                 <div className='row-span-3 '>
                                     <h3 className='text-lg font-medium text-gray-900 dark:text-slate-200 lg:text-2xlg row-start-1 row-end-2 md:max-w-sm'>
                                        <Link href='books/[slug]' as={`/books/${book?.id}`} passHref>
                                           <a className='line-clamp-2 text-ellipsis'>
@@ -73,7 +73,7 @@ const Cards: React.FunctionComponent<{
                                     </p>
                                  </div>
                                  {/* dropdown buttons for large */}
-                                 <div className='flex flex-row items-end w-full mt-8 pr-5'>
+                                 <div className='flex flex-row items-end w-full pr-5'>
                                     <SignInRequiredButton
                                        type='finished'
                                        userId={userId}
