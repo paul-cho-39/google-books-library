@@ -8,6 +8,7 @@ import BookSearchSkeleton from '../components/loaders/bookcardsSkeleton';
 import { useRouter } from 'next/router';
 import { Items } from '../lib/types/googleBookTypes';
 import { CustomSession } from '../lib/types/serverPropsTypes';
+import EmptyResult from '../components/bookcards/emptyResult';
 
 const Cards = lazy(() => import('../components/bookcards/cards'));
 
@@ -28,16 +29,16 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    });
 
    // filtering duplicated results
-   const uniqueDataSets = useMemo(
+   // and because of this 'totalItems' is not true number
+   const uniqueDataSets: Array<Items<any>> = useMemo(
       () => data?.pages && data?.pages[0] && createUniqueDataSets(data),
       [data]
-   ) as Array<Items<any>>;
+   );
 
-   const totalItems = data?.pages && data?.pages[0] && data?.pages[0].totalItems;
+   const totalItems = data?.pages?.[0]?.totalItems || 0;
 
-   if (!data || (data?.pages && data?.pages[0].items.length < 1)) {
-      console.log('error here');
-      return;
+   if (!data || isError || totalItems < 1) {
+      return <EmptyResult isError={isError} query={search} />;
    }
 
    return (
@@ -54,7 +55,6 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
                   )
                )}
             </div>
-            {/* if error then display a sign that it could not be fetched */}
          </div>
          <div ref={pageLoader}></div>
       </div>

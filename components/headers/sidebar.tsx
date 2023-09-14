@@ -1,6 +1,6 @@
 import { Transition, Dialog } from '@headlessui/react';
 import { Categories, categories } from '../../constants/categories';
-import { Dispatch, Fragment, SetStateAction, useState } from 'react';
+import { Dispatch, Fragment, SetStateAction, useEffect, useState } from 'react';
 import {
    ArrowLeftOnRectangleIcon,
    ArrowRightOnRectangleIcon,
@@ -31,20 +31,20 @@ function getNavigation(categories: readonly string[]): Navigation[] {
 }
 
 const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
-   // TODO: pass categories as a prop
    const navigation = getNavigation(categories);
    const { isTop } = useScrollDirection();
 
-   // setCurrent(category)
    return (
       <>
          <Transition.Root show={sidebarOpen} as={Fragment}>
             <Dialog
-               static
                as='div'
-               className='hidden lg:fixed lg:inset-y-0 lg:z-0 lg:flex lg:w-80 lg:flex-col'
+               className='hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-80 lg:flex-col'
+               // className='hidden lg:relative'
+               open={sidebarOpen}
                onClose={() => setSidebarOpen(true)}
             >
+               <Dialog.Backdrop />
                <Transition.Child
                   as={Fragment}
                   enter='transition ease-in-out duration-300 transform'
@@ -54,7 +54,10 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                   leaveFrom='translate-x-0'
                   leaveTo='-translate-x-full'
                >
-                  <div className='flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-beige px-6 pb-4 dark:bg-charcoal'>
+                  <Dialog.Panel
+                     as='div'
+                     className='flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-beige px-6 pb-4 dark:bg-charcoal'
+                  >
                      <div className='flex h-16 shrink-0 items-center justify-end'>
                         <button type='button' onClick={() => setSidebarOpen(false)}>
                            <span className='sr-only'>Close sidebar</span>
@@ -95,7 +98,7 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                            </li>
                         </ul>
                      </nav>
-                  </div>
+                  </Dialog.Panel>
                </Transition.Child>
             </Dialog>
          </Transition.Root>
@@ -121,10 +124,10 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
 
 const CategoryHeader = () => {
    return (
-      <h3 className='inline-flex items-center text-xl text-center capitalize pb-4 dark:text-slate-200'>
+      <Dialog.Title className='inline-flex items-center text-xl text-center capitalize pb-4 dark:text-slate-200'>
          <ViewColumnsIcon className='h-5 w-5 dark:text-slate-200' />
          <span className='px-2'>categories</span>
-      </h3>
+      </Dialog.Title>
    );
 };
 

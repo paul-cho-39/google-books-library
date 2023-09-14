@@ -2,7 +2,6 @@ import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Icons } from '../icons/headerIcons';
-import { Subsection } from './mobile/mobileHeader';
 
 interface LinkProps {
    iconsProp: Icons;
@@ -35,15 +34,7 @@ const IconLink = ({ iconsProp, url, children }: LinkProps) => {
       </Link>
    );
 
-   return (
-      // <Link href='profile/[id]' as={`${href}`} passHref>
-      //    <a className='flex flex-row font-tertiary tracking-widest text-slate-800 dark:text-slate-100'>
-      //       <Icon />
-      //       {name} {children}
-      //    </a>
-      // </Link>
-      <div>{name === 'Categories' ? CategorySection : OtherSection}</div>
-   );
+   return <div>{name === 'Categories' ? CategorySection : OtherSection}</div>;
 };
 
 export default IconLink;

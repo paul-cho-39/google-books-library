@@ -3,9 +3,6 @@ import { Categories } from '../../constants/categories';
 import { capitalizeWords, formatCategoryName } from '../../utils/transformChar';
 import SingleOrMultipleAuthors from '../bookcover/authors';
 import BookDescription from '../bookcover/description';
-import styles from './../../styles/Home.module.css';
-
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
 // TEST THIS ONE
 type BookSection = 'Best Seller' | 'Recommended';
@@ -120,7 +117,9 @@ const ShowMoreCategory = ({ category }: { category: CategoryHeaderParams }) => {
             className='cursor-pointer inline-flex text-sm overflow-auto'
             // className='flex flex-row items-center justify-end text-md after:contents-["..."] text-slate-800 dark:text-slate-100'
          >
-            <span>More {capitalizeWords(category as string)} books...</span>
+            <span className='dark:text-slate-100'>
+               More {capitalizeWords(category as string)} books...
+            </span>
          </a>
       </Link>
    );

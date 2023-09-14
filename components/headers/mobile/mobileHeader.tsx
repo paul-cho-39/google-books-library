@@ -61,7 +61,7 @@ export const MobileNavigation = ({
                                     {!user ? (
                                        <IsSession
                                           className='py-2'
-                                          name='sign in'
+                                          name='Sign In'
                                           href='/auth/signin'
                                        />
                                     ) : (

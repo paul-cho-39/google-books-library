@@ -49,13 +49,13 @@ export const LargeNavigation = ({
             <div className='flex items-center ml-auto space-x-6'>
                {!user ? (
                   <IsSession
-                     name='Sign in'
+                     name='Sign In'
                      href='/auth/signin'
                      className='text-lg text-dark-brown dark:text-soft-white'
                   />
                ) : (
                   <IsSession
-                     name='Sign out'
+                     name='Sign Out'
                      signOut={signOut}
                      className='text-lg text-dark-brown dark:text-soft-white'
                   />
