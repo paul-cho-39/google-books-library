@@ -9,6 +9,7 @@ import queryKeys from '../queryKeys';
 import { BestSellerData, BookReview, Books, ReviewData } from '../types/nytBookTypes';
 import { CategoriesNytQueries, CategoriesQueries } from '../types/serverPropsTypes';
 import { transformStrToArray } from '../../utils/transformChar';
+import { handleNytId } from '../helper/books/handleIds';
 
 interface NytBookQueryParams {
    category: CategoryQualifiers;
@@ -117,7 +118,7 @@ function transformData<T extends CategoriesNytQueries>(data: T) {
    const adapted: CategoriesQueries = {};
    for (const [key, value] of Object.entries(data)) {
       adapted[key] = value.books.map((book) => ({
-         id: book.primary_isbn13,
+         id: handleNytId.appendSuffix(book.primary_isbn13),
          volumeInfo: {
             authors: transformStrToArray(book.author),
             title: book.title,

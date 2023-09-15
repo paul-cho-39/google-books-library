@@ -7,6 +7,7 @@ import useGetBookData, { QueryData } from '../../lib/hooks/useGetBookData';
 import { getBookWidth } from '../../utils/getBookWidth';
 import BookImage from '../bookcover/bookImages';
 import SignInRequiredButton from '../Login/requireUser';
+import BookTitle from '../bookcover/title';
 
 const HEIGHT = 125;
 
@@ -51,17 +52,14 @@ const Cards: React.FunctionComponent<{
                            {/* title + author + button */}
                            <div className='relative grid grid-rows-5 px-4 md:px-6 lg:px-8'>
                               <div className='row-span-3 '>
-                                 <h3 className='text-lg font-medium text-gray-900 dark:text-slate-200 lg:text-2xlg row-start-1 row-end-2 md:max-w-sm'>
-                                    <Link href='books/[slug]' as={`/books/${book?.id}`} passHref>
-                                       <a className='line-clamp-2 text-ellipsis'>
-                                          {book?.volumeInfo.subtitle
-                                             ? book?.volumeInfo.title +
-                                               ': ' +
-                                               book?.volumeInfo.subtitle
-                                             : book?.volumeInfo.title}
-                                       </a>
-                                    </Link>
-                                 </h3>
+                                 <div className='row-start-1 row-end-2 md:max-w-sm'>
+                                    <BookTitle
+                                       id={book.id}
+                                       title={book?.volumeInfo.title}
+                                       subtitle={book?.volumeInfo.subtitle}
+                                       className='text-lg lg:text-xl'
+                                    />
+                                 </div>
                                  <p className='row-start-2 w-full text-sm text-clip space-x-0.5 not-first:text-blue-700 not-first:hover:text-blue-500 not-first:dark:text-blue-400 '>
                                     <span className='dark:text-slate-50'>by{': '}</span>
                                     <SingleOrMultipleAuthors authors={book?.volumeInfo.authors} />

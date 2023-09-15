@@ -1,4 +1,7 @@
-import { Items } from '../../types/googleBookTypes';
+import { Pages, VolumeInfo } from '../../types/googleBookTypes';
+
+// CONSIDER: if there are more functions to run
+// consider converting this into a class
 
 const filterKeys = [
    'authors',
@@ -12,17 +15,26 @@ const filterKeys = [
    'publisher',
    'subtitle',
    'title',
-];
+] as const;
 
-function filterBookInfo<T extends Items<any>>(data: T) {
+export type FilterKeysType = (typeof filterKeys)[number];
+export type FilteredVolumeInfo = Pick<VolumeInfo, FilterKeysType>;
+
+function filterBookInfo<T extends Pages<any>>(data: T) {
    if (!data) {
       console.warn('Cannot convert undefined or null to object');
    }
 
-   const volumeInfo = data?.volumeInfo;
-   return Object.fromEntries(
-      Object.entries(volumeInfo).filter(([key]) => filterKeys.includes(key))
-   );
+   const volumeInfo = data?.items[0].volumeInfo || {};
+   const filtered: Partial<FilteredVolumeInfo> = {};
+
+   filterKeys.forEach((key) => {
+      if (key in volumeInfo) {
+         filtered[key] = volumeInfo[key] as any;
+      }
+   });
+
+   return filtered;
 }
 
 export default filterBookInfo;

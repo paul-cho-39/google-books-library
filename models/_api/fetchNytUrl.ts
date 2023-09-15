@@ -59,7 +59,7 @@ class NewYorkTimesApi {
          .filter(Boolean)
          .join('&');
       return this.appendApiKey(
-         `${NewYorkTimesApi.URL_BASE}${NewYorkTimesApi.BOOK_REVIEWS}?${queryParts}`
+         `${NewYorkTimesApi.URL_BASE}${NewYorkTimesApi.BOOK_REVIEWS}${queryParts}`
       );
    }
 

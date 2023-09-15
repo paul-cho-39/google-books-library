@@ -17,7 +17,7 @@ import {
    CategoriesQueries,
    InferServerSideProps,
 } from '../lib/types/serverPropsTypes';
-import useGetNytBestSeller, { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
+import { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
 import { getBookWidth, getContainerWidth } from '../utils/getBookWidth';
 
 type HoveredProps = {

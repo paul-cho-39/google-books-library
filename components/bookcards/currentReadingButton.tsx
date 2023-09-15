@@ -20,7 +20,7 @@ const AddPrimary = ({ book, userId }: ButtonProps) => {
    const deleteBody = { id, userId };
    const queryClient = useQueryClient();
    const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
-   const currentlyReading = dataBooks?.library?.currentlyReading;
+   const currentlyReading = dataBooks?.library?.currentlyReading || [];
 
    const { mutateAsync: mutateDelete } = useMutation(() =>
       bookApiUpdate('DELETE', userId, 'reading', deleteBody)

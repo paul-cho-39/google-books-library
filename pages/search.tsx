@@ -37,7 +37,7 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
 
    const totalItems = data?.pages?.[0]?.totalItems || 0;
 
-   if (!data || isError || totalItems < 1) {
+   if (!data || isError || ((!isLoading || !isFetching) && totalItems < 1)) {
       return <EmptyResult isError={isError} query={search} />;
    }
 

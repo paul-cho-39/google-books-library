@@ -3,6 +3,7 @@ import { Categories } from '../../constants/categories';
 import { capitalizeWords, formatCategoryName } from '../../utils/transformChar';
 import SingleOrMultipleAuthors from '../bookcover/authors';
 import BookDescription from '../bookcover/description';
+import BookTitle from '../bookcover/title';
 
 // TEST THIS ONE
 type BookSection = 'Best Seller' | 'Recommended';
@@ -55,17 +56,7 @@ export const CategoryDescription = ({
          <div className='w-full h-full flex flex-col px-2 bg-white dark:bg-slate-900'>
             <div className='flex flex-col'>
                <div className='w-full'>
-                  <h3 className='text-md font-medium py-1 text-slate-800 dark:text-slate-100'>
-                     <Link as={`/books/${id}`} href={'/books/[slug]/'} passHref>
-                        <a className='line-clamp-2 text-ellipsis'>
-                           <span className='sr-only'>
-                              {title}: {subtitle}
-                           </span>
-                           {subtitle ? title + ': ' + subtitle : title}
-                        </a>
-                     </Link>
-                  </h3>
-
+                  <BookTitle id={id} title={title} subtitle={subtitle} className='text-md' />
                   {/* another component for reusability */}
                   {/* in the props 'dmy' 'y' 'my' */}
                </div>

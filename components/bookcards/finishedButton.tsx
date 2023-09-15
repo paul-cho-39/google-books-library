@@ -20,7 +20,7 @@ const SaveAsFinishedButton = ({ book, userId }: ButtonProps) => {
 
    const queryClient = useQueryClient();
    const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
-   const finishedBooks = dataBooks?.library?.finished;
+   const finishedBooks = dataBooks?.library?.finished || [];
 
    const { mutateAsync: mutateUpdate, isLoading } = useMutation(
       queryKeys.finished,

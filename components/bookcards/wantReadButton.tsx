@@ -13,7 +13,7 @@ const WantToReadButton = ({ book, userId }: ButtonProps) => {
    const body = getBody(userId, book);
    const queryClient = useQueryClient();
    const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
-   const wantToRead = dataBooks?.library?.wantToRead;
+   const wantToRead = dataBooks?.library?.wantToRead || [];
 
    const { mutate, isLoading, isSuccess } = useMutation(
       queryKeys.want,
