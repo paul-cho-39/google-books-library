@@ -152,7 +152,7 @@ const ExpandedDescription = ({
 }) => (
    <p
       aria-live='polite'
-      className={classNames(`${textSize}, dark:text-slate-100`)}
+      className={classNames(`${textSize}, dark:text-slate-100 leading-relaxed`)}
       aria-label='Expanded book description'
    >
       {description}

@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useGetCategoriesQueries } from '../lib/hooks/useGetCategoryQuery';
-import HomeLayout from '../components/layout/page/home';
 import { CategoryDescription, CategoryDisplay } from '../components/home/categories';
 import BookImage from '../components/bookcover/bookImages';
 import { ImageLinks, Items, Pages } from '../lib/types/googleBookTypes';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../lib/hooks/useDisableBreakPoints';
 import googleApi from '../models/_api/fetchGoogleUrl';
-import { Categories, TopCateogry, categories, topCategories } from '../constants/categories';
+import { Categories, topCategories } from '../constants/categories';
 import createUniqueDataSets, { createUniqueData } from '../lib/helper/books/filterUniqueData';
 import { fetcher } from '../utils/fetchData';
 import nytApi, { CategoryQualifiers } from '../models/_api/fetchNytUrl';

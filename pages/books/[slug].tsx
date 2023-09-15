@@ -29,11 +29,12 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    // NOT only want useGetBookData but also data that is needed to fill
    // in here which are analytics of the book
 
+   console.log(data.description);
    // TODO: create a layout page
    return (
       <div className='mx-auto w-full min-h-screen overflow-y-auto dark:bg-slate-800'>
-         <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 lg:grid lg:grid-cols-5 lg:max-w-5xl'>
-            <div className='flex flex-col items-center justify-center lg:col-span-2'>
+         <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 lg:grid lg:grid-cols-3 lg:max-w-4xl'>
+            <div className='flex flex-col items-center justify-center lg:col-span-1 lg:gap-x-0'>
                <BookImage
                   bookImage={data.imageLinks}
                   title={data.title as string}
@@ -59,7 +60,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   />
                </div>
             </div>
-            <div className='flex flex-col justify-start gap-y-2 lg:col-span-3'>
+            <div className='flex flex-col justify-start px-2 gap-y-2 lg:col-span-2'>
                <BookTitle
                   id={id}
                   hasLink={false}
@@ -88,14 +89,14 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
          <div
             role='contentinfo'
             id='book-info'
-            className='my-4 w-full max-w-2xl py-2 lg:max-w-5xl lg:px-6 xl:px-12'
+            className='my-4 w-full max-w-2xl py-2 px-2 lg:max-w-5xl lg:px-6 xl:px-12 lg:my-12'
          >
-            <h3 className='text-xl lg:text-2xl underline underline-offset-1 text-slate-700 dark:text-slate-200'>
+            <h3 className='text-xl lg:text-2xl underline underline-offset-1 text-slate-700 dark:text-slate-200 lg:mb-4'>
                Descriptions
             </h3>
             <BookDescription
                description={data.description}
-               descriptionLimit={300}
+               descriptionLimit={250}
                textSize='text-lg'
                isLink={false}
                href={''}

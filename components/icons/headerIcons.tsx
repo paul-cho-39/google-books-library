@@ -115,11 +115,6 @@ const IconProviders: IconProps = {
       name: 'Categories',
       subsection: getNavigation(categories),
    },
-   // search: {
-   //    icon: MagnifyingGlass,
-   //    href: '/searchbooks',
-   //    name: 'Search',
-   // },
 };
 
 function getNavigation(categories: readonly string[]) {

@@ -29,11 +29,14 @@ const BookDetails = ({
       return !detail ? 'hidden' : '';
    };
 
+   const hoverStyle =
+      'cursor-pointer hover:opacity-80 hover:underline hover:decoration-orange-600 dark:hover:decoration-orange-300 transition-all duration-75';
+
    return (
       <div>
          <table
             aria-expanded={isExpanded}
-            className={classNames(isExpanded ? 'table-fixed w-full' : 'hidden', className)}
+            className={classNames(isExpanded ? 'table-fixed w-full my-4' : 'hidden', className)}
          >
             <tbody className='font-light text-slate-600 dark:text-slate-300'>
                <tr className={hideElement(page)}>
@@ -47,7 +50,11 @@ const BookDetails = ({
                <tr className={hideElement(categories)}>
                   <td>Categories</td>
                   <td>
-                     <Categories categories={categories} />
+                     <Categories
+                        hasLink={true}
+                        className={classNames(hoverStyle)}
+                        categories={categories}
+                     />
                   </td>
                </tr>
                <tr className={hideElement(publisher)}>
@@ -55,17 +62,25 @@ const BookDetails = ({
                   <td>{publisher}</td>
                </tr>
                <tr className={hideElement(infoLinks)}>
-                  <td>Additional Info</td>
-                  <td className='overflow-hidden text-ellipsis line-clamp-1'>{infoLinks}</td>
+                  <td scope='row'>Additional Info</td>
+                  <td
+                     role='link'
+                     aria-label='More information of the book'
+                     className='overflow-hidden text-ellipsis line-clamp-1'
+                  >
+                     <a className={classNames(hoverStyle)} href={infoLinks as string}>
+                        {infoLinks}
+                     </a>
+                  </td>
                </tr>
             </tbody>
          </table>
          <button
             onClick={expandDetails}
-            className='inline-flex items-center justify-center'
+            className={classNames(hoverStyle, 'inline-flex items-center justify-center ')}
             aria-label={!isExpanded ? 'expand for book details' : 'collapse book details'}
          >
-            <span className='text-md font-medium dark:text-slate-200'>Book details</span>
+            <span className='text-md font-medium mr-1 dark:text-slate-200'>Book details</span>
             <ChevronDownIcon
                className={classNames(
                   isExpanded ? 'rotate-180' : 'rotate-0',
