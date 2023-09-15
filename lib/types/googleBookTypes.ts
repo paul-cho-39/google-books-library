@@ -34,6 +34,7 @@ export type VolumeInfo = {
       thumbnail: string;
       smallThumbnail: string;
    };
+   infoLink?: string;
    language?: string;
    industryIdentifiers?: IndustryIdentifiers[];
 };

@@ -9,6 +9,7 @@ const filterKeys = [
    'description',
    'imageLinks',
    'industryIdentifiers',
+   'infoLink',
    'language',
    'pageCount',
    'publishedDate',

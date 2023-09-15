@@ -52,7 +52,7 @@ const BookDescription = ({
          </a>
       </Link>
    ) : (
-      <span
+      <button
          aria-expanded={toggleDescription}
          role='button'
          onClick={() => setToggleDescription(true)}
@@ -62,8 +62,9 @@ const BookDescription = ({
                : 'inline-flex font-semibold mt-2.5 transition-opacity dark:text-slate-200 duration-300 hover:opacity-50 hover:cursor-pointer'
          }`}
       >
-         See More <ArrowDownIcon height='25' width='20' />{' '}
-      </span>
+         <span>See More</span>
+         <ArrowDownIcon height='25' width='20' />{' '}
+      </button>
    );
 
    return (
@@ -88,7 +89,7 @@ const BookDescription = ({
                )}
             </>
          )}
-         <span
+         <button
             role='button'
             aria-expanded={toggleDescription}
             onClick={() => setToggleDescription(false)}
@@ -98,13 +99,17 @@ const BookDescription = ({
                   : 'flex font-semibold hover:cursor-pointer hover:opacity-50 dark:text-slate-200'
             } py-2`}
          >
-            See Less <ArrowUpIcon height='25' width='20' />
-         </span>
+            <span>See Less</span> <ArrowUpIcon height='25' width='20' />
+         </button>
       </>
    );
 };
 
-const NoDescription = () => <p className='text-lg dark:text-slate-100'>No description provided</p>;
+const NoDescription = () => (
+   <p aria-live='polite' className='text-lg dark:text-slate-100'>
+      No description provided
+   </p>
+);
 
 const CollapsedDescription = ({
    description,
@@ -122,6 +127,7 @@ const CollapsedDescription = ({
 }) => (
    <div className={classNames(isLink ? 'mb-0' : 'mb-5', 'relative')}>
       <p
+         aria-live='polite'
          aria-label='Collapsed book description'
          className={clsx(`${lineClamp} dark:text-slate-100 `, className)}
       >
@@ -145,6 +151,7 @@ const ExpandedDescription = ({
    textSize?: TextSize;
 }) => (
    <p
+      aria-live='polite'
       className={classNames(`${textSize}, dark:text-slate-100`)}
       aria-label='Expanded book description'
    >
