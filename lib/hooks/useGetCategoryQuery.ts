@@ -1,5 +1,10 @@
 import { UseQueryResult, useQueries, useQuery } from '@tanstack/react-query';
-import { Categories, TopCateogry, topCategories } from '../../constants/categories';
+import {
+   Categories,
+   TopCateogry,
+   serverSideCategories,
+   topCategories,
+} from '../../constants/categories';
 import queryKeys from '../queryKeys';
 import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import { Pages, Items } from '../types/googleBookTypes';
@@ -7,25 +12,31 @@ import { createUniqueData } from '../helper/books/filterUniqueData';
 import { fetcher } from '../../utils/fetchData';
 import { CategoriesQueries } from '../types/serverPropsTypes';
 
+interface CategoryQueryParams {
+   initialData: Pages<any>;
+   category: Categories;
+   sort: string;
+   meta?: MetaProps;
+}
+
 // also enable other book data as well here
 // using useQuery to pair with different categories as well
 // enable loader here(?) so whenever the data is loaded it will enable the data;
-export default function useGetCategoryQuery(category: Categories, meta?: MetaProps) {
-   // this is a test -- should be using useQueries
+export default function useGetCategoryQuery(
+   initialData: Pages<any>,
+   category: Categories,
+   meta?: MetaProps
+) {
    const data = useQuery<Pages<any>, unknown, Items<any>[]>(
-      queryKeys.categories(category as string),
+      queryKeys.categories(category as string, meta),
       () => {
-         const url = googleApi.getUrlBySubject(category);
-         if (meta) {
-            return fetcher(googleApi.addMeta(url, meta));
-         } else {
-            return fetcher(url);
-         }
+         const url = fetcher(googleApi.getUrlBySubject(category, meta));
+         return url;
       },
-      // TODO: may have to play around with properties
       {
          enabled: !!category,
          select: (data) => data.items,
+         initialData: initialData,
       }
    );
 
@@ -38,21 +49,33 @@ export default function useGetCategoryQuery(category: Categories, meta?: MetaPro
 
 // add an enabler here -- let's say something loaded then enable this to be loaded
 export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProps) {
-   const categoryKeys = topCategories.map((category, index) => {
+   const allCategories = [...serverSideCategories, ...topCategories];
+   const categoryKeys = allCategories.map((category, index) => {
       return {
-         queryKey: queryKeys.categories(category),
+         queryKey: queryKeys.categories(category, meta),
          queryFn: async () => {
-            if (!data) {
-               const url = googleApi.getUrlBySubject(category as Categories, {
-                  maxResultNumber: meta?.maxResultNumber ?? 15,
-                  pageIndex: meta?.maxResultNumber ?? 0,
-               });
-               const json = await fetcher(url);
-               const uniqueData = createUniqueData(json) as Items<any>[];
-               return uniqueData?.slice(0, 6);
+            const url = googleApi.getUrlBySubject(category as Categories, {
+               maxResultNumber: meta?.maxResultNumber ?? 15,
+               pageIndex: meta?.maxResultNumber ?? 0,
+            });
+            const json = await fetcher(url);
+            const uniqueData = createUniqueData(json) as Items<any>[];
+            return uniqueData.slice(0, 6);
+         },
+         initialData: () => {
+            const serverCategory = serverSideCategories.includes(category) ? category : null;
+            if (serverCategory) {
+               return data[serverCategory.toLowerCase()];
             }
          },
-         initialData: data[category.toLowerCase()],
+         // select: (data) => {
+         //    return allCategories.reduce((acc, category, index) => {
+         //       const queryData = categoryData[index];
+         //       acc[category.toLowerCase()] = queryData?.data;
+         //       return acc;
+         //    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
+         // },
+         // enabled: !!data,
       };
    });
 
@@ -61,7 +84,7 @@ export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProp
    });
 
    // create a function for this
-   const dataWithKeys = topCategories.reduce((acc, category, index) => {
+   const dataWithKeys = allCategories.reduce((acc, category, index) => {
       const queryData = categoryData[index];
       if (queryData.isError) {
          throw new Error(`${category} data failed to fetch.`);
@@ -73,3 +96,8 @@ export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProp
 
    return { dataWithKeys, categoryData };
 }
+
+// this will return filter for couple things:
+// 1) it will return category in a published date
+// 2) return the most popular items(?)
+// 3)

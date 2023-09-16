@@ -23,6 +23,7 @@ export interface Items<T extends Record<string, string>> {
 export type VolumeInfo = {
    authors: string[];
    averageRating?: number;
+   ratingsCount?: number;
    categories?: string[];
    description?: string;
    pageCount?: number;

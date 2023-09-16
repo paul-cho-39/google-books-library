@@ -36,13 +36,20 @@ export const categories = [
    'YOUNG ADULT FICTION',
 ] as const;
 
+export const serverSideCategories = ['HISTORY', 'SELF-HELP'];
+
+// testing here with top categories:
 export const topCategories = [
    'BIOGRAPHY & AUTOBIOGRAPHY',
    'BUSINESS & ECONOMICS',
-   'SELF-HELP',
-   'HISTORY',
+   'PHILOSOPHY',
+   'COMPUTERS',
+   'POETRY',
+   'RELIGION',
    'SCIENCE',
+   'TECHNOLOGY & ENGINEERING',
 ];
 
+export type ServerSideCategories = (typeof serverSideCategories)[keyof typeof serverSideCategories];
 export type Categories = (typeof categories)[keyof typeof categories];
 export type TopCateogry = (typeof topCategories)[number];

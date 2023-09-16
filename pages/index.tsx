@@ -1,12 +1,11 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { useGetCategoriesQueries } from '../lib/hooks/useGetCategoryQuery';
-import { CategoryDescription, CategoryDisplay } from '../components/home/categories';
-import BookImage from '../components/bookcover/bookImages';
+import { CategoryDisplay } from '../components/home/categories';
 import { ImageLinks, Items, Pages } from '../lib/types/googleBookTypes';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../lib/hooks/useDisableBreakPoints';
 import googleApi from '../models/_api/fetchGoogleUrl';
-import { Categories, topCategories } from '../constants/categories';
+import { Categories, serverSideCategories, topCategories } from '../constants/categories';
 import createUniqueDataSets, { createUniqueData } from '../lib/helper/books/filterUniqueData';
 import { fetcher } from '../utils/fetchData';
 import nytApi, { CategoryQualifiers } from '../models/_api/fetchNytUrl';
@@ -18,6 +17,7 @@ import {
 } from '../lib/types/serverPropsTypes';
 import { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
 import { getBookWidth, getContainerWidth } from '../utils/getBookWidth';
+import { BookImageSkeleton, DescriptionSkeleton } from '../components/loaders/bookcardsSkeleton';
 
 type HoveredProps = {
    id: string | null;
@@ -38,7 +38,7 @@ const changeDirection = (
    totalColumns: number,
    threshold: number = totalColumns
 ) => {
-   const offsetBy = 5;
+   const offsetBy = 8;
    const currentIndex =
       itemIndex === totalColumns || itemIndex % totalColumns === 0
          ? totalColumns
@@ -54,6 +54,9 @@ const changeDirection = (
 
    return { left: (PADDING + width) * currentIndex - offsetBy, right: 0 };
 };
+
+const CategoryDescription = lazy(() => import('../components/home/categoryDescription'));
+const BookImage = lazy(() => import('../components/bookcover/bookImages'));
 
 const Home = (props: InferServerSideProps) => {
    // combine the two data(?)
@@ -150,6 +153,10 @@ const Home = (props: InferServerSideProps) => {
       }
    }, [NUMBER_OF_COLS, isHovered]);
 
+   // images that are not server rendered are rendered later
+   const priorityCategories = ['FICTION', 'NONFICTION', ...serverSideCategories];
+   const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
+
    return (
       <>
          {Object.entries(combinedData).map(([key, value]) => (
@@ -167,32 +174,37 @@ const Home = (props: InferServerSideProps) => {
                               }}
                               className='absolute z-50 rounded-lg'
                            >
-                              <CategoryDescription
-                                 id={book.id}
-                                 title={book.volumeInfo.title}
-                                 subtitle={book.volumeInfo.subtitle}
-                                 authors={book.volumeInfo.authors}
-                                 description={book.volumeInfo.description}
-                              />
+                              <Suspense fallback={<DescriptionSkeleton />}>
+                                 <CategoryDescription
+                                    id={book.id}
+                                    title={book.volumeInfo.title}
+                                    subtitle={book.volumeInfo.subtitle}
+                                    authors={book.volumeInfo.authors}
+                                    description={book.volumeInfo.description}
+                                 />
+                              </Suspense>
                            </div>
                         );
                      return (
                         <>
-                           <BookImage
-                              key={book.id}
-                              bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                              width={getBookWidth(HEIGHT)}
-                              height={HEIGHT}
-                              forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
-                              title={book.volumeInfo.title}
-                              priority // set the priorioty a bit different for later indexes
-                              onMouseEnter={() => onMouseEnter(book.id, index)}
-                              onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e)}
-                              className={classNames(
-                                 // index % 2 ? 'bg-blue-100' : 'bg-red-100',
-                                 'lg:col-span-1 px-1 lg:px-0 cursor-pointer'
-                              )}
-                           />
+                           <Suspense
+                              fallback={
+                                 <BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />
+                              }
+                           >
+                              <BookImage
+                                 key={book.id}
+                                 bookImage={book.volumeInfo.imageLinks as ImageLinks}
+                                 width={getBookWidth(HEIGHT)}
+                                 height={HEIGHT}
+                                 forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
+                                 title={book.volumeInfo.title}
+                                 priority={isPriority(key)}
+                                 onMouseEnter={() => onMouseEnter(book.id, index)}
+                                 onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e)}
+                                 className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
+                              />
+                           </Suspense>
                            {hoveredEl}
                         </>
                      );
@@ -205,6 +217,9 @@ const Home = (props: InferServerSideProps) => {
 
 export default Home;
 
+// retrieve the first results in the beginning
+// then pass the rest(?);
+
 export const getServerSideProps = async () => {
    const data: CategoriesQueries = {};
    const bestSellerData: CategoriesNytQueries = {};
@@ -212,7 +227,7 @@ export const getServerSideProps = async () => {
    // the caveat here is that this is not full proof of parsing duplicated items
    // however given that it will only have six books it will be highly unlikely for
    // having mulitple duplicated books
-   for (let category of topCategories) {
+   for (let category of serverSideCategories) {
       category = category.toLocaleLowerCase();
       const url = googleApi.getUrlBySubject(category as Categories, {
          maxResultNumber: 15,
@@ -250,38 +265,3 @@ export const getServerSideProps = async () => {
       },
    };
 };
-
-// using getServerSideProps to access google api
-// and store it in the client side because the data will
-// be static(?) and will retrieve by the results to retrieve almost all of the queries
-// and prefetch the data
-
-// export const getServerSideProps = async (context: any) => {
-//    const getUser = await getSession(context);
-//    const userId = getUserId(getUser as object, 'id');
-//    // const bookGetter = new BookGetter(userId);
-//    // const data = await bookGetter.getCurrentOrPrimary();
-
-//    const getter = new ReadingGetter(userId);
-//    const data = await getter.getEditPrimaryData();
-//    return {
-//       props: {
-//          userId: userId,
-//          data: data,
-//       },
-//    };
-// };
-
-// TESTING
-// if (!data) {
-//    return (
-//       // "track your data here" w/ link to the book page
-//       <Link as={`/profile/${userId}/searchbook`} href={`/profile/[id]/searchbook`}></Link>
-//    );
-// }
-
-// here even for some categoires can prefetch and cache it no?
-// and use initialData defined by its queryKeys to work with all of this
-
-// this wont happen with recommended lists or best sellers(?)
-// see NYT bestsellers lists for more

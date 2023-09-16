@@ -1,18 +1,19 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import googleApi from '../../models/_api/fetchGoogleUrl';
+import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import queryKeys from '../queryKeys';
 import { fetcher } from '../../utils/fetchData';
 
 interface FetcherProps {
    search: string;
-   maxResult?: number;
+   meta: (page: number) => MetaProps;
+   // meta?: MetaProps;
 }
 
-export default function useInfiniteFetcher({ search, maxResult = 15 }: FetcherProps) {
+export default function useInfiniteFetcher({ search, meta }: FetcherProps) {
    const { data, isLoading, isFetching, isError, isSuccess, hasNextPage, fetchNextPage } =
       useInfiniteQuery(
          queryKeys.bookSearch(search),
-         ({ pageParam = 0 }) => fetcher(googleApi.getUrlByQuery(search, maxResult, pageParam)),
+         ({ pageParam = 0 as number }) => fetcher(googleApi.getUrlByQuery(search, meta(pageParam))),
          {
             getNextPageParam: (lastPage, allPages) => {
                // // google book api ordering is off

@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import { Items } from '../lib/types/googleBookTypes';
 import { CustomSession } from '../lib/types/serverPropsTypes';
 import EmptyResult from '../components/bookcards/emptyResult';
+import { MetaProps } from '../models/_api/fetchGoogleUrl';
 
 const Cards = lazy(() => import('../components/bookcards/cards'));
 
@@ -19,8 +20,15 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    const search = router.query.q as string;
    const pageLoader = useRef<HTMLDivElement>(null);
 
+   const meta = (page: number): MetaProps => {
+      return {
+         maxResultNumber: 15,
+         pageIndex: page,
+      };
+   };
+
    const { data, isLoading, isFetching, isError, isSuccess, hasNextPage, fetchNextPage } =
-      useInfiniteFetcher({ search });
+      useInfiniteFetcher({ search, meta });
 
    useInteractionObserver({
       enabled: !!hasNextPage,

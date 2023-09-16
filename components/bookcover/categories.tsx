@@ -12,14 +12,6 @@ const Categories = ({ categories, hasLink = false, className }: CategoriesProps)
 
    if (!filteredCategories) return <></>;
    return (
-      // <ul role='listitem' className='flex flex-row flex-wrap '>
-      //    {filteredCategories &&
-      //       filteredCategories.map((category, index) => (
-      //          <li className={className} key={index}>
-      //             {category}
-      //          </li>
-      //       ))}
-      // </ul>
       <ul role='list' className='flex flex-row flex-wrap '>
          {filteredCategories.map((category, index) => (
             <li className={className} key={index}>

@@ -30,7 +30,7 @@ const BookDetails = ({
    };
 
    const hoverStyle =
-      'cursor-pointer hover:opacity-80 hover:underline hover:decoration-orange-600 dark:hover:decoration-orange-300 transition-all duration-75';
+      'cursor-pointer hover:opacity-80 hover:underline hover:underline-offset-1 hover:decoration-orange-600 dark:hover:decoration-orange-300 transition-all duration-75';
 
    return (
       <div>

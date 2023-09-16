@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Items } from '../../lib/types/googleBookTypes';
 
 const BookSearchSkeleton: React.FunctionComponent<{
@@ -37,7 +38,48 @@ const BookSearchSkeleton: React.FunctionComponent<{
 };
 
 export const ButtonSkeleton = () => {
-   return <div className='h-10 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4'></div>;
+   return (
+      <div
+         aria-label='skeleton loader'
+         className='animate-pulse h-10 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4'
+      ></div>
+   );
+};
+
+export const DescriptionSkeleton = () => {
+   return (
+      <div
+         aria-label='skeleton loader'
+         className='mx-auto w-full animate-pulse flex flex-col gap-y-2'
+      >
+         <div className='bg-gray-200 h-6 rounded-full dark:bg-gray-700 w-[20%]'></div>
+         <div className='bg-gray-200 h-6 rounded-full dark:bg-gray-700 w-[75%]'></div>
+         <div className='bg-gray-200 h-6 rounded-full dark:bg-gray-700 w-full'></div>
+      </div>
+   );
+};
+
+export const BookImageSkeleton = ({
+   height,
+   getWidth,
+   className,
+}: {
+   height: number;
+   getWidth: (height: number, ratio?: number) => number;
+   className?: string;
+}) => {
+   const defaultStyle =
+      'w-full inline-flex items-center justify-center divide-y-2 mb-8 animate-pulse bg-gray-200 dark:bg-gray-700';
+   return (
+      <div
+         style={{
+            height: height,
+            width: getWidth(height),
+         }}
+         aria-label='skeleton loader'
+         className={classNames(defaultStyle, className)}
+      ></div>
+   );
 };
 
 export default BookSearchSkeleton;

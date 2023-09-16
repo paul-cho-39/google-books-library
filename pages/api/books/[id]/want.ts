@@ -1,79 +1,68 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Library } from "../../../../lib/prisma/class/library";
-import WantToReadCreator from "../../../../lib/prisma/class/create/want";
-import prisma from "../../../../lib/prisma";
+import type { NextApiRequest, NextApiResponse } from 'next';
+import prisma from '../../../../lib/prisma';
+import WantToReadCreator from '../../../../models/server/prisma/class/create/want';
+import { Library } from '../../../../models/server/prisma/class/library';
 
-export default async function handle(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method === "POST") {
-    const {
-      userId,
-      imageLinks,
-      industryIdentifiers,
-      authors,
-      categories,
-      ...data
-    } = req.body;
-    // should there be primary counts?
+export default async function handle(req: NextApiRequest, res: NextApiResponse) {
+   if (req.method === 'POST') {
+      const { userId, imageLinks, industryIdentifiers, authors, categories, ...data } = req.body;
+      // should there be primary counts?
 
-    const want = new WantToReadCreator(
-      data,
-      categories,
-      authors,
-      imageLinks,
-      industryIdentifiers,
-      userId
-    );
-    const isLibraryNotInWant = await prisma.book.findFirst({
-      where: {
-        AND: [
-          {
-            id: data.id,
-            userId: userId,
-          },
-          {
-            NOT: [
-              {
-                want: { bookId: data.id },
-              },
+      const want = new WantToReadCreator(
+         data,
+         categories,
+         authors,
+         imageLinks,
+         industryIdentifiers,
+         userId
+      );
+      const isLibraryNotInWant = await prisma.book.findFirst({
+         where: {
+            AND: [
+               {
+                  id: data.id,
+                  userId: userId,
+               },
+               {
+                  NOT: [
+                     {
+                        want: { bookId: data.id },
+                     },
+                  ],
+               },
             ],
-          },
-        ],
-      },
-      select: { id: true },
-    });
-    console.log("Reading or Finished?", isLibraryNotInWant);
+         },
+         select: { id: true },
+      });
+      console.log('Reading or Finished?', isLibraryNotInWant);
 
-    try {
-      // await updateBook.createOrUpdateToWantToRead();
+      try {
+         // await updateBook.createOrUpdateToWantToRead();
 
-      if (isLibraryNotInWant) {
-        await want.updateWant().then(async () => await want.createWant());
-      } else {
-        await want.createWant();
+         if (isLibraryNotInWant) {
+            await want.updateWant().then(async () => await want.createWant());
+         } else {
+            await want.createWant();
+         }
+         return res.status(201).json({ success: true });
+      } catch (err) {
+         return res.end(err);
       }
-      return res.status(201).json({ success: true });
-    } catch (err) {
-      return res.end(err);
-    }
-  }
-  if (req.method === "DELETE") {
-    
-  }
-  if (req.method === "PATCH") {
-    const { id, userId } = req.body;
-    const library = new Library(userId, id);
-    const libraryId = await library.uniqueIdToString();
-    const bookPatcher = new BookPatcher(libraryId);
-    try {
-      await bookPatcher.removeWantToRead();
-      return res.status(204);
-    } catch (err) {
-      return res
-        .status(400)
-        .end({ success: false, message: "Unable to modify the primary book" });
-    }
-  }
+   }
+   if (req.method === 'DELETE') {
+   }
+   // if (req.method === "PATCH") {
+   //   const { id, userId } = req.body;
+   //   const library = new Library(userId, id);
+   //   const libraryId = await library.uniqueIdToString();
+   //   const bookPatcher = new BookPatcher(libraryId);
+   //   try {
+   //     await bookPatcher.removeWantToRead();
+   //     return res.status(204);
+   //   } catch (err) {
+   //     return res
+   //       .status(400)
+   //       .end({ success: false, message: "Unable to modify the primary book" });
+   //   }
+   // }
 }

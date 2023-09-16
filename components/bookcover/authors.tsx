@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { transformStrToArray } from '../../utils/transformChar';
+import classNames from 'classnames';
+import { Fragment } from 'react';
 
 type Authors = string[];
 
@@ -37,21 +39,30 @@ const SingleOrMultipleAuthors = <T extends string[] | string>({
    );
 };
 
-const MultipleAuthors = ({ authors, indexLimit = 3, textLimit }: AuthorProps<string[]>) => (
-   <>
-      {authors.map((author, index) => (
-         <Link key={index} href={`/author/${author}`} passHref>
-            <a
-               className={`after:content-[', '] last-of-type:after:content-[''] ${
-                  index >= indexLimit ? 'hidden' : ''
-               }`}
-            >
-               {author}
-            </a>
-         </Link>
-      ))}
-   </>
-);
+// include hovered or not?
+const MultipleAuthors = ({ authors, indexLimit = 3, textLimit }: AuthorProps<string[]>) => {
+   const numOfAuthors = authors.length;
+   return (
+      <>
+         {authors.slice(0, indexLimit).map((author, index) => (
+            <Fragment key={index}>
+               <Link href={`/author/${author}`} passHref>
+                  <a
+                     className={classNames(
+                        index >= indexLimit ? 'hidden' : '',
+
+                        'hover:text-opacity-80'
+                     )}
+                  >
+                     {author}
+                  </a>
+               </Link>
+               {index < Math.min(numOfAuthors, indexLimit) - 1 ? ', ' : ''}
+            </Fragment>
+         ))}
+      </>
+   );
+};
 
 const SingleAuthor = ({ authors, textLimit }: Exclude<AuthorProps<string[]>, 'indexLimit'>) => {
    const authorToString = authors.join(', ');

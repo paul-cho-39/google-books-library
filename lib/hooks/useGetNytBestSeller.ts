@@ -83,10 +83,8 @@ export function useGetNytBestSellers({ initialData, category, date }: NytBookMul
       return {
          queryKey: queryKeys.nytBestSellers(key as CategoryQualifiers['type'], date as string),
          queryFn: () => {
-            if (!initialData[key]) {
-               const res = nytApi.getUrlByCategory(category, date);
-               return res;
-            }
+            const res = nytApi.getUrlByCategory(category, date);
+            return res;
          },
          initialData: initialData[key],
       };

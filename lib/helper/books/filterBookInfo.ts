@@ -10,6 +10,8 @@ const filterKeys = [
    'imageLinks',
    'industryIdentifiers',
    'infoLink',
+   'averageRating',
+   'ratingsCount',
    'language',
    'pageCount',
    'publishedDate',

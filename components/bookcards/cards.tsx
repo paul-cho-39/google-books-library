@@ -8,6 +8,7 @@ import { getBookWidth } from '../../utils/getBookWidth';
 import BookImage from '../bookcover/bookImages';
 import SignInRequiredButton from '../Login/requireUser';
 import BookTitle from '../bookcover/title';
+import { Divider } from '../layout/dividers';
 
 const HEIGHT = 125;
 
@@ -27,9 +28,7 @@ const Cards: React.FunctionComponent<{
    return (
       <div className=''>
          <TotalResults result={totalItems} />
-         <div className='relative flex justify-center'>
-            <div className='absolute border-t-[1.5px] border-gray-200 w-full' />
-         </div>
+         <Divider />
          <div className='mx-auto w-full lg:max-w-2xl'>
             <ul
                aria-label='lists of book result'

@@ -16,40 +16,37 @@ interface PublishedDate {
 export interface MetaProps {
    maxResultNumber: number;
    pageIndex: number;
+   byNewest?: boolean;
 }
 
 class GoogleBookApi {
    private static URL_BASE = 'https://www.googleapis.com/books/v1/volumes?q=';
    private static KEY = process.env.NEXT_PUBLIC_GOOGLE_KEY || '';
 
-   public getCompleteUrlWithQualifiers(
-      qualifiers: QueryQualifiers,
-      maxResultNumber: number = 15,
-      pageIndex: number = 0
-   ) {
+   public getCompleteUrlWithQualifiers(qualifiers: QueryQualifiers, meta?: MetaProps) {
       const query = this.constructMultipleQueries(qualifiers);
       const url = `${GoogleBookApi.URL_BASE}${query}`;
-      return this.appendCommonParams(url, maxResultNumber, pageIndex);
+      return this.appender(url, meta);
    }
 
-   public getUrlByQuery(query: string, maxResultNumber?: number, pageIndex?: number) {
+   public getUrlByQuery(query: string, meta?: MetaProps) {
       const url = `${GoogleBookApi.URL_BASE}+${query}`;
-      return this.appendCommonParams(url, maxResultNumber, pageIndex);
+      return this.appender(url, meta);
    }
 
-   public getUrlByAuthor(author: string) {
+   public getUrlByAuthor(author: string, meta?: MetaProps) {
       const url = `${GoogleBookApi.URL_BASE}+inauthor:${author}`;
-      return this.appendCommonParams(url);
+      return this.appender(url, meta);
    }
 
-   public getUrlByIsbn(isbn: string, maxResultNumber?: number) {
+   public getUrlByIsbn(isbn: string) {
       const url = `${GoogleBookApi.URL_BASE}isbn:${isbn}`;
-      return this.appendCommonParams(url, maxResultNumber);
+      return this.appender(url);
    }
 
    public getUrlBySubject(subject: Categories, meta?: MetaProps) {
       const url = `${GoogleBookApi.URL_BASE}subject:${subject}`;
-      return this.appendCommonParams(url, meta?.maxResultNumber, meta?.pageIndex);
+      return this.appender(url, meta);
    }
 
    // use individual books to get higher quality images
@@ -57,36 +54,39 @@ class GoogleBookApi {
    public getUrlByBookId(id: string) {
       return GoogleBookApi.URL_BASE + id;
    }
-   public addMeta(url: string, meta: MetaProps) {
-      this.checkUrl(url);
-      return this.appendCommonParams(url, meta.maxResultNumber, meta.pageIndex);
-   }
-   public addPublishedDate(
-      url: string,
-      publishedDate: PublishedDate,
-      maxResultNumber?: number,
-      pageIndex?: number
-   ) {
+   public addPublishedDate(url: string, publishedDate: PublishedDate, meta?: MetaProps) {
       const date = this.isPublishedDate(publishedDate);
       const query = `+publishedDate:${date}`;
       this.checkUrl(url);
       const newUrl = url + query;
-      return this.appendCommonParams(newUrl, maxResultNumber, pageIndex);
+      return this.appender(newUrl, meta);
    }
    private appendCommonParams(
       url: string,
       maxResultNumber: number = 15,
       pageIndex: number = 0,
-      key: string = GoogleBookApi.KEY
+      byNewest?: boolean
    ) {
+      const max = maxResultNumber > 40 ? 40 : maxResultNumber;
+      const orderBy = byNewest ? 'orderBy=newest' : 'orderBy=relevance';
+
+      return `${url}&startIndex=${pageIndex}&maxResults=${max}&${orderBy}&printType=books&`;
+   }
+   private appendKeys(url: string, key: string = GoogleBookApi.KEY) {
       if (key == '') {
          throw console.warn(
             'The current key does not contain any key. Go to google developer tool to acquire one'
          );
       }
-      return `${url}&startIndex=${pageIndex}&maxResults=${maxResultNumber}&orderBy=relevance&printType=books&key=${key}`;
+      return `${url}key=${key}`;
    }
-
+   private appender(url: string, meta?: MetaProps) {
+      return !meta
+         ? this.appendKeys(url)
+         : this.appendKeys(
+              this.appendCommonParams(url, meta.maxResultNumber, meta.pageIndex, meta.byNewest)
+           );
+   }
    private isPublishedDate(key: PublishedDate) {
       const { start, end } = key;
       if (start && end) {
