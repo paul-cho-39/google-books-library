@@ -5,13 +5,10 @@ interface QueryQualifiers {
    intitle?: string;
    isbn?: string;
    subject?: Categories;
-   publishedDate?: PublishedDate;
+   filter?: FilterParams;
 }
 
-interface PublishedDate {
-   start?: string;
-   end?: string;
-}
+export type FilterParams = 'partial' | 'full' | 'free-ebooks' | 'paid-ebooks' | 'ebooks';
 
 export interface MetaProps {
    maxResultNumber: number;
@@ -21,6 +18,7 @@ export interface MetaProps {
 
 class GoogleBookApi {
    private static URL_BASE = 'https://www.googleapis.com/books/v1/volumes?q=';
+   private static URL_BY_ID = 'https://www.googleapis.com/books/v1/volumes/';
    private static KEY = process.env.NEXT_PUBLIC_GOOGLE_KEY || '';
 
    public getCompleteUrlWithQualifiers(qualifiers: QueryQualifiers, meta?: MetaProps) {
@@ -52,14 +50,7 @@ class GoogleBookApi {
    // use individual books to get higher quality images
    // WARNING: some higher quality images do not match the book
    public getUrlByBookId(id: string) {
-      return GoogleBookApi.URL_BASE + id;
-   }
-   public addPublishedDate(url: string, publishedDate: PublishedDate, meta?: MetaProps) {
-      const date = this.isPublishedDate(publishedDate);
-      const query = `+publishedDate:${date}`;
-      this.checkUrl(url);
-      const newUrl = url + query;
-      return this.appender(newUrl, meta);
+      return GoogleBookApi.URL_BY_ID + id;
    }
    private appendCommonParams(
       url: string,
@@ -87,23 +78,13 @@ class GoogleBookApi {
               this.appendCommonParams(url, meta.maxResultNumber, meta.pageIndex, meta.byNewest)
            );
    }
-   private isPublishedDate(key: PublishedDate) {
-      const { start, end } = key;
-      if (start && end) {
-         return `${start}-${end}`;
-      } else if (start) {
-         return `>${start}`;
-      } else if (end) {
-         return `<${end}`;
-      }
-
-      return '';
-   }
-
    private constructMultipleQueries(qualifiers: QueryQualifiers) {
       return Object.entries(qualifiers)
+         .filter(([key, value]) => key && value)
          .map(([key, value]) => {
-            value = key === 'publishedDate' ? this.isPublishedDate(value) : value;
+            if (key === 'filter') {
+               return `&filter=${value}`;
+            }
             return `+${key}:${value}`;
          })
          .join('');

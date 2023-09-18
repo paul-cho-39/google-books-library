@@ -1,3 +1,5 @@
+import { FilterParams } from '../../models/_api/fetchGoogleUrl';
+
 export interface Data<T extends Record<string, string>> {
    pageParams?: unknown[] | [];
    pages: Array<Pages<T>>;
@@ -70,5 +72,10 @@ export type ImageLinks = {
    smallThumbnail?: string;
    thumbnail?: string;
 };
+
+export interface FilterProps {
+   filterBy: 'title' | 'author' | 'isbn';
+   filterBookParams?: FilterParams[];
+}
 
 export type ImageLinksPairs = Pick<ImageLinks, 'thumbnail' | 'smallThumbnail'>;

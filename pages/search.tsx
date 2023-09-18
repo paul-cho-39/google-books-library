@@ -6,10 +6,11 @@ import useInteractionObserver from '../lib/hooks/useIntersectionObserver';
 import useInfiniteFetcher from '../lib/hooks/useInfiniteFetcher';
 import BookSearchSkeleton from '../components/loaders/bookcardsSkeleton';
 import { useRouter } from 'next/router';
-import { Items } from '../lib/types/googleBookTypes';
+import { FilterProps, Items } from '../lib/types/googleBookTypes';
 import { CustomSession } from '../lib/types/serverPropsTypes';
 import EmptyResult from '../components/bookcards/emptyResult';
 import { MetaProps } from '../models/_api/fetchGoogleUrl';
+import FilterInput from '../components/inputs/filter';
 
 const Cards = lazy(() => import('../components/bookcards/cards'));
 
@@ -18,17 +19,23 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    // required when selecting the books later to connect w/ api route
    const router = useRouter();
    const search = router.query.q as string;
+
    const pageLoader = useRef<HTMLDivElement>(null);
+
+   const [filter, setFilter] = useState<FilterProps>({
+      filterBy: 'title',
+   });
 
    const meta = (page: number): MetaProps => {
       return {
          maxResultNumber: 15,
          pageIndex: page,
+         byNewest: false,
       };
    };
 
    const { data, isLoading, isFetching, isError, isSuccess, hasNextPage, fetchNextPage } =
-      useInfiniteFetcher({ search, meta });
+      useInfiniteFetcher({ search, filter, meta });
 
    useInteractionObserver({
       enabled: !!hasNextPage,
@@ -45,13 +52,19 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
 
    const totalItems = data?.pages?.[0]?.totalItems || 0;
 
+   if (isLoading || isFetching) {
+      console.log('it is fetching');
+   }
+
    if (!data || isError || ((!isLoading || !isFetching) && totalItems < 1)) {
       return <EmptyResult isError={isError} query={search} />;
    }
 
+   // TODO: error boundary here;
    return (
       <div className='mx-auto px-4 lg:px-16 lg:py-2 dark:slate-800'>
          <div>
+            <FilterInput filter={filter} setFilter={setFilter} />
             <div>
                {isFetching && isLoading ? (
                   <BookSearchSkeleton books={5} />

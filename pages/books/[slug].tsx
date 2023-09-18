@@ -29,8 +29,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    // NOT only want useGetBookData but also data that is needed to fill
    // in here which are analytics of the book
 
-   console.log(data.description);
-   // TODO: create a layout page
+   // TODO: create an error boundary page
    return (
       <div className='mx-auto w-full min-h-screen overflow-y-auto dark:bg-slate-800'>
          <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 lg:grid lg:grid-cols-3 lg:max-w-4xl'>
@@ -48,15 +47,13 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                      type='finished'
                      userId={userId}
                      signedInActiveButton={
-                        <SaveAsFinishedButton book={book.items[0]} userId={userId as string} />
+                        <SaveAsFinishedButton book={book} userId={userId as string} />
                      }
                   />
                   <SignInRequiredButton
                      type='popover'
                      userId={userId}
-                     signedInActiveButton={
-                        <PopOverButtons book={book.items[0]} userId={userId as string} />
-                     }
+                     signedInActiveButton={<PopOverButtons book={book} userId={userId as string} />}
                   />
                </div>
             </div>
@@ -108,7 +105,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
 
 export const getServerSideProps: GetServerSideProps<{
    // data: Partial<FilteredVolumeInfo>;
-   book: Pages<any>;
+   book: Items<any>;
    id: string;
    userId: string | null;
 }> = async (context: any) => {
