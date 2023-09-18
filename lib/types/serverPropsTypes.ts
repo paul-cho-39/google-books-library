@@ -1,5 +1,5 @@
 import { InferGetServerSidePropsType } from 'next';
-import { TopCateogry } from '../../constants/categories';
+import { Categories, TopCateogry } from '../../constants/categories';
 import { Items, Pages } from './googleBookTypes';
 import { BestSellerData } from './nytBookTypes';
 import { getServerSideProps } from '../../pages';
@@ -12,8 +12,8 @@ type CombinedData = {
 } & Items<any>;
 
 // home/index.ts - front page
-export type CategoriesDataParams = Record<TopCateogry, Pages<any> | null>;
-export type CategoriesQueries = Record<TopCateogry, CombinedData[] | null>;
+export type CategoriesDataParams = Record<string, Pages<any> | null>;
+export type CategoriesQueries = Record<string, CombinedData[] | null>;
 export type CategoriesNytQueries = Record<string, BestSellerData>;
 
 export interface CustomSession extends DefaultSession {

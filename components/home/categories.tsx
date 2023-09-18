@@ -8,6 +8,7 @@ type CategoryHeaderParams = BookSection | Categories;
 interface CategoryDisplayProps {
    category: CategoryHeaderParams;
    children: React.ReactNode;
+   // forwardRef?: (el: HTMLDivElement) => void;
    forwardRef?: React.RefObject<HTMLDivElement>;
 }
 
@@ -47,8 +48,8 @@ const ShowMoreCategory = ({ category }: { category: CategoryHeaderParams }) => {
          href={'/categories/[slug]'}
          passHref
       >
-         <a className='cursor-pointer inline-flex text-sm hover:opacity-80 hover:underline hover:underline-offset-1 hover:decoration-orange-600 dark:hover:decoration-orange-300 transition-all duration-75'>
-            <span className='dark:text-slate-100 '>
+         <a className='cursor-pointer inline-flex text-sm hover:opacity-80 hover:underline hover:underline-offset-1 hover:decoration-orange-600 dark:hover:decoration-orange-300 transition-none'>
+            <span className='dark:text-slate-100'>
                More {capitalizeWords(category as string)} books...
             </span>
          </a>

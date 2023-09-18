@@ -45,7 +45,7 @@ const BookDescription = ({
       <Link {...props}>
          <a
             aria-label='See more about this book'
-            className='inline-flex items-center justify-end px-2 hover:translate-x-1 hover:text-slate-300 transition-all duration-200'
+            className='flex items-center justify-end px-2 hover:translate-x-1 hover:text-slate-300 transition-all duration-200'
          >
             <span className='text-blue-500 text-xs'>See More</span>{' '}
             <ArrowRightIcon color='rgb(59, 130, 246)' height='10' width='10' />{' '}
@@ -59,7 +59,7 @@ const BookDescription = ({
          className={`${
             minimumDescriptionChar && minimumDescriptionChar < descriptionLimit
                ? 'hidden'
-               : 'inline-flex font-semibold mt-2.5 transition-opacity dark:text-slate-200 duration-300 hover:opacity-50 hover:cursor-pointer'
+               : 'inline-flex font-semibold mt-2.5 transition-opacity dark:text-slate-200 duration-100 hover:opacity-50 hover:cursor-pointer'
          }`}
       >
          <span>See More</span>
@@ -82,7 +82,7 @@ const BookDescription = ({
                         isLink={isLink}
                         className={className}
                      />
-                     <div className='flex items-center justify-center'>{SeeMoreElement}</div>
+                     {SeeMoreElement}
                   </>
                ) : (
                   <ExpandedDescription description={filteredDescription.toString()} />

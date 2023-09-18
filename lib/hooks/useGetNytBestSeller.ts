@@ -110,8 +110,6 @@ export function useGetNytBestSellers({ initialData, category, date }: NytBookMul
    return { data, dataWithKeys, transformedData };
 }
 
-// either change the nyt data structure and rearrange them so its more like the google data
-// or adding it into a component (having it as a component may be better(?))
 function transformData<T extends CategoriesNytQueries>(data: T) {
    const adapted: CategoriesQueries = {};
    for (const [key, value] of Object.entries(data)) {

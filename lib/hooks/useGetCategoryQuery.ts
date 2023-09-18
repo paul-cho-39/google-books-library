@@ -1,4 +1,10 @@
-import { UseQueryResult, useQueries, useQuery } from '@tanstack/react-query';
+import {
+   QueryClient,
+   UseQueryResult,
+   useQueries,
+   useQuery,
+   useQueryClient,
+} from '@tanstack/react-query';
 import {
    Categories,
    TopCateogry,
@@ -11,11 +17,11 @@ import { Pages, Items } from '../types/googleBookTypes';
 import { createUniqueData } from '../helper/books/filterUniqueData';
 import { fetcher } from '../../utils/fetchData';
 import { CategoriesQueries } from '../types/serverPropsTypes';
+import { useEffect, useRef, useState } from 'react';
 
 interface CategoryQueryParams {
-   initialData: Pages<any>;
-   category: Categories;
-   sort: string;
+   initialData: CategoriesQueries;
+   loadItems: number;
    meta?: MetaProps;
 }
 
@@ -27,6 +33,11 @@ export default function useGetCategoryQuery(
    category: Categories,
    meta?: MetaProps
 ) {
+   const queryClient = new QueryClient();
+   queryClient.prefetchQuery({
+      queryKey: queryKeys.categories(category as string, meta),
+      queryFn: () => fetcher(googleApi.getUrlBySubject(category, meta)),
+   });
    const data = useQuery<Pages<any>, unknown, Items<any>[]>(
       queryKeys.categories(category as string, meta),
       () => {
@@ -37,6 +48,7 @@ export default function useGetCategoryQuery(
          enabled: !!category,
          select: (data) => data.items,
          initialData: initialData,
+         // onSuccess: (data) =>
       }
    );
 
@@ -47,10 +59,23 @@ export default function useGetCategoryQuery(
    return data;
 }
 
-// add an enabler here -- let's say something loaded then enable this to be loaded
-export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProps) {
+// what happens when the page is refreshed?
+// if the page is refreshed the data has to be fetched again?
+// does this call for zustand(?) so that it stores the info
+// inside the cache?
+const LOAD_ITEMS = 4;
+export function useGetCategoriesQueries({ initialData, loadItems, meta }: CategoryQueryParams) {
    const allCategories = [...serverSideCategories, ...topCategories];
-   const categoryKeys = allCategories.map((category, index) => {
+
+   const updatedCategories = allCategories.slice(0, loadItems + LOAD_ITEMS);
+   console.log('WTF IS HAPPENING AGAIN: ', updatedCategories);
+
+   const queryClient = useQueryClient();
+   const existingData = queryClient.getQueryData(
+      queryKeys.allGoogleCategories
+   ) as CategoriesQueries;
+
+   const categoryKeys = updatedCategories.map((category, index) => {
       return {
          queryKey: queryKeys.categories(category, meta),
          queryFn: async () => {
@@ -60,22 +85,25 @@ export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProp
             });
             const json = await fetcher(url);
             const uniqueData = createUniqueData(json) as Items<any>[];
+            // slicing should be later when the data is returned
+            // so that the data is cached for a while
             return uniqueData.slice(0, 6);
          },
          initialData: () => {
             const serverCategory = serverSideCategories.includes(category) ? category : null;
             if (serverCategory) {
-               return data[serverCategory.toLowerCase()];
+               return initialData[serverCategory.toLowerCase()];
             }
          },
-         // select: (data) => {
-         //    return allCategories.reduce((acc, category, index) => {
-         //       const queryData = categoryData[index];
-         //       acc[category.toLowerCase()] = queryData?.data;
-         //       return acc;
-         //    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
+         // onSuccess: (data: Items<any>[]) => {
+         //    console.log('not working again');
+         //    queryClient.setQueryData(queryKeys.allGoogleCategories, {
+         //       ...existingData,
+         //       [category.toLocaleLowerCase()]: [...(existingData[category] || []), ...data],
+         //    });
          // },
-         // enabled: !!data,
+         // enabled: !!enabled,
+         // suspense: true,
       };
    });
 
@@ -83,8 +111,7 @@ export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProp
       queries: [...categoryKeys, {}],
    });
 
-   // create a function for this
-   const dataWithKeys = allCategories.reduce((acc, category, index) => {
+   const dataWithKeys = updatedCategories.reduce((acc, category, index) => {
       const queryData = categoryData[index];
       if (queryData.isError) {
          throw new Error(`${category} data failed to fetch.`);
@@ -94,8 +121,63 @@ export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProp
       return acc;
    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
 
+   queryClient.setQueryData(queryKeys.allGoogleCategories, dataWithKeys);
+
    return { dataWithKeys, categoryData };
 }
+
+// pass loading status
+
+// add an enabler here -- let's say something loaded then enable this to be loaded
+// export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProps) {
+
+//    const allCategories = [...serverSideCategories, ...topCategories];
+//    const categoryKeys = allCategories.map((category, index) => {
+//       return {
+//          queryKey: queryKeys.categories(category, meta),
+//          queryFn: async () => {
+//             const url = googleApi.getUrlBySubject(category as Categories, {
+//                maxResultNumber: meta?.maxResultNumber ?? 15,
+//                pageIndex: meta?.maxResultNumber ?? 0,
+//             });
+//             const json = await fetcher(url);
+//             const uniqueData = createUniqueData(json) as Items<any>[];
+//             return uniqueData.slice(0, 6);
+//          },
+//          initialData: () => {
+//             const serverCategory = serverSideCategories.includes(category) ? category : null;
+//             if (serverCategory) {
+//                return data[serverCategory.toLowerCase()];
+//             }
+//          },
+//          // select: (data) => {
+//          //    return allCategories.reduce((acc, category, index) => {
+//          //       const queryData = categoryData[index];
+//          //       acc[category.toLowerCase()] = queryData?.data;
+//          //       return acc;
+//          //    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
+//          // },
+//          // enabled: !!data,
+//       };
+//    });
+
+//    const categoryData = useQueries<unknown[]>({
+//       queries: [...categoryKeys, {}],
+//    });
+
+//    // create a function for this
+//    const dataWithKeys = allCategories.reduce((acc, category, index) => {
+//       const queryData = categoryData[index];
+//       if (queryData.isError) {
+//          throw new Error(`${category} data failed to fetch.`);
+//       }
+
+//       acc[category.toLowerCase()] = queryData?.data;
+//       return acc;
+//    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
+
+//    return { dataWithKeys, categoryData };
+// }
 
 // this will return filter for couple things:
 // 1) it will return category in a published date

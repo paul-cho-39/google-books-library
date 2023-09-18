@@ -18,6 +18,9 @@ import {
 import { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
 import { getBookWidth, getContainerWidth } from '../utils/getBookWidth';
 import { BookImageSkeleton, DescriptionSkeleton } from '../components/loaders/bookcardsSkeleton';
+import { DividerButtons } from '../components/layout/dividers';
+import { useQueryClient } from '@tanstack/react-query';
+import queryKeys from '../lib/queryKeys';
 
 type HoveredProps = {
    id: string | null;
@@ -59,15 +62,28 @@ const CategoryDescription = lazy(() => import('../components/home/categoryDescri
 const BookImage = lazy(() => import('../components/bookcover/bookImages'));
 
 const Home = (props: InferServerSideProps) => {
+   const [categoriesToLoad, setCategoriesToLoad] = useState(0);
+   const queryClient = useQueryClient();
+   const cache = queryClient.getQueryData(queryKeys.allGoogleCategories) as CategoriesQueries;
+   console.log('the new data is now: ', cache);
+
    // combine the two data(?)
-   const { data, bestSellerData } = props;
-   const { dataWithKeys: googleData } = useGetCategoriesQueries(data);
+   const { googleData, bestSellerData } = props;
+   const { categoryData, dataWithKeys: data } = useGetCategoriesQueries({
+      initialData: googleData,
+      loadItems: categoriesToLoad,
+   });
    const { transformedData: nytData } = useGetNytBestSellers({ initialData: bestSellerData });
 
-   const combinedData = { ...nytData, ...googleData } as CategoriesQueries;
+   const combinedData = { ...nytData, ...data } as CategoriesQueries;
 
    const floatingRef = useRef<HTMLDivElement>(null);
+   const categoryRefs = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+   const handleProcessData = () => {
+      setCategoriesToLoad((prev) => prev + 4);
+   };
 
    // make this into a hook
    const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout>(null!);
@@ -157,10 +173,11 @@ const Home = (props: InferServerSideProps) => {
    const priorityCategories = ['FICTION', 'NONFICTION', ...serverSideCategories];
    const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
 
+   // TODO: Create an error boundary for this?
    return (
       <>
-         {Object.entries(combinedData).map(([key, value]) => (
-            <CategoryDisplay key={key} category={key as Categories}>
+         {Object.entries(combinedData).map(([key, value], index) => (
+            <CategoryDisplay key={key} forwardRef={categoryRefs} category={key as Categories}>
                {value &&
                   value?.map((book, index) => {
                      const hoveredEl = isHovered.id == book.id &&
@@ -211,6 +228,7 @@ const Home = (props: InferServerSideProps) => {
                   })}
             </CategoryDisplay>
          ))}
+         <DividerButtons onClick={handleProcessData} condition={false} title='Load More' />
       </>
    );
 };
@@ -221,7 +239,7 @@ export default Home;
 // then pass the rest(?);
 
 export const getServerSideProps = async () => {
-   const data: CategoriesQueries = {};
+   const googleData: CategoriesQueries = {};
    const bestSellerData: CategoriesNytQueries = {};
 
    // the caveat here is that this is not full proof of parsing duplicated items
@@ -237,11 +255,11 @@ export const getServerSideProps = async () => {
       const json = await fetcher(url);
 
       if (!json) {
-         data[category] = null;
+         googleData[category] = null;
       }
 
       const uniqueData = createUniqueData(json) as Items<any>[];
-      data[category] = uniqueData?.slice(0, 6);
+      googleData[category] = uniqueData?.slice(0, 6);
    }
 
    const promises = ['fiction', 'nonfiction'].map(async (key) => {
@@ -260,7 +278,7 @@ export const getServerSideProps = async () => {
 
    return {
       props: {
-         data,
+         googleData,
          bestSellerData,
       },
    };
