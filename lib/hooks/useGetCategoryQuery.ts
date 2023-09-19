@@ -25,15 +25,13 @@ interface MultipleQueries extends CategoryQueryParams<CategoriesQueries> {
    loadItems: number;
 }
 
-// also enable other book data as well here
-// using useQuery to pair with different categories as well
-// enable loader here(?) so whenever the data is loaded it will enable the data;
 export default function useGetCategoryQuery({ initialData, category, enabled, meta }: SingleQuery) {
    const queryClient = new QueryClient();
-   queryClient.prefetchQuery({
-      queryKey: queryKeys.categories(category as string, meta),
-      queryFn: () => fetcher(googleApi.getUrlBySubject(category, meta)),
-   });
+
+   const cache = queryClient.getQueryData(
+      queryKeys.categories(category as string, meta)
+   ) as Pages<any>;
+
    const data = useQuery<Pages<any>, unknown, Items<any>[]>(
       queryKeys.categories(category as string, meta),
       () => {
@@ -43,7 +41,7 @@ export default function useGetCategoryQuery({ initialData, category, enabled, me
       {
          enabled: !!category && enabled,
          select: (data) => data.items,
-         initialData: initialData,
+         initialData: cache ?? initialData,
       }
    );
 
@@ -70,9 +68,6 @@ export function useGetCategoriesQueries({
    const updatedCategories = allCategories.slice(0, loadItems + LOAD_ITEMS);
 
    const queryClient = useQueryClient();
-   const existingData = queryClient.getQueryData(
-      queryKeys.allGoogleCategories
-   ) as CategoriesQueries;
 
    const categoryKeys = updatedCategories.map((category, index) => {
       return {
@@ -84,9 +79,7 @@ export function useGetCategoriesQueries({
             });
             const json = await fetcher(url);
             const uniqueData = createUniqueData(json) as Items<any>[];
-            // slicing should be later when the data is returned
-            // so that the data is cached for a while
-            return uniqueData.slice(0, 6);
+            return uniqueData;
          },
          initialData: () => {
             const serverCategory = serverSideCategories.includes(category) ? category : null;
@@ -109,7 +102,8 @@ export function useGetCategoriesQueries({
          throw new Error(`${category} data failed to fetch.`);
       }
 
-      acc[category.toLowerCase()] = queryData?.data;
+      const data = queryData.data as Items<any>[];
+      acc[category.toLowerCase()] = data.slice(0, 6);
       return acc;
    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
 

@@ -1,4 +1,4 @@
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import nytApi, {
    CategoryQualifiers,
    DateQualifiers,
@@ -32,6 +32,12 @@ export default function useGetNytBestSeller({
    enabled,
    initialData,
 }: NytBookSingleQuery) {
+   const queryClient = useQueryClient();
+   const cache = queryClient.getQueryData(
+      queryKeys.nytBestSellers(category.type, category.format)
+   ) as ReviewData<BestSellerData>;
+   console.log('the cache here is : ', cache);
+
    const data = useQuery<ReviewData<BestSellerData>, unknown, BestSellerData>(
       queryKeys.nytBestSellers(category.type, category.format),
       () => {
@@ -44,7 +50,7 @@ export default function useGetNytBestSeller({
       {
          select: (data) => data.results,
          enabled: enabled,
-         initialData: initialData,
+         initialData: cache ?? initialData,
       }
    );
 

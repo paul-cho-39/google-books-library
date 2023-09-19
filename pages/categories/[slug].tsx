@@ -23,6 +23,7 @@ import { getBookWidth, getContainerWidth } from '../../utils/getBookWidth';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../../lib/hooks/useDisableBreakPoints';
 import { changeDirection } from '../../utils/reverseDescriptionPos';
+import { routes } from '../../constants/routes';
 
 const SMALL_SCREEN = 768;
 const PADDING = 1; // have to add margin from the components
@@ -49,11 +50,11 @@ export default function BookCategoryPages({
    // working with nyt data
    const enableNytData = category === 'fiction' || category === 'nonfiction';
 
-   // const topList = useGetNytBestSeller({
-   //    category: { format: 'combined-print-and-e-book', type: category } as CategoryQualifiers,
-   //    date: 'current',
-   //    enabled: enableNytData,
-   // });
+   const topList = useGetNytBestSeller({
+      category: { format: 'combined-print-and-e-book', type: category } as CategoryQualifiers,
+      date: 'current',
+      enabled: enableNytData,
+   });
 
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -66,6 +67,7 @@ export default function BookCategoryPages({
    }, []);
 
    const largeEnabled = useDisableBreakPoints();
+
    useEffect(() => {
       if (
          isHovered.id &&
@@ -96,10 +98,7 @@ export default function BookCategoryPages({
       }
    }, [isHovered, largeEnabled]);
 
-   // console.log('books data are: ', googleData);
-   // console.log(' the current category is : ', category);
-   // console.log(' is it enabled : ', enabled);
-   // console.log('the current top list data is: ', topList.data);
+   console.log('the current top list data is: ', topList.data);
 
    return (
       <div>
@@ -124,6 +123,7 @@ export default function BookCategoryPages({
                                  subtitle={book.volumeInfo.subtitle}
                                  authors={book.volumeInfo.authors}
                                  description={book.volumeInfo.description}
+                                 fromPage={routes.category}
                               />
                            </Suspense>
                         </div>
@@ -145,6 +145,7 @@ export default function BookCategoryPages({
                               onMouseEnter={() => onMouseEnter(book.id, index)}
                               onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
                               className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
+                              fromPage={routes.category}
                            />
                         </Suspense>
                         {hoveredEl}
@@ -160,15 +161,6 @@ export default function BookCategoryPages({
                <div>Hello</div>
             </>
          </CategoryGridSmall>
-         <div>
-            {/* component here */}
-            <article>
-               <h3>New Released {capitalizeWords(category as string)} Books</h3>
-               <div></div>
-            </article>
-
-            <div></div>
-         </div>
       </div>
    );
 }

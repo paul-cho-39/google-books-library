@@ -9,6 +9,7 @@ interface CategoryDescriptionParams {
    authors?: string[];
    publishedYear?: string;
    description?: string;
+   fromPage?: string;
 }
 
 const CategoryDescription = ({
@@ -17,6 +18,7 @@ const CategoryDescription = ({
    subtitle,
    authors,
    description,
+   fromPage,
 }: CategoryDescriptionParams) => {
    return (
       <div className='px-2 py-2 bg-beige overflow-hidden dark:bg-dark-charcoal'>
@@ -39,7 +41,7 @@ const CategoryDescription = ({
                   isLink
                   passHref
                   as={`/books/${id}`}
-                  href={'/books/[slug]/'}
+                  href={{ pathname: '/books/[slug]/', query: { from: fromPage } }}
                   description={description}
                   descriptionLimit={250}
                   lineClamp='line-clamp-4'

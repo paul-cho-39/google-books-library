@@ -16,6 +16,7 @@ interface BookImageProps<T extends GoogleImages | string> extends OmittedImagePr
    height: number;
    priority: boolean;
    id?: string;
+   fromPage?: string;
    isLinkHidden?: boolean;
    forwardedRef?: (el: HTMLDivElement) => void;
    // forwardedRef?: Record<string, HTMLDivElement | null>;
@@ -31,6 +32,7 @@ const BookImage = <T extends GoogleImages | string>({
    height = 185,
    priority,
    id,
+   fromPage,
    isLinkHidden,
    forwardedRef,
    onMouseEnter,
@@ -49,7 +51,11 @@ const BookImage = <T extends GoogleImages | string>({
          onMouseLeave={onMouseLeave}
          className={className ? clsx(defaultStyle, className) : defaultStyle}
       >
-         <Link hidden={isLinkHidden} href={`/books/[slug]`} as={`/books/${id}`}>
+         <Link
+            hidden={isLinkHidden}
+            href={{ pathname: `/books/[slug]`, query: { from: fromPage } }}
+            as={`/books/${id}`}
+         >
             <Image
                src={imageSrc}
                alt={`Picture of ${title} cover`}

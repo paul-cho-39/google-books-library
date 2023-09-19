@@ -9,6 +9,7 @@ import BookImage from '../bookcover/bookImages';
 import SignInRequiredButton from '../Login/requireUser';
 import BookTitle from '../bookcover/title';
 import { Divider } from '../layout/dividers';
+import { routes } from '../../constants/routes';
 
 const HEIGHT = 125;
 
@@ -47,6 +48,7 @@ const Cards: React.FunctionComponent<{
                                  width={getBookWidth(HEIGHT)}
                                  priority
                                  title={book.volumeInfo.title}
+                                 fromPage={routes.search}
                               />
                            </div>
                            {/* title + author + button */}

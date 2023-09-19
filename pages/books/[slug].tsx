@@ -15,6 +15,7 @@ import BookPublisher from '../../components/bookcover/publisher';
 import BookDetails from '../../components/bookcover/bookDetails';
 import SignInRequiredButton from '../../components/Login/requireUser';
 import { CustomSession } from '../../lib/types/serverPropsTypes';
+import { useRouter } from 'next/router';
 
 const HEIGHT = 225;
 
@@ -25,6 +26,10 @@ const PopOverButtons = lazy(() => import('./../../components/bookcards/popover/p
 export default function BookPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const { id, book, userId } = props;
    const data = filterBookInfo(book);
+
+   const router = useRouter();
+   const fromPage = router.query.from;
+   console.log('The page is from: ', fromPage);
 
    // NOT only want useGetBookData but also data that is needed to fill
    // in here which are analytics of the book
