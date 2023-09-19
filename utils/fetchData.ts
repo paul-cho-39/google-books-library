@@ -45,10 +45,23 @@ async function fetchApiData<T>({
    });
 }
 
+// this fetcher is mainly for googleAPI but can be used with nyt
 export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
    try {
+      // debugging
       console.log('the url is: ', input);
-      const res = await fetch(input, init);
+
+      const headers = {
+         ...init?.headers,
+         'Accept-Encoding': 'gzip',
+         'User-Agent': 'YourAppName/1.0 (gzip)',
+      };
+
+      const res = await fetch(input, {
+         ...init,
+         headers,
+      });
+
       if (!res.ok || res.status === 400) {
          throw new Error('Cannot be fetched');
       }

@@ -6,33 +6,65 @@ import { fetcher } from '../../utils/fetchData';
 import { Pages } from '../../lib/types/googleBookTypes';
 import useGetCategoryQuery from '../../lib/hooks/useGetCategoryQuery';
 import { Categories } from '../../constants/categories';
+import useGetNytBestSeller from '../../lib/hooks/useGetNytBestSeller';
+import { CategoryQualifiers } from '../../models/_api/fetchNytUrl';
+import { capitalizeWords } from '../../utils/transformChar';
+import { CategoryDisplay } from '../../components/contents/home/categories';
+import useHoverDisplayDescription from '../../lib/hooks/useHoverDisplay';
 
 export default function BookCategoryPages({
    category,
-   pageIndex,
    userId,
-   data,
+   recentlyPublishedData,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-   const books = useGetCategoryQuery(data, category);
-   //    if nyt fiction / nonfiction return those books too?
+   const { data: googleData } = useGetCategoryQuery({
+      initialData: recentlyPublishedData,
+      category: category as Categories,
+      enabled: !!recentlyPublishedData,
+   });
 
-   console.log('books data are: ', books);
+   // working with nyt data
+   const enableNytData = category === 'fiction' || category === 'nonfiction';
+
+   const topList = useGetNytBestSeller({
+      category: { format: 'combined-print-and-e-book', type: category } as CategoryQualifiers,
+      date: 'current',
+      enabled: enableNytData,
+   });
+
+   const { isHovered, onMouseEnter, onMouseLeave, onMouseLeaveDescription } =
+      useHoverDisplayDescription();
+
+   console.log('books data are: ', googleData);
+   console.log(' the current category is : ', category);
+   console.log(' is it enabled : ', enabled);
+   console.log('the current top list data is: ', topList.data);
 
    return (
       <div>
-         {/* component here */}
-         <article>
-            <h3>New Released {category as string} Books</h3>
+         <CategoryDisplay category={`New ${capitalizeWords(category as string)} Releases`}>
+            <>{googleData.map((book, index) => {})}</>
+         </CategoryDisplay>
+         <CategoryDisplay
+            category={`${capitalizeWords(category as string)} Best Sellers`}
+         ></CategoryDisplay>
+         <div>
+            {/* component here */}
+            <article>
+               <h3>New Released {capitalizeWords(category as string)} Books</h3>
+               <div></div>
+            </article>
+
+            {/* another component here */}
+            {topList && (
+               <article>
+                  <h3>Top 15 {capitalizeWords(category as string)}</h3>
+                  <div>Load more..</div>
+               </article>
+            )}
+
             <div></div>
-         </article>
-
-         {/* another component here */}
-         <article>
-            <h3>More</h3>
-            <div>Load more..</div>
-         </article>
-
-         <div></div>
+         </div>
       </div>
    );
 }
@@ -43,10 +75,9 @@ export default function BookCategoryPages({
 //
 
 export const getServerSideProps: GetServerSideProps<{
-   category: Categories;
-   pageIndex: number;
+   category: Categories | CategoryQualifiers['type'];
    userId: string | null;
-   data: Pages<Record<string, string>>;
+   recentlyPublishedData: Pages<Record<string, string>>;
 }> = async (context: any) => {
    const category = context.query.slug;
 
@@ -54,11 +85,9 @@ export const getServerSideProps: GetServerSideProps<{
    const user = session?.user as CustomSession;
    const userId = user?.id || null;
 
-   const pageIndex = Math.floor(Math.random() * 5) + 1;
-
    const url = googleApi.getUrlBySubject(category, {
       maxResultNumber: 15,
-      pageIndex: pageIndex,
+      pageIndex: 0,
       byNewest: true,
    });
 
@@ -66,10 +95,9 @@ export const getServerSideProps: GetServerSideProps<{
 
    return {
       props: {
-         category,
-         pageIndex,
+         category: category,
          userId: userId,
-         data: data || null,
+         recentlyPublishedData: data || null,
       },
    };
 };

@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { Categories } from '../../constants/categories';
-import { capitalizeWords, formatCategoryName } from '../../utils/transformChar';
+import { Categories } from '../../../constants/categories';
+import { capitalizeWords, formatCategoryName } from '../../../utils/transformChar';
 
 type BookSection = 'Best Seller' | 'Recommended';
-type CategoryHeaderParams = BookSection | Categories;
+type CategoryHeaderParams = BookSection | Categories | string;
 
-interface CategoryDisplayProps {
+export interface CategoryDisplayProps {
    category: CategoryHeaderParams;
    children: React.ReactNode;
    // forwardRef?: (el: HTMLDivElement) => void;
@@ -19,7 +19,7 @@ export const CategoryDisplay = ({ category, children, forwardRef }: CategoryDisp
          <div className='px-1 py-1 rounded-md lg:px-2 lg:py-2'>
             <div
                ref={forwardRef}
-               className='relative scollbars flex justify-start space-x-4 lg:space-x-0 lg:grid lg:grid-cols-6'
+               className='relative scollbars flex justify-start space-x-4 lg:overflow-hidden lg:space-x-0 lg:grid lg:grid-cols-6 xl:px-6'
             >
                {children}
             </div>
@@ -31,7 +31,7 @@ export const CategoryDisplay = ({ category, children, forwardRef }: CategoryDisp
    );
 };
 
-const CategoryHeader = ({ category }: { category: CategoryHeaderParams }) => {
+export const CategoryHeader = ({ category }: { category: CategoryHeaderParams }) => {
    const formattedCategory = formatCategoryName(category as string);
    return (
       <h2 className='mt-4 py-3 text-xl lg:text-2xl text-slate-800 dark:text-slate-100'>

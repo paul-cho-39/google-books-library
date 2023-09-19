@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { useGetCategoriesQueries } from '../lib/hooks/useGetCategoryQuery';
-import { CategoryDisplay } from '../components/home/categories';
+import { CategoryDisplay } from '../components/contents/home/categories';
 import { ImageLinks, Items, Pages } from '../lib/types/googleBookTypes';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../lib/hooks/useDisableBreakPoints';
@@ -21,6 +21,7 @@ import { BookImageSkeleton, DescriptionSkeleton } from '../components/loaders/bo
 import { DividerButtons } from '../components/layout/dividers';
 import { useQueryClient } from '@tanstack/react-query';
 import queryKeys from '../lib/queryKeys';
+import useHoverDisplayDescription from '../lib/hooks/useHoverDisplay';
 
 type HoveredProps = {
    id: string | null;
@@ -58,22 +59,20 @@ const changeDirection = (
    return { left: (PADDING + width) * currentIndex - offsetBy, right: 0 };
 };
 
-const CategoryDescription = lazy(() => import('../components/home/categoryDescription'));
+const CategoryDescription = lazy(() => import('../components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('../components/bookcover/bookImages'));
 
 const Home = (props: InferServerSideProps) => {
    const [categoriesToLoad, setCategoriesToLoad] = useState(0);
-   const queryClient = useQueryClient();
-   const cache = queryClient.getQueryData(queryKeys.allGoogleCategories) as CategoriesQueries;
-   console.log('the new data is now: ', cache);
 
    // combine the two data(?)
    const { googleData, bestSellerData } = props;
+   const { transformedData: nytData } = useGetNytBestSellers({ initialData: bestSellerData });
    const { categoryData, dataWithKeys: data } = useGetCategoriesQueries({
       initialData: googleData,
       loadItems: categoriesToLoad,
+      enabled: !!googleData,
    });
-   const { transformedData: nytData } = useGetNytBestSellers({ initialData: bestSellerData });
 
    const combinedData = { ...nytData, ...data } as CategoriesQueries;
 
@@ -81,18 +80,12 @@ const Home = (props: InferServerSideProps) => {
    const categoryRefs = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+   const { isHovered, onMouseEnter, onMouseLeave, onMouseLeaveDescription } =
+      useHoverDisplayDescription();
+
    const handleProcessData = () => {
       setCategoriesToLoad((prev) => prev + 4);
    };
-
-   // make this into a hook
-   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout>(null!);
-   const [isHovered, setIsHovered] = useState<HoveredProps>({
-      id: null,
-      hovered: false,
-      isFloatHovered: false,
-      index: null,
-   });
 
    const setImageRef = useCallback((id: string, el: HTMLDivElement | null) => {
       if (imageRefs.current) imageRefs.current[id] = el;
@@ -103,42 +96,6 @@ const Home = (props: InferServerSideProps) => {
    const smallEnabled = useDisableBreakPoints(SMALL_SCREEN);
    const NUMBER_OF_COLS = largeEnabled ? 6 : smallEnabled ? 4 : 3;
 
-   const onMouseEnter = (id: string, index: number) => {
-      if (!id) return;
-
-      clearTimeout(hoverTimer);
-      setHoverTimer(
-         setTimeout(() => {
-            setIsHovered({ id, hovered: true, isFloatHovered: false, index: index + 1 });
-         }, 350)
-      );
-   };
-
-   // still to be tested for this one!;
-   const onMouseLeave = (e: React.MouseEvent) => {
-      const floatingElement = floatingRef.current;
-
-      if (
-         floatingElement &&
-         e.relatedTarget instanceof Node &&
-         floatingElement.contains(e.relatedTarget)
-      ) {
-         return;
-      }
-
-      clearTimeout(hoverTimer);
-      if (isHovered.id !== null) {
-         setIsHovered({ id: null, hovered: false, isFloatHovered: false, index: null });
-      }
-   };
-
-   const onMouseLeaveDescription = () => {
-      clearTimeout(hoverTimer);
-      if (isHovered.id !== null) {
-         setIsHovered({ id: null, hovered: false, isFloatHovered: false, index: null });
-      }
-   };
-
    useEffect(() => {
       if (
          isHovered.id &&
@@ -148,13 +105,14 @@ const Home = (props: InferServerSideProps) => {
          imageRefs.current
       ) {
          const el = imageRefs.current[isHovered.id]?.getBoundingClientRect();
+         const largeReverseGrid = largeEnabled ? NUMBER_OF_COLS - 2 : NUMBER_OF_COLS - 1;
 
          if (el) {
             const position = changeDirection(
                el.width,
                isHovered.index,
                NUMBER_OF_COLS,
-               NUMBER_OF_COLS - 1
+               largeReverseGrid
             );
 
             floatingRef.current.style.top = `${0}px`;
@@ -167,7 +125,7 @@ const Home = (props: InferServerSideProps) => {
             }
          }
       }
-   }, [NUMBER_OF_COLS, isHovered]);
+   }, [NUMBER_OF_COLS, isHovered, largeEnabled]);
 
    // images that are not server rendered are rendered later
    const priorityCategories = ['FICTION', 'NONFICTION', ...serverSideCategories];
@@ -218,7 +176,9 @@ const Home = (props: InferServerSideProps) => {
                                  title={book.volumeInfo.title}
                                  priority={isPriority(key)}
                                  onMouseEnter={() => onMouseEnter(book.id, index)}
-                                 onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e)}
+                                 onMouseLeave={(e: React.MouseEvent) =>
+                                    onMouseLeave(e, floatingRef)
+                                 }
                                  className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
                               />
                            </Suspense>
@@ -233,10 +193,178 @@ const Home = (props: InferServerSideProps) => {
    );
 };
 
-export default Home;
+// const Home = (props: InferServerSideProps) => {
+//    const [categoriesToLoad, setCategoriesToLoad] = useState(0);
 
-// retrieve the first results in the beginning
-// then pass the rest(?);
+//    // combine the two data(?)
+//    const { googleData, bestSellerData } = props;
+//    const { categoryData, dataWithKeys: data } = useGetCategoriesQueries({
+//       initialData: googleData,
+//       loadItems: categoriesToLoad,
+//       enabled: !!googleData,
+//    });
+
+//    const { transformedData: nytData } = useGetNytBestSellers({ initialData: bestSellerData });
+
+//    const combinedData = { ...nytData, ...data } as CategoriesQueries;
+
+//    const floatingRef = useRef<HTMLDivElement>(null);
+//    const categoryRefs = useRef<HTMLDivElement>(null);
+//    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+//    const handleProcessData = () => {
+//       setCategoriesToLoad((prev) => prev + 4);
+//    };
+
+//    // make this into a hook
+//    const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout>(null!);
+//    const [isHovered, setIsHovered] = useState<HoveredProps>({
+//       id: null,
+//       hovered: false,
+//       isFloatHovered: false,
+//       index: null,
+//    });
+
+//    const setImageRef = useCallback((id: string, el: HTMLDivElement | null) => {
+//       if (imageRefs.current) imageRefs.current[id] = el;
+//    }, []);
+
+//    // getting number of grids
+//    const largeEnabled = useDisableBreakPoints();
+//    const smallEnabled = useDisableBreakPoints(SMALL_SCREEN);
+//    const NUMBER_OF_COLS = largeEnabled ? 6 : smallEnabled ? 4 : 3;
+
+//    const onMouseEnter = (id: string, index: number) => {
+//       if (!id) return;
+
+//       clearTimeout(hoverTimer);
+//       setHoverTimer(
+//          setTimeout(() => {
+//             setIsHovered({ id, hovered: true, isFloatHovered: false, index: index + 1 });
+//          }, 350)
+//       );
+//    };
+
+//    // still to be tested for this one!;
+//    const onMouseLeave = (e: React.MouseEvent) => {
+//       const floatingElement = floatingRef.current;
+
+//       if (
+//          floatingElement &&
+//          e.relatedTarget instanceof Node &&
+//          floatingElement.contains(e.relatedTarget)
+//       ) {
+//          return;
+//       }
+
+//       clearTimeout(hoverTimer);
+//       if (isHovered.id !== null) {
+//          setIsHovered({ id: null, hovered: false, isFloatHovered: false, index: null });
+//       }
+//    };
+
+//    const onMouseLeaveDescription = () => {
+//       clearTimeout(hoverTimer);
+//       if (isHovered.id !== null) {
+//          setIsHovered({ id: null, hovered: false, isFloatHovered: false, index: null });
+//       }
+//    };
+
+//    useEffect(() => {
+//       if (
+//          isHovered.id &&
+//          isHovered.index &&
+//          isHovered.hovered &&
+//          floatingRef.current &&
+//          imageRefs.current
+//       ) {
+//          const el = imageRefs.current[isHovered.id]?.getBoundingClientRect();
+
+//          if (el) {
+//             const position = changeDirection(
+//                el.width,
+//                isHovered.index,
+//                NUMBER_OF_COLS,
+//                NUMBER_OF_COLS - 1
+//             );
+
+//             floatingRef.current.style.top = `${0}px`;
+//             floatingRef.current.style.position = 'absolute';
+
+//             if (position.right > 0) {
+//                floatingRef.current.style.right = `${position.right}px`;
+//             } else {
+//                floatingRef.current.style.left = `${position.left}px`;
+//             }
+//          }
+//       }
+//    }, [NUMBER_OF_COLS, isHovered]);
+
+//    // images that are not server rendered are rendered later
+//    const priorityCategories = ['FICTION', 'NONFICTION', ...serverSideCategories];
+//    const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
+
+//    // TODO: Create an error boundary for this?
+//    return (
+//       <>
+//          {Object.entries(combinedData).map(([key, value], index) => (
+//             <CategoryDisplay key={key} forwardRef={categoryRefs} category={key as Categories}>
+//                {value &&
+//                   value?.map((book, index) => {
+//                      const hoveredEl = isHovered.id == book.id &&
+//                         (isHovered.hovered || isHovered.isFloatHovered) && (
+//                            <div
+//                               ref={floatingRef}
+//                               onMouseLeave={onMouseLeaveDescription}
+//                               style={{
+//                                  height: CONTAINER_HEIGHT,
+//                                  width: getContainerWidth(HEIGHT, WIDTH_RATIO, largeEnabled),
+//                               }}
+//                               className='absolute z-50 rounded-lg'
+//                            >
+//                               <Suspense fallback={<DescriptionSkeleton />}>
+//                                  <CategoryDescription
+//                                     id={book.id}
+//                                     title={book.volumeInfo.title}
+//                                     subtitle={book.volumeInfo.subtitle}
+//                                     authors={book.volumeInfo.authors}
+//                                     description={book.volumeInfo.description}
+//                                  />
+//                               </Suspense>
+//                            </div>
+//                         );
+//                      return (
+//                         <>
+//                            <Suspense
+//                               fallback={
+//                                  <BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />
+//                               }
+//                            >
+//                               <BookImage
+//                                  key={book.id}
+//                                  bookImage={book.volumeInfo.imageLinks as ImageLinks}
+//                                  width={getBookWidth(HEIGHT)}
+//                                  height={HEIGHT}
+//                                  forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
+//                                  title={book.volumeInfo.title}
+//                                  priority={isPriority(key)}
+//                                  onMouseEnter={() => onMouseEnter(book.id, index)}
+//                                  onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e)}
+//                                  className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
+//                               />
+//                            </Suspense>
+//                            {hoveredEl}
+//                         </>
+//                      );
+//                   })}
+//             </CategoryDisplay>
+//          ))}
+//          <DividerButtons onClick={handleProcessData} condition={false} title='Load More' />
+//       </>
+//    );
+// };
+
+export default Home;
 
 export const getServerSideProps = async () => {
    const googleData: CategoriesQueries = {};

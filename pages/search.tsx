@@ -57,7 +57,11 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    }
 
    if (!data || isError || ((!isLoading || !isFetching) && totalItems < 1)) {
-      return <EmptyResult isError={isError} query={search} />;
+      return (
+         <EmptyResult isError={isError} query={search}>
+            <FilterInput filter={filter} setFilter={setFilter} />
+         </EmptyResult>
+      );
    }
 
    // TODO: error boundary here;

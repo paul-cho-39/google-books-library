@@ -1,8 +1,8 @@
 import { RadioGroup } from '@headlessui/react';
-import { getHighestQualityImage } from '../../lib/helper/books/editBookPageHelper';
-import { ImageLinksPairs } from '../../lib/types/googleBookTypes';
-import { CurrentOrReadingProps } from '../../pages';
-import SingleOrMultipleAuthors from '../bookcover/authors';
+import { getHighestQualityImage } from '../../../lib/helper/books/editBookPageHelper';
+import { ImageLinksPairs } from '../../../lib/types/googleBookTypes';
+import { CurrentOrReadingProps } from '../../../pages';
+import SingleOrMultipleAuthors from '../../bookcover/authors';
 import Image from 'next/image';
 import ImageFallback from '../imageFallback';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';

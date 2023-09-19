@@ -75,7 +75,7 @@ export type ImageLinks = {
 
 export interface FilterProps {
    filterBy: 'title' | 'author' | 'isbn';
-   filterBookParams?: FilterParams[];
+   filterBookParams?: FilterParams;
 }
 
 export type ImageLinksPairs = Pick<ImageLinks, 'thumbnail' | 'smallThumbnail'>;

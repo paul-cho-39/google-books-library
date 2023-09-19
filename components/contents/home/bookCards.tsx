@@ -1,9 +1,9 @@
-import { CurrentOrReadingProps } from '../../pages';
+import { CurrentOrReadingProps } from '../../../pages';
 import ShowCurrentBooks from './editBook';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import primaryOrCurrent, { filterData } from '../../lib/helper/books/primaryOrCurrent';
-import queryKeys from '../../lib/queryKeys';
-import bookApiUpdate from '../../lib/helper/books/bookApiUpdate';
+import primaryOrCurrent, { filterData } from '../../../lib/helper/books/primaryOrCurrent';
+import queryKeys from '../../../lib/queryKeys';
+import bookApiUpdate from '../../../lib/helper/books/bookApiUpdate';
 
 // CHANGE THE PROPS
 interface BookCardsProps {

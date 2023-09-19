@@ -1,10 +1,4 @@
-import {
-   QueryClient,
-   UseQueryResult,
-   useQueries,
-   useQuery,
-   useQueryClient,
-} from '@tanstack/react-query';
+import { QueryClient, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
    Categories,
    TopCateogry,
@@ -17,22 +11,24 @@ import { Pages, Items } from '../types/googleBookTypes';
 import { createUniqueData } from '../helper/books/filterUniqueData';
 import { fetcher } from '../../utils/fetchData';
 import { CategoriesQueries } from '../types/serverPropsTypes';
-import { useEffect, useRef, useState } from 'react';
 
-interface CategoryQueryParams {
-   initialData: CategoriesQueries;
-   loadItems: number;
+interface CategoryQueryParams<TData extends CategoriesQueries | Pages<any>> {
+   initialData: TData;
+   enabled?: boolean;
    meta?: MetaProps;
+}
+
+interface SingleQuery extends CategoryQueryParams<Pages<any>> {
+   category: Categories;
+}
+interface MultipleQueries extends CategoryQueryParams<CategoriesQueries> {
+   loadItems: number;
 }
 
 // also enable other book data as well here
 // using useQuery to pair with different categories as well
 // enable loader here(?) so whenever the data is loaded it will enable the data;
-export default function useGetCategoryQuery(
-   initialData: Pages<any>,
-   category: Categories,
-   meta?: MetaProps
-) {
+export default function useGetCategoryQuery({ initialData, category, enabled, meta }: SingleQuery) {
    const queryClient = new QueryClient();
    queryClient.prefetchQuery({
       queryKey: queryKeys.categories(category as string, meta),
@@ -45,10 +41,9 @@ export default function useGetCategoryQuery(
          return url;
       },
       {
-         enabled: !!category,
+         enabled: !!category && enabled,
          select: (data) => data.items,
          initialData: initialData,
-         // onSuccess: (data) =>
       }
    );
 
@@ -64,11 +59,15 @@ export default function useGetCategoryQuery(
 // does this call for zustand(?) so that it stores the info
 // inside the cache?
 const LOAD_ITEMS = 4;
-export function useGetCategoriesQueries({ initialData, loadItems, meta }: CategoryQueryParams) {
+export function useGetCategoriesQueries({
+   initialData,
+   loadItems,
+   enabled,
+   meta,
+}: MultipleQueries) {
    const allCategories = [...serverSideCategories, ...topCategories];
 
    const updatedCategories = allCategories.slice(0, loadItems + LOAD_ITEMS);
-   console.log('WTF IS HAPPENING AGAIN: ', updatedCategories);
 
    const queryClient = useQueryClient();
    const existingData = queryClient.getQueryData(
@@ -95,15 +94,8 @@ export function useGetCategoriesQueries({ initialData, loadItems, meta }: Catego
                return initialData[serverCategory.toLowerCase()];
             }
          },
-         // onSuccess: (data: Items<any>[]) => {
-         //    console.log('not working again');
-         //    queryClient.setQueryData(queryKeys.allGoogleCategories, {
-         //       ...existingData,
-         //       [category.toLocaleLowerCase()]: [...(existingData[category] || []), ...data],
-         //    });
-         // },
-         // enabled: !!enabled,
-         // suspense: true,
+         enabled: enabled,
+         suspense: true,
       };
    });
 

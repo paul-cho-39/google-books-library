@@ -21,6 +21,7 @@ interface NytBookMultiQueries extends Partial<NytBookQueryParams> {
 }
 
 interface NytBookSingleQuery extends NytBookQueryParams {
+   enabled: boolean;
    initialData?: ReviewData<BestSellerData>;
 }
 
@@ -28,6 +29,7 @@ interface NytBookSingleQuery extends NytBookQueryParams {
 export default function useGetNytBestSeller({
    category = { type: 'fiction', format: 'combined-print-and-e-book' },
    date,
+   enabled,
    initialData,
 }: NytBookSingleQuery) {
    const data = useQuery<ReviewData<BestSellerData>, unknown, BestSellerData>(
@@ -41,14 +43,14 @@ export default function useGetNytBestSeller({
       },
       {
          select: (data) => data.results,
-         enabled: true, // loader here(?),
+         enabled: enabled,
          initialData: initialData,
       }
    );
 
-   if (data.isError) {
-      throw new Error(`${data.failureReason}`);
-   }
+   // if (data.isError) {
+   //    throw new Error(`${data.failureReason}`);
+   // }
 
    return data;
 }
@@ -87,27 +89,28 @@ export function useGetNytBestSellers({ initialData, category, date }: NytBookMul
             return res;
          },
          initialData: initialData[key],
+         // suspense: true,
       };
    });
 
-   const data = useQueries({
+   const queryData = useQueries({
       queries: [...queries],
    });
 
    // transform data
    const dataWithKeys = type.reduce((acc, cat, index) => {
-      const queryData = data[index];
-      if (queryData.isError) {
+      const data = queryData[index];
+      if (data.isError) {
          throw new Error(`${category} data failed to fetch.`);
       }
 
-      acc[cat] = queryData?.data as BestSellerData;
+      acc[cat] = data?.data as BestSellerData;
       return acc;
    }, {} as { [key: string]: unknown } as CategoriesNytQueries);
 
    const transformedData = transformData(dataWithKeys);
 
-   return { data, dataWithKeys, transformedData };
+   return { queryData, transformedData };
 }
 
 function transformData<T extends CategoriesNytQueries>(data: T) {

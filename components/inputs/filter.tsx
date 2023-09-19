@@ -26,17 +26,6 @@ const FilterInput: React.FunctionComponent<FilterComponentProps> = ({ filter, se
       });
    };
 
-   const handleCheckboxChange = (value: FilterParams) => {
-      const newFilterParams = filter.filterBookParams?.includes(value)
-         ? filter.filterBookParams?.filter((param) => param !== value)
-         : [...(filter.filterBookParams || []), value];
-
-      setFilter({
-         ...filter,
-         filterBookParams: newFilterParams,
-      });
-   };
-
    return (
       <div
          aria-label='Filter book search'
@@ -73,21 +62,22 @@ const FilterInput: React.FunctionComponent<FilterComponentProps> = ({ filter, se
                   </select>
                </label>
 
-               <div className='mt-2'>
-                  {(
-                     ['partial', 'full', 'free-ebooks', 'paid-ebooks', 'ebooks'] as FilterParams[]
-                  ).map((param, index) => (
-                     <label key={index} className='inline-flex items-center justify-evenly mr-3'>
-                        <input
-                           type='checkbox'
-                           className='form-checkbox'
-                           checked={filter.filterBookParams?.includes(param) || false}
-                           onChange={() => handleCheckboxChange(param)}
-                        />
-                        <span className='ml-2'>{param}</span>
-                     </label>
-                  ))}
-               </div>
+               <label className='block mb-2' htmlFor='filterParams'>
+                  Filter Params:
+                  <select
+                     aria-label='Filter by parameter'
+                     className='block w-full bg-white dark:bg-gray-800 text-black dark:text-white mt-1 rounded'
+                     value={filter.filterBookParams || ''}
+                     onChange={(e) => handleChange(e, 'filterParams')}
+                  >
+                     <option value=''>None</option>
+                     <option value='partial'>Partial</option>
+                     <option value='full'>Full</option>
+                     <option value='free-ebooks'>Free eBooks</option>
+                     <option value='paid-ebooks'>Paid eBooks</option>
+                     <option value='ebooks'>eBooks</option>
+                  </select>
+               </label>
             </div>
          )}
       </div>

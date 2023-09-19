@@ -1,6 +1,6 @@
-import SingleOrMultipleAuthors from '../bookcover/authors';
-import BookDescription from '../bookcover/description';
-import BookTitle from '../bookcover/title';
+import SingleOrMultipleAuthors from '../../bookcover/authors';
+import BookDescription from '../../bookcover/description';
+import BookTitle from '../../bookcover/title';
 
 interface CategoryDescriptionParams {
    id: string;
@@ -24,8 +24,6 @@ const CategoryDescription = ({
             <div className='flex flex-col'>
                <div className='w-full'>
                   <BookTitle id={id} title={title} subtitle={subtitle} className='text-md' />
-                  {/* another component for reusability */}
-                  {/* in the props 'dmy' 'y' 'my' */}
                </div>
 
                {/* another component for reusability */}
@@ -45,7 +43,7 @@ const CategoryDescription = ({
                   description={description}
                   descriptionLimit={250}
                   lineClamp='line-clamp-4'
-                  className='text-xs overflow-hidden'
+                  className='text-xs'
                />
             </div>
          </div>

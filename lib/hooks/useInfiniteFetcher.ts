@@ -45,7 +45,6 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
          ({ pageParam = 0 as number }) => {
             const url = getUrlFromFilter(pageParam);
             return fetcher(url);
-            // return fetcher(googleApi.getUrlByQuery(search, meta(pageParam)));
          },
          {
             getNextPageParam: (lastPage, allPages) => {

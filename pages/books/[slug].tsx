@@ -1,7 +1,7 @@
 import { getSession } from 'next-auth/react';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import googleApi from '../../models/_api/fetchGoogleUrl';
-import { lazy, useEffect } from 'react';
+import { lazy } from 'react';
 import filterBookInfo, { FilteredVolumeInfo } from '../../lib/helper/books/filterBookInfo';
 import { Items, Pages, SingleBook } from '../../lib/types/googleBookTypes';
 import { fetcher } from '../../utils/fetchData';
