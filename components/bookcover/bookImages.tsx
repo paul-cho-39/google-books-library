@@ -4,6 +4,7 @@ import { getAvailableThumbnail } from '../../lib/helper/books/editBookPageHelper
 import clsx from 'clsx';
 import classNames from 'classnames';
 import { ForwardRefRenderFunction, useEffect, useState } from 'react';
+import Link from 'next/link';
 
 type OmittedImageProps = Omit<ImageProps, 'src' | 'width' | 'height' | 'priority'>;
 type GoogleImages = ImageLinksPairs | ImageLinks;
@@ -14,6 +15,8 @@ interface BookImageProps<T extends GoogleImages | string> extends OmittedImagePr
    width: number;
    height: number;
    priority: boolean;
+   id?: string;
+   isLinkHidden?: boolean;
    forwardedRef?: (el: HTMLDivElement) => void;
    // forwardedRef?: Record<string, HTMLDivElement | null>;
    onMouseEnter?: () => void;
@@ -27,6 +30,8 @@ const BookImage = <T extends GoogleImages | string>({
    width = 135,
    height = 185,
    priority,
+   id,
+   isLinkHidden,
    forwardedRef,
    onMouseEnter,
    onMouseLeave,
@@ -44,14 +49,16 @@ const BookImage = <T extends GoogleImages | string>({
          onMouseLeave={onMouseLeave}
          className={className ? clsx(defaultStyle, className) : defaultStyle}
       >
-         <Image
-            src={imageSrc}
-            alt={`Picture of ${title} cover`}
-            priority={priority}
-            width={width}
-            height={height}
-            {...restProps}
-         />
+         <Link hidden={isLinkHidden} href={`/books/[slug]`} as={`/books/${id}`}>
+            <Image
+               src={imageSrc}
+               alt={`Picture of ${title} cover`}
+               priority={priority}
+               width={width}
+               height={height}
+               {...restProps}
+            />
+         </Link>
       </div>
    );
 };

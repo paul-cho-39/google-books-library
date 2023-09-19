@@ -20,11 +20,8 @@ export const CategoryGridSmall = ({ category, children, forwardRef }: CategoryDi
    return (
       <article id={category as string}>
          <CategoryHeader category={category} />
-         <div className='px-1 py-1 rounded-md lg:px-2 lg:py-2'>
-            <div
-               ref={forwardRef}
-               className='relative scollbars flex justify-start space-x-4 lg:overflow-hidden lg:grid lg:grid-cols-5 lg:grid-rows-3'
-            >
+         <div className='px-1 py-1 lg:px-2 lg:py-2 lg:max-w-3xl bg-red-500'>
+            <div ref={forwardRef} className='grid grid-cols-2 lg:gap-x-4'>
                {children}
             </div>
          </div>

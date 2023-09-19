@@ -41,6 +41,7 @@ const Cards: React.FunctionComponent<{
                         <div className='flex items-start px-2 py-4'>
                            <div className='flex-shrink-0'>
                               <BookImage
+                                 id={book.id}
                                  bookImage={book.volumeInfo.imageLinks}
                                  height={HEIGHT}
                                  width={getBookWidth(HEIGHT)}

@@ -35,6 +35,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
          <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 lg:grid lg:grid-cols-3 lg:max-w-4xl'>
             <div className='flex flex-col items-center justify-center lg:col-span-1 lg:gap-x-0'>
                <BookImage
+                  hidden={true}
                   bookImage={data.imageLinks}
                   title={data.title as string}
                   height={HEIGHT}
