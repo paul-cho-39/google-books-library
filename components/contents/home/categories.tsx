@@ -14,12 +14,12 @@ export interface CategoryDisplayProps {
 
 export const CategoryDisplay = ({ category, children, forwardRef }: CategoryDisplayProps) => {
    return (
-      <article id={category as string}>
+      <article className='xl:ml-12' id={category as string}>
          <CategoryHeader category={category} />
-         <div className='px-1 py-1 rounded-md lg:px-2 lg:py-2'>
+         <div className='px-1 py-1 rounded-md lg:px-2 lg:py-2 max-w-4xl'>
             <div
                ref={forwardRef}
-               className='relative scollbars flex justify-start space-x-4 lg:overflow-hidden lg:space-x-0 lg:grid lg:grid-cols-6 xl:px-6'
+               className='relative scollbars grid grid-cols-3 lg:overflow-hidden lg:space-x-0 lg:grid lg:grid-cols-6 xl:px-6'
             >
                {children}
             </div>

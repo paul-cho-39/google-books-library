@@ -110,7 +110,10 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
 }
 
 // the tradeoff b/w fetching from the cached result and requesting new data
-// is the resolution of the image. It is much lower and only have 'smallThumbnail'
+// are :
+// a) resolution of the image. It is much lower and only have 'smallThumbnail'
+// b) less defined cateogires
+// c)
 export const getServerSideProps: GetServerSideProps<{
    // data: Partial<FilteredVolumeInfo>;
    book: Items<any>;

@@ -3,9 +3,9 @@ export const changeDirection = (
    itemIndex: number,
    totalColumns: number,
    threshold: number = totalColumns - 1,
-   padding: number
+   padding: number,
+   offsetBy: number = 0
 ) => {
-   const offsetBy = 8;
    const currentIndex = getIndex(itemIndex, totalColumns);
    if (currentIndex >= threshold) {
       const mult = totalColumns + 1 - currentIndex;

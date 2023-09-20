@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useRef } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { getSession } from 'next-auth/react';
 import googleApi from '../../models/_api/fetchGoogleUrl';
@@ -12,7 +12,6 @@ import { ImageLinks, Items, Pages } from '../../lib/types/googleBookTypes';
 import { Categories } from '../../constants/categories';
 import { CategoryQualifiers } from '../../models/_api/fetchNytUrl';
 import { capitalizeWords } from '../../utils/transformChar';
-import { CategoryDisplay } from '../../components/contents/home/categories';
 import useHoverDisplayDescription from '../../lib/hooks/useHoverDisplay';
 import {
    CategoryGridLarge,
@@ -29,6 +28,7 @@ import { handleNytId } from '../../lib/helper/books/handleIds';
 import { Divider } from '../../components/layout/dividers';
 import BookTitle from '../../components/bookcover/title';
 import SingleOrMultipleAuthors from '../../components/bookcover/authors';
+import Pagination from '../../components/headers/pagination';
 
 const SMALL_SCREEN = 768;
 const PADDING = 1; // have to add margin from the components
@@ -41,16 +41,30 @@ const CategoryDescription = lazy(
 );
 const BookImage = lazy(() => import('../../components/bookcover/bookImages'));
 
+const MAX_ITEMS = 15;
+
 export default function BookCategoryPages({
    category,
    userId,
    recentlyPublishedData,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+   const [currentPage, setCurrentPage] = useState(0);
+
    const { data: googleData, cleanedData } = useGetCategoryQuery({
       initialData: recentlyPublishedData,
       category: category as Categories,
       enabled: !!recentlyPublishedData,
+      meta: {
+         maxResultNumber: MAX_ITEMS,
+         pageIndex: currentPage,
+         byNewest: true,
+      },
+      keepPreviousData: true,
    });
+
+   const handlePageChange = (newPage: number) => {
+      setCurrentPage(newPage);
+   };
 
    // working with nyt data
    const enableNytData = category === 'fiction' || category === 'nonfiction';
@@ -86,7 +100,7 @@ export default function BookCategoryPages({
          if (el) {
             const currentIdx = isHovered.index - 1;
             const row = Math.floor(currentIdx / 5);
-            const height = el.top / (row + 1);
+            const height = (el.top + window.scrollY) / (row + 1);
             const top = height * row;
 
             const position = changeDirection(el.width, isHovered.index, 5, 5 - 1, PADDING);
@@ -103,9 +117,9 @@ export default function BookCategoryPages({
       }
    }, [isHovered, largeEnabled]);
 
-   const CATEGORY_NYT_HEADER = `${capitalizeWords(category as string)} Best Sellers (${
-      bestSellers.published_date
-   })`;
+   const CATEGORY_NYT_HEADER =
+      bestSellers &&
+      `${capitalizeWords(category as string)} Best Sellers (${bestSellers.published_date})`;
 
    return (
       <div className='min-h-screen w-full'>
@@ -159,40 +173,49 @@ export default function BookCategoryPages({
                );
             })}
          </CategoryGridLarge>
+         <Pagination
+            currentPage={currentPage}
+            itemsPerPage={MAX_ITEMS}
+            onPageChange={handlePageChange}
+            totalItems={googleData.data.totalItems}
+         />
          {isSuccess && bestSellers && (
-            <CategoryGridSmall category={CATEGORY_NYT_HEADER}>
-               {bestSellers.books.map((book, index) => (
-                  <div className='flex flex-row items-start' key={book.primary_isbn13}>
-                     <Suspense
-                        fallback={<BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />}
-                     >
-                        <BookImage
-                           // key={book.primary_isbn13}
-                           id={handleNytId.appendSuffix(book.primary_isbn13)}
-                           title={book.title}
-                           width={getBookWidth(HEIGHT)}
-                           height={HEIGHT}
-                           bookImage={book.book_image}
-                           priority={false}
-                           className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
-                           fromPage={routes.category}
-                        />
-                     </Suspense>
-                     <div className='flex flex-col items-start justify-start w-full'>
-                        <h4 className='text-lg dark:text-slate-200'>Rank: {book.rank}</h4>
-                        <BookTitle
-                           id={handleNytId.appendSuffix(book.primary_isbn13)}
-                           title={book.title}
-                           className='text-lg lg:text-xl'
-                        />
-                        <p className='text-sm text-clip space-x-0.5 not-first:text-blue-700 not-first:hover:text-blue-500 not-first:dark:text-blue-400 '>
-                           <span className='dark:text-slate-50'>by{': '}</span>
-                           <SingleOrMultipleAuthors authors={book.author} />
-                        </p>
+            <>
+               <Divider />
+               <CategoryGridSmall category={CATEGORY_NYT_HEADER}>
+                  {bestSellers.books.map((book, index) => (
+                     <div className='flex flex-row items-start' key={book.primary_isbn13}>
+                        <Suspense
+                           fallback={<BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />}
+                        >
+                           <BookImage
+                              // key={book.primary_isbn13}
+                              id={handleNytId.appendSuffix(book.primary_isbn13)}
+                              title={book.title}
+                              width={getBookWidth(HEIGHT)}
+                              height={HEIGHT}
+                              bookImage={book.book_image}
+                              priority={false}
+                              className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
+                              fromPage={routes.category}
+                           />
+                        </Suspense>
+                        <div className='flex flex-col items-start justify-start w-full'>
+                           <h4 className='text-lg dark:text-slate-200'>Rank: {book.rank}</h4>
+                           <BookTitle
+                              id={handleNytId.appendSuffix(book.primary_isbn13)}
+                              title={capitalizeWords(book.title)}
+                              className='text-lg lg:text-xl'
+                           />
+                           <p className='text-sm text-clip space-x-0.5 not-first:text-blue-700 not-first:hover:text-blue-500 not-first:dark:text-blue-400 '>
+                              <span className='dark:text-slate-50'>by{': '}</span>
+                              <SingleOrMultipleAuthors authors={book.author} />
+                           </p>
+                        </div>
                      </div>
-                  </div>
-               ))}
-            </CategoryGridSmall>
+                  ))}
+               </CategoryGridSmall>
+            </>
          )}
       </div>
    );
@@ -215,7 +238,7 @@ export const getServerSideProps: GetServerSideProps<{
    const userId = user?.id || null;
 
    const url = googleApi.getUrlBySubject(category, {
-      maxResultNumber: 15,
+      maxResultNumber: MAX_ITEMS,
       pageIndex: 0,
       byNewest: true,
    });

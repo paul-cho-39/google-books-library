@@ -25,7 +25,7 @@ import { DividerButtons } from '../components/layout/dividers';
 
 const SMALL_SCREEN = 768;
 const PADDING = 1; // have to add margin from the components
-const WIDTH_RATIO = 3.2;
+const WIDTH_RATIO = 2;
 const HEIGHT = 150;
 const CONTAINER_HEIGHT = 150; // may subject to change
 

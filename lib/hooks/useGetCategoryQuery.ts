@@ -20,19 +20,26 @@ interface CategoryQueryParams<TData extends CategoriesQueries | Pages<any>> {
 
 interface SingleQuery extends CategoryQueryParams<Pages<any>> {
    category: Categories;
+   keepPreviousData?: boolean;
 }
 interface MultipleQueries extends CategoryQueryParams<CategoriesQueries> {
    loadItems: number;
 }
 
-export default function useGetCategoryQuery({ initialData, category, enabled, meta }: SingleQuery) {
+export default function useGetCategoryQuery({
+   initialData,
+   category,
+   enabled,
+   meta,
+   keepPreviousData,
+}: SingleQuery) {
    const queryClient = new QueryClient();
 
    const cache = queryClient.getQueryData(
       queryKeys.categories(category as string, meta)
    ) as Pages<any>;
 
-   const data = useQuery<Pages<any>, unknown, Items<any>[]>(
+   const data = useQuery<Pages<any>, unknown, Pages<any>>(
       queryKeys.categories(category as string, meta),
       () => {
          const url = fetcher(googleApi.getUrlBySubject(category, meta));
@@ -40,8 +47,9 @@ export default function useGetCategoryQuery({ initialData, category, enabled, me
       },
       {
          enabled: !!category && enabled,
-         select: (data) => data.items,
+         select: (data) => data,
          initialData: cache ?? initialData,
+         keepPreviousData: keepPreviousData,
       }
    );
 
@@ -49,7 +57,7 @@ export default function useGetCategoryQuery({ initialData, category, enabled, me
       throw new Error(`${data.failureReason}`);
    }
 
-   const cleanedData = createUniqueData(data.data);
+   const cleanedData = createUniqueData(data.data.items);
 
    return { cleanedData, data };
 }
@@ -113,61 +121,3 @@ export function useGetCategoriesQueries({
 
    return { dataWithKeys, categoryData };
 }
-
-// pass loading status
-
-// add an enabler here -- let's say something loaded then enable this to be loaded
-// export function useGetCategoriesQueries(data: CategoriesQueries, meta?: MetaProps) {
-
-//    const allCategories = [...serverSideCategories, ...topCategories];
-//    const categoryKeys = allCategories.map((category, index) => {
-//       return {
-//          queryKey: queryKeys.categories(category, meta),
-//          queryFn: async () => {
-//             const url = googleApi.getUrlBySubject(category as Categories, {
-//                maxResultNumber: meta?.maxResultNumber ?? 15,
-//                pageIndex: meta?.maxResultNumber ?? 0,
-//             });
-//             const json = await fetcher(url);
-//             const uniqueData = createUniqueData(json) as Items<any>[];
-//             return uniqueData.slice(0, 6);
-//          },
-//          initialData: () => {
-//             const serverCategory = serverSideCategories.includes(category) ? category : null;
-//             if (serverCategory) {
-//                return data[serverCategory.toLowerCase()];
-//             }
-//          },
-//          // select: (data) => {
-//          //    return allCategories.reduce((acc, category, index) => {
-//          //       const queryData = categoryData[index];
-//          //       acc[category.toLowerCase()] = queryData?.data;
-//          //       return acc;
-//          //    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
-//          // },
-//          // enabled: !!data,
-//       };
-//    });
-
-//    const categoryData = useQueries<unknown[]>({
-//       queries: [...categoryKeys, {}],
-//    });
-
-//    // create a function for this
-//    const dataWithKeys = allCategories.reduce((acc, category, index) => {
-//       const queryData = categoryData[index];
-//       if (queryData.isError) {
-//          throw new Error(`${category} data failed to fetch.`);
-//       }
-
-//       acc[category.toLowerCase()] = queryData?.data;
-//       return acc;
-//    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
-
-//    return { dataWithKeys, categoryData };
-// }
-
-// this will return filter for couple things:
-// 1) it will return category in a published date
-// 2) return the most popular items(?)
-// 3)
