@@ -49,6 +49,7 @@ export default function BookCategoryPages({
    recentlyPublishedData,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const [currentPage, setCurrentPage] = useState(0);
+   const enableNytData = category === 'fiction' || category === 'nonfiction';
 
    const { data: googleData, cleanedData } = useGetCategoryQuery({
       initialData: recentlyPublishedData,
@@ -65,9 +66,6 @@ export default function BookCategoryPages({
    const handlePageChange = (newPage: number) => {
       setCurrentPage(newPage);
    };
-
-   // working with nyt data
-   const enableNytData = category === 'fiction' || category === 'nonfiction';
 
    const { data: bestSellers, isSuccess } = useGetNytBestSeller({
       category: { format: 'combined-print-and-e-book', type: category } as CategoryQualifiers,
@@ -103,7 +101,7 @@ export default function BookCategoryPages({
             const height = (el.top + window.scrollY) / (row + 1);
             const top = height * row;
 
-            const position = changeDirection(el.width, isHovered.index, 5, 5 - 1, PADDING);
+            const position = changeDirection(el.width, isHovered.index, 5, 5 - 1, PADDING, 15);
 
             floatingRef.current.style.top = `${top}px`;
             floatingRef.current.style.position = 'absolute';

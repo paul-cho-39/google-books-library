@@ -50,6 +50,10 @@ export const topCategories = [
    'TECHNOLOGY & ENGINEERING',
 ];
 
+type BookSection = 'Best Seller' | 'Recommended';
+
+export type CategoryHeaderParams = BookSection | Categories | string;
+
 export type ServerSideCategories = (typeof serverSideCategories)[keyof typeof serverSideCategories];
 export type Categories = (typeof categories)[keyof typeof categories];
 export type TopCateogry = (typeof topCategories)[number];

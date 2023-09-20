@@ -46,7 +46,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   height={HEIGHT}
                   width={getBookWidth(HEIGHT)}
                   priority
-                  className=''
+                  className='justify-center items-center'
                />
                <div className='flex flex-row w-full py-4 items-center justify-center'>
                   <SignInRequiredButton

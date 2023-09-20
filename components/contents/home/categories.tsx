@@ -1,40 +1,41 @@
 import Link from 'next/link';
-import { Categories } from '../../../constants/categories';
 import { capitalizeWords, formatCategoryName } from '../../../utils/transformChar';
+import CategoryLayout, { CategoryLayoutProps } from '../../layout/page/categoryLayout';
+import { CategoryHeaderParams } from '../../../constants/categories';
+import classNames from 'classnames';
 
-type BookSection = 'Best Seller' | 'Recommended';
-type CategoryHeaderParams = BookSection | Categories | string;
-
-export interface CategoryDisplayProps {
-   category: CategoryHeaderParams;
-   children: React.ReactNode;
-   // forwardRef?: (el: HTMLDivElement) => void;
-   forwardRef?: React.RefObject<HTMLDivElement>;
-}
-
-export const CategoryDisplay = ({ category, children, forwardRef }: CategoryDisplayProps) => {
+export const CategoryDisplay = ({ category, children, forwardRef }: CategoryLayoutProps) => {
    return (
-      <article className='xl:ml-12' id={category as string}>
-         <CategoryHeader category={category} />
-         <div className='px-1 py-1 rounded-md lg:px-2 lg:py-2 max-w-4xl'>
-            <div
-               ref={forwardRef}
-               className='relative scollbars grid grid-cols-3 lg:overflow-hidden lg:space-x-0 lg:grid lg:grid-cols-6 xl:px-6'
-            >
-               {children}
-            </div>
-            <div className='text-right'>
-               <ShowMoreCategory category={category} />
-            </div>
+      <CategoryLayout category={category}>
+         <CategoryHeader className='' category={category} />
+         <div
+            ref={forwardRef}
+            className='relative scollbars grid grid-cols-3 lg:grid lg:grid-cols-6'
+         >
+            {children}
          </div>
-      </article>
+         <div className='text-right'>
+            <ShowMoreCategory category={category} />
+         </div>
+      </CategoryLayout>
    );
 };
 
-export const CategoryHeader = ({ category }: { category: CategoryHeaderParams }) => {
+export const CategoryHeader = ({
+   category,
+   className,
+}: {
+   category: CategoryHeaderParams;
+   className?: string;
+}) => {
    const formattedCategory = formatCategoryName(category as string);
    return (
-      <h2 className='mt-4 py-3 text-xl lg:text-2xl text-slate-800 dark:text-slate-100'>
+      <h2
+         className={classNames(
+            className,
+            'mt-4 py-3 text-xl lg:text-2xl text-slate-800 dark:text-slate-100'
+         )}
+      >
          {capitalizeWords(formattedCategory)}
       </h2>
    );

@@ -41,8 +41,7 @@ const BookImage = <T extends GoogleImages | string>({
    ...restProps
 }: BookImageProps<T>) => {
    const imageSrc = typeof bookImage === 'string' ? bookImage : getAvailableThumbnail(bookImage);
-   const defaultStyle =
-      'w-full inline-flex items-center justify-center divide-y-2 divide-gray-400 mb-8';
+   const defaultStyle = 'w-full inline-flex items-start justify-start mb-8';
 
    return (
       <div
