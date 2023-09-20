@@ -83,7 +83,8 @@ const Home = (props: InferServerSideProps) => {
                isHovered.index,
                NUMBER_OF_COLS,
                largeReverseGrid,
-               PADDING
+               PADDING,
+               15
             );
 
             floatingRef.current.style.top = `${0}px`;
@@ -103,6 +104,7 @@ const Home = (props: InferServerSideProps) => {
    const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
 
    // TODO: Create an error boundary for this?
+   console.log('combined data is: ', combinedData);
    return (
       <>
          {Object.entries(combinedData).map(([key, value], index) => (
@@ -153,7 +155,12 @@ const Home = (props: InferServerSideProps) => {
                                     onMouseLeave(e, floatingRef)
                                  }
                                  fromPage='home'
-                                 className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
+                                 className={classNames(
+                                    isHovered.hovered && isHovered.id === book.id
+                                       ? 'opacity-70'
+                                       : 'opacity-100',
+                                    'lg:col-span-1 px-4 lg:px-0 cursor-pointer'
+                                 )}
                               />
                            </Suspense>
                            {hoveredEl}

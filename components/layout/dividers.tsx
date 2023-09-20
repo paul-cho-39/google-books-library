@@ -22,13 +22,14 @@ export const DividerButtons = ({ title, condition, renderIcon, ...props }: Divid
       }
       return (
          <PlusIcon
-            className='-ml-1 -mr-0.5 h-5 w-5 text-slate-800 dark:text-slate-200'
+            className='-ml-1 -mr-0.5 h-5 w-5 text-slate-800 dark:text-slate-400'
             aria-hidden='true'
          />
       );
    };
+
    return (
-      <div className='relative'>
+      <div className='relative w-full md:max-w-2xl lg:max-w-4xl'>
          <div className='absolute inset-0 flex items-center' aria-hidden='true'>
             <div className='w-full border-t border-gray-600 dark:border-gray-200' />
          </div>
@@ -36,7 +37,8 @@ export const DividerButtons = ({ title, condition, renderIcon, ...props }: Divid
             <button
                {...props}
                type='button'
-               className='inline-flex items-center gap-x-1.5 rounded-full bg-beige px-3 py-1.5 text-sm font-semibold text-slate-900 dark:text-slate-400 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
+               aria-label='Load more books'
+               className='inline-flex items-center gap-x-1 rounded-full bg-beige dark:bg-gray-200 px-3 py-1.5 text-sm font-semibold text-slate-900 dark:text-slate-400 shadow-sm hover:bg-gray-50 focus:ring-1 focus:ring-black'
             >
                {title}
                {displayIcon()}

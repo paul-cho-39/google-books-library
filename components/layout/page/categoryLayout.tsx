@@ -11,11 +11,14 @@ export interface CategoryLayoutProps {
 
 const CategoryLayout = ({ category, children, className, forwardRef }: CategoryLayoutProps) => {
    return (
-      <article id={category as string} className='xl:ml-14'>
+      <article
+         id={category as string}
+         className='xl:ml-14 scollbars overflow-y-hidden lg:overflow-hidden'
+      >
          <div
             className={classNames(
                className,
-               'px-1 py-1 w-full md:max-w-2xl lg:px-2 lg:py-2 lg:max-w-4xl'
+               'scollbars lg:overflow-x--hidden px-1 py-1 md:max-w-2xl lg:px-2 lg:py-2 lg:max-w-4xl'
             )}
          >
             {children}

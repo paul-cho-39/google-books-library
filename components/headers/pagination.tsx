@@ -11,7 +11,7 @@ export interface PaginationProps {
 const Pagination = ({ currentPage, totalItems, itemsPerPage, onPageChange }: PaginationProps) => {
    const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-   let startPage = 0;
+   let startPage = 1;
    let endPage = totalPages;
    const maxVisiblePages = 9;
 

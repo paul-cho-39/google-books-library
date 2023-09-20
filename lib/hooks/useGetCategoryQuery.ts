@@ -89,7 +89,7 @@ export function useGetCategoriesQueries({
             });
             const json = await fetcher(url);
             const uniqueData = createUniqueData(json) as Items<any>[];
-            return uniqueData;
+            return uniqueData.slice(0, 6);
          },
          initialData: () => {
             const serverCategory = serverSideCategories.includes(category) ? category : null;
@@ -113,7 +113,9 @@ export function useGetCategoriesQueries({
       }
 
       const data = queryData.data as Items<any>[];
-      acc[category.toLowerCase()] = data.slice(0, 6);
+      acc[category.toLowerCase()] = data;
+      // acc[category.toLowerCase()] = data.slice(0, 6);
+
       return acc;
    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
 
