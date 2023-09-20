@@ -26,7 +26,7 @@ const BookDetails = ({
    };
 
    const hideElement = (detail?: any) => {
-      return !detail ? 'hidden' : '';
+      return !detail ? 'hidden' : 'my-2';
    };
 
    const hoverStyle =
@@ -48,7 +48,7 @@ const BookDetails = ({
                   <td className='uppercase'>{language}</td>
                </tr>
                <tr className={hideElement(categories)}>
-                  <td>Categories</td>
+                  <td className='inline-flex justify-start items-start'>Categories</td>
                   <td>
                      <Categories
                         hasLink={true}

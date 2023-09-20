@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { breakCategories } from '../../lib/helper/books/editBookPageHelper';
+import classNames from 'classnames';
 
 interface CategoriesProps {
    categories?: string[];
@@ -14,10 +15,13 @@ const Categories = ({ categories, hasLink = false, className }: CategoriesProps)
    return (
       <ul role='list' className='flex flex-row flex-wrap '>
          {filteredCategories.map((category, index) => (
-            <li className={className} key={index}>
+            <li className={classNames(className, 'mr-1')} key={index}>
                {hasLink ? (
                   <Link passHref href={'/categories/[slug]'} as={`/categories/${category}`}>
-                     <a>{category}</a>
+                     <a>
+                        {category}
+                        <span>{filteredCategories.length - 1 >= index ? ', ' : ''}</span>
+                     </a>
                   </Link>
                ) : (
                   category

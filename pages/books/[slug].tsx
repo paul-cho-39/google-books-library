@@ -29,7 +29,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
 
    const router = useRouter();
    const fromPage = router.query.from;
-   console.log('The page is from: ', fromPage);
+   // write a helper function to detail where it is coming from
 
    // NOT only want useGetBookData but also data that is needed to fill
    // in here which are analytics of the book
@@ -109,6 +109,8 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    );
 }
 
+// the tradeoff b/w fetching from the cached result and requesting new data
+// is the resolution of the image. It is much lower and only have 'smallThumbnail'
 export const getServerSideProps: GetServerSideProps<{
    // data: Partial<FilteredVolumeInfo>;
    book: Items<any>;

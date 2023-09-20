@@ -36,7 +36,7 @@ export default function useGetNytBestSeller({
    const cache = queryClient.getQueryData(
       queryKeys.nytBestSellers(category.type, category.format)
    ) as ReviewData<BestSellerData>;
-   console.log('the cache here is : ', cache);
+   // console.log('the cache here is : ', cache);
 
    const data = useQuery<ReviewData<BestSellerData>, unknown, BestSellerData>(
       queryKeys.nytBestSellers(category.type, category.format),
@@ -53,10 +53,6 @@ export default function useGetNytBestSeller({
          initialData: cache ?? initialData,
       }
    );
-
-   // if (data.isError) {
-   //    throw new Error(`${data.failureReason}`);
-   // }
 
    return data;
 }

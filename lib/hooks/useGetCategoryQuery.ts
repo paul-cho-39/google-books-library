@@ -49,7 +49,9 @@ export default function useGetCategoryQuery({ initialData, category, enabled, me
       throw new Error(`${data.failureReason}`);
    }
 
-   return data;
+   const cleanedData = createUniqueData(data.data);
+
+   return { cleanedData, data };
 }
 
 // what happens when the page is refreshed?
