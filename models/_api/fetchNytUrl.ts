@@ -79,7 +79,6 @@ class NewYorkTimesApi {
          );
          return url;
       }
-      console.log('url is: ', url);
       return `${url}api-key=${NewYorkTimesApi.KEY}`;
    }
 

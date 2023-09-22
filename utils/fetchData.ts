@@ -1,7 +1,14 @@
 import router from 'next/router';
 import { SignInForm } from '../lib/types/formInputsWithChildren';
+import { NextApiRequest } from 'next';
+import { IncomingMessage } from 'http';
+import { Categories } from '../constants/categories';
+import { GoogleUpdatedFields } from '../lib/types/googleBookTypes';
+import { BestSellerData, ReviewData } from '../lib/types/nytBookTypes';
+import { ReturnedCacheData } from '../lib/types/serverPropsTypes';
+import { MetaProps } from '../models/_api/fetchGoogleUrl';
 
-type Data<T> = T extends SignInForm ? Partial<SignInForm> : string;
+export type Data<T> = T extends SignInForm ? Partial<SignInForm> : string;
 export type Method = 'PUT' | 'POST' | 'GET' | 'DELETE';
 
 interface ParamProps<T> {
@@ -14,6 +21,18 @@ interface ParamProps<T> {
       delay?: number;
    };
 }
+
+type Request = IncomingMessage & {
+   cookies: Partial<{
+      [key: string]: string;
+   }>;
+};
+
+export type FetchCacheType = {
+   source: 'google' | 'nyt';
+   endpoint: 'relevant' | 'recent' | 'best-seller';
+   req?: Request;
+};
 
 async function fetchApiData<T>({
    url,
@@ -45,7 +64,7 @@ async function fetchApiData<T>({
    });
 }
 
-// this fetcher is mainly for googleAPI but can be used with nyt
+// this fetcher is mainly for googleAPI and can be used with nyt
 export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
    try {
       // debugging
@@ -69,6 +88,39 @@ export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
    } catch (error) {
       console.log(error);
    }
+};
+
+export const getAbsoluteUrl = (req: Request) => {
+   const protocol = req.headers['x-forwarded-proto'] || 'http';
+   const host = req.headers['x-forwarded-host'] || req.headers['host'];
+   return `${protocol}://${host}`;
+};
+
+export const fetchDataFromCache = async <
+   CacheData extends GoogleUpdatedFields | ReviewData<BestSellerData>
+>(
+   category: Categories | string,
+   type: FetchCacheType,
+   meta?: MetaProps,
+   date?: string
+): Promise<ReturnedCacheData<CacheData>> => {
+   const { source, endpoint, req } = type;
+   let baseUrl = '';
+   if (req) {
+      baseUrl = getAbsoluteUrl(req);
+   }
+
+   const res = await fetch(`${baseUrl}/api/third-party/${source}/${category}/${endpoint}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      // body: JSON.stringify(meta ?? date),
+   });
+
+   if (!res.ok || res.status === 500 || res.status === 404) {
+      throw new Error(`Failed to fetch the cached ${source} data `);
+   }
+
+   return res.json();
 };
 
 export default fetchApiData;

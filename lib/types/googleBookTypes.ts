@@ -22,6 +22,7 @@ export interface Items<T extends Record<string, string>> {
    volumeInfo: VolumeInfo;
 }
 
+// TODO: update ratings here
 export type VolumeInfo = {
    authors: string[];
    averageRating?: number;
@@ -45,6 +46,25 @@ export type VolumeInfo = {
 export type IndustryIdentifiers = {
    type: 'ISBN_10' | 'ISBN-13' | 'ISSN' | 'OTHER';
    identifier: string;
+};
+
+type AccessInfo = {
+   country: string;
+   viewability: 'NO_PAGES' | 'PARTIAL' | 'ALL_PAGES'; // etc.
+   embeddable: boolean;
+   publicDomain: boolean;
+   textToSpeechPermission: 'ALLOWED' | 'ALLOWED_FOR_ACCESSIBILITY' | 'NOT_ALLOWED';
+   epub: {
+      isAvailable: boolean;
+      acsTokenLink?: string; // Only present if isAvailable is true
+   };
+   pdf: {
+      isAvailable: boolean;
+      acsTokenLink?: string; // Only present if isAvailable is true
+   };
+   webReaderLink: string;
+   accessViewStatus: 'NONE' | 'SAMPLE' | 'FULL_PUBLIC_DOMAIN' | 'FULL_PURCHASED';
+   quoteSharingAllowed: boolean;
 };
 
 export type BookIdProps = { id: string };
@@ -76,6 +96,16 @@ export type ImageLinks = {
 export interface FilterProps {
    filterBy: 'title' | 'author' | 'isbn';
    filterBookParams?: FilterParams;
+}
+
+export interface GoogleUpdatedFields {
+   totalItems: number;
+   items: {
+      id: string;
+      selfLink: string;
+      volumeInfo: VolumeInfo;
+      accessInfo: AccessInfo;
+   }[];
 }
 
 export type ImageLinksPairs = Pick<ImageLinks, 'thumbnail' | 'smallThumbnail'>;

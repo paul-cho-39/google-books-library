@@ -9,7 +9,7 @@ import queryKeys from '../queryKeys';
 import { BestSellerData, BookReview, Books, ReviewData } from '../types/nytBookTypes';
 import { CategoriesNytQueries, CategoriesQueries } from '../types/serverPropsTypes';
 import { transformStrToArray } from '../../utils/transformChar';
-import { handleNytId } from '../helper/books/handleIds';
+import { handleNytId } from '../../utils/handleIds';
 
 interface NytBookQueryParams {
    category: CategoryQualifiers;

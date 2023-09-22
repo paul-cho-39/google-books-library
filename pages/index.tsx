@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { useGetCategoriesQueries } from '../lib/hooks/useGetCategoryQuery';
 import { CategoryDisplay } from '../components/contents/home/categories';
-import { ImageLinks, Items, Pages } from '../lib/types/googleBookTypes';
+import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '../lib/types/googleBookTypes';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../lib/hooks/useDisableBreakPoints';
-import googleApi from '../models/_api/fetchGoogleUrl';
 import { Categories, serverSideCategories, topCategories } from '../constants/categories';
-import { createUniqueData } from '../lib/helper/books/filterUniqueData';
 import nytApi, { CategoryQualifiers } from '../models/_api/fetchNytUrl';
 import { BestSellerData, ReviewData } from '../lib/types/nytBookTypes';
 import {
@@ -16,12 +14,14 @@ import {
 } from '../lib/types/serverPropsTypes';
 import { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
 import { getBookWidth, getContainerWidth } from '../utils/getBookWidth';
-import { fetcher } from '../utils/fetchData';
+import { fetchDataFromCache, fetcher } from '../utils/fetchData';
 import { changeDirection } from '../utils/reverseDescriptionPos';
 import useHoverDisplayDescription from '../lib/hooks/useHoverDisplay';
 
 import { BookImageSkeleton, DescriptionSkeleton } from '../components/loaders/bookcardsSkeleton';
 import { DividerButtons } from '../components/layout/dividers';
+import { GetServerSideProps, NextApiRequest, NextApiResponse } from 'next';
+import lruCache from '../lib/LRUcache';
 
 const SMALL_SCREEN = 768;
 const PADDING = 1; // have to add margin from the components
@@ -37,14 +37,17 @@ const Home = (props: InferServerSideProps) => {
 
    // combine the two data(?)
    const { googleData, bestSellerData } = props;
-   const { transformedData: nytData } = useGetNytBestSellers({ initialData: bestSellerData });
-   const { categoryData, dataWithKeys: data } = useGetCategoriesQueries({
-      initialData: googleData,
-      loadItems: categoriesToLoad,
-      enabled: !!googleData,
-   });
+   // const { transformedData: nytData } = useGetNytBestSellers({ initialData: bestSellerData });
+   // const { categoryData, dataWithKeys: data } = useGetCategoriesQueries({
+   //    initialData: googleData,
+   //    loadItems: categoriesToLoad,
+   //    enabled: !!googleData,
+   // });
 
-   const combinedData = { ...nytData, ...data } as CategoriesQueries;
+   // const combinedData = {
+   //    ...nytData,
+   //    ...data,
+   // } as CategoriesQueries;
 
    const floatingRef = useRef<HTMLDivElement>(null);
    const categoryRefs = useRef<HTMLDivElement>(null);
@@ -104,115 +107,183 @@ const Home = (props: InferServerSideProps) => {
    const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
 
    // TODO: Create an error boundary for this?
-   console.log('combined data is: ', combinedData);
    return (
-      <>
-         {Object.entries(combinedData).map(([key, value], index) => (
-            <CategoryDisplay key={key} forwardRef={categoryRefs} category={key as Categories}>
-               {value &&
-                  value?.map((book, index) => {
-                     const hoveredEl = isHovered.id == book.id &&
-                        (isHovered.hovered || isHovered.isFloatHovered) && (
-                           <div
-                              ref={floatingRef}
-                              onMouseLeave={onMouseLeaveDescription}
-                              style={{
-                                 height: CONTAINER_HEIGHT,
-                                 width: getContainerWidth(HEIGHT, WIDTH_RATIO, largeEnabled),
-                              }}
-                              className='absolute z-50 rounded-lg'
-                           >
-                              <Suspense fallback={<DescriptionSkeleton />}>
-                                 <CategoryDescription
-                                    id={book.id}
-                                    title={book.volumeInfo.title}
-                                    subtitle={book.volumeInfo.subtitle}
-                                    authors={book.volumeInfo.authors}
-                                    description={book.volumeInfo.description}
-                                    fromPage='home'
-                                 />
-                              </Suspense>
-                           </div>
-                        );
-                     return (
-                        <>
-                           <Suspense
-                              fallback={
-                                 <BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />
-                              }
-                           >
-                              <BookImage
-                                 key={book.id}
-                                 id={book.id}
-                                 title={book.volumeInfo.title}
-                                 width={getBookWidth(HEIGHT)}
-                                 height={HEIGHT}
-                                 forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
-                                 bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                                 priority={isPriority(key)}
-                                 onMouseEnter={() => onMouseEnter(book.id, index)}
-                                 onMouseLeave={(e: React.MouseEvent) =>
-                                    onMouseLeave(e, floatingRef)
-                                 }
-                                 fromPage='home'
-                                 className={classNames(
-                                    isHovered.hovered && isHovered.id === book.id
-                                       ? 'opacity-70'
-                                       : 'opacity-100',
-                                    'lg:col-span-1 px-4 lg:px-0 cursor-pointer'
-                                 )}
-                              />
-                           </Suspense>
-                           {hoveredEl}
-                        </>
-                     );
-                  })}
-            </CategoryDisplay>
-         ))}
-         <DividerButtons onClick={handleProcessData} condition={false} title='Load More' />
-      </>
+      <div>hello</div>
+      // <>
+      //    {Object.entries(combinedData).map(([key, value], index) => (
+      //       <CategoryDisplay key={key} forwardRef={categoryRefs} category={key as Categories}>
+      //          {value &&
+      //             value?.map((book, index) => {
+      //                const hoveredEl = isHovered.id == book.id &&
+      //                   (isHovered.hovered || isHovered.isFloatHovered) && (
+      //                      <div
+      //                         ref={floatingRef}
+      //                         onMouseLeave={onMouseLeaveDescription}
+      //                         style={{
+      //                            height: CONTAINER_HEIGHT,
+      //                            width: getContainerWidth(HEIGHT, WIDTH_RATIO, largeEnabled),
+      //                         }}
+      //                         className='absolute z-50 rounded-lg'
+      //                      >
+      //                         <Suspense fallback={<DescriptionSkeleton />}>
+      //                            <CategoryDescription
+      //                               id={book.id}
+      //                               title={book.volumeInfo.title}
+      //                               subtitle={book.volumeInfo.subtitle}
+      //                               authors={book.volumeInfo.authors}
+      //                               description={book.volumeInfo.description}
+      //                               fromPage='home'
+      //                            />
+      //                         </Suspense>
+      //                      </div>
+      //                   );
+      //                return (
+      //                   <>
+      //                      <Suspense
+      //                         fallback={
+      //                            <BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />
+      //                         }
+      //                      >
+      //                         <BookImage
+      //                            key={book.id}
+      //                            id={book.id}
+      //                            title={book.volumeInfo.title}
+      //                            width={getBookWidth(HEIGHT)}
+      //                            height={HEIGHT}
+      //                            forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
+      //                            bookImage={book.volumeInfo.imageLinks as ImageLinks}
+      //                            priority={isPriority(key)}
+      //                            onMouseEnter={() => onMouseEnter(book.id, index)}
+      //                            onMouseLeave={(e: React.MouseEvent) =>
+      //                               onMouseLeave(e, floatingRef)
+      //                            }
+      //                            fromPage='home'
+      //                            className={classNames(
+      //                               isHovered.hovered && isHovered.id === book.id
+      //                                  ? 'opacity-70'
+      //                                  : 'opacity-100',
+      //                               'lg:col-span-1 px-4 lg:px-0 cursor-pointer'
+      //                            )}
+      //                         />
+      //                      </Suspense>
+      //                      {hoveredEl}
+      //                   </>
+      //                );
+      //             })}
+      //       </CategoryDisplay>
+      //    ))}
+      //    <DividerButtons onClick={handleProcessData} condition={false} title='Load More' />
+      // </>
    );
 };
 
 export default Home;
 
-export const getServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
    const googleData: CategoriesQueries = {};
    const bestSellerData: CategoriesNytQueries = {};
+
+   const nytCategory = ['fiction', 'nonfiction'];
+
+   // lruCache.get()
 
    // the caveat here is that this is not full proof of parsing duplicated items
    // however given that it will only have six books it will be highly unlikely for
    // having mulitple duplicated books
    for (let category of serverSideCategories) {
       category = category.toLocaleLowerCase();
-      const url = googleApi.getUrlBySubject(category as Categories, {
-         maxResultNumber: 15,
-         pageIndex: 0,
+
+      const res = await fetchDataFromCache<GoogleUpdatedFields>(category, {
+         source: 'google',
+         endpoint: 'relevant',
+         req,
       });
+      const data = res.data;
 
-      const json = await fetcher(url);
-
-      if (!json) {
+      if (!data) {
          googleData[category] = null;
       }
 
-      const uniqueData = createUniqueData(json) as Items<any>[];
-      googleData[category] = uniqueData?.slice(0, 6);
+      googleData[category] = data.items;
    }
 
-   const promises = ['fiction', 'nonfiction'].map(async (key) => {
-      const url = nytApi.getUrlByCategory({
-         format: 'combined-print-and-e-book',
-         type: key as CategoryQualifiers['type'],
-      });
-      const json = (await fetcher(url)) as ReviewData<BestSellerData>;
-      bestSellerData[key] = {
-         ...json.results,
-         books: json.results.books.slice(0, 6),
-      };
-   });
+   // const cat = serverSideCategories[0];
+   // const res = await fetchDataFromCache<GoogleUpdatedFields>(cat, {
+   //    source: 'google',
+   //    endpoint: 'relevant',
+   //    req,
+   // });
+   // const data = res.data;
 
-   await Promise.all(promises);
+   // if (!data) {
+   //    googleData[cat] = null;
+   // } else {
+   //    googleData[cat] = data.items;
+   // }
+
+   // const googlePromise = serverSideCategories.map(async (category) => {
+   //    const lowerCaseCategory = category.toLocaleLowerCase();
+
+   //    const res = await fetchDataFromCache<GoogleUpdatedFields>(lowerCaseCategory, {
+   //       source: 'google',
+   //       endpoint: 'relevant',
+   //       req,
+   //    });
+   //    const data = res.data;
+
+   //    if (!data) {
+   //       googleData[lowerCaseCategory] = null;
+   //    } else {
+   //       googleData[lowerCaseCategory] = data.items;
+   //    }
+   // });
+
+   // await Promise.all(googlePromise);
+
+   // for (const key of ['fiction', 'nonfiction']) {
+   //    try {
+   //       const res = await fetchDataFromCache<ReviewData<BestSellerData>>(key, {
+   //          source: 'nyt',
+   //          endpoint: 'best-seller',
+   //          req,
+   //       });
+
+   //       bestSellerData[key] = {
+   //          ...res.data.results,
+   //          books: res.data.results.books.slice(0, 6),
+   //       };
+   //    } catch (error) {
+   //       console.error('Error fetching and caching data for', key, ':', error);
+   //    }
+   // }
+
+   // const promises = ['fiction', 'nonfiction'].map(async (key) => {
+   //    const res = await fetchDataFromCache<ReviewData<BestSellerData>>(key, {
+   //       source: 'nyt',
+   //       endpoint: 'best-seller',
+   //       req,
+   //    });
+
+   //    console.log(res);
+
+   //    bestSellerData[key] = {
+   //       ...res.data.results,
+   //       books: res.data?.results.books.slice(0, 6),
+   //    };
+   // });
+
+   // await Promise.all(promises);
+
+   // const fiction = await fetchDataFromCache<ReviewData<BestSellerData>>('nonfiction', {
+   //    source: 'nyt',
+   //    endpoint: 'best-seller',
+   //    req,
+   // });
+
+   // bestSellerData['fiction'] = {
+   //    ...fiction.data.results,
+   //    books: fiction.data.results.books.slice(0, 6),
+   // };
 
    return {
       props: {

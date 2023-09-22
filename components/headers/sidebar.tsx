@@ -112,8 +112,10 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
             <button type='button' onClick={() => setSidebarOpen(true)}>
                <span className='sr-only'>Close sidebar</span>
                <ArrowRightOnRectangleIcon
+                  aria-hidden
+                  title={sidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
+                  xlinkTitle={sidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
                   role='button'
-                  aria-label='Close sidebar navigation'
                   className='inline h-6 cursor-pointer dark:stroke-slate-300'
                />
             </button>

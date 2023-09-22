@@ -5,7 +5,7 @@ import { lazy } from 'react';
 import filterBookInfo, { FilteredVolumeInfo } from '../../lib/helper/books/filterBookInfo';
 import { Items, Pages, SingleBook } from '../../lib/types/googleBookTypes';
 import { fetcher } from '../../utils/fetchData';
-import { handleNytId } from '../../lib/helper/books/handleIds';
+import { handleNytId } from '../../utils/handleIds';
 import BookImage from '../../components/bookcover/bookImages';
 import { getBookWidth } from '../../utils/getBookWidth';
 import BookTitle from '../../components/bookcover/title';

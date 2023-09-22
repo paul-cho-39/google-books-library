@@ -1,30 +1,28 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { getSession } from 'next-auth/react';
-import googleApi from '../../models/_api/fetchGoogleUrl';
-import { fetcher } from '../../utils/fetchData';
+import { fetchDataFromCache, fetcher, getAbsoluteUrl } from '../../utils/fetchData';
 
 import useGetCategoryQuery from '../../lib/hooks/useGetCategoryQuery';
 import useGetNytBestSeller from '../../lib/hooks/useGetNytBestSeller';
+import useHoverDisplayDescription from '../../lib/hooks/useHoverDisplay';
 
-import { CustomSession } from '../../lib/types/serverPropsTypes';
-import { ImageLinks, Items, Pages } from '../../lib/types/googleBookTypes';
+import { CustomSession, ReturnedCacheData } from '../../lib/types/serverPropsTypes';
+import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '../../lib/types/googleBookTypes';
 import { Categories } from '../../constants/categories';
 import { CategoryQualifiers } from '../../models/_api/fetchNytUrl';
 import { capitalizeWords } from '../../utils/transformChar';
-import useHoverDisplayDescription from '../../lib/hooks/useHoverDisplay';
 import {
    CategoryGridLarge,
    CategoryGridSmall,
-} from '../../components/contents/category/categoryGridLarge ';
+} from '../../components/contents/category/categoryGrids';
 import { BookImageSkeleton, DescriptionSkeleton } from '../../components/loaders/bookcardsSkeleton';
 import { getBookWidth, getContainerWidth } from '../../utils/getBookWidth';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../../lib/hooks/useDisableBreakPoints';
 import { changeDirection } from '../../utils/reverseDescriptionPos';
 import { routes } from '../../constants/routes';
-import { createUniqueData } from '../../lib/helper/books/filterUniqueData';
-import { handleNytId } from '../../lib/helper/books/handleIds';
+import { handleNytId } from '../../utils/handleIds';
 import { Divider } from '../../components/layout/dividers';
 import BookTitle from '../../components/bookcover/title';
 import SingleOrMultipleAuthors from '../../components/bookcover/authors';
@@ -52,7 +50,7 @@ export default function BookCategoryPages({
    const enableNytData = category === 'fiction' || category === 'nonfiction';
 
    const { data: googleData, cleanedData } = useGetCategoryQuery({
-      initialData: recentlyPublishedData,
+      initialData: recentlyPublishedData.data,
       category: category as Categories,
       enabled: !!recentlyPublishedData,
       meta: {
@@ -61,6 +59,7 @@ export default function BookCategoryPages({
          byNewest: true,
       },
       keepPreviousData: true,
+      route: { source: 'google', endpoint: 'recent' },
    });
 
    const handlePageChange = (newPage: number) => {
@@ -121,7 +120,13 @@ export default function BookCategoryPages({
 
    return (
       <div className='min-h-screen w-full'>
-         <CategoryGridLarge category={`New ${capitalizeWords(category as string)} Releases`}>
+         <CategoryGridLarge
+            currentPage={currentPage}
+            itemsPerPage={MAX_ITEMS}
+            onPageChange={handlePageChange}
+            totalItems={googleData.data.totalItems}
+            category={`New ${capitalizeWords(category as string)} Releases`}
+         >
             {cleanedData?.map((book, index) => {
                const hoveredEl = isHovered.id == book.id &&
                   (isHovered.hovered || isHovered.isFloatHovered) && (
@@ -171,23 +176,16 @@ export default function BookCategoryPages({
                );
             })}
          </CategoryGridLarge>
-         <Pagination
-            currentPage={currentPage}
-            itemsPerPage={MAX_ITEMS}
-            onPageChange={handlePageChange}
-            totalItems={googleData.data.totalItems}
-         />
          {isSuccess && bestSellers && (
             <>
                <Divider />
                <CategoryGridSmall category={CATEGORY_NYT_HEADER}>
                   {bestSellers.books.map((book, index) => (
-                     <div className='flex flex-row items-start' key={book.primary_isbn13}>
+                     <div className='flex flex-row items-start space-x-2' key={book.primary_isbn13}>
                         <Suspense
                            fallback={<BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />}
                         >
                            <BookImage
-                              // key={book.primary_isbn13}
                               id={handleNytId.appendSuffix(book.primary_isbn13)}
                               title={book.title}
                               width={getBookWidth(HEIGHT)}
@@ -203,9 +201,9 @@ export default function BookCategoryPages({
                            <BookTitle
                               id={handleNytId.appendSuffix(book.primary_isbn13)}
                               title={capitalizeWords(book.title)}
-                              className='text-lg lg:text-xl'
+                              className='text-lg lg:text-xl hover:underline hover:decoration-orange-400 hover:dark:decoration-orange-200'
                            />
-                           <p className='text-sm text-clip space-x-0.5 not-first:text-blue-700 not-first:hover:text-blue-500 not-first:dark:text-blue-400 '>
+                           <p className='text-sm text-clip space-x-0.5 not-first:text-blue-700 not-first:hover:text-blue-500 not-first:dark:text-blue-400 hover:not-first:underline hover:not-first:decoration-orange-400 hover:not-first:dark:decoration-orange-200'>
                               <span className='dark:text-slate-50'>by{': '}</span>
                               <SingleOrMultipleAuthors authors={book.author} />
                            </p>
@@ -225,23 +223,21 @@ export default function BookCategoryPages({
 //
 
 export const getServerSideProps: GetServerSideProps<{
-   category: Categories | CategoryQualifiers['type'];
+   category: string;
    userId: string | null;
-   recentlyPublishedData: Pages<Record<string, string>>;
-}> = async (context: any) => {
-   const category = context.query.slug;
+   recentlyPublishedData: ReturnedCacheData<GoogleUpdatedFields>;
+}> = async ({ req, params, query }) => {
+   const category = query?.slug as string;
 
-   const session = await getSession(context);
+   const session = await getSession(params);
    const user = session?.user as CustomSession;
    const userId = user?.id || null;
 
-   const url = googleApi.getUrlBySubject(category, {
-      maxResultNumber: MAX_ITEMS,
-      pageIndex: 0,
-      byNewest: true,
+   const data = await fetchDataFromCache<GoogleUpdatedFields>(category, {
+      source: 'google',
+      endpoint: 'recent',
+      req,
    });
-
-   const data = await fetcher(url);
 
    return {
       props: {

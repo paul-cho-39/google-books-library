@@ -37,6 +37,7 @@ const SearchInput = ({ filterQuery }: SearchInputInterface) => {
             <button type='submit'>
                <MagnifyingGlassIcon
                   className='cursor-pointer relative top-0 right-8 h-5 w-5 text-slate-600'
+                  title='Search'
                   aria-hidden='true'
                />
             </button>
