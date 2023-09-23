@@ -8,6 +8,7 @@ interface BookTitleProps {
    subtitle?: string;
    lineClamp?: LineClamp;
    hasLink?: boolean;
+   fromPage?: string;
    className?: string;
 }
 
@@ -17,6 +18,7 @@ const BookTitle = ({
    subtitle,
    lineClamp = 'line-clamp-2',
    hasLink = true,
+   fromPage,
    className,
 }: BookTitleProps) => {
    const content = (
@@ -30,7 +32,11 @@ const BookTitle = ({
    return (
       <h3 className={classNames('font-medium py-1 text-slate-800 dark:text-slate-100', className)}>
          {hasLink ? (
-            <Link as={`/books/${id}`} href={'/books/[slug]/'} passHref>
+            <Link
+               as={`/books/${id}`}
+               href={{ pathname: '/books/[slug]/', query: { from: fromPage } }}
+               passHref
+            >
                {content}
             </Link>
          ) : (

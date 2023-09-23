@@ -5,6 +5,7 @@ import { fetcher } from '../../utils/fetchData';
 import { handleCacheKeys } from '../../utils/handleIds';
 import googleApi, { MetaProps } from '../_api/fetchGoogleUrl';
 import assert from 'assert';
+import { CategoriesQueries } from '../../lib/types/serverPropsTypes';
 
 export default async function handleGoogleCache(
    res: NextApiResponse,
@@ -69,4 +70,25 @@ export default async function handleGoogleCache(
       source: status.get === 'hit' || status.get === 'stale' ? 'cache' : 'api',
       cacheStatus: status,
    });
+}
+
+export async function fetchGoogleData(meta: MetaProps) {
+   const googleData: CategoriesQueries = {};
+
+   await Promise.all(
+      categories.map(async (category) => {
+         const catLowerCase = category.toLowerCase();
+         const url = googleApi.getUrlBySubject(catLowerCase, meta);
+
+         try {
+            const res = await fetcher(url);
+            googleData[catLowerCase] = res;
+         } catch (error) {
+            console.error('Error fetching data for category:', category, error);
+            googleData[catLowerCase] = null;
+         }
+      })
+   );
+
+   return googleData;
 }

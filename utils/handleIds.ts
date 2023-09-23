@@ -8,11 +8,11 @@ export default function matchIds(book: Items<any>, bookIds: Array<BookIdProps>) 
 
 type FilterObject<T> = T extends BookIdProps ? BookIdProps : string;
 
-export function isMatchingIds<FilterObject>(bookIds: Array<FilterObject>, id: string) {
-   if (bookIds.keys()) {
-      return bookIds.some((bookId) => bookId.id === id);
-   } else return bookIds.some((bookId) => bookId === id);
-}
+// export function isMatchingIds<T extends BookIdProps | string>(bookIds: Array<FilterObject<>, id: string) {
+//    if (bookIds.keys()) {
+//       return bookIds.some((bookId) => bookId.id === id);
+//    } else return bookIds.some((bookId) => bookId === id);
+// }
 
 export const handleNytId = {
    suffix: '-nytbook',

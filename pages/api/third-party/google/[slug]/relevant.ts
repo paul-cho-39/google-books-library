@@ -11,6 +11,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
    try {
       if (req.method === 'GET') {
+         res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
          return await handleGoogleCache(res, category, {
             maxResultNumber: 15,
             pageIndex: 0,

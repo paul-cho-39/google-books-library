@@ -29,6 +29,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
 
    const router = useRouter();
    const fromPage = router.query.from;
+   console.log('from page is: ', fromPage);
    // write a helper function to detail where it is coming from
 
    // NOT only want useGetBookData but also data that is needed to fill

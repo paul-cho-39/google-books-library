@@ -75,7 +75,12 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
                ) : (
                   isSuccess && (
                      <Suspense fallback={<BookSearchSkeleton books={5} />}>
-                        <Cards books={uniqueDataSets} userId={userId} totalItems={totalItems} />
+                        <Cards
+                           query={search}
+                           books={uniqueDataSets}
+                           userId={userId}
+                           totalItems={totalItems}
+                        />
                      </Suspense>
                   )
                )}

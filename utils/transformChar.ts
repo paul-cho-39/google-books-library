@@ -16,3 +16,7 @@ export function formatCategoryName<T extends string>(category: T) {
       ? `${category} best seller`
       : category;
 }
+
+export function getRouteParams(param: string, key: string) {
+   return param + '%' + key;
+}

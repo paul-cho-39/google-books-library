@@ -101,7 +101,6 @@ export const fetchDataFromCache = async <
 >(
    category: Categories | string,
    type: FetchCacheType,
-   meta?: MetaProps,
    date?: string
 ): Promise<ReturnedCacheData<CacheData>> => {
    const { source, endpoint, req } = type;

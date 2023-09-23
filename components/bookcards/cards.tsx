@@ -9,7 +9,7 @@ import BookImage from '../bookcover/bookImages';
 import SignInRequiredButton from '../Login/requireUser';
 import BookTitle from '../bookcover/title';
 import { Divider } from '../layout/dividers';
-import { routes } from '../../constants/routes';
+import routes from '../../constants/routes';
 
 const HEIGHT = 125;
 
@@ -17,10 +17,11 @@ const SaveAsFinishedButton = lazy(() => import('./finishedButton'));
 const PopOverButtons = lazy(() => import('./popover/popoverButtons'));
 
 const Cards: React.FunctionComponent<{
+   query: string;
    books: Array<Items<any>> | undefined;
    totalItems: number;
    userId: string | null;
-}> = ({ books, userId, totalItems }) => {
+}> = ({ query, books, userId, totalItems }) => {
    const dataBooks = useGetBookData(userId);
    const finishedData = dataBooks?.library?.finished;
    const currentlyReading = dataBooks?.library?.currentlyReading;
@@ -48,7 +49,7 @@ const Cards: React.FunctionComponent<{
                                  width={getBookWidth(HEIGHT)}
                                  priority
                                  title={book.volumeInfo.title}
-                                 fromPage={routes.search}
+                                 fromPage={routes.search(query)}
                               />
                            </div>
                            {/* title + author + button */}
@@ -57,6 +58,8 @@ const Cards: React.FunctionComponent<{
                                  <div className='row-start-1 row-end-2 md:max-w-sm'>
                                     <BookTitle
                                        id={book.id}
+                                       fromPage={routes.search(query)}
+                                       hasLink
                                        title={book?.volumeInfo.title}
                                        subtitle={book?.volumeInfo.subtitle}
                                        className='text-lg lg:text-xl'

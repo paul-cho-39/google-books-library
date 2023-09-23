@@ -11,9 +11,10 @@ import { Pages, Items, GoogleUpdatedFields } from '../types/googleBookTypes';
 import { createUniqueData } from '../helper/books/filterUniqueData';
 import { FetchCacheType, fetchDataFromCache, fetcher } from '../../utils/fetchData';
 import { CategoriesQueries } from '../types/serverPropsTypes';
+import { useState } from 'react';
 
 interface CategoryQueryParams<TData extends CategoriesQueries | GoogleUpdatedFields> {
-   initialData: TData;
+   initialData?: TData;
    enabled?: boolean;
    meta?: MetaProps;
 }
@@ -37,6 +38,7 @@ export default function useGetCategoryQuery({
    keepPreviousData,
 }: SingleQuery) {
    const queryClient = new QueryClient();
+   // const [cleanedData, setCleanedData] = useState<Items<any>[] | null>(null);
 
    const cache = queryClient.getQueryData(
       queryKeys.categories(category as string, meta)
@@ -45,7 +47,7 @@ export default function useGetCategoryQuery({
    const data = useQuery<GoogleUpdatedFields, unknown, GoogleUpdatedFields>(
       queryKeys.categories(category as string, meta),
       async () => {
-         const res = await fetchDataFromCache<GoogleUpdatedFields>(category, route, meta);
+         const res = await fetchDataFromCache<GoogleUpdatedFields>(category, route);
          return res.data;
       },
       {
@@ -60,9 +62,17 @@ export default function useGetCategoryQuery({
       throw new Error(`${data.failureReason}`);
    }
 
-   const cleanedData = createUniqueData(data.data.items);
+   // if (data && data.data.items) {
+   //    const sanitized = createUniqueData(data.data.items);
+   //    setCleanedData(sanitized);
+   // }
 
-   return { cleanedData, data };
+   const cleanedData = createUniqueData(data?.data?.items);
+
+   return {
+      cleanedData,
+      data,
+   };
 }
 
 // what happens when the page is refreshed?
@@ -91,12 +101,12 @@ export function useGetCategoriesQueries({
                source: 'google',
                endpoint: 'relevant',
             });
-            const uniqueData = createUniqueData(res.data.items);
-            return uniqueData;
+
+            return res.data.items;
          },
          initialData: () => {
             const serverCategory = serverSideCategories.includes(category) ? category : null;
-            if (serverCategory) {
+            if (initialData && serverCategory) {
                return initialData[serverCategory.toLowerCase()];
             }
          },
@@ -110,13 +120,16 @@ export function useGetCategoriesQueries({
 
    const dataWithKeys = updatedCategories.reduce((acc, category, index) => {
       const queryData = categoryData[index];
-      // if (queryData.isError) {
-      //    throw new Error(`${category} data failed to fetch.`);
-      // }
+
+      // DEBUGGING
+      if (queryData.isError) {
+         throw new Error(`${category} data failed to fetch.`);
+      }
 
       const data = queryData.data as Items<any>[];
-      // acc[category.toLowerCase()] = data;
-      acc[category.toLowerCase()] = data?.slice(0, 6);
+
+      const sanitized = createUniqueData(data);
+      acc[category.toLowerCase()] = sanitized?.slice(0, 6);
 
       return acc;
    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;

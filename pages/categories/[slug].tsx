@@ -1,5 +1,10 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import {
+   GetServerSideProps,
+   GetStaticPaths,
+   GetStaticProps,
+   InferGetServerSidePropsType,
+} from 'next';
 import { getSession } from 'next-auth/react';
 import { fetchDataFromCache, fetcher, getAbsoluteUrl } from '../../utils/fetchData';
 
@@ -9,7 +14,7 @@ import useHoverDisplayDescription from '../../lib/hooks/useHoverDisplay';
 
 import { CustomSession, ReturnedCacheData } from '../../lib/types/serverPropsTypes';
 import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '../../lib/types/googleBookTypes';
-import { Categories } from '../../constants/categories';
+import { Categories, categories } from '../../constants/categories';
 import { CategoryQualifiers } from '../../models/_api/fetchNytUrl';
 import { capitalizeWords } from '../../utils/transformChar';
 import {
@@ -21,18 +26,13 @@ import { getBookWidth, getContainerWidth } from '../../utils/getBookWidth';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../../lib/hooks/useDisableBreakPoints';
 import { changeDirection } from '../../utils/reverseDescriptionPos';
-import { routes } from '../../constants/routes';
+import routes from '../../constants/routes';
 import { handleNytId } from '../../utils/handleIds';
 import { Divider } from '../../components/layout/dividers';
 import BookTitle from '../../components/bookcover/title';
 import SingleOrMultipleAuthors from '../../components/bookcover/authors';
-import Pagination from '../../components/headers/pagination';
-
-const SMALL_SCREEN = 768;
-const PADDING = 1; // have to add margin from the components
-const WIDTH_RATIO = 2.5;
-const HEIGHT = 150;
-const CONTAINER_HEIGHT = 150; // may subject to change
+import layoutManager from '../../constants/layouts';
+import { fetchGoogleData } from '../../models/cache/handleGoogleCache';
 
 const CategoryDescription = lazy(
    () => import('../../components/contents/home/categoryDescription')
@@ -47,10 +47,21 @@ export default function BookCategoryPages({
    recentlyPublishedData,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const [currentPage, setCurrentPage] = useState(0);
+   const [publishedDate, setPublishedDate] = useState(null);
+
    const enableNytData = category === 'fiction' || category === 'nonfiction';
 
+   const initialGoogleData = () => {
+      if (recentlyPublishedData === null) return;
+      return recentlyPublishedData.data;
+   };
+
+   const handlePageChange = (newPage: number) => {
+      setCurrentPage(newPage);
+   };
+
    const { data: googleData, cleanedData } = useGetCategoryQuery({
-      initialData: recentlyPublishedData.data,
+      initialData: initialGoogleData(),
       category: category as Categories,
       enabled: !!recentlyPublishedData,
       meta: {
@@ -62,13 +73,10 @@ export default function BookCategoryPages({
       route: { source: 'google', endpoint: 'recent' },
    });
 
-   const handlePageChange = (newPage: number) => {
-      setCurrentPage(newPage);
-   };
-
+   // requring both so that each will have its own publication date?
    const { data: bestSellers, isSuccess } = useGetNytBestSeller({
       category: { format: 'combined-print-and-e-book', type: category } as CategoryQualifiers,
-      date: 'current',
+      date: 'current', // the date should be passed(?)
       enabled: enableNytData,
    });
 
@@ -100,7 +108,14 @@ export default function BookCategoryPages({
             const height = (el.top + window.scrollY) / (row + 1);
             const top = height * row;
 
-            const position = changeDirection(el.width, isHovered.index, 5, 5 - 1, PADDING, 15);
+            const position = changeDirection(
+               el.width,
+               isHovered.index,
+               5,
+               5 - 1,
+               layoutManager.categories.padding,
+               15
+            );
 
             floatingRef.current.style.top = `${top}px`;
             floatingRef.current.style.position = 'absolute';
@@ -114,68 +129,77 @@ export default function BookCategoryPages({
       }
    }, [isHovered, largeEnabled]);
 
+   // create a function for this too
    const CATEGORY_NYT_HEADER =
       bestSellers &&
       `${capitalizeWords(category as string)} Best Sellers (${bestSellers.published_date})`;
 
+   const HEIGHT = layoutManager.constants.imageHeight;
+
    return (
       <div className='min-h-screen w-full'>
-         <CategoryGridLarge
-            currentPage={currentPage}
-            itemsPerPage={MAX_ITEMS}
-            onPageChange={handlePageChange}
-            totalItems={googleData.data.totalItems}
-            category={`New ${capitalizeWords(category as string)} Releases`}
-         >
-            {cleanedData?.map((book, index) => {
-               const hoveredEl = isHovered.id == book.id &&
-                  (isHovered.hovered || isHovered.isFloatHovered) && (
-                     <div
-                        ref={floatingRef}
-                        onMouseLeave={onMouseLeaveDescription}
-                        style={{
-                           height: CONTAINER_HEIGHT,
-                           width: getContainerWidth(HEIGHT, WIDTH_RATIO, largeEnabled),
-                        }}
-                        className='absolute z-50 rounded-lg'
-                     >
-                        <Suspense fallback={<DescriptionSkeleton />}>
-                           <CategoryDescription
+         {googleData.isSuccess && googleData && (
+            <CategoryGridLarge
+               currentPage={currentPage}
+               itemsPerPage={MAX_ITEMS}
+               onPageChange={handlePageChange}
+               totalItems={googleData.data.totalItems}
+               category={`New ${capitalizeWords(category as string)} Releases`}
+            >
+               {cleanedData?.map((book, index) => {
+                  const hoveredEl = isHovered.id == book.id &&
+                     (isHovered.hovered || isHovered.isFloatHovered) && (
+                        <div
+                           ref={floatingRef}
+                           onMouseLeave={onMouseLeaveDescription}
+                           style={{
+                              height: HEIGHT,
+                              width: getContainerWidth(
+                                 HEIGHT,
+                                 layoutManager.categories.widthRatio,
+                                 largeEnabled
+                              ),
+                           }}
+                           className='absolute z-50 rounded-lg'
+                        >
+                           <Suspense fallback={<DescriptionSkeleton />}>
+                              <CategoryDescription
+                                 id={book.id}
+                                 title={book.volumeInfo.title}
+                                 subtitle={book.volumeInfo.subtitle}
+                                 authors={book.volumeInfo.authors}
+                                 description={book.volumeInfo.description}
+                                 fromPage={routes.category(category)}
+                              />
+                           </Suspense>
+                        </div>
+                     );
+                  return (
+                     <>
+                        <Suspense
+                           fallback={<BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />}
+                        >
+                           <BookImage
+                              key={book.id}
                               id={book.id}
                               title={book.volumeInfo.title}
-                              subtitle={book.volumeInfo.subtitle}
-                              authors={book.volumeInfo.authors}
-                              description={book.volumeInfo.description}
-                              fromPage={routes.category}
+                              width={getBookWidth(HEIGHT)}
+                              height={HEIGHT}
+                              forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
+                              bookImage={book.volumeInfo.imageLinks as ImageLinks}
+                              priority={false}
+                              onMouseEnter={() => onMouseEnter(book.id, index)}
+                              onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
+                              className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
+                              fromPage={routes.category(category)}
                            />
                         </Suspense>
-                     </div>
+                        {hoveredEl}
+                     </>
                   );
-               return (
-                  <>
-                     <Suspense
-                        fallback={<BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />}
-                     >
-                        <BookImage
-                           key={book.id}
-                           id={book.id}
-                           title={book.volumeInfo.title}
-                           width={getBookWidth(HEIGHT)}
-                           height={HEIGHT}
-                           forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
-                           bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                           priority={false}
-                           onMouseEnter={() => onMouseEnter(book.id, index)}
-                           onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
-                           className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
-                           fromPage={routes.category}
-                        />
-                     </Suspense>
-                     {hoveredEl}
-                  </>
-               );
-            })}
-         </CategoryGridLarge>
+               })}
+            </CategoryGridLarge>
+         )}
          {isSuccess && bestSellers && (
             <>
                <Divider />
@@ -193,7 +217,7 @@ export default function BookCategoryPages({
                               bookImage={book.book_image}
                               priority={false}
                               className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
-                              fromPage={routes.category}
+                              fromPage={routes.category(category)}
                            />
                         </Suspense>
                         <div className='flex flex-col items-start justify-start w-full'>
@@ -220,30 +244,60 @@ export default function BookCategoryPages({
 // retrieve categories in their library and see whether the library
 // can it retrieve new released?
 // is inside the cateogry that is being clicked
-//
+
+export const getStaticPaths: GetStaticPaths = async () => {
+   const paths = categories.map((category) => ({
+      params: { slug: category.toLowerCase() },
+   }));
+
+   return {
+      paths,
+      fallback: true,
+   };
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+   const googleData = fetchGoogleData({
+      maxResultNumber: 15,
+      pageIndex: 0,
+      byNewest: true,
+   });
+
+   return {
+      props: {
+         googleData,
+      },
+      revalidate: 60 * 60 * 6, // wont revalidate for at least the next 6 hours
+   };
+};
 
 export const getServerSideProps: GetServerSideProps<{
    category: string;
    userId: string | null;
-   recentlyPublishedData: ReturnedCacheData<GoogleUpdatedFields>;
+   recentlyPublishedData: ReturnedCacheData<GoogleUpdatedFields> | null;
 }> = async ({ req, params, query }) => {
+   let data: ReturnedCacheData<GoogleUpdatedFields> | null;
    const category = query?.slug as string;
 
    const session = await getSession(params);
    const user = session?.user as CustomSession;
    const userId = user?.id || null;
 
-   const data = await fetchDataFromCache<GoogleUpdatedFields>(category, {
-      source: 'google',
-      endpoint: 'recent',
-      req,
-   });
+   if (category.toUpperCase() === categories[0]) {
+      data = null;
+   } else {
+      data = await fetchDataFromCache<GoogleUpdatedFields>(category, {
+         source: 'google',
+         endpoint: 'recent',
+         req,
+      });
+   }
 
    return {
       props: {
          category: category,
          userId: userId,
-         recentlyPublishedData: data || null,
+         recentlyPublishedData: data,
       },
    };
 };

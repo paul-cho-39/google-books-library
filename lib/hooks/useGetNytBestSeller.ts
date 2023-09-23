@@ -17,7 +17,7 @@ interface NytBookQueryParams {
 }
 
 interface NytBookMultiQueries extends Partial<NytBookQueryParams> {
-   initialData: CategoriesNytQueries;
+   initialData?: CategoriesNytQueries;
 }
 
 interface NytBookSingleQuery extends NytBookQueryParams {
@@ -34,9 +34,8 @@ export default function useGetNytBestSeller({
 }: NytBookSingleQuery) {
    const queryClient = useQueryClient();
    const cache = queryClient.getQueryData(
-      queryKeys.nytBestSellers(category.type, category.format)
+      queryKeys.nytBestSellers(category.type, date as string)
    ) as ReviewData<BestSellerData>;
-   // console.log('the cache here is : ', cache);
 
    const data = useQuery<ReviewData<BestSellerData>, unknown, BestSellerData>(
       queryKeys.nytBestSellers(category.type, category.format),
@@ -59,6 +58,7 @@ export default function useGetNytBestSeller({
 
 export function useGetNytBookReview(qualifiers: ReviewQualifiers, key: keyof ReviewQualifiers) {
    const value = qualifiers[key] as string;
+
    const data = useQuery<ReviewData<BookReview[]>, unknown, BookReview[]>(
       queryKeys.nytReview(key, value),
       () => {
@@ -80,17 +80,23 @@ export function useGetNytBookReview(qualifiers: ReviewQualifiers, key: keyof Rev
    return data;
 }
 
-export function useGetNytBestSellers({ initialData, category, date }: NytBookMultiQueries) {
+export function useGetNytBestSellers({ category, date, initialData }: NytBookMultiQueries) {
+   const queryClient = useQueryClient();
    const type = ['fiction', 'nonfiction'];
 
+   const checkInitialData = !initialData ? {} : initialData;
+
    const queries = type.map((key) => {
+      const cache = queryClient.getQueryData(
+         queryKeys.nytBestSellers(key as CategoryQualifiers['type'], date as string)
+      );
       return {
          queryKey: queryKeys.nytBestSellers(key as CategoryQualifiers['type'], date as string),
          queryFn: () => {
             const res = nytApi.getUrlByCategory(category, date);
             return res;
          },
-         initialData: initialData[key],
+         initialData: cache || checkInitialData[key],
          // suspense: true,
       };
    });
@@ -112,13 +118,15 @@ export function useGetNytBestSellers({ initialData, category, date }: NytBookMul
 
    const transformedData = transformData(dataWithKeys);
 
+   console.log('HERE ARE THE TRANSFORMED DATA', transformData);
+
    return { queryData, transformedData };
 }
 
 function transformData<T extends CategoriesNytQueries>(data: T) {
-   const adapted: CategoriesQueries = {};
+   const sanitized: CategoriesQueries = {};
    for (const [key, value] of Object.entries(data)) {
-      adapted[key] = value.books.map((book) => ({
+      sanitized[key] = value.books.map((book) => ({
          id: handleNytId.appendSuffix(book.primary_isbn13),
          volumeInfo: {
             authors: transformStrToArray(book.author),
@@ -135,5 +143,5 @@ function transformData<T extends CategoriesNytQueries>(data: T) {
          displayName: value.display_name,
       }));
    }
-   return adapted;
+   return sanitized;
 }
