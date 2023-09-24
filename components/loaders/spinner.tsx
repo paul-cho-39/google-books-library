@@ -3,8 +3,8 @@ import styles from './../styles/Home.module.css';
 import classNames from 'classnames';
 
 interface RootElements {
-   bookWidth?: string;
-   bookHeight?: string;
+   bookWidth?: string | number;
+   bookHeight?: string | number;
 }
 
 interface SpinnerProps extends RootElements {
@@ -22,7 +22,7 @@ const BookLoader = ({
 }: SpinnerProps) => {
    // const el = document.querySelector(":root");
    function setRootElement(rootElement: string, value?: typeof bookWidth | typeof bookHeight) {
-      value && document.documentElement.style.setProperty(rootElement, value);
+      value && document.documentElement.style.setProperty(rootElement, value.toString());
    }
 
    useEffect(() => {

@@ -36,7 +36,7 @@ export const categories = [
    'YOUNG ADULT FICTION',
 ] as const;
 
-export const serverSideCategories = ['FICTION', 'NONFICTION', 'HISTORY', 'SELF-HELP'];
+export const serverSideCategories = ['FICTION', 'NONFICTION', 'HISTORY', 'SELF-HELP'] as const;
 
 // testing here with top categories:
 export const topCategories = [

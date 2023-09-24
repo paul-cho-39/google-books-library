@@ -1,10 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
-import {
-   GetServerSideProps,
-   GetStaticPaths,
-   GetStaticProps,
-   InferGetServerSidePropsType,
-} from 'next';
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { getSession } from 'next-auth/react';
 import { fetchDataFromCache, fetcher, getAbsoluteUrl } from '../../utils/fetchData';
 
@@ -12,7 +7,12 @@ import useGetCategoryQuery from '../../lib/hooks/useGetCategoryQuery';
 import useGetNytBestSeller from '../../lib/hooks/useGetNytBestSeller';
 import useHoverDisplayDescription from '../../lib/hooks/useHoverDisplay';
 
-import { CustomSession, ReturnedCacheData } from '../../lib/types/serverPropsTypes';
+import {
+   CategoriesQueries,
+   CategoryQuery,
+   CustomSession,
+   ReturnedCacheData,
+} from '../../lib/types/serverPropsTypes';
 import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '../../lib/types/googleBookTypes';
 import { Categories, categories } from '../../constants/categories';
 import { CategoryQualifiers } from '../../models/_api/fetchNytUrl';
@@ -32,7 +32,9 @@ import { Divider } from '../../components/layout/dividers';
 import BookTitle from '../../components/bookcover/title';
 import SingleOrMultipleAuthors from '../../components/bookcover/authors';
 import layoutManager from '../../constants/layouts';
-import { fetchGoogleData } from '../../models/cache/handleGoogleCache';
+import { batchFetchGoogleCategories } from '../../models/cache/handleGoogleCache';
+import { useRouter } from 'next/router';
+import BookLoader from '../../components/loaders/spinner';
 
 const CategoryDescription = lazy(
    () => import('../../components/contents/home/categoryDescription')
@@ -43,27 +45,23 @@ const MAX_ITEMS = 15;
 
 export default function BookCategoryPages({
    category,
-   userId,
-   recentlyPublishedData,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+   data,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
    const [currentPage, setCurrentPage] = useState(0);
-   const [publishedDate, setPublishedDate] = useState(null);
+
+   const router = useRouter();
+   // const { category } = router.query;
 
    const enableNytData = category === 'fiction' || category === 'nonfiction';
-
-   const initialGoogleData = () => {
-      if (recentlyPublishedData === null) return;
-      return recentlyPublishedData.data;
-   };
 
    const handlePageChange = (newPage: number) => {
       setCurrentPage(newPage);
    };
 
    const { data: googleData, cleanedData } = useGetCategoryQuery({
-      initialData: initialGoogleData(),
+      initialData: data[category] as GoogleUpdatedFields | undefined,
       category: category as Categories,
-      enabled: !!recentlyPublishedData,
+      enabled: !!data,
       meta: {
          maxResultNumber: MAX_ITEMS,
          pageIndex: currentPage,
@@ -135,6 +133,10 @@ export default function BookCategoryPages({
       `${capitalizeWords(category as string)} Best Sellers (${bestSellers.published_date})`;
 
    const HEIGHT = layoutManager.constants.imageHeight;
+
+   if (router.isFallback) {
+      return <div>...Loading</div>;
+   }
 
    return (
       <div className='min-h-screen w-full'>
@@ -256,8 +258,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
    };
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-   const googleData = fetchGoogleData({
+export const getStaticProps: GetStaticProps<{
+   data: CategoryQuery;
+   category: string;
+}> = async ({ params }) => {
+   const category = params?.slug as string;
+
+   const sampleCat = categories.slice(0, 4);
+
+   // change this to categories when testing this out
+   const googleData = await batchFetchGoogleCategories(sampleCat, {
       maxResultNumber: 15,
       pageIndex: 0,
       byNewest: true,
@@ -265,39 +275,40 @@ export const getStaticProps: GetStaticProps = async () => {
 
    return {
       props: {
-         googleData,
+         data: googleData as CategoryQuery,
+         category: category,
       },
       revalidate: 60 * 60 * 6, // wont revalidate for at least the next 6 hours
    };
 };
 
-export const getServerSideProps: GetServerSideProps<{
-   category: string;
-   userId: string | null;
-   recentlyPublishedData: ReturnedCacheData<GoogleUpdatedFields> | null;
-}> = async ({ req, params, query }) => {
-   let data: ReturnedCacheData<GoogleUpdatedFields> | null;
-   const category = query?.slug as string;
+// export const getServerSideProps: GetServerSideProps<{
+//    category: string;
+//    userId: string | null;
+//    recentlyPublishedData: ReturnedCacheData<GoogleUpdatedFields> | null;
+// }> = async ({ req, params, query }) => {
+//    let data: ReturnedCacheData<GoogleUpdatedFields> | null;
+//    const category = query?.slug as string;
 
-   const session = await getSession(params);
-   const user = session?.user as CustomSession;
-   const userId = user?.id || null;
+//    const session = await getSession(params);
+//    const user = session?.user as CustomSession;
+//    const userId = user?.id || null;
 
-   if (category.toUpperCase() === categories[0]) {
-      data = null;
-   } else {
-      data = await fetchDataFromCache<GoogleUpdatedFields>(category, {
-         source: 'google',
-         endpoint: 'recent',
-         req,
-      });
-   }
+//    if (category.toUpperCase() === categories[0]) {
+//       data = null;
+//    } else {
+//       data = await fetchDataFromCache<GoogleUpdatedFields>(category, {
+//          source: 'google',
+//          endpoint: 'recent',
+//          req,
+//       });
+//    }
 
-   return {
-      props: {
-         category: category,
-         userId: userId,
-         recentlyPublishedData: data,
-      },
-   };
-};
+//    return {
+//       props: {
+//          category: category,
+//          userId: userId,
+//          recentlyPublishedData: data,
+//       },
+//    };
+// };

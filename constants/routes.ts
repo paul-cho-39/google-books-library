@@ -2,6 +2,7 @@ import queryKeys from '../lib/queryKeys';
 import { MetaProps } from '../models/_api/fetchGoogleUrl';
 import { getRouteParams } from '../utils/transformChar';
 
+// TODO: move this file to /api/routes
 const routes = {
    home: (category: string) => getRouteParams('home', category),
    search: (search: string) => getRouteParams('search', search),

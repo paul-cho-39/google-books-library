@@ -10,7 +10,7 @@ import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import { Pages, Items, GoogleUpdatedFields } from '../types/googleBookTypes';
 import { createUniqueData } from '../helper/books/filterUniqueData';
 import { FetchCacheType, fetchDataFromCache, fetcher } from '../../utils/fetchData';
-import { CategoriesQueries } from '../types/serverPropsTypes';
+import { CategoriesQueries, CategoryQuery } from '../types/serverPropsTypes';
 import { useState } from 'react';
 
 interface CategoryQueryParams<TData extends CategoriesQueries | GoogleUpdatedFields> {
@@ -47,8 +47,11 @@ export default function useGetCategoryQuery({
    const data = useQuery<GoogleUpdatedFields, unknown, GoogleUpdatedFields>(
       queryKeys.categories(category as string, meta),
       async () => {
-         const res = await fetchDataFromCache<GoogleUpdatedFields>(category, route);
-         return res.data;
+         // const res = await fetchDataFromCache<GoogleUpdatedFields>(category, route);
+         // return res.data;
+         const url = googleApi.getUrlBySubject(category, meta);
+         const data = await fetcher(url);
+         return data;
       },
       {
          enabled: !!category && enabled,
@@ -68,6 +71,8 @@ export default function useGetCategoryQuery({
    // }
 
    const cleanedData = createUniqueData(data?.data?.items);
+
+   console.log('cleaned data is: ', cleanedData);
 
    return {
       cleanedData,

@@ -9,30 +9,35 @@ import useHoverDisplayDescription from '../lib/hooks/useHoverDisplay';
 import { useGetCategoriesQueries } from '../lib/hooks/useGetCategoryQuery';
 
 import { Categories, serverSideCategories, topCategories } from '../constants/categories';
-import { CategoriesQueries, InferServerSideProps } from '../lib/types/serverPropsTypes';
 import { getBookWidth, getContainerWidth } from '../utils/getBookWidth';
-import { fetchDataFromCache, fetcher } from '../utils/fetchData';
 import { changeDirection } from '../utils/reverseDescriptionPos';
 
 import { BookImageSkeleton, DescriptionSkeleton } from '../components/loaders/bookcardsSkeleton';
 import { DividerButtons } from '../components/layout/dividers';
 import layoutManager from '../constants/layouts';
-import googleApi from '../models/_api/fetchGoogleUrl';
 import routes from '../constants/routes';
+import { batchFetchGoogleCategories } from '../models/cache/handleGoogleCache';
+import { getSession, useSession } from 'next-auth/react';
+import { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
+import { CategoriesQueries } from '../lib/types/serverPropsTypes';
 
 const CategoryDescription = lazy(() => import('../components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('../components/bookcover/bookImages'));
 
 const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
-   const { googleData } = props;
+   const { data } = props;
 
+   const { data: user } = useSession();
    const [categoriesToLoad, setCategoriesToLoad] = useState(0);
 
-   const { categoryData, dataWithKeys: data } = useGetCategoriesQueries({
-      initialData: googleData,
+   const { categoryData, dataWithKeys: googleData } = useGetCategoriesQueries({
+      initialData: data,
       loadItems: categoriesToLoad,
-      enabled: !!googleData,
+      enabled: !!data,
    });
+
+   const { transformedData: nytData } = useGetNytBestSellers({});
+   const combinedData = { ...nytData, ...googleData };
 
    const floatingRef = useRef<HTMLDivElement>(null);
    const categoryRefs = useRef<HTMLDivElement>(null);
@@ -94,9 +99,10 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
    const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
 
    // TODO: Create an error boundary for this?
+
    return (
       <>
-         {Object.entries(data).map(([key, value], index) => (
+         {Object.entries(combinedData).map(([key, value], index) => (
             <CategoryDisplay key={key} forwardRef={categoryRefs} category={key as Categories}>
                {value &&
                   value?.map((book, index) => {
@@ -169,29 +175,20 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
 export default Home;
 
-export const getStaticProps: GetStaticProps = async () => {
-   const googleData: CategoriesQueries = {};
-
-   for (let category of serverSideCategories) {
-      category = category.toLocaleLowerCase();
-      const url = googleApi.getUrlBySubject(category, {
-         maxResultNumber: 15,
-         pageIndex: 0,
-         byNewest: false,
-      });
-
-      const res = await fetcher(url);
-
-      if (!res) {
-         googleData[category] = null;
-      }
-
-      googleData[category] = res;
-   }
+// change the categories later
+// getSession() -> use userId right?
+export const getStaticProps: GetStaticProps<{
+   data: CategoriesQueries;
+}> = async () => {
+   const googleData = (await batchFetchGoogleCategories(serverSideCategories, {
+      maxResultNumber: 15,
+      pageIndex: 0,
+      byNewest: true,
+   })) as CategoriesQueries;
 
    return {
       props: {
-         googleData,
+         data: googleData,
       },
       revalidate: 60 * 60 * 12,
    };
