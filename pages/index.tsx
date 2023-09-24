@@ -128,7 +128,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                                     subtitle={book.volumeInfo.subtitle}
                                     authors={book.volumeInfo.authors}
                                     description={book.volumeInfo.description}
-                                    fromPage={routes.home(key)}
+                                    routeQuery={routes.home(key)}
                                  />
                               </Suspense>
                            </div>
@@ -153,7 +153,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                                  onMouseLeave={(e: React.MouseEvent) =>
                                     onMouseLeave(e, floatingRef)
                                  }
-                                 fromPage={routes.home(key)}
+                                 routeQuery={routes.home(key)}
                                  className={classNames(
                                     isHovered.hovered && isHovered.id === book.id
                                        ? 'opacity-70'

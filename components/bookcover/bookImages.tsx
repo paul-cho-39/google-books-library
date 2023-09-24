@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import classNames from 'classnames';
 import { ForwardRefRenderFunction, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { RouteParams } from '../../constants/routes';
 
 type OmittedImageProps = Omit<ImageProps, 'src' | 'width' | 'height' | 'priority'>;
 type GoogleImages = ImageLinksPairs | ImageLinks;
@@ -16,7 +17,7 @@ interface BookImageProps<T extends GoogleImages | string> extends OmittedImagePr
    height: number;
    priority: boolean;
    id?: string;
-   fromPage?: string;
+   routeQuery?: RouteParams;
    isLinkHidden?: boolean;
    forwardedRef?: (el: HTMLDivElement) => void;
    // forwardedRef?: Record<string, HTMLDivElement | null>;
@@ -32,7 +33,7 @@ const BookImage = <T extends GoogleImages | string>({
    height = 185,
    priority,
    id,
-   fromPage,
+   routeQuery,
    isLinkHidden,
    forwardedRef,
    onMouseEnter,
@@ -52,7 +53,7 @@ const BookImage = <T extends GoogleImages | string>({
       >
          <Link
             hidden={isLinkHidden}
-            href={{ pathname: `/books/[slug]`, query: { from: fromPage } }}
+            href={{ pathname: `/books/[slug]`, query: routeQuery }}
             as={`/books/${id}`}
          >
             <Image

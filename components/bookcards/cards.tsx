@@ -49,7 +49,7 @@ const Cards: React.FunctionComponent<{
                                  width={getBookWidth(HEIGHT)}
                                  priority
                                  title={book.volumeInfo.title}
-                                 fromPage={routes.search(query)}
+                                 routeQuery={routes.search(query)}
                               />
                            </div>
                            {/* title + author + button */}
@@ -58,7 +58,7 @@ const Cards: React.FunctionComponent<{
                                  <div className='row-start-1 row-end-2 md:max-w-sm'>
                                     <BookTitle
                                        id={book.id}
-                                       fromPage={routes.search(query)}
+                                       routeQuery={routes.search(query)}
                                        hasLink
                                        title={book?.volumeInfo.title}
                                        subtitle={book?.volumeInfo.subtitle}

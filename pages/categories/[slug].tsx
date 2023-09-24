@@ -58,15 +58,17 @@ export default function BookCategoryPages({
       setCurrentPage(newPage);
    };
 
+   const meta = {
+      maxResultNumber: MAX_ITEMS,
+      pageIndex: currentPage,
+      byNewest: true,
+   };
+
    const { data: googleData, cleanedData } = useGetCategoryQuery({
       initialData: data[category] as GoogleUpdatedFields | undefined,
       category: category as Categories,
       enabled: !!data,
-      meta: {
-         maxResultNumber: MAX_ITEMS,
-         pageIndex: currentPage,
-         byNewest: true,
-      },
+      meta: meta,
       keepPreviousData: true,
       route: { source: 'google', endpoint: 'recent' },
    });
@@ -171,7 +173,7 @@ export default function BookCategoryPages({
                                  subtitle={book.volumeInfo.subtitle}
                                  authors={book.volumeInfo.authors}
                                  description={book.volumeInfo.description}
-                                 fromPage={routes.category(category)}
+                                 routeQuery={routes.category(category, meta)}
                               />
                            </Suspense>
                         </div>
@@ -193,7 +195,7 @@ export default function BookCategoryPages({
                               onMouseEnter={() => onMouseEnter(book.id, index)}
                               onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
                               className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
-                              fromPage={routes.category(category)}
+                              routeQuery={routes.category(category, meta)}
                            />
                         </Suspense>
                         {hoveredEl}
@@ -219,7 +221,7 @@ export default function BookCategoryPages({
                               bookImage={book.book_image}
                               priority={false}
                               className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
-                              fromPage={routes.category(category)}
+                              routeQuery={routes.category(category, meta)}
                            />
                         </Suspense>
                         <div className='flex flex-col items-start justify-start w-full'>
@@ -227,6 +229,7 @@ export default function BookCategoryPages({
                            <BookTitle
                               id={handleNytId.appendSuffix(book.primary_isbn13)}
                               title={capitalizeWords(book.title)}
+                              routeQuery={routes.category(category, meta)}
                               className='text-lg lg:text-xl hover:underline hover:decoration-orange-400 hover:dark:decoration-orange-200'
                            />
                            <p className='text-sm text-clip space-x-0.5 not-first:text-blue-700 not-first:hover:text-blue-500 not-first:dark:text-blue-400 hover:not-first:underline hover:not-first:decoration-orange-400 hover:not-first:dark:decoration-orange-200'>
@@ -258,6 +261,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
    };
 };
 
+// would this only hit the api request for every time a page is visited?
 export const getStaticProps: GetStaticProps<{
    data: CategoryQuery;
    category: string;

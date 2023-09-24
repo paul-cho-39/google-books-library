@@ -1,12 +1,29 @@
 import queryKeys from '../lib/queryKeys';
 import { MetaProps } from '../models/_api/fetchGoogleUrl';
-import { getRouteParams } from '../utils/transformChar';
 
 // TODO: move this file to /api/routes
 const routes = {
-   home: (category: string) => getRouteParams('home', category),
-   search: (search: string) => getRouteParams('search', search),
-   category: (category: string) => getRouteParams('category', category),
+   home: (category: string) => {
+      return {
+         from: 'home',
+         fromQuery: category,
+      };
+   },
+   search: (search: string) => {
+      return {
+         from: 'search',
+         fromQuery: search,
+      };
+   },
+   category: (category: string, meta: MetaProps) => {
+      return {
+         from: 'category',
+         fromQuery: category,
+         maxResultNumber: meta.maxResultNumber,
+         pageIndex: meta.pageIndex,
+         byNewest: meta.byNewest,
+      };
+   },
 } as const;
 
 // TEST WHETHER REACT-QUERY WILL QUERY THE SEARCH
@@ -18,4 +35,9 @@ export const decodeRoutes = {
 
 export default routes;
 
-export type RouteParams = (typeof routes)[keyof typeof routes];
+export type RouteNames = 'home' | 'search' | 'category';
+
+type ReturnedRoutes = ReturnType<(typeof routes)[keyof typeof routes]>;
+export type RouteParams = ReturnedRoutes & {
+   slug?: string;
+};

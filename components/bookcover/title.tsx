@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { LineClamp } from './description';
 import classNames from 'classnames';
+import { RouteParams } from '../../constants/routes';
 
 interface BookTitleProps {
    id: string;
@@ -8,7 +9,7 @@ interface BookTitleProps {
    subtitle?: string;
    lineClamp?: LineClamp;
    hasLink?: boolean;
-   fromPage?: string;
+   routeQuery?: RouteParams;
    className?: string;
 }
 
@@ -18,7 +19,7 @@ const BookTitle = ({
    subtitle,
    lineClamp = 'line-clamp-2',
    hasLink = true,
-   fromPage,
+   routeQuery,
    className,
 }: BookTitleProps) => {
    const content = (
@@ -34,7 +35,7 @@ const BookTitle = ({
          {hasLink ? (
             <Link
                as={`/books/${id}`}
-               href={{ pathname: '/books/[slug]/', query: { from: fromPage } }}
+               href={{ pathname: '/books/[slug]/', query: routeQuery }}
                passHref
             >
                {content}

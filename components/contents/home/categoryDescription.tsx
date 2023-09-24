@@ -1,3 +1,4 @@
+import { RouteParams } from '../../../constants/routes';
 import SingleOrMultipleAuthors from '../../bookcover/authors';
 import BookDescription from '../../bookcover/description';
 import BookTitle from '../../bookcover/title';
@@ -9,7 +10,7 @@ interface CategoryDescriptionParams {
    authors?: string[];
    publishedYear?: string;
    description?: string;
-   fromPage?: string;
+   routeQuery?: RouteParams;
 }
 
 const CategoryDescription = ({
@@ -18,7 +19,7 @@ const CategoryDescription = ({
    subtitle,
    authors,
    description,
-   fromPage,
+   routeQuery,
 }: CategoryDescriptionParams) => {
    return (
       <div className='px-2 py-2 bg-beige overflow-hidden dark:bg-dark-charcoal'>
@@ -41,7 +42,7 @@ const CategoryDescription = ({
                   isLink
                   passHref
                   as={`/books/${id}`}
-                  href={{ pathname: '/books/[slug]/', query: { from: fromPage } }}
+                  href={{ pathname: '/books/[slug]/', query: routeQuery }}
                   description={description}
                   descriptionLimit={250}
                   lineClamp='line-clamp-4'
