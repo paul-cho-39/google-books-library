@@ -16,7 +16,7 @@ const queryKeys = {
    categories: (category: string | string[], meta?: MetaProps) =>
       ['category', { type: category }, meta] as const,
    nytReview: (key: ReviewType, value: string) => [key, { value }] as const,
-   nytBestSellers: (type: NytDataType, date: string | 'current') =>
+   nytBestSellers: (type: NytDataType | string, date: string | 'current') =>
       ['bestSellers', { type: type }, { date: date }] as const,
    singleBook: (bookId: string) => ['singebook', { bookId }],
    bookSearch: (search: string) => [...queryKeys.books, { search }] as const,

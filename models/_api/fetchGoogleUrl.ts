@@ -20,7 +20,7 @@ class GoogleBookApi {
    private static URL_BASE = 'https://www.googleapis.com/books/v1/volumes?q=';
    private static URL_BY_ID = 'https://www.googleapis.com/books/v1/volumes/';
    private static FIELDS =
-      'totalItems,items(id,accessInfo,selfLink,volumeInfo/authors,volumeInfo/averageRating,volumeInfo/ratingsCount,volumeInfo/categories,volumeInfo/description,volumeInfo/pageCount,volumeInfo/publishedDate,volumeInfo/publisher,volumeInfo/subtitle,volumeInfo/title,volumeInfo/imageLinks,volumeInfo/infoLink,volumeInfo/language,volumeInfo/industryIdentifiers)';
+      'totalItems,items(id,accessInfo,selfLink,volumeInfo/authors,volumeInfo/averageRating,volumeInfo/ratingsCount,volumeInfo/categories,volumeInfo/description,volumeInfo/pageCount,volumeInfo/publishedDate,volumeInfo/publisher,volumeInfo/subtitle,volumeInfo/title,volumeInfo/imageLinks,volumeInfo/infoLink,volumeInfo/language,volumeInfo/industryIdentifiers,volumeInfo/averageRating,volumeInfo/ratingsCount)';
    private static KEY = process.env.NEXT_PUBLIC_GOOGLE_KEY || '';
 
    public getCompleteUrlWithQualifiers(qualifiers: QueryQualifiers, meta?: MetaProps) {
@@ -40,7 +40,7 @@ class GoogleBookApi {
    }
 
    public getUrlByIsbn(isbn: string) {
-      const url = `${GoogleBookApi.URL_BASE}isbn:${isbn}`;
+      const url = `${GoogleBookApi.URL_BASE}isbn:${isbn}&fields=${GoogleBookApi.FIELDS}`;
       return this.appender(url);
    }
 
@@ -48,7 +48,6 @@ class GoogleBookApi {
       const url = `${GoogleBookApi.URL_BASE}subject:${subject}`;
       return this.appender(url, meta);
    }
-
    // use individual books to get higher quality images
    // WARNING: some higher quality images do not match the book
    public getUrlByBookId(id: string) {

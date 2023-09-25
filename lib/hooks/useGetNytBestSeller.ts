@@ -2,6 +2,7 @@ import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import nytApi, {
    CategoryQualifiers,
    DateQualifiers,
+   NytCategoryTypes,
    ReviewQualifiers,
 } from '../../models/_api/fetchNytUrl';
 import { fetcher } from '../../utils/fetchData';
@@ -10,9 +11,9 @@ import { BestSellerData, BookReview, Books, ReviewData } from '../types/nytBookT
 import { CategoriesNytQueries, CategoriesQueries } from '../types/serverPropsTypes';
 import { transformStrToArray } from '../../utils/transformChar';
 import { handleNytId } from '../../utils/handleIds';
+import { useEffect, useState } from 'react';
 
 interface NytBookQueryParams {
-   category: CategoryQualifiers;
    date: DateQualifiers | 'current';
 }
 
@@ -21,6 +22,7 @@ interface NytBookMultiQueries extends Partial<NytBookQueryParams> {
 }
 
 interface NytBookSingleQuery extends NytBookQueryParams {
+   category: CategoryQualifiers;
    enabled: boolean;
    initialData?: ReviewData<BestSellerData>;
 }
@@ -80,53 +82,58 @@ export function useGetNytBookReview(qualifiers: ReviewQualifiers, key: keyof Rev
    return data;
 }
 
-export function useGetNytBestSellers({ category, date, initialData }: NytBookMultiQueries) {
+export function useGetNytBestSellers({ initialData, date }: NytBookMultiQueries) {
    const queryClient = useQueryClient();
-   const type = ['fiction', 'nonfiction'];
+   const categories = ['fiction', 'nonfiction'] as unknown as NytCategoryTypes[];
 
    const checkInitialData = !initialData ? {} : initialData;
 
-   const queries = type.map((key) => {
+   const queries = categories.map((cat) => {
       const cache = queryClient.getQueryData(
-         queryKeys.nytBestSellers(key as CategoryQualifiers['type'], date as string)
+         queryKeys.nytBestSellers(cat as CategoryQualifiers['type'], date as string)
       );
       return {
-         queryKey: queryKeys.nytBestSellers(key as CategoryQualifiers['type'], date as string),
-         queryFn: () => {
-            const res = nytApi.getUrlByCategory(category, date);
-            return res;
+         queryKey: queryKeys.nytBestSellers(cat as CategoryQualifiers['type'], date as string),
+         queryFn: async () => {
+            const res = nytApi.getUrlByCategory(
+               { type: cat, format: 'combined-print-and-e-book' },
+               date
+            );
+            return await fetcher(res);
          },
-         initialData: cache || checkInitialData[key],
+         initialData: cache || checkInitialData[cat],
          // suspense: true,
       };
    });
 
-   const queryData = useQueries({
+   const queriesData = useQueries({
       queries: [...queries],
    });
 
-   // transform data
-   const dataWithKeys = type.reduce((acc, cat, index) => {
-      const data = queryData[index];
-      if (data.isError) {
-         throw new Error(`${category} data failed to fetch.`);
-      }
+   const dataIsSuccess = queriesData.every((queryData) => queryData.status === 'success');
+   const dataIsLoading = queriesData.every((queryData) => queryData.status === 'loading');
 
-      acc[cat] = data?.data as BestSellerData;
-      return acc;
-   }, {} as { [key: string]: unknown } as CategoriesNytQueries);
+   let transformedData;
+   if (dataIsSuccess) {
+      const dataWithKeys = categories.reduce((acc, cat, index) => {
+         const queryData = queriesData[index];
 
-   const transformedData = transformData(dataWithKeys);
+         if (queryData.isError) throw new Error(`${cat} data failed to fetch.`);
+         acc[cat.toLocaleLowerCase()] = queryData.data as ReviewData<BestSellerData>;
+         return acc;
+      }, {} as CategoriesNytQueries);
 
-   console.log('HERE ARE THE TRANSFORMED DATA', transformData);
+      const newData = transformData(dataWithKeys);
+      transformedData = newData;
+   }
 
-   return { queryData, transformedData };
+   return { queriesData, dataIsSuccess, dataIsLoading, transformedData };
 }
 
-function transformData<T extends CategoriesNytQueries>(data: T) {
+function transformData(data: CategoriesNytQueries) {
    const sanitized: CategoriesQueries = {};
    for (const [key, value] of Object.entries(data)) {
-      sanitized[key] = value.books.map((book) => ({
+      sanitized[key] = value.results.books.map((book) => ({
          id: handleNytId.appendSuffix(book.primary_isbn13),
          volumeInfo: {
             authors: transformStrToArray(book.author),
@@ -138,9 +145,9 @@ function transformData<T extends CategoriesNytQueries>(data: T) {
                smallThumbnail: '',
             },
          },
-         bestsellers_date: value.bestsellers_date,
+         bestsellers_date: value.results.bestsellers_date,
          weeks_on_list: book.weeks_on_list,
-         displayName: value.display_name,
+         displayName: value.results.display_name,
       }));
    }
    return sanitized;

@@ -1,6 +1,6 @@
 export interface ReviewData<NyData extends BookReview[] | BestSellerData> {
-   copyright: string;
-   num_results: number;
+   copyright?: string;
+   num_results?: number;
    results: NyData;
    //    results: BookReview[] | BestSellerData;
 }

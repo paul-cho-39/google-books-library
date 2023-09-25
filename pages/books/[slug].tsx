@@ -5,7 +5,7 @@ import { lazy } from 'react';
 import filterBookInfo, { FilteredVolumeInfo } from '../../lib/helper/books/filterBookInfo';
 import { Items, Pages, SingleBook } from '../../lib/types/googleBookTypes';
 import { fetcher } from '../../utils/fetchData';
-import { handleNytId } from '../../utils/handleIds';
+import { getBookIdAndSource, handleNytId } from '../../utils/handleIds';
 import BookImage from '../../components/bookcover/bookImages';
 import { getBookWidth } from '../../utils/getBookWidth';
 import BookTitle from '../../components/bookcover/title';
@@ -16,6 +16,9 @@ import BookDetails from '../../components/bookcover/bookDetails';
 import SignInRequiredButton from '../../components/Login/requireUser';
 import { CustomSession } from '../../lib/types/serverPropsTypes';
 import { useRouter } from 'next/router';
+import { getBookById } from '../../lib/helper/books/primaryOrCurrent';
+import useGetBookById from '../../lib/hooks/useGetBookById';
+import { CategoryRouteParams, RouteParams } from '../../constants/routes';
 
 const HEIGHT = 225;
 
@@ -24,14 +27,18 @@ const PopOverButtons = lazy(() => import('./../../components/bookcards/popover/p
 
 // whenever a key is applied it does not seem to work?
 export default function BookPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-   const { id, book, userId } = props;
-   const data = filterBookInfo(book);
+   const {
+      // book,
+      id,
+      userId,
+   } = props;
+   // const data = filterBookInfo(book);
 
    const router = useRouter();
-   const query = router.query;
-   const key = decodeRouteParams(query.from as string);
-   console.log('from page is: ', key);
-   console.log('decoded is: ', query);
+   const query = router.query as CategoryRouteParams | RouteParams;
+
+   const { data } = useGetBookById({ routeParams: query });
+   console.log('the data is: ', data);
    // write a helper function to detail where it is coming from
 
    // NOT only want useGetBookData but also data that is needed to fill
@@ -44,8 +51,8 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
             <div className='flex flex-col items-center justify-center lg:col-span-1 lg:gap-x-0'>
                <BookImage
                   hidden={true}
-                  bookImage={data.imageLinks}
-                  title={data.title as string}
+                  bookImage={data?.volumeInfo.imageLinks}
+                  title={data?.volumeInfo.title as string}
                   height={HEIGHT}
                   width={getBookWidth(HEIGHT)}
                   priority
@@ -56,13 +63,13 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                      type='finished'
                      userId={userId}
                      signedInActiveButton={
-                        <SaveAsFinishedButton book={book} userId={userId as string} />
+                        <SaveAsFinishedButton book={data} userId={userId as string} />
                      }
                   />
                   <SignInRequiredButton
                      type='popover'
                      userId={userId}
-                     signedInActiveButton={<PopOverButtons book={book} userId={userId as string} />}
+                     signedInActiveButton={<PopOverButtons book={data} userId={userId as string} />}
                   />
                </div>
             </div>
@@ -70,24 +77,24 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                <BookTitle
                   id={id}
                   hasLink={false}
-                  title={data.title as string}
-                  subtitle={data.subtitle}
+                  title={data?.volumeInfo.title as string}
+                  subtitle={data?.volumeInfo.subtitle}
                   className='text-xl mb-2 lg:mb-4 lg:text-3xl'
                />
                <div className='mb-1 lg:mb-1 not-first:underline not-first:underline-offset-2 text-slate-800 dark:text-slate-100'>
                   <span className=''>By: </span>
-                  <SingleOrMultipleAuthors authors={data.authors} />
+                  <SingleOrMultipleAuthors authors={data?.volumeInfo.authors} />
                </div>
                <BookPublisher
-                  date={data.publishedDate}
+                  date={data?.volumeInfo.publishedDate}
                   className='mb-1 lg:mb-1 text-md dark:text-slate-100'
                />
                <BookDetails
-                  categories={data.categories}
-                  page={data.pageCount}
-                  publisher={data.publisher}
-                  language={data.language}
-                  infoLinks={data.infoLink}
+                  categories={data?.volumeInfo.categories}
+                  page={data?.volumeInfo.pageCount}
+                  publisher={data?.volumeInfo.publisher}
+                  language={data?.volumeInfo.language}
+                  infoLinks={data?.volumeInfo.infoLink}
                   className='px-6 py-4 md:py-8 lg:py-12'
                />
             </div>
@@ -101,7 +108,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                Descriptions
             </h3>
             <BookDescription
-               description={data.description}
+               description={data?.volumeInfo.description}
                descriptionLimit={250}
                textSize='text-lg'
                isLink={false}
@@ -119,37 +126,29 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
 // c)
 export const getServerSideProps: GetServerSideProps<{
    // data: Partial<FilteredVolumeInfo>;
-   book: Items<any>;
+   // book: Items<any>;
    id: string;
    userId: string | null;
 }> = async (context: any) => {
    const { slug } = context.query as { slug: string };
-   let id: string;
-   let source: string;
 
    const session = await getSession(context);
    const user = session?.user as CustomSession;
    const userId = user?.id || null;
 
-   if (slug.includes(handleNytId.suffix)) {
-      id = handleNytId.removeSuffix(slug);
-      source = 'nyt';
-   } else {
-      id = slug;
-      source = 'google';
-   }
+   const { id, source } = getBookIdAndSource(slug);
 
    // if nyd can also use nyd book image but for now
    // can just fetch the google because of api limitation
-   const book =
-      source === 'google'
-         ? await fetcher(googleApi.getUrlByBookId(id))
-         : await fetcher(googleApi.getUrlByIsbn(id));
+   // const book =
+   //    source === 'google'
+   //       ? await fetcher(googleApi.getUrlByBookId(id))
+   //       : await fetcher(googleApi.getUrlByIsbn(id));
 
    return {
       props: {
          userId: userId,
-         book: book,
+         // book: book,
          // data: filterBookInfo(book),
          id: slug, // pass the original id
       },

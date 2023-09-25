@@ -41,7 +41,7 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
 
    const { data, isLoading, isFetching, isError, isSuccess, hasNextPage, fetchNextPage } =
       useInfiniteQuery(
-         queryKeys.bookSearch(search),
+         queryKeys.bookSearch(search.toLocaleLowerCase()),
          ({ pageParam = 0 as number }) => {
             const url = getUrlFromFilter(pageParam);
             return fetcher(url);
@@ -53,6 +53,7 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
                let pageParam = 1;
                if (lastPage && allPages) {
                   const totalAllPagesLength = allPages.length;
+                  // console.log("THE TOAL LENGTH : ", totalAllPagesLength);
                   const lastPageItems = allPages[totalAllPagesLength - 1]?.totalItems;
 
                   if (lastPage.totalItems === lastPageItems) {

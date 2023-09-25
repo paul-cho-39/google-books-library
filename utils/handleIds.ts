@@ -44,4 +44,15 @@ export const handleCacheKeys = {
    },
 };
 
-type Book = { id: string };
+export function getBookIdAndSource(slug: string) {
+   let id, source;
+   if (slug.includes(handleNytId.suffix)) {
+      id = handleNytId.removeSuffix(slug);
+      source = 'nyt';
+   } else {
+      id = slug;
+      source = 'google';
+   }
+
+   return { id, source };
+}

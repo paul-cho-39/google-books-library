@@ -24,19 +24,41 @@ import { CategoriesQueries } from '../lib/types/serverPropsTypes';
 const CategoryDescription = lazy(() => import('../components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('../components/bookcover/bookImages'));
 
+const MAX_RESULT = 6;
+
 const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
    const { data } = props;
 
-   const { data: user } = useSession();
+   const { data: user } = useSession(); // TODO: pass it from route to route
+
    const [categoriesToLoad, setCategoriesToLoad] = useState(0);
 
-   const { categoryData, dataWithKeys: googleData } = useGetCategoriesQueries({
+   const meta = {
+      maxResultNumber: MAX_RESULT,
+      pageIndex: 0,
+      byNewest: false,
+   };
+
+   const {
+      queriesData,
+      dataWithKeys: googleData,
+      dataIsSuccess: googleDataSuccess,
+   } = useGetCategoriesQueries({
       initialData: data,
       loadItems: categoriesToLoad,
       enabled: !!data,
+      meta,
+      returnNumberOfItems: MAX_RESULT,
    });
 
-   const { transformedData: nytData } = useGetNytBestSellers({});
+   const {
+      queriesData: nytQueries,
+      transformedData: nytData,
+      dataIsSuccess: nytDataSuccess,
+   } = useGetNytBestSellers({});
+
+   // console.log('nytimes data is: ', nytData);
+
    const combinedData = { ...nytData, ...googleData };
 
    const floatingRef = useRef<HTMLDivElement>(null);
@@ -100,6 +122,10 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
    // TODO: Create an error boundary for this?
 
+   if (!nytDataSuccess && !googleDataSuccess) {
+      return <div>Is Loading...</div>;
+   }
+
    return (
       <>
          {Object.entries(combinedData).map(([key, value], index) => (
@@ -128,7 +154,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                                     subtitle={book.volumeInfo.subtitle}
                                     authors={book.volumeInfo.authors}
                                     description={book.volumeInfo.description}
-                                    routeQuery={routes.home(key)}
+                                    routeQuery={routes.home(key, meta)}
                                  />
                               </Suspense>
                            </div>
@@ -153,7 +179,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                                  onMouseLeave={(e: React.MouseEvent) =>
                                     onMouseLeave(e, floatingRef)
                                  }
-                                 routeQuery={routes.home(key)}
+                                 routeQuery={routes.home(key, meta)}
                                  className={classNames(
                                     isHovered.hovered && isHovered.id === book.id
                                        ? 'opacity-70'

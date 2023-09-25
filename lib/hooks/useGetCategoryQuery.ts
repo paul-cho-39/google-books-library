@@ -11,7 +11,6 @@ import { Pages, Items, GoogleUpdatedFields } from '../types/googleBookTypes';
 import { createUniqueData } from '../helper/books/filterUniqueData';
 import { FetchCacheType, fetchDataFromCache, fetcher } from '../../utils/fetchData';
 import { CategoriesQueries, CategoryQuery } from '../types/serverPropsTypes';
-import { useState } from 'react';
 
 interface CategoryQueryParams<TData extends CategoriesQueries | GoogleUpdatedFields> {
    initialData?: TData;
@@ -27,6 +26,7 @@ interface SingleQuery extends CategoryQueryParams<GoogleUpdatedFields> {
 
 interface MultipleQueries extends CategoryQueryParams<CategoriesQueries> {
    loadItems: number;
+   returnNumberOfItems?: number;
 }
 
 export default function useGetCategoryQuery({
@@ -38,18 +38,16 @@ export default function useGetCategoryQuery({
    keepPreviousData,
 }: SingleQuery) {
    const queryClient = new QueryClient();
-   // const [cleanedData, setCleanedData] = useState<Items<any>[] | null>(null);
 
+   const lowercaseCategory = (category as string).toLocaleLowerCase();
    const cache = queryClient.getQueryData(
-      queryKeys.categories(category as string, meta)
+      queryKeys.categories(lowercaseCategory, meta)
    ) as GoogleUpdatedFields;
 
    const data = useQuery<GoogleUpdatedFields, unknown, GoogleUpdatedFields>(
-      queryKeys.categories(category as string, meta),
+      queryKeys.categories(lowercaseCategory, meta),
       async () => {
-         // const res = await fetchDataFromCache<GoogleUpdatedFields>(category, route);
-         // return res.data;
-         const url = googleApi.getUrlBySubject(category, meta);
+         const url = googleApi.getUrlBySubject(lowercaseCategory, meta);
          const data = await fetcher(url);
          return data;
       },
@@ -65,14 +63,7 @@ export default function useGetCategoryQuery({
       throw new Error(`${data.failureReason}`);
    }
 
-   // if (data && data.data.items) {
-   //    const sanitized = createUniqueData(data.data.items);
-   //    setCleanedData(sanitized);
-   // }
-
    const cleanedData = createUniqueData(data?.data?.items);
-
-   console.log('cleaned data is: ', cleanedData);
 
    return {
       cleanedData,
@@ -80,51 +71,50 @@ export default function useGetCategoryQuery({
    };
 }
 
-// what happens when the page is refreshed?
-// if the page is refreshed the data has to be fetched again?
-// does this call for zustand(?) so that it stores the info
-// inside the cache?
+// change the cache here
 const LOAD_ITEMS = 4;
 export function useGetCategoriesQueries({
    initialData,
    loadItems,
    enabled,
    meta,
+   returnNumberOfItems = 6,
 }: MultipleQueries) {
    const allCategories = [...serverSideCategories, ...topCategories];
 
+   const itemsToSlice = Math.min(returnNumberOfItems, meta?.maxResultNumber ?? 15);
    const updatedCategories = allCategories.slice(0, loadItems + LOAD_ITEMS);
 
    const queryClient = useQueryClient();
    const cache = queryClient.getQueryData<CategoriesQueries>(queryKeys.allGoogleCategories);
 
    const categoryKeys = updatedCategories.map((category, index) => {
+      const lowercaseCategory = category.toLocaleLowerCase();
       return {
-         queryKey: queryKeys.categories(category, meta),
+         queryKey: queryKeys.categories(lowercaseCategory, meta),
          queryFn: async () => {
-            const res = await fetchDataFromCache<GoogleUpdatedFields>(category, {
-               source: 'google',
-               endpoint: 'relevant',
-            });
-
-            return res.data.items;
+            const url = googleApi.getUrlBySubject(lowercaseCategory, meta);
+            const data = await fetcher(url);
+            return data;
          },
          initialData: () => {
-            const serverCategory = serverSideCategories.includes(category) ? category : null;
-            if (initialData && serverCategory) {
-               return initialData[serverCategory.toLowerCase()];
+            if (initialData) {
+               return initialData[lowercaseCategory];
             }
          },
+         // select: (data: GoogleUpdatedFields) => data.items,
          enabled: enabled,
       };
    });
 
-   const categoryData = useQueries<unknown[]>({
-      queries: [...categoryKeys, {}],
+   const queriesData = useQueries<unknown[]>({
+      queries: categoryKeys,
    });
 
+   const dataIsSuccess = queriesData.every((queryData) => queryData.status === 'success');
+
    const dataWithKeys = updatedCategories.reduce((acc, category, index) => {
-      const queryData = categoryData[index];
+      const queryData = queriesData[index];
 
       // DEBUGGING
       if (queryData.isError) {
@@ -132,14 +122,21 @@ export function useGetCategoriesQueries({
       }
 
       const data = queryData.data as Items<any>[];
+      const cleanedData = createUniqueData(data)?.slice(0, itemsToSlice);
 
-      const sanitized = createUniqueData(data);
-      acc[category.toLowerCase()] = sanitized?.slice(0, 6);
+      acc[category.toLowerCase()] = cleanedData;
 
       return acc;
    }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
 
-   queryClient.setQueryData(queryKeys.allGoogleCategories, dataWithKeys);
+   if (!cache) {
+      queryClient.setQueryData(queryKeys.allGoogleCategories, dataWithKeys);
+   }
 
-   return { dataWithKeys, categoryData };
+   return {
+      dataWithKeys,
+      // transformedData,
+      queriesData,
+      dataIsSuccess,
+   };
 }

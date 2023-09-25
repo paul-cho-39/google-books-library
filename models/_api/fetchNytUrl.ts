@@ -10,8 +10,10 @@ export interface DateQualifiers {
    publishedDate?: string;
 }
 
+export type NytCategoryTypes = 'fiction' | 'nonfiction' | 'trade-fiction';
+
 export interface CategoryQualifiers {
-   type: 'fiction' | 'nonfiction' | 'trade-fiction';
+   type: NytCategoryTypes;
    format: 'hardcover' | 'paperback' | 'combined-print-and-e-book';
 }
 
@@ -102,3 +104,6 @@ class NewYorkTimesApi {
 
 const nytApi = new NewYorkTimesApi();
 export default nytApi;
+
+// create a function where it sanitizes the date
+// so it always returns yyyy-mm-dd -> beginning of the month every time

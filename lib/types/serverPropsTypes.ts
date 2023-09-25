@@ -14,7 +14,7 @@ type CombinedData = {
 export type CategoriesDataParams = Record<string, Pages<any> | null>;
 export type CategoryQuery = Record<string, GoogleUpdatedFields | null>;
 export type CategoriesQueries = Record<string, CombinedData[] | null>;
-export type CategoriesNytQueries = Record<string, BestSellerData>;
+export type CategoriesNytQueries = Record<string, ReviewData<BestSellerData>>;
 
 export interface CustomSession extends DefaultSession {
    id: string | null | undefined;

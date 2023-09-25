@@ -26,7 +26,13 @@ const CategoryDescription = ({
          <div className='w-full h-full flex flex-col px-2 bg-white dark:bg-slate-900'>
             <div className='flex flex-col'>
                <div className='w-full'>
-                  <BookTitle id={id} title={title} subtitle={subtitle} className='text-md' />
+                  <BookTitle
+                     id={id}
+                     title={title}
+                     subtitle={subtitle}
+                     hasLink={false}
+                     className='text-md'
+                  />
                </div>
 
                {/* another component for reusability */}
