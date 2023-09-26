@@ -234,7 +234,10 @@ export default function BookCategoryPages({
                            />
                            <p className='text-sm text-clip space-x-0.5 not-first:text-blue-700 not-first:hover:text-blue-500 not-first:dark:text-blue-400 hover:not-first:underline hover:not-first:decoration-orange-400 hover:not-first:dark:decoration-orange-200'>
                               <span className='dark:text-slate-50'>by{': '}</span>
-                              <SingleOrMultipleAuthors authors={book.author} />
+                              <SingleOrMultipleAuthors
+                                 hoverUnderline={true}
+                                 authors={book.author}
+                              />
                            </p>
                         </div>
                      </div>

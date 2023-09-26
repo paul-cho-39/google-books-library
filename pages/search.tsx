@@ -52,7 +52,7 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
 
    const totalItems = data?.pages?.[0]?.totalItems || 0;
 
-   if (isLoading || isFetching) {
+   if (!data && (isLoading || isFetching)) {
       return <div>Loading...</div>;
    }
 

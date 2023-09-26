@@ -56,6 +56,7 @@ const FilterInput: React.FunctionComponent<FilterComponentProps> = ({ filter, se
                      value={filter.filterBy}
                      onChange={(e) => handleChange(e, 'filterBy')}
                   >
+                     <option value='all'>All</option>
                      <option value='title'>Title</option>
                      <option value='author'>Author</option>
                      <option value='isbn'>ISBN</option>

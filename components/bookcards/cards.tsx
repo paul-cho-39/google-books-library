@@ -62,12 +62,15 @@ const Cards: React.FunctionComponent<{
                                        hasLink
                                        title={book?.volumeInfo.title}
                                        subtitle={book?.volumeInfo.subtitle}
-                                       className='text-lg lg:text-xl'
+                                       className='text-lg lg:text-xl hover:underline hover:underline-offset-1 hover:decoration-slate-200 dark:hover:decoration-slate-300'
                                     />
                                  </div>
-                                 <p className='row-start-2 w-full text-sm text-clip space-x-0.5 not-first:text-blue-700 not-first:hover:text-blue-500 not-first:dark:text-blue-400 '>
+                                 <p className='row-start-2 w-full text-sm text-clip space-x-0.5 '>
                                     <span className='dark:text-slate-50'>by{': '}</span>
-                                    <SingleOrMultipleAuthors authors={book?.volumeInfo.authors} />
+                                    <SingleOrMultipleAuthors
+                                       hoverUnderline={true}
+                                       authors={book?.volumeInfo.authors}
+                                    />
                                  </p>
                               </div>
                               {/* dropdown buttons for large */}

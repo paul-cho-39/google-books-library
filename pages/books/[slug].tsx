@@ -69,9 +69,12 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   subtitle={data?.volumeInfo.subtitle}
                   className='text-xl mb-2 lg:mb-4 lg:text-3xl'
                />
-               <div className='mb-1 lg:mb-1 not-first:underline not-first:underline-offset-2 text-slate-800 dark:text-slate-100'>
+               <div className='mb-1 lg:mb-1 '>
                   <span className=''>By: </span>
-                  <SingleOrMultipleAuthors authors={data?.volumeInfo.authors} />
+                  <SingleOrMultipleAuthors
+                     hoverUnderline={true}
+                     authors={data?.volumeInfo.authors}
+                  />
                </div>
                <BookPublisher
                   date={data?.volumeInfo.publishedDate}

@@ -57,7 +57,8 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
                   const lastPageItems = allPages[totalAllPagesLength - 1]?.totalItems;
 
                   if (lastPage.totalItems === lastPageItems) {
-                     return totalAllPagesLength * 10;
+                     pageParam = Math.max(pageParam, 15);
+                     return totalAllPagesLength * pageParam;
                   } else {
                      return undefined;
                   }
