@@ -63,7 +63,7 @@ export const Sample = () => {
       //    //  className={`${styles.scrollbars} text-center`}
       //    //  className='bg-slate-100 flex overflow-x-auto space-x-14 border-gray-300 p-4'
       // >
-      <div className='scollbars flex items-start justify-evenly space-x-8'>
+      <div className='scrollbarX flex items-start justify-evenly space-x-8'>
          <div style={{ height, width }} className='bg-red-200 px-1 '>
             Item 1
          </div>

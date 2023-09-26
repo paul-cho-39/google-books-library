@@ -3,6 +3,7 @@ import { ThemeToggler } from '../buttons/themeToggler';
 import IsSession from '../Login/isSession';
 import { NavigationProps } from '../../lib/types/theme';
 import SearchInput from '../inputs/search';
+import HomeIcon from '../icons/homeIcon';
 
 export const LargeNavigation = ({
    user,
@@ -16,11 +17,12 @@ export const LargeNavigation = ({
       <>
          <div className='flex items-center w-full h-full px-8'>
             {/* Home Link */}
-            <div className='mr-auto'>
+            {/* <div className='mr-auto'>
                <Link href='/'>
                   <span className='text-xl font-bold text-slate-800 dark:text-slate-100'>Logo</span>
                </Link>
-            </div>
+            </div> */}
+            <HomeIcon />
 
             {/* Menu Items */}
             {/* <nav className='h-full flex justify-center items-center space-x-1'>

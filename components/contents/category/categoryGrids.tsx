@@ -15,7 +15,7 @@ export const CategoryGridLarge = ({
          <CategoryHeader className='mb-4 lg:mb-6' category={category} />
          <div
             ref={forwardRef}
-            className='relative scollbars lg:overflow-hidden grid grid-cols-3 lg:grid-cols-5 grid-rows-3'
+            className='relative scrollbarX lg:overflow-hidden grid grid-cols-3 lg:grid-cols-5 grid-rows-3'
          >
             {children}
          </div>

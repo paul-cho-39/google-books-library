@@ -29,35 +29,46 @@ html {
 
 @layer utilities {
   
-  .scollbars {
+  .scrollbarX {
+    overflow-x: scroll;
+    scrollbar-width: 8px;
+    scrollbar-color: transparent transparent;
+  }
+
+  .scrollbarY {
     overflow-x: scroll;
     scrollbar-width: 8px;
     scrollbar-color: transparent transparent;
   }
   
-  .scollbars:hover,
-  .scollbars:active {
+  .scrollbarX:hover,
+  .scrollbarX:active,
+  .scrollbarY:hover,
+  .scrollbarY:active {
     scrollbar-color: rgb(250, 250, 250) rgb(199, 186, 186);
   }
   
   /* Webkit browsers like Chrome, Safari, etc. */
-  .scollbars::-webkit-scrollbar {
+  .scrollbarX::-webkit-scrollbar, .scrollbarY::-webkit-scrollbar {
     height: 16px;
   }
   
-  .scollbars::-webkit-scrollbar-thumb {
+  .scrollbarX::-webkit-scrollbar-thumb, .scrollbarY::-webkit-scrollbar-thumb {
     background-color: transparent;
   }
   
-  .scollbars:hover::-webkit-scrollbar-thumb {
+  .scrollbarY:hover::-webkit-scrollbar-thumb,
+  .scrollbarX:hover::-webkit-scrollbar-thumb {
     background-color: rgb(250, 250, 250);
   }
   
-  .scollbars:active::-webkit-scrollbar-thumb {
+  .scrollbarX:active::-webkit-scrollbar-thumb,
+  .scrollbarY:active::-webkit-scrollbar-thumb {
     background-color: rgb(199, 186, 186)
   }
 
-  .scollbars::-webkit-scrollbar-thumb {
+  .scrollbarX::-webkit-scrollbar-thumb,
+  .scrollbarY::-webkit-scrollbar-thumb {
     background-color: transparent;
     border: 4px solid transparent;
     background-clip: padding-box;

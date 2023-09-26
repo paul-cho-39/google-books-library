@@ -64,8 +64,6 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
       );
    }
 
-   console.log('unique data sets are: ', uniqueDataSets);
-
    // TODO: error boundary here;
    return (
       <div className='mx-auto px-4 lg:px-16 lg:py-2 dark:slate-800'>

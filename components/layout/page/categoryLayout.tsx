@@ -13,12 +13,12 @@ const CategoryLayout = ({ category, children, className, forwardRef }: CategoryL
    return (
       <article
          id={category as string}
-         className='xl:ml-14 scollbars overflow-y-hidden lg:overflow-hidden'
+         className='xl:ml-14 scrollbarX overflow-y-hidden lg:overflow-hidden'
       >
          <div
             className={classNames(
                className,
-               'scollbars lg:overflow-x--hidden px-1 py-1 md:max-w-2xl lg:px-2 lg:py-2 lg:max-w-4xl'
+               'scrollbarX lg:overflow-x--hidden px-1 py-1 md:max-w-2xl lg:px-2 lg:py-2 lg:max-w-4xl'
             )}
          >
             {children}

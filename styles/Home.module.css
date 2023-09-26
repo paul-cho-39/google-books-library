@@ -82,34 +82,3 @@
     scrollbar-width: 8px;
     scrollbar-color: transparent transparent;
   }
-  
-  /* Show the scrollbar on hover or touch */
-  .scollbars:hover,
-  .scollbars:active {
-    scrollbar-color: rgb(250, 250, 250) rgb(199, 186, 186);
-  }
-  
-  /* Webkit browsers like Chrome, Safari, etc. */
-  .scollbars::-webkit-scrollbar {
-    height: 16px;
-  }
-  
-  .scollbars::-webkit-scrollbar-thumb {
-    background-color: transparent;
-  }
-  
-  .scollbars:hover::-webkit-scrollbar-thumb {
-    background-color: rgb(250, 250, 250);
-  }
-  
-  .scollbars:active::-webkit-scrollbar-thumb {
-    background-color: rgb(199, 186, 186)
-  }
-
-  .scollbars::-webkit-scrollbar-thumb {
-    background-color: transparent;
-    border: 4px solid transparent;
-    background-clip: padding-box;
-    border-radius: 10px;
-  }
-  

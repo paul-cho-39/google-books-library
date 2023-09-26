@@ -7,14 +7,14 @@ import classNames from 'classnames';
 export const CategoryDisplay = ({ category, children, forwardRef }: CategoryLayoutProps) => {
    return (
       <CategoryLayout
-         className='scollbars w-[175vw] lg:w-full lg:overflow-hidden'
+         className='scrollbarX w-[175vw] lg:w-full lg:overflow-hidden'
          category={category}
       >
          <CategoryHeader className='mb-4' category={category} />
          <div
             ref={forwardRef}
             className='relative lg:grid lg:grid-cols-6'
-            // className='relative scollbars grid grid-cols-3 lg:grid lg:grid-cols-6'
+            // className='relative scrollbarX grid grid-cols-3 lg:grid lg:grid-cols-6'
          >
             {children}
          </div>

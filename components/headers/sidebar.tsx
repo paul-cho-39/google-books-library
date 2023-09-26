@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import { capitalizeWords } from '../../utils/transformChar';
 import { useScrollDirection } from '../../lib/hooks/useScrollDirection';
 import Link from 'next/link';
+import HomeIcon from '../icons/homeIcon';
 
 export interface SideNavigationProps {
    sidebarOpen: boolean;
@@ -39,8 +40,7 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
          <Transition.Root show={sidebarOpen} as={Fragment}>
             <Dialog
                as='div'
-               className='hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-80 lg:flex-col'
-               // className='hidden lg:relative'
+               className='hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-80 lg:flex-col mt-16'
                open={sidebarOpen}
                onClose={() => setSidebarOpen(true)}
             >
@@ -56,19 +56,22 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                >
                   <Dialog.Panel
                      as='div'
-                     className='flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-beige px-6 pb-4 dark:bg-charcoal'
+                     className='flex grow flex-col gap-y-5 scrollbarY overflow-y-auto border-r border-gray-200 bg-beige px-6 pb-4 dark:bg-charcoal'
                   >
-                     <div className='flex h-16 shrink-0 items-center justify-end'>
-                        <button type='button' onClick={() => setSidebarOpen(false)}>
-                           <span className='sr-only'>Close sidebar</span>
-                           <ArrowLeftOnRectangleIcon
-                              role='button'
-                              aria-label='Close sidebar navigation'
-                              className='inline h-6 cursor-pointer dark:stroke-slate-300'
-                           />
-                        </button>
-                     </div>
-                     <nav className='flex flex-1 flex-col'>
+                     {/* <div className='fixed block left-[16rem] -top-10 z-50'>
+                        <div className='flex h-16 shrink-0 items-center justify-end'>
+                           <button onClick={() => setSidebarOpen(false)}>
+                              <span className='sr-only'>Close sidebar</span>
+                              <ArrowLeftOnRectangleIcon
+                                 role='button'
+                                 title='Close Sidebar'
+                                 aria-label='Close sidebar navigation'
+                                 className='inline h-6 cursor-pointer dark:stroke-slate-300'
+                              />
+                           </button>
+                        </div>
+                     </div> */}
+                     <nav className='flex flex-1 flex-col py-6'>
                         <CategoryHeader />
                         <ul role='list' className='flex flex-1 flex-col gap-y-7'>
                            <li>
@@ -102,24 +105,41 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                </Transition.Child>
             </Dialog>
          </Transition.Root>
-         <div
-            className={classNames(
-               sidebarOpen ? 'opacity-0' : 'opacity-100',
-               isTop ? 'top-16' : 'top-0',
-               'fixed z-40 h-16 inline-flex items-center left-10 transition-opacity duration-150 ease-out'
-            )}
-         >
-            <button type='button' onClick={() => setSidebarOpen(true)}>
-               <span className='sr-only'>Close sidebar</span>
-               <ArrowRightOnRectangleIcon
-                  aria-hidden
-                  title={sidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
-                  xlinkTitle={sidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
-                  role='button'
-                  className='inline h-6 cursor-pointer dark:stroke-slate-300'
-               />
-            </button>
-         </div>
+         {!sidebarOpen ? (
+            <div
+               className={classNames(
+                  sidebarOpen ? 'opacity-0' : 'opacity-100',
+                  isTop ? 'top-16' : 'top-0',
+                  'fixed z-40 h-16 inline-flex items-center left-10 transition-opacity duration-150 ease-out'
+               )}
+            >
+               <button type='button' onClick={() => setSidebarOpen(true)}>
+                  <span className='sr-only'>Close sidebar</span>
+                  <ArrowRightOnRectangleIcon
+                     aria-hidden
+                     title={sidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
+                     xlinkTitle={sidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
+                     role='button'
+                     className='inline h-6 cursor-pointer dark:stroke-slate-300'
+                  />
+               </button>
+            </div>
+         ) : (
+            <div className='fixed flex w-80 -top-0 z-50 bg-beige dark:bg-charcoal'>
+               <HomeIcon />
+               <div className='px-6 flex h-16 shrink-0 items-center justify-end'>
+                  <button onClick={() => setSidebarOpen(false)}>
+                     <span className='sr-only'>Close sidebar</span>
+                     <ArrowLeftOnRectangleIcon
+                        role='button'
+                        title='Close Sidebar'
+                        aria-label='Close sidebar navigation'
+                        className='inline h-6 cursor-pointer dark:stroke-slate-300'
+                     />
+                  </button>
+               </div>
+            </div>
+         )}
       </>
    );
 };
