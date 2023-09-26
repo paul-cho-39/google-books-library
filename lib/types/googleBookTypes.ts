@@ -7,7 +7,7 @@ export interface Data<T extends Record<string, string>> {
 
 export interface Pages<T extends Record<string, string>> {
    items: Items<T>[];
-   totalItems: number;
+   totalItems?: number;
    kind?: string;
 }
 
@@ -94,7 +94,7 @@ export type ImageLinks = {
 };
 
 export interface FilterProps {
-   filterBy: 'title' | 'author' | 'isbn';
+   filterBy: 'all' | 'title' | 'author' | 'isbn';
    filterBookParams?: FilterParams;
 }
 

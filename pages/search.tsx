@@ -23,13 +23,13 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    const pageLoader = useRef<HTMLDivElement>(null);
 
    const [filter, setFilter] = useState<FilterProps>({
-      filterBy: 'title',
+      filterBy: 'all',
    });
 
    const meta = (page: number): MetaProps => {
       return {
          maxResultNumber: 15,
-         pageIndex: page,
+         pageIndex: page ?? 0,
          byNewest: false,
       };
    };
@@ -53,7 +53,7 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    const totalItems = data?.pages?.[0]?.totalItems || 0;
 
    if (isLoading || isFetching) {
-      console.log('it is fetching');
+      return <div>Loading...</div>;
    }
 
    if (!data || isError || ((!isLoading || !isFetching) && totalItems < 1)) {
@@ -63,6 +63,8 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
          </EmptyResult>
       );
    }
+
+   console.log('unique data sets are: ', uniqueDataSets);
 
    // TODO: error boundary here;
    return (

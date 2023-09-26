@@ -1,11 +1,7 @@
 import { getSession } from 'next-auth/react';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import googleApi from '../../models/_api/fetchGoogleUrl';
 import { lazy } from 'react';
-import filterBookInfo, { FilteredVolumeInfo } from '../../lib/helper/books/filterBookInfo';
-import { Items, Pages, SingleBook } from '../../lib/types/googleBookTypes';
-import { fetcher } from '../../utils/fetchData';
-import { getBookIdAndSource, handleNytId } from '../../utils/handleIds';
+
 import BookImage from '../../components/bookcover/bookImages';
 import { getBookWidth } from '../../utils/getBookWidth';
 import BookTitle from '../../components/bookcover/title';
@@ -16,7 +12,6 @@ import BookDetails from '../../components/bookcover/bookDetails';
 import SignInRequiredButton from '../../components/Login/requireUser';
 import { CustomSession } from '../../lib/types/serverPropsTypes';
 import { useRouter } from 'next/router';
-import { getBookById } from '../../lib/helper/books/primaryOrCurrent';
 import useGetBookById from '../../lib/hooks/useGetBookById';
 import { CategoryRouteParams, RouteParams } from '../../constants/routes';
 
@@ -27,24 +22,17 @@ const PopOverButtons = lazy(() => import('./../../components/bookcards/popover/p
 
 // whenever a key is applied it does not seem to work?
 export default function BookPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-   const {
-      // book,
-      id,
-      userId,
-   } = props;
-   // const data = filterBookInfo(book);
+   const { id, userId } = props;
 
    const router = useRouter();
    const query = router.query as CategoryRouteParams | RouteParams;
 
-   const { data } = useGetBookById({ routeParams: query });
-   console.log('the data is: ', data);
-   // write a helper function to detail where it is coming from
+   const { data, isLoading } = useGetBookById({ routeParams: query });
 
-   // NOT only want useGetBookData but also data that is needed to fill
-   // in here which are analytics of the book
+   if (isLoading) {
+      return <div>Loading...</div>;
+   }
 
-   // TODO: create an error boundary page
    return (
       <div className='mx-auto w-full min-h-screen overflow-y-auto dark:bg-slate-800'>
          <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 lg:grid lg:grid-cols-3 lg:max-w-4xl'>
@@ -119,37 +107,21 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    );
 }
 
-// the tradeoff b/w fetching from the cached result and requesting new data
-// are :
-// a) resolution of the image. It is much lower and only have 'smallThumbnail'
-// b) less defined cateogires
-// c)
 export const getServerSideProps: GetServerSideProps<{
-   // data: Partial<FilteredVolumeInfo>;
-   // book: Items<any>;
    id: string;
    userId: string | null;
 }> = async (context: any) => {
    const { slug } = context.query as { slug: string };
 
+   console.log('the book is here right now');
+
    const session = await getSession(context);
    const user = session?.user as CustomSession;
    const userId = user?.id || null;
 
-   const { id, source } = getBookIdAndSource(slug);
-
-   // if nyd can also use nyd book image but for now
-   // can just fetch the google because of api limitation
-   // const book =
-   //    source === 'google'
-   //       ? await fetcher(googleApi.getUrlByBookId(id))
-   //       : await fetcher(googleApi.getUrlByIsbn(id));
-
    return {
       props: {
          userId: userId,
-         // book: book,
-         // data: filterBookInfo(book),
          id: slug, // pass the original id
       },
    };

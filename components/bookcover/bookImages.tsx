@@ -2,8 +2,6 @@ import Image, { ImageProps } from 'next/image';
 import { ImageLinks, ImageLinksPairs } from '../../lib/types/googleBookTypes';
 import { getAvailableThumbnail } from '../../lib/helper/books/editBookPageHelper';
 import clsx from 'clsx';
-import classNames from 'classnames';
-import { ForwardRefRenderFunction, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { RouteParams } from '../../constants/routes';
 
@@ -20,7 +18,6 @@ interface BookImageProps<T extends GoogleImages | string> extends OmittedImagePr
    routeQuery?: RouteParams;
    isLinkHidden?: boolean;
    forwardedRef?: (el: HTMLDivElement) => void;
-   // forwardedRef?: Record<string, HTMLDivElement | null>;
    onMouseEnter?: () => void;
    onMouseLeave?: (e: React.MouseEvent) => void;
    className?: string;

@@ -1,15 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-   CategoryRouteParams,
-   CheckCategoryRouteParams,
-   RouteNames,
-   RouteParams,
-   decodeRoutes,
-} from '../../constants/routes';
+import { CategoryRouteParams, RouteNames, RouteParams, decodeRoutes } from '../../constants/routes';
 import queryKeys from '../queryKeys';
 import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import { getBookIdAndSource } from '../../utils/handleIds';
-import { Data, GoogleUpdatedFields } from '../types/googleBookTypes';
+import { Data, GoogleUpdatedFields, Items } from '../types/googleBookTypes';
 import { fetcher } from '../../utils/fetchData';
 
 export interface SingleBookQueryParams<TRoute extends CategoryRouteParams | RouteParams> {
@@ -21,26 +15,21 @@ export default function useGetBookById<
    TRoute extends CategoryRouteParams | RouteParams,
    CacheData extends Data<Record<string, string>> | GoogleUpdatedFields
 >({ routeParams, accessFullBookUrl = false }: SingleBookQueryParams<TRoute>) {
-   // basically if source is equal to nyt then it should go directly
+   // if source is equal to nyt then it should go directly
    // to fetching the data instead of the queryKey;
+
    const { id, source } = getBookIdAndSource(routeParams.slug as string);
-   const queryKey = getQueryKeys(routeParams);
    // home should have this too
 
    const queryClient = useQueryClient();
+   const initialData = queryClient.getQueryData<CacheData>(queryKeys.singleBook(id));
 
-   console.log('----------------------------');
-   console.log('here is the query Keys before: ', queryKey);
-
-   // FROM HOME AND CATEGORY THIS IS GOOGLEUPDATEDFIELDS
-   const cache = queryClient.getQueryData<CacheData>(queryKey);
-
-   const book = findBookId(cache, id, source);
-
-   console.log('----------------------------');
-   console.log('the cache here is: ', cache);
-   console.log('----------------------------');
-   console.log('the BOOK here is: ', book);
+   let book: Items<Record<string, string>> | GoogleUpdatedFields | undefined;
+   if (!initialData || initialData === null) {
+      const queryKey = getQueryKeys(routeParams);
+      const secondaryCache = queryClient.getQueryData<CacheData>(queryKey);
+      book = findBookId(secondaryCache, id, source);
+   }
 
    const queryResult = useQuery(
       queryKeys.singleBook(routeParams?.slug as string),
@@ -52,13 +41,12 @@ export default function useGetBookById<
          return data;
       },
       {
-         initialData: book,
-         select: (data) => {
-            if (Array.isArray(data)) return data;
-         },
-         enabled: !cache,
+         initialData: () => initialData || book,
+         enabled: !!id && !initialData && !book,
+         onSuccess: (data) => queryClient.setQueryData(queryKeys.singleBook(id), data),
       }
    );
+
    return queryResult;
 }
 
@@ -70,7 +58,7 @@ function findBookId<CacheData extends Data<Record<string, string>> | GoogleUpdat
 ) {
    if (source === 'nyt' || !cache) return;
    if ('items' in cache) {
-      return cache?.items.find((book) => book.id === id);
+      return cache?.items.find((book) => book.id === id) as unknown as GoogleUpdatedFields;
    } else {
       for (const page of cache.pages) {
          for (const item of page.items) {
@@ -80,12 +68,13 @@ function findBookId<CacheData extends Data<Record<string, string>> | GoogleUpdat
          }
       }
    }
-   return;
 }
 
 function getQueryKeys(routeParams: RouteParams | CategoryRouteParams) {
+   if (!routeParams.from || !routeParams.fromQuery) return [];
+
    const from = routeParams.from as RouteNames;
-   const lowerCased = routeParams.fromQuery.toLocaleLowerCase();
+   const lowerCased = routeParams.fromQuery?.toLocaleLowerCase();
    if (from === 'category' || from === 'home') {
       const { maxResultNumber, pageIndex, byNewest } = routeParams as CategoryRouteParams;
       const meta: MetaProps = {
@@ -95,8 +84,8 @@ function getQueryKeys(routeParams: RouteParams | CategoryRouteParams) {
       };
 
       const queryKey = decodeRoutes[from];
-      return queryKey(lowerCased, meta);
+      return queryKey(lowerCased as string, meta);
    }
    const queryKey = decodeRoutes[from];
-   return queryKey(lowerCased);
+   return queryKey(lowerCased as string);
 }

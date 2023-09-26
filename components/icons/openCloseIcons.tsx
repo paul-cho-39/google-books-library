@@ -13,7 +13,7 @@ export const Close = ({ className, ...props }: ReactIconProps) => {
          aria-hidden='true'
          {...props}
       >
-         <path strokeLinecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12' />
+         <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
       </svg>
    );
 };
@@ -32,7 +32,7 @@ export const MenuBars = ({ className, ...props }: ReactIconProps) => {
       >
          <path
             strokeLinecap='round'
-            stroke-linejoin='round'
+            strokeLinejoin='round'
             d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'
          />
       </svg>

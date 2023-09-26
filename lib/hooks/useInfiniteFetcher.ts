@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import queryKeys from '../queryKeys';
 import { fetcher } from '../../utils/fetchData';
@@ -15,6 +15,7 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
       const metaProps = meta(pageParam);
 
       const urlGenerators = {
+         all: () => googleApi.getUrlByQuery(search, metaProps),
          author: () =>
             googleApi.getCompleteUrlWithQualifiers(
                {
@@ -42,7 +43,7 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
    const { data, isLoading, isFetching, isError, isSuccess, hasNextPage, fetchNextPage } =
       useInfiniteQuery(
          queryKeys.bookSearch(search.toLocaleLowerCase()),
-         ({ pageParam = 0 as number }) => {
+         ({ pageParam = 0 }) => {
             const url = getUrlFromFilter(pageParam);
             return fetcher(url);
          },
@@ -50,14 +51,13 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
             getNextPageParam: (lastPage, allPages) => {
                // // google book api ordering is off
                // // tested and cannot seem to find the proper ordering?
-               let pageParam = 1;
+               let pageParam = 0;
                if (lastPage && allPages) {
                   const totalAllPagesLength = allPages.length;
-                  // console.log("THE TOAL LENGTH : ", totalAllPagesLength);
                   const lastPageItems = allPages[totalAllPagesLength - 1]?.totalItems;
 
                   if (lastPage.totalItems === lastPageItems) {
-                     return totalAllPagesLength * pageParam;
+                     return totalAllPagesLength * 10;
                   } else {
                      return undefined;
                   }
@@ -67,6 +67,7 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
             keepPreviousData: true,
          }
       );
+
    return {
       data,
       isLoading,

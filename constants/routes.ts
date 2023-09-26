@@ -41,7 +41,7 @@ export default routes;
 export type RouteNames = 'home' | 'search' | 'category';
 
 type ReturnedRoutes = ReturnType<(typeof routes)[keyof typeof routes]>;
-export type RouteParams = ReturnedRoutes & {
+export type RouteParams = Partial<ReturnedRoutes> & {
    slug?: string;
 };
 

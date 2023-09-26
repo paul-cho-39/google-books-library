@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import classNames from 'classnames';
 import { ChevronDownIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { ButtonSkeleton } from '../loaders/bookcardsSkeleton';
 
 interface SignInRequiredButtonProps {
@@ -17,11 +17,17 @@ const SignInRequiredButton = ({
    userId,
    signedInActiveButton,
 }: SignInRequiredButtonProps) => {
+   const isReady = useRef<boolean>();
    const router = useRouter();
 
    const handlePress = () => {
-      router.push('/auth/signup');
+      isReady && router.push('/auth/signup');
    };
+
+   useEffect(() => {
+      if (!router.isReady) return;
+      isReady.current = true;
+   }, [router.isReady]);
 
    const style =
       type === 'finished'

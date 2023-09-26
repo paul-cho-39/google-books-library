@@ -97,7 +97,7 @@ function PopOverButtons({ userId, book }: ButtonProps) {
 
                                     <DeleteButtonWrapper
                                        userId={userId}
-                                       id={book.id}
+                                       id={book?.id}
                                        toggleHide={toggleHide}
                                     />
                                  </div>

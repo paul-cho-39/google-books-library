@@ -4,7 +4,6 @@ import { Items } from '../../types/googleBookTypes';
 export const getBody = (userId: string, book: Items<any>) => {
    const { id, volumeInfo } = book;
 
-   console.log('the id here is: ', id);
    const { industryIdentifiers, authors, categories, imageLinks, ...rest } = volumeInfo;
    const body = {
       userId,
