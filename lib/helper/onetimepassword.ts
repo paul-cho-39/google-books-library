@@ -1,20 +1,17 @@
-import { SignInForm } from "../types/formInputsWithChildren";
+import { SignInForm } from '../types/forms';
 
 export const getDataApiUrl = (data: SignInForm) => {
-  let url;
-  // can it be better by using switch & case?
-  data.lastName ||
-    (data.firstName &&
-      data.lastName &&
-      data.firstName &&
-      (url = `/api/user-settings/names`));
-  data.email && (url = `/api/user-settings/email`);
-  data.password &&
-    data.newPassword &&
-    data.confirmPassword &&
-    (url = `/api/user-settings/changePassword`);
+   let url;
+   // can it be better by using switch & case?
+   data.lastName ||
+      (data.firstName && data.lastName && data.firstName && (url = `/api/user-settings/names`));
+   data.email && (url = `/api/user-settings/email`);
+   data.password &&
+      data.newPassword &&
+      data.confirmPassword &&
+      (url = `/api/user-settings/changePassword`);
 
-  return url;
+   return url;
 };
 
 // 1) get the user id and select date

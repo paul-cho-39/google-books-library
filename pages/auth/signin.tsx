@@ -6,7 +6,7 @@ import { InferGetServerSidePropsType } from 'next';
 import { useState, Fragment, useLayoutEffect } from 'react';
 import LoginPage from '../../components/Login/providers';
 import FormSignIn, { Inputs } from '../../components/Login/credentials';
-import { SignInForm } from '../../lib/types/formInputsWithChildren';
+import { SignInForm } from '../../lib/types/forms';
 // lazy-load? like later in the inputs
 import { validateSignUp } from '../../lib/resolvers/validation';
 import { yupResolver } from '@hookform/resolvers/yup';

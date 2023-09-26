@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import FormSignIn, { Inputs } from '../../../components/Login/credentials';
-import { SignInForm } from '../../../lib/types/formInputsWithChildren';
+import { SignInForm } from '../../../lib/types/forms';
 import fetchApiData, { Method } from '../../../utils/fetchData';
 
 type EmailInput = Pick<SignInForm, 'email'>;

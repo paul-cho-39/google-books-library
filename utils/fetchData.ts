@@ -1,5 +1,5 @@
 import router from 'next/router';
-import { SignInForm } from '../lib/types/formInputsWithChildren';
+import { SignInForm } from '../lib/types/forms';
 import { NextApiRequest } from 'next';
 import { IncomingMessage } from 'http';
 import { Categories } from '../constants/categories';

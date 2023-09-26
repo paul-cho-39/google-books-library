@@ -58,19 +58,6 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                      as='div'
                      className='flex grow flex-col gap-y-5 scrollbarY overflow-y-auto border-r border-gray-200 bg-beige px-6 pb-4 dark:bg-charcoal'
                   >
-                     {/* <div className='fixed block left-[16rem] -top-10 z-50'>
-                        <div className='flex h-16 shrink-0 items-center justify-end'>
-                           <button onClick={() => setSidebarOpen(false)}>
-                              <span className='sr-only'>Close sidebar</span>
-                              <ArrowLeftOnRectangleIcon
-                                 role='button'
-                                 title='Close Sidebar'
-                                 aria-label='Close sidebar navigation'
-                                 className='inline h-6 cursor-pointer dark:stroke-slate-300'
-                              />
-                           </button>
-                        </div>
-                     </div> */}
                      <nav className='flex flex-1 flex-col py-6'>
                         <CategoryHeader />
                         <ul role='list' className='flex flex-1 flex-col gap-y-7'>
@@ -88,7 +75,7 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                                              className={classNames(
                                                 item.current
                                                    ? 'bg-gray-50  dark:text-slate-100 dark:bg-slate-700'
-                                                   : 'text-gray-700 hover:text-indigo-200 hover:bg-gray-50 dark:hover:bg-slate-600',
+                                                   : 'text-gray-700 dark:text-gray-300 hover:text-indigo-700 dark:hover:text-indigo-200 hover:bg-gray-50 dark:hover:bg-slate-600',
                                                 'group flex gap-x-3 rounded-md p-2 text-md leading-6 font-semibold'
                                              )}
                                           >
