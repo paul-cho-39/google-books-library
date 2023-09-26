@@ -34,7 +34,6 @@ const CategoryDescription = ({
                      className='text-md'
                   />
                </div>
-
                {/* another component for reusability */}
                <div className='block overflow-hidden dark:text-slate-100'>
                   <h3 className='text-xs py-1 text-clip space-x-0.5 '>

@@ -7,12 +7,12 @@ const layoutManager = {
    home: {
       widthRatio: 1.8,
       padding: 1,
-      offset: 15,
+      offset: 10,
    },
    categories: {
       widthRatio: 2,
       padding: 1,
-      offset: 15,
+      offset: 25,
    },
 };
 

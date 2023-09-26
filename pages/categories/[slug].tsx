@@ -1,18 +1,11 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-import { getSession } from 'next-auth/react';
-import { fetchDataFromCache, fetcher, getAbsoluteUrl } from '../../utils/fetchData';
 
 import useGetCategoryQuery from '../../lib/hooks/useGetCategoryQuery';
 import useGetNytBestSeller from '../../lib/hooks/useGetNytBestSeller';
 import useHoverDisplayDescription from '../../lib/hooks/useHoverDisplay';
 
-import {
-   CategoriesQueries,
-   CategoryQuery,
-   CustomSession,
-   ReturnedCacheData,
-} from '../../lib/types/serverPropsTypes';
+import { CategoryQuery } from '../../lib/types/serverPropsTypes';
 import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '../../lib/types/googleBookTypes';
 import { Categories, categories } from '../../constants/categories';
 import { CategoryQualifiers } from '../../models/_api/fetchNytUrl';
@@ -114,7 +107,7 @@ export default function BookCategoryPages({
                5,
                5 - 1,
                layoutManager.categories.padding,
-               15
+               layoutManager.categories.offset
             );
 
             floatingRef.current.style.top = `${top}px`;
@@ -194,8 +187,10 @@ export default function BookCategoryPages({
                               priority={false}
                               onMouseEnter={() => onMouseEnter(book.id, index)}
                               onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
-                              className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
                               routeQuery={routes.category(category, meta)}
+                              className={classNames(
+                                 'lg:col-span-1 px-1 inline-flex items-center justify-center lg:px-0 cursor-pointer'
+                              )}
                            />
                         </Suspense>
                         {hoveredEl}
@@ -232,7 +227,7 @@ export default function BookCategoryPages({
                               routeQuery={routes.category(category, meta)}
                               className='text-lg lg:text-xl hover:underline hover:decoration-orange-400 hover:dark:decoration-orange-200'
                            />
-                           <p className='text-sm text-clip space-x-0.5 not-first:text-blue-700 not-first:hover:text-blue-500 not-first:dark:text-blue-400 hover:not-first:underline hover:not-first:decoration-orange-400 hover:not-first:dark:decoration-orange-200'>
+                           <p className='text-sm text-clip space-x-0.5'>
                               <span className='dark:text-slate-50'>by{': '}</span>
                               <SingleOrMultipleAuthors
                                  hoverUnderline={true}

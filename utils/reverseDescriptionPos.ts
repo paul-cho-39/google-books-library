@@ -10,7 +10,7 @@ export const changeDirection = (
    if (currentIndex >= threshold) {
       const mult = totalColumns + 1 - currentIndex;
       return {
-         right: (padding + width) * mult + offsetBy,
+         right: (padding + width) * mult - offsetBy,
          left: 0,
       };
    }

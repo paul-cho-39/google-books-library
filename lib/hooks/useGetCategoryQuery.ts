@@ -113,23 +113,27 @@ export function useGetCategoriesQueries({
 
    const dataIsSuccess = queriesData.every((queryData) => queryData.status === 'success');
 
-   const dataWithKeys = updatedCategories.reduce((acc, category, index) => {
-      const queryData = queriesData[index];
+   let dataWithKeys;
+   if (dataIsSuccess) {
+      dataWithKeys = updatedCategories.reduce((acc, category, index) => {
+         const queryData = queriesData[index];
 
-      // DEBUGGING
-      if (queryData.isError) {
-         throw new Error(`${category} data failed to fetch.`);
-      }
+         // DEBUGGING
+         if (queryData.isError) {
+            throw new Error(`${category} data failed to fetch.`);
+         }
 
-      const data = queryData.data as Items<any>[];
-      const cleanedData = createUniqueData(data)?.slice(0, itemsToSlice);
+         const data = queryData.data as GoogleUpdatedFields;
 
-      acc[category.toLowerCase()] = cleanedData;
+         const cleanedData = createUniqueData(data.items)?.slice(0, itemsToSlice);
 
-      return acc;
-   }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
+         acc[category.toLowerCase()] = cleanedData;
 
-   if (!cache) {
+         return acc;
+      }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
+   }
+
+   if (!cache && dataWithKeys) {
       queryClient.setQueryData(queryKeys.allGoogleCategories, dataWithKeys);
    }
 

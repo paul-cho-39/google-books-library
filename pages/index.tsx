@@ -40,7 +40,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
    };
 
    const {
-      queriesData,
+      queriesData: googleQueries,
       dataWithKeys: googleData,
       dataIsSuccess: googleDataSuccess,
    } = useGetCategoriesQueries({
@@ -184,7 +184,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                                     isHovered.hovered && isHovered.id === book.id
                                        ? 'opacity-70'
                                        : 'opacity-100',
-                                    'lg:col-span-1 px-4 lg:px-0 cursor-pointer'
+                                    'lg:col-span-1 px-4 lg:px-2 inline-flex items-center justify-center cursor-pointer'
                                  )}
                               />
                            </Suspense>
