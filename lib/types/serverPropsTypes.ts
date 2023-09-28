@@ -1,5 +1,3 @@
-import { InferGetServerSidePropsType } from 'next';
-import { Categories, TopCateogry } from '../../constants/categories';
 import { GoogleUpdatedFields, Items, Pages } from './googleBookTypes';
 import { BestSellerData, ReviewData } from './nytBookTypes';
 import { DefaultSession } from 'next-auth';

@@ -1,18 +1,12 @@
 import { BookIdProps, Items } from '../lib/types/googleBookTypes';
 
+export type APISource = 'google' | 'nyt';
+
 // return boolean instead?
 export default function matchIds(book: Items<any>, bookIds: Array<BookIdProps>) {
    const bookId = bookIds.find((bookId) => bookId.id === book.id);
    return typeof bookId === 'string' ? bookId : bookId?.id;
 }
-
-type FilterObject<T> = T extends BookIdProps ? BookIdProps : string;
-
-// export function isMatchingIds<T extends BookIdProps | string>(bookIds: Array<FilterObject<>, id: string) {
-//    if (bookIds.keys()) {
-//       return bookIds.some((bookId) => bookId.id === id);
-//    } else return bookIds.some((bookId) => bookId === id);
-// }
 
 export const handleNytId = {
    suffix: '-nytbook',
@@ -45,7 +39,8 @@ export const handleCacheKeys = {
 };
 
 export function getBookIdAndSource(slug: string) {
-   let id, source;
+   let id: string;
+   let source: APISource;
    if (slug.includes(handleNytId.suffix)) {
       id = handleNytId.removeSuffix(slug);
       source = 'nyt';

@@ -1,10 +1,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { CategoryRouteParams, RouteNames, RouteParams, decodeRoutes } from '../../constants/routes';
+import { CategoryRouteParams, RouteNames, RouteParams } from '../types/routes';
 import queryKeys from '../queryKeys';
 import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
-import { getBookIdAndSource } from '../../utils/handleIds';
+import { APISource, getBookIdAndSource } from '../../utils/handleIds';
 import { Data, GoogleUpdatedFields, Items } from '../types/googleBookTypes';
 import { fetcher } from '../../utils/fetchData';
+import { decodeRoutes } from '../../utils/routes';
 
 export interface SingleBookQueryParams<TRoute extends CategoryRouteParams | RouteParams> {
    routeParams: TRoute;
@@ -18,26 +19,31 @@ export default function useGetBookById<
    // if source is equal to nyt then it should go directly
    // to fetching the data instead of the queryKey;
 
+   let book: Items<Record<string, string>> | GoogleUpdatedFields | undefined;
    const { id, source } = getBookIdAndSource(routeParams.slug as string);
-   // home should have this too
+   const isGoogle = isSource(source, 'google');
 
    const queryClient = useQueryClient();
    const initialData = queryClient.getQueryData<CacheData>(queryKeys.singleBook(id));
 
-   let book: Items<Record<string, string>> | GoogleUpdatedFields | undefined;
-   if (!initialData || initialData === null) {
+   console.log('SHOULD BE NYT RIGHT?: ', !isGoogle);
+   console.log('THE INITIAL DATA INSIDER HERE IS: ', initialData);
+
+   if (isGoogle && (!initialData || initialData === null)) {
+      console.log('----------------------------');
+      console.log('should not be running here');
       const queryKey = getQueryKeys(routeParams);
       const secondaryCache = queryClient.getQueryData<CacheData>(queryKey);
-      book = findBookId(secondaryCache, id, source);
+      book = findBookId(secondaryCache, id);
    }
 
    const queryResult = useQuery(
       queryKeys.singleBook(routeParams?.slug as string),
       async () => {
-         const url =
-            source === 'google' ? googleApi.getUrlByBookId(id) : googleApi.getUrlByIsbn(id);
+         const url = isGoogle ? googleApi.getUrlByBookId(id) : googleApi.getUrlByIsbn(id);
 
          const data = await fetcher(url);
+
          return data;
       },
       {
@@ -50,13 +56,11 @@ export default function useGetBookById<
    return queryResult;
 }
 
-// different type of depending on cache?
 function findBookId<CacheData extends Data<Record<string, string>> | GoogleUpdatedFields>(
    cache: CacheData | undefined,
-   id: string,
-   source: string
+   id: string
 ) {
-   if (source === 'nyt' || !cache) return;
+   if (!cache) return;
    if ('items' in cache) {
       return cache?.items.find((book) => book.id === id) as unknown as GoogleUpdatedFields;
    } else {
@@ -88,4 +92,8 @@ function getQueryKeys(routeParams: RouteParams | CategoryRouteParams) {
    }
    const queryKey = decodeRoutes[from];
    return queryKey(lowerCased as string);
+}
+
+function isSource(source: APISource, matching: APISource) {
+   return source === matching;
 }

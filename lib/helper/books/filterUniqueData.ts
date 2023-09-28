@@ -17,7 +17,6 @@ export function createUniqueData<TData extends Pages<any> | Items<any>[]>(data: 
       return;
    }
    const flatArray = (data: Pages<any>) => {
-      console.log('flat mapped');
       return data.items.flatMap((item) => item);
    };
 

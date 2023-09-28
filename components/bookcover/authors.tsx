@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { transformStrToArray } from '../../utils/transformChar';
 import classNames from 'classnames';
 import { Fragment } from 'react';
+import ROUTES from '../../utils/routes';
 
 interface AuthorProps<T extends string[] | string> {
    authors: T;
@@ -38,7 +39,11 @@ const SingleOrMultipleAuthors = <T extends string[] | string>({
       <>
          {numberOfAuthors && numberOfAuthors > 1 ? (
             <MultipleAuthors
-               className={className}
+               className={classNames(
+                  hoverUnderline &&
+                     'text-blue-700 hover:underline-offset-1 hover:underline hover:decoration-blue-400 hover:dark:decoration-blue-200',
+                  className
+               )}
                authors={transformedAuthor}
                indexLimit={indexLimit}
                textLimit={textLimit}
@@ -70,7 +75,7 @@ const MultipleAuthors = ({
       <>
          {authors.slice(0, indexLimit).map((author, index) => (
             <Fragment key={index}>
-               <Link href={`/author/${author}`} passHref>
+               <Link href={ROUTES.AUTHORS(author)} passHref>
                   <a className={classNames(index >= indexLimit ? 'hidden' : className)}>{author}</a>
                </Link>
                <span className='text-slate-800 dark:text-slate-100'>
@@ -89,7 +94,7 @@ const SingleAuthor = ({
 }: Exclude<AuthorProps<string[]>, 'indexLimit'>) => {
    const authorToString = authors.join(', ');
    return (
-      <Link href={`/author/${authorToString}`} passHref>
+      <Link href={ROUTES.AUTHORS(authorToString)} passHref>
          <a className={className}>
             {authorToString.length < (textLimit || 30)
                ? authorToString

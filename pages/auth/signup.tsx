@@ -3,14 +3,13 @@ import React, { useEffect, useState } from 'react';
 import prisma from '../../lib/prisma';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { InferGetStaticPropsType } from 'next';
-import SignupPage from '../../components/Login/signup';
-// this should be lazy-loaded?
 import { Validate } from '../../lib/resolvers/validation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AuthLayout from '../../components/layout/authLayout';
 import { Divider } from '../../components/layout/dividers';
 import { FormInput } from '../../lib/types/forms';
-import InputField from '../../components/inputs/inputfield';
+import InputField from '../../components/inputs/inputField';
+import ROUTES from '../../utils/routes';
 
 // this page should be connected to auth/signin
 export default function Signup({
@@ -101,7 +100,7 @@ export default function Signup({
             </form>
             <div className='w-full flex flex-col my-3 justify-center items-center text-slate-800 dark:text-slate-200'>
                <p className='mb-2 font-teritary text-md'>Already have an account?</p>
-               <Link href='/auth/signin'>
+               <Link href={ROUTES.AUTH.SIGNIN}>
                   <a className='font-teritary text-md hover:underline hover:underline-offset-1 hover:decoration-slate-800 dark:hover:decoration-slate-200'>
                      Sign In
                   </a>
@@ -131,70 +130,3 @@ type User = {
    email?: string;
    username?: string;
 };
-
-// it might be a better idea to pass props from signup
-{
-   /* <div className='mb-5 max-h-[85px] w-full'>
-                        <label className='block text-md flex-1 font-semibold'>Username*</label>
-                        <input
-                           // if error the border should be red
-                           className={`${
-                              errors.username
-                                 ? 'border-red-400 border-[1px] transition-colors'
-                                 : null
-                           }
-                    max-w-sm w-full border-[1px] border-black rounded-md items-center px-2 py-1 transition ease-in-out focus:border-blue-300/50 focus:outline-none`}
-                           type='text'
-                           {...register('username')}
-                        />
-                        <span className='block text-red-600 mt-0 text-sm'>
-                           {errors.username && `${errors.username.message}`}
-                        </span>
-                     </div>
-                     <div className='mb-5 max-h-[85px] w-full'>
-                        <label className='block mb-4 text-md flex-1 tracking-wider font-semibold'>
-                           Email*
-                        </label>
-                        <input
-                           className={`${
-                              errors.email
-                                 ? 'border-red-400 border-[1px] transition-colors focus:border-red-400'
-                                 : null
-                           }
-                    max-w-sm w-full border-[1px] border-black rounded-md items-center px-2 py-1 transition ease-in-out focus:border-blue-300/50 focus:outline-none`}
-                           type='email'
-                           {...register('email')}
-                        />
-                        <span className='block text-red-600 mt-0 text-sm'>
-                           {errors.email && `${errors.email.message}`}
-                        </span>
-                     </div>
-                     <div className='mb-5 max-h-[85px] w-full'>
-                        <label className='block flex-nowrap mb-4 text-md flex-1 font-semibold'>
-                           Password*
-                        </label>
-                        <input
-                           className={`${
-                              errors.password
-                                 ? 'border-red-400 border-[1px] transition-colors focus:border-red-400'
-                                 : null
-                           }
-                    max-w-sm w-full border-[1px] border-black rounded-md items-center px-2 py-1 transition ease-in-out focus:border-blue-300/50 focus:outline-none`}
-                           type='password'
-                           {...register('password')}
-                        />
-                        {/* the error message should show onBlur */
-}
-//       <span className='block text-red-600 mt-0 text-sm'>
-//          {errors.password && `${errors.password.message}`}
-//       </span>
-//    </div>
-// </div>
-// <div className='mt-7 mb-3 w-full'>
-//    <button
-//       disabled={errors.email || errors.password || errors.username ? true : false}
-//       className='rounded-lg bg-slate-300/20 tracking-wider max-w-sm w-full h-[40px] ring-1 disabled:opacity-25'
-//    >
-//       Create an Account
-//    </button>
-// </div> */}

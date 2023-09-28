@@ -13,7 +13,7 @@ import SignInRequiredButton from '../../components/Login/requireUser';
 import { CustomSession } from '../../lib/types/serverPropsTypes';
 import { useRouter } from 'next/router';
 import useGetBookById from '../../lib/hooks/useGetBookById';
-import { CategoryRouteParams, RouteParams } from '../../constants/routes';
+import { CategoryRouteParams, RouteParams } from '../../lib/types/routes';
 
 const HEIGHT = 225;
 
@@ -27,7 +27,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    const router = useRouter();
    const query = router.query as CategoryRouteParams | RouteParams;
 
-   const { data, isLoading } = useGetBookById({ routeParams: query });
+   const { data, isSuccess, isLoading } = useGetBookById({ routeParams: query });
 
    if (isLoading) {
       return <div>Loading...</div>;
@@ -38,6 +38,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
          <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 lg:grid lg:grid-cols-3 lg:max-w-4xl'>
             <div className='flex flex-col items-center justify-center lg:col-span-1 lg:gap-x-0'>
                <BookImage
+                  id={data.id}
                   hidden={true}
                   bookImage={data?.volumeInfo.imageLinks}
                   title={data?.volumeInfo.title as string}
@@ -47,18 +48,24 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   className='justify-center items-center'
                />
                <div className='flex flex-row w-full py-4 items-center justify-center'>
-                  <SignInRequiredButton
-                     type='finished'
-                     userId={userId}
-                     signedInActiveButton={
-                        <SaveAsFinishedButton book={data} userId={userId as string} />
-                     }
-                  />
-                  <SignInRequiredButton
-                     type='popover'
-                     userId={userId}
-                     signedInActiveButton={<PopOverButtons book={data} userId={userId as string} />}
-                  />
+                  {isSuccess && data && (
+                     <>
+                        <SignInRequiredButton
+                           type='finished'
+                           userId={userId}
+                           signedInActiveButton={
+                              <SaveAsFinishedButton book={data} userId={userId as string} />
+                           }
+                        />
+                        <SignInRequiredButton
+                           type='popover'
+                           userId={userId}
+                           signedInActiveButton={
+                              <PopOverButtons book={data} userId={userId as string} />
+                           }
+                        />
+                     </>
+                  )}
                </div>
             </div>
             <div className='flex flex-col justify-start px-2 gap-y-2 lg:col-span-2'>
@@ -70,7 +77,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   className='text-xl mb-2 lg:mb-4 lg:text-3xl'
                />
                <div className='mb-1 lg:mb-1 '>
-                  <span className=''>By: </span>
+                  <span className='text-slate-800 dark:text-slate-200'>By: </span>
                   <SingleOrMultipleAuthors
                      hoverUnderline={true}
                      authors={data?.volumeInfo.authors}
@@ -115,8 +122,6 @@ export const getServerSideProps: GetServerSideProps<{
    userId: string | null;
 }> = async (context: any) => {
    const { slug } = context.query as { slug: string };
-
-   console.log('the book is here right now');
 
    const session = await getSession(context);
    const user = session?.user as CustomSession;

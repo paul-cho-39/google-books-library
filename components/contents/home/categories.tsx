@@ -3,6 +3,7 @@ import { capitalizeWords, formatCategoryName } from '../../../utils/transformCha
 import CategoryLayout, { CategoryLayoutProps } from '../../layout/page/categoryLayout';
 import { CategoryHeaderParams } from '../../../constants/categories';
 import classNames from 'classnames';
+import ROUTES from '../../../utils/routes';
 
 export const CategoryDisplay = ({ category, children, forwardRef }: CategoryLayoutProps) => {
    return (
@@ -49,7 +50,7 @@ const ShowMoreCategory = ({ category }: { category: CategoryHeaderParams }) => {
    return (
       <Link
          aria-label='Show more categories'
-         as={`/categories/${category}`}
+         as={ROUTES.CATEGORIES(category as string)}
          href={'/categories/[slug]'}
          passHref
       >

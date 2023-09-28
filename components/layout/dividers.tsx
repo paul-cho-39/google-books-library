@@ -1,5 +1,12 @@
 import { PlusIcon } from '@heroicons/react/20/solid';
+import classNames from 'classnames';
 import { ButtonHTMLAttributes, ReactNode } from 'react';
+
+type DividerButtonsProps = {
+   title: string;
+   condition?: boolean;
+   renderIcon?: ReactNode;
+} & ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Divider = () => {
    return (
@@ -8,12 +15,6 @@ export const Divider = () => {
       </div>
    );
 };
-
-type DividerButtonsProps = {
-   title: string;
-   condition?: boolean;
-   renderIcon?: ReactNode;
-} & ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const DividerButtons = ({ title, condition, renderIcon, ...props }: DividerButtonsProps) => {
    const displayIcon = () => {
@@ -43,6 +44,26 @@ export const DividerButtons = ({ title, condition, renderIcon, ...props }: Divid
                {title}
                {displayIcon()}
             </button>
+         </div>
+      </div>
+   );
+};
+
+export const LabelDivider = ({ label, className }: { label: string; className?: string }) => {
+   // it has to be same as the backgorund color
+   // likely wont change but here for reference
+   const platformBG = 'bg-white dark:bg-slate-800';
+   return (
+      <div className='relative'>
+         <div className='absolute inset-0 flex items-center' aria-hidden='true'>
+            <div className='w-full border-t border-gray-300' />
+         </div>
+         <div className='relative flex justify-center'>
+            <span
+               className={classNames(platformBG, 'px-2 text-sm dark:text-slate-200 text-slate-800')}
+            >
+               {label}
+            </span>
          </div>
       </div>
    );

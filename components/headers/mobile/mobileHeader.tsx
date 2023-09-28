@@ -8,6 +8,7 @@ import { IconProps, Icons, Navigation } from '../../icons/headerIcons';
 import Link from 'next/link';
 import { ChevronUpIcon } from '@heroicons/react/20/solid';
 import SearchInput from '../../inputs/search';
+import ROUTES from '../../../utils/routes';
 
 export const MobileNavigation = ({
    user,
@@ -126,7 +127,7 @@ const Subsection = ({ subsections }: SessionProps) => {
                <li className='py-[6px] bg-transparent' key={section.name}>
                   <Link
                      passHref
-                     as={`/categories/${section.name?.toLocaleLowerCase()}`}
+                     as={ROUTES.CATEGORIES(section.name?.toLocaleLowerCase() as string)}
                      href={'/categories/[slug]'}
                   >
                      <a>{section.name}</a>

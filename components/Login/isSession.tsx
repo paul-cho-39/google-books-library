@@ -1,6 +1,7 @@
 import { SignOutParams } from 'next-auth/react';
 import Link from 'next/link';
 import clsx from 'clsx';
+import ROUTES from '../../utils/routes';
 
 type SessionProps = {
    name: string;
@@ -20,7 +21,7 @@ const IsSession = ({ name, href, signOut, className }: SessionProps) => {
             className
          )}
       >
-         <Link href={href ?? '/auth/signin'}>{name}</Link>
+         <Link href={href ?? ROUTES.AUTH.SIGNIN}>{name}</Link>
       </button>
    );
 };

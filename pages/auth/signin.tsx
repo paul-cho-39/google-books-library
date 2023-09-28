@@ -11,6 +11,9 @@ import { SignInForm } from '../../lib/types/forms';
 import { validateSignUp } from '../../lib/resolvers/validation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Link from 'next/link';
+import AuthLayout from '../../components/layout/authLayout';
+import { Divider, LabelDivider } from '../../components/layout/dividers';
+import ROUTES from '../../utils/routes';
 
 interface Providers {
    authProviders: Awaited<ReturnType<typeof getProviders>>;
@@ -29,7 +32,7 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
          password: data.password,
          redirect: false,
       });
-      // i dont know why but when the button is submitted
+
       if (!res || status === 'unauthenticated') {
          setError(true);
       }
@@ -47,80 +50,62 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [session]);
 
-   // there wont be any open modal
-   function openModal() {
-      setIsOpen(true);
-   }
-
    return (
-      <>
-         {/* have to wrap the dialog inside transition for transition animation effect */}
-         <Transition appear show={isOpen} as={Fragment}>
-            <Dialog as='div' static className='h-max max-w-sm' onClose={openModal}>
-               <div className='fixed inset-0 h-full overflow-auto '>
-                  <div className='flex mx-auto items-center justify-center p-2 text-center'>
-                     <Dialog.Panel className='w-full h-full transform rounded-2xl shadow-sm transition-all md:w-[40vw] overflow-hidden'>
-                        <div className='border-black bg-white max-w-[100vw] rounded-xl lg:max-h-auto lg:max-w-[60vw]'>
-                           <div className='h-max w-max container mx-auto flex flex-col'>
-                              <div>
-                                 {/* book animation here */}
-                                 <div className='my-10'>Logo Here</div>
-                                 <h2 className='my-4 text-left text-slate-400 text-lg font-semibold flex-1 md:text-5xl md:static md:text-center md:mb-10'>
-                                    Sign In
-                                 </h2>
-                                 <span className='block mb-5 flex-1 border-b-2 border-y-slate-300/60 w-max-sm self-center md:w-[30vw]'></span>
-                                 <p className='mb-3 tracking-tight text-red-500 transition duration-300'>
-                                    {error && 'Email or password is invalid'}
-                                 </p>
+      <AuthLayout>
+         <div className='flex flex-col '>
+            <div className='flex flex-col'>
+               <div>
+                  <div className='inline-flex mt-10 mb-4 w-full'>
+                     <h3 className='font-bold font-primary text-2xl lg:text-4xl text-slate-800 dark:text-slate-200'>
+                        Sign In
+                     </h3>
+                  </div>
+                  <Divider />
+                  <p className='mb-3 tracking-tight text-red-500 transition duration-200'>
+                     {error && 'Email or password is invalid'}
+                  </p>
 
-                                 <div>
-                                    <FormSignIn resolver={resolver} onSubmit={onSubmit}>
-                                       <label className='block text-left font-normal text-primary'>
-                                          Email
-                                       </label>
-                                       <Inputs name='email' />
-                                       <div className='w-full flex flex-row justify-between items-stretch '>
-                                          <label className='font-normal text-primary'>
-                                             Password
-                                          </label>
-                                          <Link href='/verify/reset/sendverification'>
-                                             <span className='self-end underline font-extralight text-primary cursor-pointer'>
-                                                Forgot password?
-                                             </span>
-                                          </Link>
-                                       </div>
-
-                                       <Inputs name='password' type='password' />
-                                       <button className='rounded-md bg-slate-300/20 tracking-wider max-w-md w-full h-[40px] ring-slate-300/50 hover:opacity-[0.8]'>
-                                          {text}
-                                       </button>
-                                    </FormSignIn>
-                                 </div>
-                                 <div className='mt-7 flex flex-row justify-evenly items-center'>
-                                    <span className='mb-3 border-b-2 border-y-slate-300/60 w-[12vw]'></span>
-                                    <span className='relative -top-2 z-40 font-light'>
-                                       Or continue with
-                                    </span>
-                                    <span className='mb-3 border-b-2 border-y-slate-300/60 w-[12vw]'></span>
-                                 </div>
-                              </div>
-                              {authProviders?.map((provider) => (
-                                 <LoginPage key={provider?.id} providers={provider} />
-                              ))}
-                           </div>
-                        </div>
-                        <div className='my-5'>
-                           <p>Not a member?</p>
-                           <Link href='/auth/signup'>
-                              <a>Sign up</a>
+                  <div>
+                     <FormSignIn resolver={resolver} onSubmit={onSubmit}>
+                        <label className='block text-md flex-1 text-slate-800 dark:text-slate-100 font-normal text-primary'>
+                           Email
+                        </label>
+                        <Inputs name='email' type='email' />
+                        <div className='w-full flex flex-row justify-between items-stretch '>
+                           <label className='block text-md flex-1 text-slate-800 dark:text-slate-100 font-normal text-primary'>
+                              Password
+                           </label>
+                           <Link href='/verify/reset/sendverification'>
+                              <span className='self-end underline font-extralight text-primary cursor-pointer dark:text-slate-100'>
+                                 Forgot password?
+                              </span>
                            </Link>
                         </div>
-                     </Dialog.Panel>
+
+                        <Inputs name='password' type='password' />
+                        <button className='rounded-xl bg-beige dark:bg-charcoal tracking-wider max-w-md w-full h-[40px] border-2 border-orange-200 dark:border-dark-charcoal disabled:opacity-25'>
+                           <span className='text-slate-800 dark:text-slate-200'>{text}</span>
+                        </button>
+                     </FormSignIn>
+                  </div>
+                  <div className='my-2'>
+                     <LabelDivider label='Or continue with' />
                   </div>
                </div>
-            </Dialog>
-         </Transition>
-      </>
+               {authProviders?.map((provider) => (
+                  <LoginPage key={provider?.id} providers={provider} />
+               ))}
+            </div>
+            <div className='flex flex-col justify-center items-center'>
+               <p className='text-slate-800 dark:text-slate-100'>Not a member?</p>
+               <Link href={ROUTES.AUTH.SIGNUP}>
+                  <a className='text-slate-800 dark:text-slate-100 hover:underline hover:underline-offset-1 hover:decoration-slate-800 dark:hover:decoration-slate-200'>
+                     Sign up
+                  </a>
+               </Link>
+            </div>
+         </div>
+      </AuthLayout>
    );
 }
 

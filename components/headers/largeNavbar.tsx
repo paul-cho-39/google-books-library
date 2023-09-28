@@ -4,6 +4,7 @@ import IsSession from '../Login/isSession';
 import { NavigationProps } from '../../lib/types/theme';
 import SearchInput from '../inputs/search';
 import HomeIcon from '../icons/homeIcon';
+import ROUTES from '../../utils/routes';
 
 export const LargeNavigation = ({
    user,
@@ -52,7 +53,7 @@ export const LargeNavigation = ({
                {!user ? (
                   <IsSession
                      name='Sign In'
-                     href='/auth/signin'
+                     href={ROUTES.AUTH.SIGNIN}
                      className='text-lg text-dark-brown dark:text-soft-white'
                   />
                ) : (

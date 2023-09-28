@@ -3,7 +3,8 @@ import { ImageLinks, ImageLinksPairs } from '../../lib/types/googleBookTypes';
 import { getAvailableThumbnail } from '../../lib/helper/books/editBookPageHelper';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { RouteParams } from '../../constants/routes';
+import ROUTES from '../../utils/routes';
+import { RouteParams } from '../../lib/types/routes';
 
 type OmittedImageProps = Omit<ImageProps, 'src' | 'width' | 'height' | 'priority'>;
 type GoogleImages = ImageLinksPairs | ImageLinks;
@@ -14,7 +15,7 @@ interface BookImageProps<T extends GoogleImages | string> extends OmittedImagePr
    width: number;
    height: number;
    priority: boolean;
-   id?: string;
+   id: string;
    routeQuery?: RouteParams;
    isLinkHidden?: boolean;
    forwardedRef?: (el: HTMLDivElement) => void;
@@ -51,7 +52,7 @@ const BookImage = <T extends GoogleImages | string>({
          <Link
             hidden={isLinkHidden}
             href={{ pathname: `/books/[slug]`, query: routeQuery }}
-            as={`/books/${id}`}
+            as={ROUTES.BOOKS.GOOGLE(id)}
          >
             <Image
                src={imageSrc}

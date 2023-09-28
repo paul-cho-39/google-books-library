@@ -9,7 +9,7 @@ import BookImage from '../bookcover/bookImages';
 import SignInRequiredButton from '../Login/requireUser';
 import BookTitle from '../bookcover/title';
 import { Divider } from '../layout/dividers';
-import routes from '../../constants/routes';
+import { encodeRoutes } from '../../utils/routes';
 
 const HEIGHT = 125;
 
@@ -49,7 +49,7 @@ const Cards: React.FunctionComponent<{
                                  width={getBookWidth(HEIGHT)}
                                  priority
                                  title={book.volumeInfo.title}
-                                 routeQuery={routes.search(query)}
+                                 routeQuery={encodeRoutes.search(query)}
                               />
                            </div>
                            {/* title + author + button */}
@@ -58,7 +58,7 @@ const Cards: React.FunctionComponent<{
                                  <div className='row-start-1 row-end-2 md:max-w-sm'>
                                     <BookTitle
                                        id={book.id}
-                                       routeQuery={routes.search(query)}
+                                       routeQuery={encodeRoutes.search(query)}
                                        hasLink
                                        title={book?.volumeInfo.title}
                                        subtitle={book?.volumeInfo.subtitle}

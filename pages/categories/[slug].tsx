@@ -19,7 +19,6 @@ import { getBookWidth, getContainerWidth } from '../../utils/getBookWidth';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../../lib/hooks/useDisableBreakPoints';
 import { changeDirection } from '../../utils/reverseDescriptionPos';
-import routes from '../../constants/routes';
 import { handleNytId } from '../../utils/handleIds';
 import { Divider } from '../../components/layout/dividers';
 import BookTitle from '../../components/bookcover/title';
@@ -28,6 +27,7 @@ import layoutManager from '../../constants/layouts';
 import { batchFetchGoogleCategories } from '../../models/cache/handleGoogleCache';
 import { useRouter } from 'next/router';
 import BookLoader from '../../components/loaders/spinner';
+import { encodeRoutes } from '../../utils/routes';
 
 const CategoryDescription = lazy(
    () => import('../../components/contents/home/categoryDescription')
@@ -166,7 +166,7 @@ export default function BookCategoryPages({
                                  subtitle={book.volumeInfo.subtitle}
                                  authors={book.volumeInfo.authors}
                                  description={book.volumeInfo.description}
-                                 routeQuery={routes.category(category, meta)}
+                                 routeQuery={encodeRoutes.category(category, meta)}
                               />
                            </Suspense>
                         </div>
@@ -187,7 +187,7 @@ export default function BookCategoryPages({
                               priority={false}
                               onMouseEnter={() => onMouseEnter(book.id, index)}
                               onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
-                              routeQuery={routes.category(category, meta)}
+                              routeQuery={encodeRoutes.category(category, meta)}
                               className={classNames(
                                  'lg:col-span-1 px-1 inline-flex items-center justify-center lg:px-0 cursor-pointer'
                               )}
@@ -216,7 +216,7 @@ export default function BookCategoryPages({
                               bookImage={book.book_image}
                               priority={false}
                               className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
-                              routeQuery={routes.category(category, meta)}
+                              routeQuery={encodeRoutes.category(category, meta)}
                            />
                         </Suspense>
                         <div className='flex flex-col items-start justify-start w-full'>
@@ -224,7 +224,7 @@ export default function BookCategoryPages({
                            <BookTitle
                               id={handleNytId.appendSuffix(book.primary_isbn13)}
                               title={capitalizeWords(book.title)}
-                              routeQuery={routes.category(category, meta)}
+                              routeQuery={encodeRoutes.category(category, meta)}
                               className='text-lg lg:text-xl hover:underline hover:decoration-orange-400 hover:dark:decoration-orange-200'
                            />
                            <p className='text-sm text-clip space-x-0.5'>

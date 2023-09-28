@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { LineClamp } from './description';
 import classNames from 'classnames';
-import { RouteParams } from '../../constants/routes';
+import ROUTES from '../../utils/routes';
+import { RouteParams } from '../../lib/types/routes';
 
 interface BookTitleProps {
    id: string;
@@ -34,7 +35,7 @@ const BookTitle = ({
       <h3 className={classNames('font-medium py-1 text-slate-800 dark:text-slate-100', className)}>
          {hasLink ? (
             <Link
-               as={`/books/${id}`}
+               as={ROUTES.BOOKS.GOOGLE(id)}
                href={{ pathname: '/books/[slug]/', query: routeQuery }}
                passHref
             >

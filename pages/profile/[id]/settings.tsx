@@ -10,6 +10,7 @@ import { getDataApiUrl } from '../../../lib/helper/onetimepassword';
 import ModalOpener from '../../../components/modal/openModal';
 import DeleteModalContent from '../../../components/modal/modalContentDeletion';
 import { ModalInnerButton } from '../../../components/modal/modalButton';
+import ROUTES from '../../../utils/routes';
 
 // the setting page may be broken into multiple components?
 export default function SettingPage(props) {
@@ -62,7 +63,7 @@ export default function SettingPage(props) {
                className='border-b border-blue-gray-200 bg-white xl:hidden'
             >
                <div className='mx-auto flex max-w-3xl items-start py-3 px-4 sm:px-6 lg:px-8'>
-                  <Link href='/'>
+                  <Link href={ROUTES.HOME}>
                      <a
                         href='#'
                         className='-ml-1 inline-flex items-center space-x-3 text-sm font-medium text-blue-gray-900'

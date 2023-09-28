@@ -11,6 +11,7 @@ import { capitalizeWords } from '../../utils/transformChar';
 import { useScrollDirection } from '../../lib/hooks/useScrollDirection';
 import Link from 'next/link';
 import HomeIcon from '../icons/homeIcon';
+import ROUTES from '../../utils/routes';
 
 export interface SideNavigationProps {
    sidebarOpen: boolean;
@@ -67,7 +68,9 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                                     <li key={item.name}>
                                        <Link
                                           passHref
-                                          as={`/categories/${item.name?.toLocaleLowerCase()}`}
+                                          as={ROUTES.CATEGORIES(
+                                             item.name?.toLocaleLowerCase() as string
+                                          )}
                                           href={'/categories/[slug]'}
                                        >
                                           <a

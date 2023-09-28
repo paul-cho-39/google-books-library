@@ -1,8 +1,24 @@
 import queryKeys from '../lib/queryKeys';
 import { MetaProps } from '../models/_api/fetchGoogleUrl';
 
-// TODO: move this file to /api/routes
-const routes = {
+const ROUTES = {
+   HOME: '/',
+   AUTH: {
+      SIGNIN: 'auth/signin',
+      SIGNUP: '/auth',
+   },
+   AUTHORS: (slug: string) => `/author/${slug}`,
+   BOOKS: {
+      NYT: (slug: string) => `/books/new-york-times/${slug}`,
+      GOOGLE: (slug: string) => `/books/${slug}`,
+   },
+   CATEGORIES: (slug: string) => `/categories/${slug}`,
+   PROFILE: {
+      SETTINGS: (id: number | string) => `/profile/${id}`,
+   },
+};
+
+export const encodeRoutes = {
    home: (category: string, meta: MetaProps) => {
       return {
          from: 'home',
@@ -29,32 +45,10 @@ const routes = {
    },
 } as const;
 
-// TEST WHETHER REACT-QUERY WILL QUERY THE SEARCH
 export const decodeRoutes = {
    home: (category: string, meta?: MetaProps) => queryKeys.categories(category, meta),
    search: (search: string) => queryKeys.bookSearch(search),
    category: (category: string, meta?: MetaProps) => queryKeys.categories(category, meta),
 };
 
-export default routes;
-
-export type RouteNames = 'home' | 'search' | 'category';
-
-type ReturnedRoutes = ReturnType<(typeof routes)[keyof typeof routes]>;
-export type RouteParams = Partial<ReturnedRoutes> & {
-   slug?: string;
-};
-
-export type CategoryRouteParams = RouteParams & {
-   maxResultNumber: number;
-   pageIndex: number;
-   byNewest: string | undefined;
-};
-
-export type CheckCategoryRouteParams<T> = T extends {
-   maxResultNumber: number;
-   pageIndex: number;
-   byNewest?: boolean;
-}
-   ? CategoryRouteParams
-   : RouteParams;
+export default ROUTES;

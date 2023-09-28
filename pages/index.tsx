@@ -15,11 +15,11 @@ import { changeDirection } from '../utils/reverseDescriptionPos';
 import { BookImageSkeleton, DescriptionSkeleton } from '../components/loaders/bookcardsSkeleton';
 import { DividerButtons } from '../components/layout/dividers';
 import layoutManager from '../constants/layouts';
-import routes from '../constants/routes';
 import { batchFetchGoogleCategories } from '../models/cache/handleGoogleCache';
 import { getSession, useSession } from 'next-auth/react';
 import { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
 import { CategoriesQueries } from '../lib/types/serverPropsTypes';
+import { encodeRoutes } from '../utils/routes';
 
 const CategoryDescription = lazy(() => import('../components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('../components/bookcover/bookImages'));
@@ -154,7 +154,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                                     subtitle={book.volumeInfo.subtitle}
                                     authors={book.volumeInfo.authors}
                                     description={book.volumeInfo.description}
-                                    routeQuery={routes.home(key, meta)}
+                                    routeQuery={encodeRoutes.home(key, meta)}
                                  />
                               </Suspense>
                            </div>
@@ -179,7 +179,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                                  onMouseLeave={(e: React.MouseEvent) =>
                                     onMouseLeave(e, floatingRef)
                                  }
-                                 routeQuery={routes.home(key, meta)}
+                                 routeQuery={encodeRoutes.home(key, meta)}
                                  className={classNames(
                                     isHovered.hovered && isHovered.id === book.id
                                        ? 'opacity-70'

@@ -124,7 +124,6 @@ export function useGetCategoriesQueries({
          }
 
          const data = queryData.data as GoogleUpdatedFields;
-
          const cleanedData = createUniqueData(data.items)?.slice(0, itemsToSlice);
 
          acc[category.toLowerCase()] = cleanedData;
