@@ -1,26 +1,12 @@
 import router from 'next/router';
 import { SignInForm } from '../lib/types/forms';
-import { NextApiRequest } from 'next';
 import { IncomingMessage } from 'http';
 import { Categories } from '../constants/categories';
-import { GoogleUpdatedFields } from '../lib/types/googleBookTypes';
+import { GoogleUpdatedFields, Items } from '../lib/types/googleBookTypes';
 import { BestSellerData, ReviewData } from '../lib/types/nytBookTypes';
 import { ReturnedCacheData } from '../lib/types/serverPropsTypes';
-import { MetaProps } from '../models/_api/fetchGoogleUrl';
-
-export type Data<T> = T extends SignInForm ? Partial<SignInForm> : string;
-export type Method = 'PUT' | 'POST' | 'GET' | 'DELETE';
-
-interface ParamProps<T> {
-   url: string;
-   method: Method;
-   data?: Data<T>;
-   options?: {
-      shouldRoute?: boolean;
-      routeTo?: string;
-      delay?: number;
-   };
-}
+import { ApiRequestOptions, Method, UrlProps } from '../lib/types/fetchbody';
+import API_ROUTES from './apiRoutes';
 
 type Request = IncomingMessage & {
    cookies: Partial<{
@@ -31,37 +17,36 @@ type Request = IncomingMessage & {
 export type FetchCacheType = {
    source: 'google' | 'nyt';
    endpoint: 'relevant' | 'recent' | 'best-seller';
-   req?: Request;
+   category: string;
 };
 
-async function fetchApiData<T>({
-   url,
-   method,
-   data,
-   options = {
-      shouldRoute: true,
-      routeTo: '/',
-      delay: 0,
-   },
-}: ParamProps<T>) {
-   const apiBaseUrl = '/api';
-   await fetch(apiBaseUrl + url, {
-      method: method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-   }).then((res) => {
-      if (!res.ok || res.status === 400 || res.status === 404) {
-         throw new Error(`${data} cannot be found`);
+async function apiRequest<T, TData>(options: ApiRequestOptions<T>): Promise<TData> {
+   const { apiUrl, method, data, headers, shouldRoute, routeTo, delay } = options;
+
+   try {
+      const response = await fetch(apiUrl, {
+         method,
+         headers: { 'Content-Type': 'application/json', ...headers },
+         body: JSON.stringify(data),
+      });
+
+      // Handle response status
+      if (!response.ok) {
+         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-      if ((res.ok && method === 'POST') || (res.ok && method === 'PUT')) {
+
+      // Special handling for POST and PUT requests with routing
+      if ((method === 'POST' || method === 'PUT') && shouldRoute && routeTo) {
          setTimeout(() => {
-            options.shouldRoute && options.routeTo && router.push(options.routeTo);
-         }, options.delay ?? 0);
+            router.push(routeTo);
+         }, delay ?? 0);
       }
-      if (method === 'GET') {
-         return res.json();
-      }
-   });
+
+      return response.json() as Promise<TData>;
+   } catch (error: any) {
+      console.error(`API Request Error: ${error.message}`);
+      throw error; // Re-throw the error after logging it
+   }
 }
 
 // this fetcher is mainly for googleAPI and can be used with nyt
@@ -86,7 +71,7 @@ export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
       }
       return res.json();
    } catch (error) {
-      console.log(error);
+      console.error(`Cannot fetch the following url: ${input}. Request error: ${error}`);
    }
 };
 
@@ -96,30 +81,42 @@ export const getAbsoluteUrl = (req: Request) => {
    return `${protocol}://${host}`;
 };
 
+// fetching data from the server
 export const fetchDataFromCache = async <
    CacheData extends GoogleUpdatedFields | ReviewData<BestSellerData>
 >(
-   category: Categories | string,
    type: FetchCacheType,
-   date?: string
+   req?: Request
 ): Promise<ReturnedCacheData<CacheData>> => {
-   const { source, endpoint, req } = type;
    let baseUrl = '';
+   const url = API_ROUTES.THIRD_PARTY.path(type);
    if (req) {
       baseUrl = getAbsoluteUrl(req);
    }
 
-   const res = await fetch(`${baseUrl}/api/third-party/${source}/${category}/${endpoint}`, {
+   const res = await apiRequest<null, ReturnedCacheData<CacheData>>({
+      apiUrl: `${baseUrl}/${url}`,
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      // body: JSON.stringify(meta ?? date),
    });
 
-   if (!res.ok || res.status === 500 || res.status === 404) {
-      throw new Error(`Failed to fetch the cached ${source} data `);
-   }
-
-   return res.json();
+   return res;
 };
 
-export default fetchApiData;
+// fetcher for user update
+export const bookApiUpdate = async <T>(
+   method: Method,
+   userId: string,
+   subdomain: UrlProps,
+   body?: Record<string, unknown> | string
+): Promise<T> => {
+   const res = await apiRequest<typeof body, T>({
+      apiUrl: API_ROUTES.BOOKS.path(userId, subdomain),
+      method: method,
+      data: body,
+      shouldRoute: false,
+   });
+
+   return res;
+};
+
+export default apiRequest;

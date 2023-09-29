@@ -1,5 +1,6 @@
 import { signOut } from 'next-auth/react';
-import fetchApiData, { Method } from '../../utils/fetchData';
+import apiRequest from '../../utils/fetchData';
+import { ApiRequestOptions, Method } from '../../lib/types/fetchbody';
 
 interface ButtonProps {
    name: string;
@@ -10,19 +11,16 @@ interface ButtonProps {
 }
 // should this be a component or a hook? function makes sense too?
 export const ModalInnerButton = ({ name, id, url, method, shouldSignOut = false }: ButtonProps) => {
-   const options = {
-      shouldRoute: false,
-      delay: 1000,
-   };
-   const params = {
-      url: url,
+   const params: ApiRequestOptions<string> = {
+      apiUrl: url,
       method: method,
       data: id,
-      options,
+      shouldRoute: false,
+      delay: 250,
    };
    //   should have shouldSignout Logic here or elsewhere?
    const onSubmit = async () => {
-      fetchApiData(params).then(() => (shouldSignOut ? signOut({ callbackUrl: '/' }) : null));
+      apiRequest(params).then(() => (shouldSignOut ? signOut({ callbackUrl: '/' }) : null));
    };
    return <button onClick={onSubmit}>{name}</button>;
 };

@@ -5,7 +5,7 @@ import {
    serverSideCategories,
    topCategories,
 } from '../../constants/categories';
-import queryKeys from '../queryKeys';
+import queryKeys from '../../utils/queryKeys';
 import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import { Pages, Items, GoogleUpdatedFields } from '../types/googleBookTypes';
 import { createUniqueData } from '../helper/books/filterUniqueData';
@@ -20,7 +20,6 @@ interface CategoryQueryParams<TData extends CategoriesQueries | GoogleUpdatedFie
 
 interface SingleQuery extends CategoryQueryParams<GoogleUpdatedFields> {
    category: Categories;
-   route: FetchCacheType;
    keepPreviousData?: boolean;
 }
 
@@ -32,7 +31,6 @@ interface MultipleQueries extends CategoryQueryParams<CategoriesQueries> {
 export default function useGetCategoryQuery({
    initialData,
    category,
-   route,
    enabled,
    meta,
    keepPreviousData,

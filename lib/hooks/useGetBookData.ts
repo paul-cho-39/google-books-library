@@ -1,6 +1,6 @@
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import queryKeys from '../queryKeys';
-import bookApiUpdate from '../helper/books/bookApiUpdate';
+import queryKeys from '../../utils/queryKeys';
+import { bookApiUpdate } from '../../utils/fetchData';
 
 type Library = {
    finished: string[] | undefined;

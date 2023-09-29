@@ -6,10 +6,10 @@ import nytApi, {
    ReviewQualifiers,
 } from '../../models/_api/fetchNytUrl';
 import { fetcher } from '../../utils/fetchData';
-import queryKeys from '../queryKeys';
+import queryKeys from '../../utils/queryKeys';
 import { BestSellerData, BookReview, Books, ReviewData } from '../types/nytBookTypes';
 import { CategoriesNytQueries, CategoriesQueries } from '../types/serverPropsTypes';
-import { transformStrToArray } from '../../utils/transformChar';
+import { transformStrToArray } from '../helper/transformChar';
 import { handleNytId } from '../../utils/handleIds';
 import { useEffect, useState } from 'react';
 

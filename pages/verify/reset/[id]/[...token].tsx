@@ -4,8 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 import FormSignIn, { Inputs } from '../../../../components/Login/credentials';
 import { SignInForm } from '../../../../lib/types/forms';
 import { validatePassword } from '../../../../lib/resolvers/validation';
-import fetchApiData from '../../../../utils/fetchData';
 import { toast, Toaster } from 'react-hot-toast';
+import API_ROUTES from '../../../../utils/apiRoutes';
+import apiRequest from '../../../../utils/fetchData';
+import ROUTES from '../../../../utils/routes';
 
 export default function ChangePassowrd(props) {
    const [isVerified, setIsVerified] = useState(true);
@@ -17,49 +19,60 @@ export default function ChangePassowrd(props) {
    const { token, id } = query;
    const userToken = token?.toString();
 
+   const url = API_ROUTES.VERIFY.RESET_EMAIL(id as string, token as string);
+
    const verify = useCallback(async () => {
       if (!router.isReady) return;
-      const res = await fetch(`/api/verify/${id}/${userToken}`, {
-         method: 'POST',
-         body: JSON.stringify({ userToken, id }),
-         headers: { 'Content-Type': 'application/json' },
-      })
-         .then((res) => res.json())
-         .then((data) => setEmail(data.email))
-         .catch((err) => {
-            setIsVerified(false);
-            console.log(err);
+
+      if (!token || !id) {
+         console.error('Either the id or token cannot be identified');
+         setIsVerified(false);
+         return;
+      }
+
+      try {
+         const res = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({ userToken, id }),
+            headers: { 'Content-Type': 'application/json' },
          });
+
+         if (!res.ok) {
+            console.error('Failed to verify:', res.statusText);
+            setIsVerified(false);
+            return;
+         }
+
+         const data = await res.json();
+         setEmail(data.email);
+      } catch (err) {
+         setIsVerified(false);
+         console.error(err);
+      }
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [router.isReady]);
 
    useEffect(() => {
       verify();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, []);
+   }, [router.isReady]);
 
    const onSubmit = async (data: Pick<SignInForm, 'password' | 'confirmPassword'>) => {
       if (!isVerified || !data.password) return;
       if (isVerified) {
          const { password } = data;
-         const params = {
-            url: `verify/${id}/${token}`,
-            method: 'PUT',
-            data: password,
-         };
-         // const changePassword = fetchApiData<Pick<SignInForm, "password">>(params);
-         const res = await fetch(`/api/verify/${id}/${token}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(password),
-         });
-         // toast.promise(changePassword, {
-         //   loading: "loading",
-         //   success: "Successfully changed!",
-         //   error: "Failed to change the password. Please try again.",
-         // });
+         try {
+            const res = await apiRequest({
+               apiUrl: url,
+               method: 'POST',
+               delay: 250,
+               routeTo: ROUTES.HOME,
+               data: password,
+            });
+         } catch (err) {
+            console.error('Failed to change the password with the following error: ', err);
+         }
       }
-      // TODO // push to { router.push("/dashboard") }
    };
 
    return (

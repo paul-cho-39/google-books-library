@@ -2,6 +2,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { FormEvent, useState } from 'react';
+import ROUTES from '../../utils/routes';
 
 interface SearchInputInterface {
    filterQuery?: string;
@@ -16,7 +17,8 @@ const SearchInput = ({ filterQuery }: SearchInputInterface) => {
       if (!query) return;
       e.preventDefault();
 
-      router.push(`/search?q=${query}`);
+      const url = ROUTES.SEARCH(query);
+      router.push(url);
    };
 
    return (

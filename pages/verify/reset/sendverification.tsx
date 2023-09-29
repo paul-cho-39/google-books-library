@@ -4,7 +4,9 @@ import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import FormSignIn, { Inputs } from '../../../components/Login/credentials';
 import { SignInForm } from '../../../lib/types/forms';
-import fetchApiData, { Method } from '../../../utils/fetchData';
+import { ApiRequestOptions } from '../../../lib/types/fetchbody';
+import API_ROUTES from '../../../utils/apiRoutes';
+import apiRequest from '../../../utils/fetchData';
 
 type EmailInput = Pick<SignInForm, 'email'>;
 
@@ -12,6 +14,7 @@ export default function EmailVerify(props) {
    const [isError, setError] = useState(false);
    const { data: session } = useSession();
    const router = useRouter();
+
    const message = {
       loading: 'loading',
       success: `Message has been sent! Please check your email. You will be redirected to the homepage`,
@@ -21,14 +24,16 @@ export default function EmailVerify(props) {
    const onSubmit = async (data: EmailInput) => {
       const { email } = data;
       if (session || !email || email.length < 5 || !email.includes('@')) return;
-      const params = {
-         url: '/verify/',
-         method: Method['POST'],
+
+      const params: ApiRequestOptions<string> = {
+         apiUrl: API_ROUTES.VERIFY.SEND_VERIFICATION,
+         method: 'POST',
          data: email,
       };
-      const getEmail = fetchApiData<string>(params);
+
+      const getEmail = await apiRequest<string>(params);
       toast.promise(getEmail, message, {
-         duration: 2500,
+         duration: 250,
          position: 'bottom-center',
       });
    };
@@ -44,7 +49,10 @@ export default function EmailVerify(props) {
                   here!
                </p>
                <FormSignIn shouldReset={true} hidden='hidden' onSubmit={onSubmit}>
-                  <label className='block text-sm font-semibold text-blue-gray-900 -my-1 -mb-2'>
+                  <label
+                     htmlFor='email'
+                     className='block text-sm font-semibold text-blue-gray-900 -my-1 -mb-2'
+                  >
                      Email
                   </label>
                   <Inputs isSubmitted={true} isDisclosure={false} name='email' />

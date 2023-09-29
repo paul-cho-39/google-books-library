@@ -9,8 +9,7 @@ import useHoverDisplayDescription from '../lib/hooks/useHoverDisplay';
 import { useGetCategoriesQueries } from '../lib/hooks/useGetCategoryQuery';
 
 import { Categories, serverSideCategories, topCategories } from '../constants/categories';
-import { getBookWidth, getContainerWidth } from '../utils/getBookWidth';
-import { changeDirection } from '../utils/reverseDescriptionPos';
+import { getBookWidth, getContainerWidth } from '../lib/helper/books/getBookWidth';
 
 import { BookImageSkeleton, DescriptionSkeleton } from '../components/loaders/bookcardsSkeleton';
 import { DividerButtons } from '../components/layout/dividers';
@@ -20,6 +19,7 @@ import { getSession, useSession } from 'next-auth/react';
 import { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
 import { CategoriesQueries } from '../lib/types/serverPropsTypes';
 import { encodeRoutes } from '../utils/routes';
+import { changeDirection } from '../lib/helper/getContainerPos';
 
 const CategoryDescription = lazy(() => import('../components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('../components/bookcover/bookImages'));

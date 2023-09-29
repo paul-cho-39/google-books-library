@@ -3,7 +3,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { lazy } from 'react';
 
 import BookImage from '../../components/bookcover/bookImages';
-import { getBookWidth } from '../../utils/getBookWidth';
+import { getBookWidth } from '../../lib/helper/books/getBookWidth';
 import BookTitle from '../../components/bookcover/title';
 import SingleOrMultipleAuthors from '../../components/bookcover/authors';
 import BookDescription from '../../components/bookcover/description';
@@ -17,8 +17,8 @@ import { CategoryRouteParams, RouteParams } from '../../lib/types/routes';
 
 const HEIGHT = 225;
 
-const SaveAsFinishedButton = lazy(() => import('./../../components/bookcards/finishedButton'));
-const PopOverButtons = lazy(() => import('./../../components/bookcards/popover/popoverButtons'));
+const SaveAsFinishedButton = lazy(() => import('../../components/buttons/finishedButton'));
+const PopOverButtons = lazy(() => import('../../components/buttons/popoverButtons'));
 
 // whenever a key is applied it does not seem to work?
 export default function BookPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {

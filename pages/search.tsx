@@ -8,7 +8,7 @@ import BookSearchSkeleton from '../components/loaders/bookcardsSkeleton';
 import { useRouter } from 'next/router';
 import { FilterProps, Items } from '../lib/types/googleBookTypes';
 import { CustomSession } from '../lib/types/serverPropsTypes';
-import EmptyResult from '../components/bookcards/emptyResult';
+import EmptyResult from '../components/error/emptyResult';
 import { MetaProps } from '../models/_api/fetchGoogleUrl';
 import FilterInput from '../components/inputs/filter';
 

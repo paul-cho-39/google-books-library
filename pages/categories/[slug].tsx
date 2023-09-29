@@ -9,16 +9,15 @@ import { CategoryQuery } from '../../lib/types/serverPropsTypes';
 import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '../../lib/types/googleBookTypes';
 import { Categories, categories } from '../../constants/categories';
 import { CategoryQualifiers } from '../../models/_api/fetchNytUrl';
-import { capitalizeWords } from '../../utils/transformChar';
+import { capitalizeWords } from '../../lib/helper/transformChar';
 import {
    CategoryGridLarge,
    CategoryGridSmall,
 } from '../../components/contents/category/categoryGrids';
 import { BookImageSkeleton, DescriptionSkeleton } from '../../components/loaders/bookcardsSkeleton';
-import { getBookWidth, getContainerWidth } from '../../utils/getBookWidth';
+import { getBookWidth, getContainerWidth } from '../../lib/helper/books/getBookWidth';
 import classNames from 'classnames';
 import { useDisableBreakPoints } from '../../lib/hooks/useDisableBreakPoints';
-import { changeDirection } from '../../utils/reverseDescriptionPos';
 import { handleNytId } from '../../utils/handleIds';
 import { Divider } from '../../components/layout/dividers';
 import BookTitle from '../../components/bookcover/title';
@@ -28,6 +27,7 @@ import { batchFetchGoogleCategories } from '../../models/cache/handleGoogleCache
 import { useRouter } from 'next/router';
 import BookLoader from '../../components/loaders/spinner';
 import { encodeRoutes } from '../../utils/routes';
+import { changeDirection } from '../../lib/helper/getContainerPos';
 
 const CategoryDescription = lazy(
    () => import('../../components/contents/home/categoryDescription')
@@ -37,9 +37,9 @@ const BookImage = lazy(() => import('../../components/bookcover/bookImages'));
 const MAX_ITEMS = 15;
 
 export default function BookCategoryPages({
-   category,
-   data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+       category,
+       data,
+    }: InferGetStaticPropsType<typeof getStaticProps>) {
    const [currentPage, setCurrentPage] = useState(0);
 
    const router = useRouter();
@@ -63,7 +63,6 @@ export default function BookCategoryPages({
       enabled: !!data,
       meta: meta,
       keepPreviousData: true,
-      route: { source: 'google', endpoint: 'recent' },
    });
 
    // requring both so that each will have its own publication date?

@@ -7,7 +7,7 @@ import {
    ViewColumnsIcon,
 } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
-import { capitalizeWords } from '../../utils/transformChar';
+import { capitalizeWords } from '../../lib/helper/transformChar';
 import { useScrollDirection } from '../../lib/hooks/useScrollDirection';
 import Link from 'next/link';
 import HomeIcon from '../icons/homeIcon';

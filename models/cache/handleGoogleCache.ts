@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next';
 import { Categories, categories } from '../../constants/categories';
-import lruCache, { StatusLRUType } from '../../lib/LRUcache';
+import lruCache, { StatusLRUType } from '../../utils/LRUcache';
 import { fetcher } from '../../utils/fetchData';
 import { handleCacheKeys } from '../../utils/handleIds';
 import googleApi, { MetaProps } from '../_api/fetchGoogleUrl';

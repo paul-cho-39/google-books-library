@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import googleApi, { MetaProps } from '../../../../../models/_api/fetchGoogleUrl';
 import { handleCacheKeys } from '../../../../../utils/handleIds';
-import lruCache, { StatusLRUType } from '../../../../../lib/LRUcache';
+import lruCache, { StatusLRUType } from '../../../../../utils/LRUcache';
 import { fetcher } from '../../../../../utils/fetchData';
 import { Categories, categories } from '../../../../../constants/categories';
 import handleGoogleCache from '../../../../../models/cache/handleGoogleCache';

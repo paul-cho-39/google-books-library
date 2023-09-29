@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CategoryRouteParams, RouteNames, RouteParams } from '../types/routes';
-import queryKeys from '../queryKeys';
+import queryKeys from '../../utils/queryKeys';
 import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import { APISource, getBookIdAndSource } from '../../utils/handleIds';
 import { Data, GoogleUpdatedFields, Items } from '../types/googleBookTypes';

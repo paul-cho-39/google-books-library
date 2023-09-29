@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next';
 import { handleCacheKeys } from '../../utils/handleIds';
-import lruCache, { StatusLRUType } from '../../lib/LRUcache';
+import lruCache, { StatusLRUType } from '../../utils/LRUcache';
 import nytApi from '../_api/fetchNytUrl';
 import { fetcher } from '../../utils/fetchData';
 

@@ -1,5 +1,3 @@
-import { ReadPostBody } from '../../helper/books/bookApiUpdate';
-
 export type DeleteBody = { id: string; userId: string };
 export type FinishedPostBody = ReadPostBody & {
    month: number;
@@ -7,6 +5,16 @@ export type FinishedPostBody = ReadPostBody & {
    day: number;
 };
 
+export interface ApiRequestOptions<T> {
+   apiUrl: string;
+   method: Method;
+   data?: BodyInit<T>;
+   headers?: HeadersInit;
+   shouldRoute?: boolean;
+   routeTo?: string;
+   delay?: number;
+}
+
 export type Body = ReadPostBody | DeleteBody | FinishedPostBody;
-export type Method = 'POST' | 'DELETE' | 'GET' | 'PATCH';
+export type Method = 'POST' | 'DELETE' | 'PUT' | 'GET' | 'PATCH';
 export type UrlProps = 'reading' | 'finished' | 'want' | 'primary';

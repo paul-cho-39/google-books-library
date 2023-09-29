@@ -1,10 +1,10 @@
-import queryKeys from '../lib/queryKeys';
+import queryKeys from './queryKeys';
 import { MetaProps } from '../models/_api/fetchGoogleUrl';
 
 const ROUTES = {
    HOME: '/',
    AUTH: {
-      SIGNIN: 'auth/signin',
+      SIGNIN: '/auth/signin',
       SIGNUP: '/auth',
    },
    AUTHORS: (slug: string) => `/author/${slug}`,
@@ -16,6 +16,7 @@ const ROUTES = {
    PROFILE: {
       SETTINGS: (id: number | string) => `/profile/${id}`,
    },
+   SEARCH: (search: string) => `/search?q=${search}`,
 };
 
 export const encodeRoutes = {

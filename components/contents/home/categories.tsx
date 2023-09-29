@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { capitalizeWords, formatCategoryName } from '../../../utils/transformChar';
+import { capitalizeWords, formatCategoryName } from '../../../lib/helper/transformChar';
 import CategoryLayout, { CategoryLayoutProps } from '../../layout/page/categoryLayout';
 import { CategoryHeaderParams } from '../../../constants/categories';
 import classNames from 'classnames';
