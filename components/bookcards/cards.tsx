@@ -4,7 +4,7 @@ import { Items } from '../../lib/types/googleBookTypes';
 import SingleOrMultipleAuthors from '../bookcover/authors';
 import FilterStatus from './filterStatus';
 import useGetBookData, { QueryData } from '../../lib/hooks/useGetBookData';
-import { getBookWidth } from '../../utils/getBookWidth';
+import { getBookWidth } from '../../lib/helper/books/getBookWidth';
 import BookImage from '../bookcover/bookImages';
 import SignInRequiredButton from '../Login/requireUser';
 import BookTitle from '../bookcover/title';
@@ -13,8 +13,8 @@ import { encodeRoutes } from '../../utils/routes';
 
 const HEIGHT = 125;
 
-const SaveAsFinishedButton = lazy(() => import('./finishedButton'));
-const PopOverButtons = lazy(() => import('./popover/popoverButtons'));
+const SaveAsFinishedButton = lazy(() => import('../buttons/finishedButton'));
+const PopOverButtons = lazy(() => import('../buttons/popoverButtons'));
 
 const Cards: React.FunctionComponent<{
    query: string;
