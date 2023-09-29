@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import googleApi, { MetaProps } from '../../../../../models/_api/fetchGoogleUrl';
 import { handleCacheKeys } from '../../../../../utils/handleIds';
 import lruCache, { StatusLRUType } from '../../../../../utils/LRUcache';
-import { fetcher } from '../../../../../utils/fetchData';
+import { throttledFetcher } from '../../../../../utils/fetchData';
 import { Categories, categories } from '../../../../../constants/categories';
 import { ComputerDesktopIcon } from '@heroicons/react/20/solid';
 
@@ -55,7 +55,7 @@ async function handleGoogleCache(res: NextApiResponse, category: string, meta: M
          // passing meta here to whether save pageIndex but likely wont
          const url = googleApi.getUrlBySubject(category as Categories, meta);
 
-         data = await fetcher(url);
+         data = await throttledFetcher(url);
 
          //  if ((categories as unknown as string[]).includes(category.toUpperCase())) {
 

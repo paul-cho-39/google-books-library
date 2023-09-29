@@ -4,7 +4,7 @@ import queryKeys from '../../utils/queryKeys';
 import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import { APISource, getBookIdAndSource } from '../../utils/handleIds';
 import { Data, GoogleUpdatedFields, Items } from '../types/googleBookTypes';
-import { fetcher } from '../../utils/fetchData';
+import { throttledFetcher } from '../../utils/fetchData';
 import { decodeRoutes } from '../../utils/routes';
 
 export interface SingleBookQueryParams<TRoute extends CategoryRouteParams | RouteParams> {
@@ -42,7 +42,7 @@ export default function useGetBookById<
       async () => {
          const url = isGoogle ? googleApi.getUrlByBookId(id) : googleApi.getUrlByIsbn(id);
 
-         const data = await fetcher(url);
+         const data = await throttledFetcher(url);
 
          return data;
       },

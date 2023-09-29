@@ -1,12 +1,14 @@
 import router from 'next/router';
 import { SignInForm } from '../lib/types/forms';
 import { IncomingMessage } from 'http';
-import { Categories } from '../constants/categories';
+import { GOOGLE_THROTTLE_TIME, NYT_THROTTLE_TIME } from '../constants/throttle';
 import { GoogleUpdatedFields, Items } from '../lib/types/googleBookTypes';
 import { BestSellerData, ReviewData } from '../lib/types/nytBookTypes';
 import { ReturnedCacheData } from '../lib/types/serverPropsTypes';
 import { ApiRequestOptions, Method, UrlProps } from '../lib/types/fetchbody';
 import API_ROUTES from './apiRoutes';
+
+import { throttle } from 'lodash';
 
 type Request = IncomingMessage & {
    cookies: Partial<{
@@ -45,16 +47,13 @@ async function apiRequest<T, TData>(options: ApiRequestOptions<T>): Promise<TDat
       return response.json() as Promise<TData>;
    } catch (error: any) {
       console.error(`API Request Error: ${error.message}`);
-      throw error; // Re-throw the error after logging it
+      throw error;
    }
 }
 
 // this fetcher is mainly for googleAPI and can be used with nyt
 export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
    try {
-      // debugging
-      console.log('the url is: ', input);
-
       const headers = {
          ...init?.headers,
          'Accept-Encoding': 'gzip',
@@ -66,12 +65,31 @@ export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
          headers,
       });
 
+      if (res.status === 429) {
+         throw new Error('API rate limit exceeded. Please try again later.');
+      }
+
       if (!res.ok || res.status === 400) {
          throw new Error('Cannot be fetched');
       }
+
       return res.json();
    } catch (error) {
       console.error(`Cannot fetch the following url: ${input}. Request error: ${error}`);
+   }
+};
+
+export const throttledFetcher = (input: RequestInfo, init?: RequestInit) => {
+   const isNYT = input.toString().includes('api.nytimes.com');
+   // debugging
+   console.log('the url is: ', isNYT);
+
+   const fetcherFunction = async () => fetcher(input, init);
+
+   if (isNYT) {
+      return throttle(fetcherFunction, NYT_THROTTLE_TIME)();
+   } else {
+      return throttle(fetcherFunction, GOOGLE_THROTTLE_TIME)();
    }
 };
 

@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import queryKeys from '../../utils/queryKeys';
-import { fetcher } from '../../utils/fetchData';
+import { throttledFetcher } from '../../utils/fetchData';
 import { FilterProps } from '../types/googleBookTypes';
 
 interface FetcherProps {
@@ -40,12 +40,12 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
       return url;
    };
 
-   const { data, isLoading, isFetching, isError, isSuccess, hasNextPage, fetchNextPage } =
+   const { data, isLoading, isFetching, isError, error, isSuccess, hasNextPage, fetchNextPage } =
       useInfiniteQuery(
          queryKeys.bookSearch(search.toLocaleLowerCase()),
          ({ pageParam = 0 }) => {
             const url = getUrlFromFilter(pageParam);
-            return fetcher(url);
+            return throttledFetcher(url);
          },
          {
             getNextPageParam: (lastPage, allPages) => {
@@ -68,6 +68,10 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
             keepPreviousData: true,
          }
       );
+
+   if (isError) {
+      throw error;
+   }
 
    return {
       data,

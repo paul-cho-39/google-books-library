@@ -5,13 +5,12 @@ import nytApi, {
    NytCategoryTypes,
    ReviewQualifiers,
 } from '../../models/_api/fetchNytUrl';
-import { fetcher } from '../../utils/fetchData';
+import { fetcher, throttledFetcher } from '../../utils/fetchData';
 import queryKeys from '../../utils/queryKeys';
 import { BestSellerData, BookReview, Books, ReviewData } from '../types/nytBookTypes';
 import { CategoriesNytQueries, CategoriesQueries } from '../types/serverPropsTypes';
 import { transformStrToArray } from '../helper/transformChar';
 import { handleNytId } from '../../utils/handleIds';
-import { useEffect, useState } from 'react';
 
 interface NytBookQueryParams {
    date: DateQualifiers | 'current';
@@ -41,8 +40,8 @@ export default function useGetNytBestSeller({
 
    const data = useQuery<ReviewData<BestSellerData>, unknown, BestSellerData>(
       queryKeys.nytBestSellers(category.type, category.format),
-      () => {
-         const res = fetcher(nytApi.getUrlByCategory(category, date), {
+      async () => {
+         const res = await throttledFetcher(nytApi.getUrlByCategory(category, date), {
             headers: { 'Content-Type': 'application/json' },
             method: 'GET',
          });
@@ -63,8 +62,8 @@ export function useGetNytBookReview(qualifiers: ReviewQualifiers, key: keyof Rev
 
    const data = useQuery<ReviewData<BookReview[]>, unknown, BookReview[]>(
       queryKeys.nytReview(key, value),
-      () => {
-         const res = fetcher(nytApi.getReviewUrl(qualifiers), {
+      async () => {
+         const res = await fetcher(nytApi.getReviewUrl(qualifiers), {
             headers: { 'Content-Type': 'application/json' },
             method: 'GET',
          });
@@ -99,7 +98,7 @@ export function useGetNytBestSellers({ initialData, date }: NytBookMultiQueries)
                { type: cat, format: 'combined-print-and-e-book' },
                date
             );
-            return await fetcher(res);
+            return await throttledFetcher(res);
          },
          initialData: cache || checkInitialData[cat],
          // suspense: true,

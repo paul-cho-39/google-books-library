@@ -11,10 +11,10 @@ import { CustomSession } from '../lib/types/serverPropsTypes';
 import EmptyResult from '../components/error/emptyResult';
 import { MetaProps } from '../models/_api/fetchGoogleUrl';
 import FilterInput from '../components/inputs/filter';
-import BookLoader from '../components/loaders/bookFlipper';
 import { Divider } from '../components/layout/dividers';
 import SearchLayoutPage from '../components/layout/searchLayout';
 import Spinner from '../components/loaders/spinner';
+import APIErrorBoundary from '../components/error/errorBoundary';
 
 const Cards = lazy(() => import('../components/bookcards/cards'));
 
@@ -76,28 +76,30 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
 
    // TODO: error boundary here;
    return (
-      <SearchLayoutPage isSuccess={true}>
-         <div>
-            <FilterInput filter={filter} setFilter={setFilter} />
-            <div>
-               {isFetching && isLoading ? (
-                  <BookSearchSkeleton books={5} />
-               ) : (
-                  isSuccess && (
-                     <Suspense fallback={<BookSearchSkeleton books={5} />}>
-                        <Cards
-                           query={search}
-                           books={uniqueDataSets}
-                           userId={userId}
-                           totalItems={totalItems}
-                        />
-                     </Suspense>
-                  )
-               )}
-            </div>
-         </div>
-         <div ref={pageLoader}></div>
-      </SearchLayoutPage>
+      <APIErrorBoundary>
+         <SearchLayoutPage isSuccess={true}>
+            <main>
+               <FilterInput filter={filter} setFilter={setFilter} />
+               <div>
+                  {isFetching && isLoading ? (
+                     <BookSearchSkeleton books={5} />
+                  ) : (
+                     isSuccess && (
+                        <Suspense fallback={<BookSearchSkeleton books={5} />}>
+                           <Cards
+                              query={search}
+                              books={uniqueDataSets}
+                              userId={userId}
+                              totalItems={totalItems}
+                           />
+                        </Suspense>
+                     )
+                  )}
+               </div>
+            </main>
+            <div ref={pageLoader}></div>
+         </SearchLayoutPage>
+      </APIErrorBoundary>
    );
 }
 

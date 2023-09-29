@@ -28,6 +28,7 @@ import { useRouter } from 'next/router';
 import BookLoader from '../../components/loaders/bookFlipper';
 import { encodeRoutes } from '../../utils/routes';
 import { changeDirection } from '../../lib/helper/getContainerPos';
+import APIErrorBoundary from '../../components/error/errorBoundary';
 
 const CategoryDescription = lazy(
    () => import('../../components/contents/home/categoryDescription')
@@ -134,70 +135,76 @@ export default function BookCategoryPages({
 
    return (
       <div className='min-h-screen w-full'>
-         {googleData.isSuccess && googleData && (
-            <CategoryGridLarge
-               currentPage={currentPage}
-               itemsPerPage={MAX_ITEMS}
-               onPageChange={handlePageChange}
-               totalItems={googleData.data.totalItems}
-               category={`New ${capitalizeWords(category as string)} Releases`}
-            >
-               {cleanedData?.map((book, index) => {
-                  const hoveredEl = isHovered.id == book.id &&
-                     (isHovered.hovered || isHovered.isFloatHovered) && (
-                        <div
-                           ref={floatingRef}
-                           onMouseLeave={onMouseLeaveDescription}
-                           style={{
-                              height: HEIGHT,
-                              width: getContainerWidth(
-                                 HEIGHT,
-                                 layoutManager.categories.widthRatio,
-                                 largeEnabled
-                              ),
-                           }}
-                           className='absolute z-50 rounded-lg'
-                        >
-                           <Suspense fallback={<DescriptionSkeleton />}>
-                              <CategoryDescription
+         <APIErrorBoundary>
+            {googleData.isSuccess && googleData && (
+               <CategoryGridLarge
+                  currentPage={currentPage}
+                  itemsPerPage={MAX_ITEMS}
+                  onPageChange={handlePageChange}
+                  totalItems={googleData.data.totalItems}
+                  category={`New ${capitalizeWords(category as string)} Releases`}
+               >
+                  {cleanedData?.map((book, index) => {
+                     const hoveredEl = isHovered.id == book.id &&
+                        (isHovered.hovered || isHovered.isFloatHovered) && (
+                           <div
+                              ref={floatingRef}
+                              onMouseLeave={onMouseLeaveDescription}
+                              style={{
+                                 height: HEIGHT,
+                                 width: getContainerWidth(
+                                    HEIGHT,
+                                    layoutManager.categories.widthRatio,
+                                    largeEnabled
+                                 ),
+                              }}
+                              className='absolute z-50 rounded-lg'
+                           >
+                              <Suspense fallback={<DescriptionSkeleton />}>
+                                 <CategoryDescription
+                                    id={book.id}
+                                    title={book.volumeInfo.title}
+                                    subtitle={book.volumeInfo.subtitle}
+                                    authors={book.volumeInfo.authors}
+                                    description={book.volumeInfo.description}
+                                    routeQuery={encodeRoutes.category(category, meta)}
+                                 />
+                              </Suspense>
+                           </div>
+                        );
+                     return (
+                        <>
+                           <Suspense
+                              fallback={
+                                 <BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />
+                              }
+                           >
+                              <BookImage
+                                 key={book.id}
                                  id={book.id}
                                  title={book.volumeInfo.title}
-                                 subtitle={book.volumeInfo.subtitle}
-                                 authors={book.volumeInfo.authors}
-                                 description={book.volumeInfo.description}
+                                 width={getBookWidth(HEIGHT)}
+                                 height={HEIGHT}
+                                 forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
+                                 bookImage={book.volumeInfo.imageLinks as ImageLinks}
+                                 priority={false}
+                                 onMouseEnter={() => onMouseEnter(book.id, index)}
+                                 onMouseLeave={(e: React.MouseEvent) =>
+                                    onMouseLeave(e, floatingRef)
+                                 }
                                  routeQuery={encodeRoutes.category(category, meta)}
+                                 className={classNames(
+                                    'lg:col-span-1 px-1 inline-flex items-center justify-center lg:px-0 cursor-pointer'
+                                 )}
                               />
                            </Suspense>
-                        </div>
+                           {hoveredEl}
+                        </>
                      );
-                  return (
-                     <>
-                        <Suspense
-                           fallback={<BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />}
-                        >
-                           <BookImage
-                              key={book.id}
-                              id={book.id}
-                              title={book.volumeInfo.title}
-                              width={getBookWidth(HEIGHT)}
-                              height={HEIGHT}
-                              forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
-                              bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                              priority={false}
-                              onMouseEnter={() => onMouseEnter(book.id, index)}
-                              onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
-                              routeQuery={encodeRoutes.category(category, meta)}
-                              className={classNames(
-                                 'lg:col-span-1 px-1 inline-flex items-center justify-center lg:px-0 cursor-pointer'
-                              )}
-                           />
-                        </Suspense>
-                        {hoveredEl}
-                     </>
-                  );
-               })}
-            </CategoryGridLarge>
-         )}
+                  })}
+               </CategoryGridLarge>
+            )}
+         </APIErrorBoundary>
          {isSuccess && bestSellers && (
             <>
                <Divider />

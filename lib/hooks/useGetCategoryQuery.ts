@@ -9,7 +9,7 @@ import queryKeys from '../../utils/queryKeys';
 import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
 import { Pages, Items, GoogleUpdatedFields } from '../types/googleBookTypes';
 import { createUniqueData } from '../helper/books/filterUniqueData';
-import { FetchCacheType, fetchDataFromCache, fetcher } from '../../utils/fetchData';
+import { throttledFetcher } from '../../utils/fetchData';
 import { CategoriesQueries, CategoryQuery } from '../types/serverPropsTypes';
 
 interface CategoryQueryParams<TData extends CategoriesQueries | GoogleUpdatedFields> {
@@ -46,7 +46,7 @@ export default function useGetCategoryQuery({
       queryKeys.categories(lowercaseCategory, meta),
       async () => {
          const url = googleApi.getUrlBySubject(lowercaseCategory, meta);
-         const data = await fetcher(url);
+         const data = await throttledFetcher(url);
          return data;
       },
       {
@@ -92,7 +92,7 @@ export function useGetCategoriesQueries({
          queryKey: queryKeys.categories(lowercaseCategory, meta),
          queryFn: async () => {
             const url = googleApi.getUrlBySubject(lowercaseCategory, meta);
-            const data = await fetcher(url);
+            const data = await throttledFetcher(url);
             return data;
          },
          initialData: () => {
