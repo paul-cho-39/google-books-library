@@ -1,4 +1,5 @@
 import { TotalResults } from '../bookcards/cards';
+import SearchLayoutPage from '../layout/searchLayout';
 
 const EmptyResult = ({
    query,
@@ -11,7 +12,7 @@ const EmptyResult = ({
 }) => {
    const message = isError ? 'Error occurred while fetching data' : `No book result for ${query}`;
    return (
-      <div className='mx-auto h-[100vh] px-4 lg:px-16 lg:py-2 dark:slate-800 overflow-hidden'>
+      <SearchLayoutPage isSuccess={false}>
          {children}
          <TotalResults result={0} />
          <div className='relative flex justify-center mb-6'>
@@ -20,7 +21,7 @@ const EmptyResult = ({
          <div>
             <p className='dark:text-slate-100 text-xl italic'>{message}</p>
          </div>
-      </div>
+      </SearchLayoutPage>
    );
 };
 

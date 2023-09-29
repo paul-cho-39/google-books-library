@@ -11,6 +11,10 @@ import { CustomSession } from '../lib/types/serverPropsTypes';
 import EmptyResult from '../components/error/emptyResult';
 import { MetaProps } from '../models/_api/fetchGoogleUrl';
 import FilterInput from '../components/inputs/filter';
+import BookLoader from '../components/loaders/bookFlipper';
+import { Divider } from '../components/layout/dividers';
+import SearchLayoutPage from '../components/layout/searchLayout';
+import Spinner from '../components/loaders/spinner';
 
 const Cards = lazy(() => import('../components/bookcards/cards'));
 
@@ -53,7 +57,13 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    const totalItems = data?.pages?.[0]?.totalItems || 0;
 
    if (!data && (isLoading || isFetching)) {
-      return <div>Loading...</div>;
+      return (
+         <SearchLayoutPage isSuccess={false}>
+            <FilterInput filter={filter} setFilter={setFilter} />
+            <Divider />
+            <Spinner />
+         </SearchLayoutPage>
+      );
    }
 
    if (!data || isError || ((!isLoading || !isFetching) && totalItems < 1)) {
@@ -66,7 +76,7 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
 
    // TODO: error boundary here;
    return (
-      <div className='mx-auto px-4 lg:px-16 lg:py-2 dark:slate-800'>
+      <SearchLayoutPage isSuccess={true}>
          <div>
             <FilterInput filter={filter} setFilter={setFilter} />
             <div>
@@ -87,7 +97,7 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
             </div>
          </div>
          <div ref={pageLoader}></div>
-      </div>
+      </SearchLayoutPage>
    );
 }
 

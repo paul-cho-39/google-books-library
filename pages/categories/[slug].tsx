@@ -25,7 +25,7 @@ import SingleOrMultipleAuthors from '../../components/bookcover/authors';
 import layoutManager from '../../constants/layouts';
 import { batchFetchGoogleCategories } from '../../models/cache/handleGoogleCache';
 import { useRouter } from 'next/router';
-import BookLoader from '../../components/loaders/spinner';
+import BookLoader from '../../components/loaders/bookFlipper';
 import { encodeRoutes } from '../../utils/routes';
 import { changeDirection } from '../../lib/helper/getContainerPos';
 

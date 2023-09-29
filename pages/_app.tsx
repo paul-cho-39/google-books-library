@@ -13,7 +13,6 @@ import '../styles/globals.css';
 import ThemeProvider from '../lib/context/ThemeContext';
 import RefreshTokenHandler from '../lib/auth/refreshTokenHandler';
 
-import Container from '../components/layout/container';
 import Navigation from '../components/headers';
 import HomeLayout from '../components/layout/page/home';
 
