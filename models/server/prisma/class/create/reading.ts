@@ -1,5 +1,5 @@
 import { Data } from '../types';
-import BookCreator from './books';
+import BookCreator from './Books';
 import prisma from '../../../../../lib/prisma';
 import { ReadingGetter } from '../get/bookgetter';
 

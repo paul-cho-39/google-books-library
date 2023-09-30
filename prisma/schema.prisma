@@ -8,110 +8,103 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// should generate RPG-esque so that user levels up 
-// for every book read?
+// This schema represents a book tracking system and a simple rating system. Users can log their 
+// reading progress from a simple list of 'BookState', comprised of three different states: 
+// Want, Reading, and Finished. 
+// *Their reading logs are not yet updated on the UI, as of yet.
+// Another feature is rating the system from lists of books without adding to their library
 
+// Represents a reading log for a user for a specific book.
+// Tracks reading progress including starting and ending pages for a reading session.
 model Log {
-  id           Int       @id @default(autoincrement())
-  date         DateTime  @default(now())
-  start        Int
-  end          Int
-  dayOfTheWeek String
-  bookId       String
-  userId       String
-  finished     Finished? @relation(fields: [bookId, userId], references: [bookId, userId], map: "finished_books")
-  reading      Reading?  @relation(fields: [bookId, userId], references: [bookId, userId], map: "reading_books")
-  user         User      @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  date      DateTime @default(now())
+  userId    String
+  bookId    String
+  start     Int
+  end       Int
+  pagesRead Int
+  UserBook  UserBook @relation(fields: [userId, bookId], references: [userId, bookId])
 
+  @@unique([userId, bookId])
   @@map("reading_logs")
 }
 
-// THOUGHTS: the book has access to the Library. But the library does not have access to the bookId 
-// so whenever accessing through the book, can access trhough the library
+// Represents a user's rating for a specific book.
+// Each user can rate a book only once but can update their rating.
+model Rating {
+  userId      String
+  bookId      String
+  ratingValue Int
+  UserBook    UserBook @relation(fields: [userId, bookId], references: [userId, bookId])
+
+  @@id([userId, bookId])
+  @@map("ratings")
+}
+
+// Represents a book with details
 model Book {
-  id                  String
-  userId              String
+  id                  String     @unique
   title               String
   subtitle            String?
-  publishedDate       DateTime  @map("pub_date")
+  publishedDate       DateTime   @map("pub_date")
   categories          String[]
   language            String?
   pageCount           Int?
   industryIdentifiers Json?
-  imageLinks          Json?
   authors             String[]
   dateDeleted         DateTime?
-  want                Want?
-  reading             Reading?
-  finished            Finished?
-  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade) // should it reference two?
+  users               UserBook[]
 
-  @@unique([id, userId])
   @@index([id], type: Hash)
   @@map("books")
 }
 
-model Want {
-  dateAdded   DateTime @default(now())
-  dateUpdated DateTime @updatedAt
-  userId      String
-  bookId      String
-  // does this mean deleting from the library or book deletes or becomes null when deleted from here?
-  book        Book?    @relation(fields: [bookId, userId], references: [id, userId], onDelete: Cascade, onUpdate: Cascade)
-
-  @@unique([bookId, userId])
-  @@map("want")
+enum BookState {
+  Want
+  Reading
+  Finished
 }
 
-model Finished {
-  // remove finishedDate?
-  finishedDate  DateTime? @map("finished_date")
-  finishedYear  Int?      @map("finished_year")
-  finishedMonth Int?      @map("finished_month")
-  finishedDay   Int?      @map("finished_day")
-  totalDaysRead Int?      @map("total_days_read")
-  // reReading     Finished[] @relation("RereadingBooks", fields: [bookId, libraryId], references: [id]) 
-  userId        String
-  bookId        String
-  book          Book?     @relation(fields: [bookId, userId], references: [id, userId], onDelete: Cascade, onUpdate: Cascade)
-  log           Log[]
+// This model is used as an intermediary model for connecting Book and User
+// Also a model for user-specific details like the 'BookState', 'Logs' and 'Rating'
+// When adding additional details it would likely be added here
+model UserBook {
+  userId            String
+  bookId            String
+  state             BookState
+  dateAdded         DateTime  @default(now())
+  dateStarted       DateTime?
+  dateFinished      DateTime?
+  dateFinishedYear  Int?
+  dateFinishedMonth Int?
+  dateFinishedDay   Int?
+  dateUpdated       DateTime  @updatedAt
+  totalDaysRead     Int?
+  primary           Boolean   @default(false)
+  primaryAdded      DateTime?
+  user              User      @relation(fields: [userId], references: [id])
+  book              Book      @relation(fields: [bookId], references: [id])
+  log               Log[]
+  rating            Rating?
 
-  @@unique([bookId, userId])
-  @@map("finished")
+  @@id([userId, bookId])
 }
 
-model Reading {
-  dateAdded    DateTime  @default(now())
-  primary      Boolean   @default(false)
-  primaryAdded DateTime?
-  bookmarkId   String?
-  userId       String
-  bookId       String
-  book         Book?     @relation(fields: [bookId, userId], references: [id, userId])
-  log          Log[]
-  Bookmark     Bookmark? @relation(fields: [bookmarkId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@unique([bookId, userId])
-  @@unique([primary, bookmarkId]) // for one primary there is one bookmarkId
-  @@map("reading")
-}
-
-// QUESTION: how will each bookmark be generated? determined by its url?
-// should the bookmark have date?
-// have to test this one out later **
 model Bookmark {
-  id      String    @id @default(cuid())
-  name    String?
-  userId  String
+  id     String  @id @default(cuid())
+  name   String?
+  userId String
   // does the bookmark require libraryId & library? dont think its necessary?
-  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Reading Reading[]
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([name, userId])
   @@index([userId], type: Hash)
   @@map("bookmarks")
 }
 
+// User, Account, Session, and VerificationToken are all part of next.js auth schema
+// the library schema can be found: PROVIDE THE URL HERE
 model User {
   id            String     @id @default(cuid())
   name          String?
@@ -123,10 +116,11 @@ model User {
   username      String?    @unique
   account       Account[]
   sessions      Session[]
-  book          Book[]
-  log           Log[]
   Bookmark      Bookmark[]
+  // book          Book[]
+  books         UserBook[]
 
+  @@unique([id, email])
   @@index([id], type: Hash)
   @@map("users")
 }
@@ -164,3 +158,30 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+// Relationships:
+// User and Book:
+
+// A many-to-many relationship exists between users and books.
+// This relationship is established through the intermediary UserBook model.
+// User and Rating:
+
+// A one-to-one relationship exists between a user-book pairing and a rating. A user can rate a specific book only once.
+// User and Log:
+
+// A one-to-many relationship exists between a user-book pairing and logs. A user can have multiple log entries for a single book.
+// User and Bookmark:
+
+// A one-to-many relationship exists between a user and bookmarks. A user can have multiple bookmarks.
+// User and Account:
+
+// A one-to-many relationship exists between a user and accounts. A user can be associated with multiple third-party accounts.
+// User and Session:
+
+// A one-to-many relationship exists between a user and sessions. A user can have multiple active sessions.
+// Usage Scenarios:
+// Users can maintain a list of books they want to read, are currently reading, or have finished.
+// Users can rate books and update their ratings.
+// Users can log their reading progress for a book.
+// Users can track their reading state for a book: whether they want to read it, are currently reading it, or have finished it.
+// Users can create bookmarks.

@@ -1,35 +1,26 @@
-import { Data } from '../types';
-import BookCreator from './books';
+import BookCreator from './Books';
 import prisma from '../../../../../lib/prisma';
+import { Data } from '../../../../../lib/types/models/books';
 
 export default class FinishedCreator extends BookCreator {
    constructor(
       data: Data,
       industryIdentifiers: string[],
       authors: string[],
-      imageLinks: { thumbnail: string; smallThumbnail: string },
       categories: string[],
       userId: string
    ) {
-      super(data, industryIdentifiers, authors, imageLinks, categories, userId);
+      super(data, industryIdentifiers, authors, categories, userId);
    }
    async createFinished(year: number, month: number, day: number) {
-      const data = new BookCreator(
-         this.data,
-         this.categories,
-         this.authors,
-         this.imageLinks,
-         this.industryIdentifiers,
-         this.userId
-      ).connectOrCreateMethod;
-
-      await prisma.finished.create({
+      await prisma.userBook.create({
          data: {
-            book: data,
-            finishedYear: year,
-            finishedMonth: month,
-            finishedDay: day,
-         },
-      });
+            bookId: this.data.id,
+            userId: this.userId,
+            dateFinished: new Date(year, month, day), 
+            state: 'Finished',
+            book {}       
+         }
+      })
    }
 }
