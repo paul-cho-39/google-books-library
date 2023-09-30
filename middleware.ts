@@ -1,18 +1,21 @@
-import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { getToken } from 'next-auth/jwt';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import logger from './utils/winston';
 
 export async function middleware(req: NextRequest) {
-  // return early if url isn't supposed to be protected
-  if (!req.url.includes("/protected-url")) {
-    return NextResponse.next();
-  }
+   // return early if url isn't supposed to be protected
+   if (!req.url.includes('/protected-url')) {
+      return NextResponse.next();
+   }
 
-  const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  // You could also check for any property on the session object,
-  // like role === "admin" or name === "John Doe", etc.
-  if (!session) return NextResponse.redirect("/api/auth/signin");
+   // loggers not running inside. Suspecting when middleware is some packages
+   // in nodejs are not running(?)
+   // logger.info('Request recieved', {
+   //    method: req.method,
+   //    path: req.nextUrl.pathname,
+   //    url: req.url,
+   // });
 
-  // If user is authenticated, continue.
-  return NextResponse.next();
+   return NextResponse.next();
 }

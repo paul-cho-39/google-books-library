@@ -6,26 +6,23 @@ type UserBookWithoutId = Omit<UserBook, 'userId' | 'bookId'>;
 
 export default class BookCreator {
    data: Data;
-   industryIdentifiers: string[];
-   authors: string[];
-   categories: string[];
-   userId: string;
+   // industryIdentifiers: string[];
+   // authors: string[];
+   // categories: string[];
    constructor(
-      data: Data,
-      categories: string[],
-      authors: string[],
-      industryIdentifiers: string[],
-      userId: string
+      data: Data
+      // categories: string[],
+      // authors: string[],
+      // industryIdentifiers: string[],
    ) {
       this.data = data;
-      this.categories = categories;
-      this.authors = authors;
-      this.industryIdentifiers = industryIdentifiers;
-      this.userId = userId;
+      // this.categories = categories;
+      // this.authors = authors;
+      // this.industryIdentifiers = industryIdentifiers;
    }
 
    async createNewBook(stateData: UserBookWithoutId) {
-      this.checkIds(this.data.id, this.userId);
+      this.checkIds(this.data.id, this.data.userId);
 
       await prisma.book.upsert({
          where: { id: this.data.id },
@@ -33,12 +30,13 @@ export default class BookCreator {
             id: this.data.id,
             title: this.data.title,
             subtitle: this.data.subtitle,
-            categories: this.categories ?? [],
-            authors: this.authors ?? [],
+            categories: this.data.categories ?? [],
+            authors: this.data.authors ?? [],
             language: this.data.language,
             publishedDate: new Date(this.data.publishedDate),
             pageCount: this.data.pageCount,
-            industryIdentifiers: (this.industryIdentifiers as Prisma.JsonArray) ?? Prisma.JsonNull,
+            industryIdentifiers:
+               (this.data.industryIdentifiers as Prisma.JsonArray) ?? Prisma.JsonNull,
          },
          update: {
             users: {
@@ -46,11 +44,11 @@ export default class BookCreator {
                   where: {
                      userId_bookId: {
                         bookId: this.data.id,
-                        userId: this.userId,
+                        userId: this.data.userId,
                      },
                   },
                   create: {
-                     userId: this.userId,
+                     userId: this.data.userId,
                      ...stateData,
                   },
                },

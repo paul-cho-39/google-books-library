@@ -6,6 +6,9 @@ export type Data = {
    publishedDate: Date;
    language: string;
    pageCount: number;
+   categories: string[];
+   authors: string[];
+   industryIdentifiers: string[];
 };
 
 type IgnorePrismaBuiltins<S extends string> = string extends S
