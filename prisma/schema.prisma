@@ -36,7 +36,9 @@ model Rating {
   userId      String
   bookId      String
   ratingValue Int
-  UserBook    UserBook @relation(fields: [userId, bookId], references: [userId, bookId])
+  dateAdded   DateTime @default(now())
+  dateUpdated DateTime @updatedAt
+  UserBook    UserBook @relation(fields: [userId, bookId], references: [userId, bookId], onDelete: NoAction)
 
   @@id([userId, bookId])
   @@map("ratings")
@@ -69,6 +71,10 @@ enum BookState {
 // This model is used as an intermediary model for connecting Book and User
 // Also a model for user-specific details like the 'BookState', 'Logs' and 'Rating'
 // When adding additional details it would likely be added here
+
+// primary and primaryAdded:
+// when Log is written then primary and primaryAdded is automatically added
+// and if 'BookState' is in 'want' it is changed to 'reading'
 model UserBook {
   userId            String
   bookId            String
@@ -83,27 +89,15 @@ model UserBook {
   totalDaysRead     Int?
   primary           Boolean   @default(false)
   primaryAdded      DateTime?
-  user              User      @relation(fields: [userId], references: [id])
-  book              Book      @relation(fields: [bookId], references: [id])
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book              Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
   log               Log[]
   rating            Rating?
 
   @@id([userId, bookId])
 }
 
-model Bookmark {
-  id     String  @id @default(cuid())
-  name   String?
-  userId String
-  // does the bookmark require libraryId & library? dont think its necessary?
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@unique([name, userId])
-  @@index([userId], type: Hash)
-  @@map("bookmarks")
-}
-
-// User, Account, Session, and VerificationToken are all part of next.js auth schema
+// User, Account, Session, and VerificationToken are all schema for next.js auth 
 // the library schema can be found: PROVIDE THE URL HERE
 model User {
   id            String     @id @default(cuid())
@@ -116,8 +110,6 @@ model User {
   username      String?    @unique
   account       Account[]
   sessions      Session[]
-  Bookmark      Bookmark[]
-  // book          Book[]
   books         UserBook[]
 
   @@unique([id, email])

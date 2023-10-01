@@ -1,4 +1,4 @@
-export type Data = {
+export interface Data {
    userId: string;
    id: string;
    title: string;
@@ -9,7 +9,12 @@ export type Data = {
    categories: string[];
    authors: string[];
    industryIdentifiers: string[];
-};
+}
+
+export interface IdParams {
+   userId: string;
+   id: string;
+}
 
 type IgnorePrismaBuiltins<S extends string> = string extends S
    ? string
