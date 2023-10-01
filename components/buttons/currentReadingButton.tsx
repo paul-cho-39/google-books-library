@@ -16,17 +16,15 @@ export type ButtonProps = {
 };
 
 const AddPrimary = ({ book, userId }: ButtonProps) => {
-   const { id, volumeInfo } = book;
+   const { id, volumeInfo: _ } = book;
    const body = getBody(userId, book);
-   const deleteBody = { id, userId };
+
    const queryClient = useQueryClient();
    const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
+
    const currentlyReading = dataBooks?.library?.currentlyReading || [];
 
-   const { mutateAsync: mutateDelete } = useMutation(() =>
-      bookApiUpdate('DELETE', userId, 'reading', deleteBody)
-   );
-   const { mutateAsync: mutateUpdate, isLoading } = useMutation(
+   const { mutate: mutateUpdate, isLoading } = useMutation(
       queryKeys.currentlyReading,
       () => bookApiUpdate('POST', userId, 'reading', body),
       {
@@ -71,10 +69,8 @@ const AddPrimary = ({ book, userId }: ButtonProps) => {
       [currentlyReading]
    );
 
-   const handleClick = async () => {
-      const deleteMutate = mutateDelete();
-      const updateMutate = mutateUpdate();
-      await Promise.all([deleteMutate, updateMutate]);
+   const handleClick = () => {
+      mutateUpdate();
    };
 
    return (

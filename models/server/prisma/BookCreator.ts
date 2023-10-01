@@ -3,7 +3,7 @@ import prisma from '../../../lib/prisma';
 import { Data } from '../../../lib/types/models/books';
 import Books from './Books';
 
-type UserBookWithoutId = Omit<UserBook, 'userId' | 'bookId'>;
+export type UserBookWithoutId = Omit<UserBook, 'userId' | 'bookId'>;
 
 export default class BookCreator extends Books {
    constructor(userId: string, bookId: string) {
@@ -48,7 +48,7 @@ export default class BookCreator extends Books {
       });
    }
    // due to createOrUpdateBookAndState upsert has slower performance creating a
-   // separate method
+   // should separate the method
    // if the user currently contains books and have IDs then return
    // then UPDATE the book
    async updateBookState(stateData: UserBookWithoutId) {

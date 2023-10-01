@@ -23,7 +23,7 @@ const SaveAsFinishedButton = ({ book, userId }: ButtonProps) => {
    const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
    const finishedBooks = dataBooks?.library?.finished || [];
 
-   const { mutateAsync: mutateUpdate, isLoading } = useMutation(
+   const { mutate: mutateUpdate, isLoading } = useMutation(
       queryKeys.finished,
       (body: any) => bookApiUpdate('POST', userId, 'finished', body),
       {
@@ -76,8 +76,7 @@ const SaveAsFinishedButton = ({ book, userId }: ButtonProps) => {
       };
       mutateUpdate(postBodyWithoutDates);
    }
-   const current = new Date(year, month, day);
-   // disabled if the id of finished book is finished already
+
    return (
       <>
          <MyToaster isAdded={true} />

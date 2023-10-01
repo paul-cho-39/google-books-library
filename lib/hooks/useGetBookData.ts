@@ -11,10 +11,7 @@ type Library = {
 
 export type QueryData = { library: Library };
 
-export default function useGetBookData(userId?: string | null) {
-   if (!userId) return;
-
-   // eslint-disable-next-line react-hooks/rules-of-hooks
+export default function useGetBookData(userId: string) {
    const { data: dataBooks } = useQuery<QueryData>(
       queryKeys.userLibrary(userId),
       () => bookApiUpdate('GET', userId, 'finished'),

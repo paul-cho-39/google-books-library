@@ -1,6 +1,6 @@
+import { Book } from '@prisma/client';
+
 export interface Data {
-   userId: string;
-   id: string;
    title: string;
    subtitle: string;
    publishedDate: Date;
@@ -15,6 +15,9 @@ export interface IdParams {
    userId: string;
    id: string;
 }
+
+export type RefinedBookState = 'want' | 'reading' | 'finished';
+export type Library = Record<RefinedBookState, Book[]>;
 
 type IgnorePrismaBuiltins<S extends string> = string extends S
    ? string

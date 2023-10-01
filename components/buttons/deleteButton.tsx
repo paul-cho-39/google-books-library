@@ -9,7 +9,7 @@ import MyToaster from '../bookcards/toaster';
 import { bookApiUpdate } from '../../utils/fetchData';
 
 const DeleteButton = ({ userId, book }: ButtonProps) => {
-   const { id, volumeInfo } = book;
+   const { id, volumeInfo: _ } = book;
    const body = { id, userId };
 
    const queryClient = useQueryClient();

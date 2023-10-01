@@ -1,68 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '../../../../lib/prisma';
-import WantToReadCreator from '../../../../models/server/prisma/class/create/want';
-import { Library } from '../../../../models/server/prisma/class/library';
+import BookCreator, { UserBookWithoutId } from '../../../../models/server/prisma/BookCreator';
+import BookStateHandler from '../../../../models/server/prisma/BookState';
+import { errorLogger, internalServerErrorLogger } from '../../../../models/server/winston';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
-      const { userId, imageLinks, industryIdentifiers, authors, categories, ...data } = req.body;
-      // should there be primary counts?
+      const { userId, id, ...data } = req.body;
 
-      const want = new WantToReadCreator(
-         data,
-         categories,
-         authors,
-         imageLinks,
-         industryIdentifiers,
-         userId
-      );
-      const isLibraryNotInWant = await prisma.book.findFirst({
-         where: {
-            AND: [
-               {
-                  id: data.id,
-                  userId: userId,
-               },
-               {
-                  NOT: [
-                     {
-                        want: { bookId: data.id },
-                     },
-                  ],
-               },
-            ],
-         },
-         select: { id: true },
-      });
-      console.log('Reading or Finished?', isLibraryNotInWant);
+      const creator = new BookCreator(userId, id);
+      const stateData = BookStateHandler.createWant();
 
       try {
-         // await updateBook.createOrUpdateToWantToRead();
-
-         if (isLibraryNotInWant) {
-            await want.updateWant().then(async () => await want.createWant());
-         } else {
-            await want.createWant();
-         }
+         await creator.createOrUpdateBookAndState(data, stateData as UserBookWithoutId);
          return res.status(201).json({ success: true });
       } catch (err) {
+         errorLogger(err, req);
          return res.end(err);
       }
+   } else {
+      internalServerErrorLogger(req);
+      return res.status(500).end({ message: 'Internal Server Error' });
    }
-   if (req.method === 'DELETE') {
-   }
-   // if (req.method === "PATCH") {
-   //   const { id, userId } = req.body;
-   //   const library = new Library(userId, id);
-   //   const libraryId = await library.uniqueIdToString();
-   //   const bookPatcher = new BookPatcher(libraryId);
-   //   try {
-   //     await bookPatcher.removeWantToRead();
-   //     return res.status(204);
-   //   } catch (err) {
-   //     return res
-   //       .status(400)
-   //       .end({ success: false, message: "Unable to modify the primary book" });
-   //   }
-   // }
 }

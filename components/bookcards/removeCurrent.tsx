@@ -11,7 +11,7 @@ import MyToaster from './toaster';
 import { bookApiUpdate } from '../../utils/fetchData';
 
 const RemovePrimary = ({ book, userId }: ButtonProps) => {
-   const { id, volumeInfo } = book;
+   const { id, volumeInfo: _ } = book;
    const body = { id, userId };
 
    const queryClient = useQueryClient();
@@ -20,7 +20,7 @@ const RemovePrimary = ({ book, userId }: ButtonProps) => {
 
    const { mutate, isLoading } = useMutation(
       queryKeys.deleted,
-      () => bookApiUpdate('DELETE', userId, 'reading', body),
+      () => bookApiUpdate('POST', userId, 'primary', body),
       {
          onMutate: async () => {
             await queryClient.cancelQueries(queryKeys.deleted, {

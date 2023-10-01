@@ -24,7 +24,7 @@ const logger = createLogger({
       new transports.File({ filename: ERRORS_LOG, level: 'error' }),
       new transports.File({ filename: COMBINED_LOG }),
    ],
-   rejectionHandlers: [new transports.File({ filename: COMBINED_LOG })],
+   rejectionHandlers: [new transports.File({ filename: REJECTIONS_LOG })],
 });
 
 if (process.env.NODE_ENV !== 'production') {

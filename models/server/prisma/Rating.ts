@@ -8,7 +8,7 @@ export default class BookRatings extends Books {
 
    async createOrUpdateRatings(rating: number | string) {
       this.checkIds();
-      const ratingInNum = this.toNumber(rating);
+      const ratingNum = this.toNumber(rating);
 
       await prisma.rating.upsert({
          where: {
@@ -17,12 +17,28 @@ export default class BookRatings extends Books {
          create: {
             bookId: this.bookId,
             userId: this.userId,
-            ratingValue: ratingInNum,
+            ratingValue: ratingNum,
          },
          update: {
             bookId: this.bookId,
             userId: this.userId,
-            ratingValue: ratingInNum,
+            ratingValue: ratingNum,
+         },
+      });
+   }
+   // whenever getting a single book
+   async getRatingByBook() {
+      return await prisma.rating.findFirst({
+         where: { bookId: this.bookId },
+         select: {
+            bookId: true,
+            dateAdded: true,
+            ratingValue: true,
+            UserBook: {
+               select: {
+                  state: true,
+               },
+            },
          },
       });
    }

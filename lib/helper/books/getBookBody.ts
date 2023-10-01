@@ -3,12 +3,11 @@ import { Items } from '../../types/googleBookTypes';
 export const getBody = (userId: string, book: Items<any>) => {
    const { id, volumeInfo } = book;
 
-   const { industryIdentifiers, authors, categories, imageLinks, ...rest } = volumeInfo;
+   const { industryIdentifiers, authors, categories, ...rest } = volumeInfo;
    const body = {
       userId,
       id,
       industryIdentifiers,
-      imageLinks,
       authors,
       categories,
       ...rest,

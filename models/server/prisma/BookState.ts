@@ -1,4 +1,5 @@
 import { BookState } from '@prisma/client';
+import { UserBookWithoutId } from './BookCreator';
 
 type StateArgs = {
    day?: number;
@@ -34,7 +35,7 @@ export default class BookStateHandler {
    }
 
    // shouldReset(?) - if resetting this will reset everything;
-   static createFinished(day: number, month: number, year: number) {
+   static createFinished(day: number, month: number, year: number): Partial<UserBookWithoutId> {
       return {
          state: 'Finished' as BookState,
          dateFinishedYear: year,
@@ -44,14 +45,14 @@ export default class BookStateHandler {
       };
    }
    // TODO: check the primary whether there should be primary
-   static createPrimary(isPrimary: boolean) {
+   static createPrimary(isPrimary: boolean): Partial<UserBookWithoutId> {
       return {
          state: 'Reading' as BookState,
          primary: isPrimary,
          primaryAdded: isPrimary ? new Date() : null,
       };
    }
-   static createWant() {
+   static createWant(): Partial<UserBookWithoutId> {
       return {
          state: 'Want' as BookState,
          primary: false,
