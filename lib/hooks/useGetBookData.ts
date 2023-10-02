@@ -10,6 +10,7 @@ export default function useGetBookData(userId: string) {
       {
          enabled: !!userId,
          retryOnMount: true,
+         refetchOnReconnect: true,
          retry: true,
          retryDelay: (attempt) => attempt * 2000,
       }

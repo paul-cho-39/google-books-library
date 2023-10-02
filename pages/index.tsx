@@ -20,6 +20,7 @@ import { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
 import { CategoriesQueries } from '../lib/types/serverPropsTypes';
 import { encodeRoutes } from '../utils/routes';
 import { changeDirection } from '../lib/helper/getContainerPos';
+import useGetRatings from '../lib/hooks/useGetRatings';
 
 const CategoryDescription = lazy(() => import('../components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('../components/bookcover/bookImages'));
@@ -39,11 +40,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       byNewest: false,
    };
 
-   const {
-      queriesData: googleQueries,
-      dataWithKeys: googleData,
-      dataIsSuccess: googleDataSuccess,
-   } = useGetCategoriesQueries({
+   const { dataWithKeys: googleData, dataIsSuccess: googleDataSuccess } = useGetCategoriesQueries({
       initialData: data,
       loadItems: categoriesToLoad,
       enabled: !!data,
@@ -51,15 +48,14 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       returnNumberOfItems: MAX_RESULT,
    });
 
-   const {
-      queriesData: nytQueries,
-      transformedData: nytData,
-      dataIsSuccess: nytDataSuccess,
-   } = useGetNytBestSellers({});
+   // useGetRatings(googleDataSuccess, googleData);
+
+   const { transformedData: nytData, dataIsSuccess: nytDataSuccess } = useGetNytBestSellers({});
 
    // console.log('nytimes data is: ', nytData);
 
    const combinedData = { ...nytData, ...googleData };
+   console.log('the google data is: ', googleData);
 
    const floatingRef = useRef<HTMLDivElement>(null);
    const categoryRefs = useRef<HTMLDivElement>(null);
@@ -154,6 +150,9 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                                     subtitle={book.volumeInfo.subtitle}
                                     authors={book.volumeInfo.authors}
                                     description={book.volumeInfo.description}
+                                    // TODO: with rating write a helper function for total reviews
+                                    averageRating={book.volumeInfo?.averageRating}
+                                    totalReviews={book.volumeInfo?.ratingsCount}
                                     routeQuery={encodeRoutes.home(key, meta)}
                                  />
                               </Suspense>
@@ -209,7 +208,7 @@ export const getStaticProps: GetStaticProps<{
    const googleData = (await batchFetchGoogleCategories(serverSideCategories, {
       maxResultNumber: 15,
       pageIndex: 0,
-      byNewest: true,
+      byNewest: false,
    })) as CategoriesQueries;
 
    return {

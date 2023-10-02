@@ -43,9 +43,11 @@ const FilterStatus = ({ bookId, library }: FilterStatusProps) => {
    if (!readingStatus) return null;
 
    return (
-      <div className='inline-flex flex-row'>
-         <CheckIcon height='20' width='20' {...readingStatus.iconProps} />
-         <span>{readingStatus.text}</span>
+      <div className='inline-flex flex-row -my-2'>
+         <CheckIcon height='16' width='16' {...readingStatus.iconProps} />
+         <span className='text-slate-600 px-2 dark:text-slate-400 font-semibold text-sm'>
+            {readingStatus.text}
+         </span>
       </div>
    );
 };

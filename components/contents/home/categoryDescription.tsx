@@ -1,9 +1,11 @@
 import { RouteParams } from '../../../lib/types/routes';
 import SingleOrMultipleAuthors from '../../bookcover/authors';
 import BookDescription from '../../bookcover/description';
+import DisplayRating, { RatingProps } from '../../bookcover/ratings';
 import BookTitle from '../../bookcover/title';
+import StarRating from '../../icons/starRating';
 
-interface CategoryDescriptionParams {
+interface CategoryDescriptionParams extends RatingProps {
    id: string;
    title: string;
    subtitle?: string;
@@ -19,6 +21,8 @@ const CategoryDescription = ({
    subtitle,
    authors,
    description,
+   averageRating,
+   totalReviews,
    routeQuery,
 }: CategoryDescriptionParams) => {
    return (
@@ -37,9 +41,12 @@ const CategoryDescription = ({
                {/* another component for reusability */}
                <div className='block overflow-hidden dark:text-slate-100'>
                   <h3 className='text-xs py-1 text-clip space-x-0.5 '>
-                     <span className=''>by</span>
+                     <span className=''>by: </span>
                      <SingleOrMultipleAuthors hoverUnderline authors={authors} />
                   </h3>
+               </div>
+               <div>
+                  <DisplayRating averageRating={averageRating} totalReviews={totalReviews} />
                </div>
             </div>
             <div className='w-full h-full overflow-hidden'>
