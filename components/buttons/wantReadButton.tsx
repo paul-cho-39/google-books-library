@@ -4,17 +4,17 @@ import queryKeys from '../../utils/queryKeys';
 import { isBookInData } from '../../lib/helper/books/isBooksInLibrary';
 import Button from './basicButton';
 import { ButtonProps } from './currentReadingButton';
-import { QueryData } from '../../lib/hooks/useGetBookData';
 import toast from 'react-hot-toast';
 import MyToaster from '../bookcards/toaster';
 import { getBody } from '../../lib/helper/books/getBookBody';
 import { bookApiUpdate } from '../../utils/fetchData';
+import { Library } from '../../lib/types/models/books';
 
 const WantToReadButton = ({ book, userId }: ButtonProps) => {
    const body = getBody(userId, book);
    const queryClient = useQueryClient();
-   const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
-   const wantToRead = dataBooks?.library?.wantToRead || [];
+   const dataBooks = queryClient.getQueryData<Library>(queryKeys.userLibrary(userId));
+   const wantToRead = dataBooks?.want || [];
 
    const { mutate, isLoading, isSuccess } = useMutation(
       queryKeys.want,
@@ -26,8 +26,8 @@ const WantToReadButton = ({ book, userId }: ButtonProps) => {
             });
             const previousBookData = queryClient.getQueryData(queryKeys.want);
             queryClient.setQueryData(queryKeys.want, {
-               ...dataBooks?.library,
-               wantToRead: [...(wantToRead as string[]), book.id],
+               ...dataBooks,
+               want: [...(wantToRead as string[]), book.id],
             });
             return previousBookData;
          },
@@ -45,8 +45,8 @@ const WantToReadButton = ({ book, userId }: ButtonProps) => {
             queryClient.setQueryData(queryKeys.userLibrary(userId), {
                ...dataBooks,
                library: {
-                  ...dataBooks?.library,
-                  wantToRead: wantToRead && [...(wantToRead as string[]), book.id],
+                  ...dataBooks,
+                  want: wantToRead && [...(wantToRead as string[]), book.id],
                },
             });
          },

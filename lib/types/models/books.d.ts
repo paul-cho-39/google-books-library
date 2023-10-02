@@ -16,8 +16,8 @@ export interface IdParams {
    id: string;
 }
 
-export type RefinedBookState = 'want' | 'reading' | 'finished';
-export type Library = Record<RefinedBookState, Book[]>;
+export type RefinedBookState = 'want' | 'reading' | 'finished' | 'unfinished';
+export type Library = Record<RefinedBookState, string[]>;
 
 type IgnorePrismaBuiltins<S extends string> = string extends S
    ? string

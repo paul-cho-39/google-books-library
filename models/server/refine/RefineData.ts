@@ -14,12 +14,15 @@ export default class RefineData {
          finished: [],
          reading: [],
          want: [],
+         unfinished: [],
       };
 
       userBooks.forEach((ub) => {
          const key = ub.state.toLocaleLowerCase() as RefinedBookState;
-         library[key].push(ub.book);
+         library[key].push(ub.book.id);
       });
+
+      library['unfinished'] = [...library.reading, ...library.want];
 
       return library;
    }

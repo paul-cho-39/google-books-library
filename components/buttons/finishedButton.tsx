@@ -5,11 +5,11 @@ import queryKeys from '../../utils/queryKeys';
 import { initialNullDateAtom, getYear, getMonth, getDay } from '../../lib/store/atomDates';
 import { useAtomValue } from 'jotai';
 import CalendarModal from '../modal/calendarModal';
-import { QueryData } from '../../lib/hooks/useGetBookData';
 import toast, { Toaster } from 'react-hot-toast';
 import MyToaster from '../bookcards/toaster';
 import { getBody } from '../../lib/helper/books/getBookBody';
 import { bookApiUpdate } from '../../utils/fetchData';
+import { Library } from '../../lib/types/models/books';
 
 const SaveAsFinishedButton = ({ book, userId }: ButtonProps) => {
    const body = getBody(userId, book);
@@ -20,8 +20,8 @@ const SaveAsFinishedButton = ({ book, userId }: ButtonProps) => {
    const day = useAtomValue(getDay);
 
    const queryClient = useQueryClient();
-   const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
-   const finishedBooks = dataBooks?.library?.finished || [];
+   const dataBooks = queryClient.getQueryData<Library>(queryKeys.userLibrary(userId));
+   const finishedBooks = dataBooks?.finished || [];
 
    const { mutate: mutateUpdate, isLoading } = useMutation(
       queryKeys.finished,
@@ -34,7 +34,7 @@ const SaveAsFinishedButton = ({ book, userId }: ButtonProps) => {
             const previousBookData = finishedBooks;
             // creating an object of array not an object of object
             queryClient.setQueryData(queryKeys.finished, {
-               ...dataBooks?.library,
+               ...dataBooks,
                finished: [...(finishedBooks as string[]), book.id],
             });
             return previousBookData;
@@ -51,7 +51,7 @@ const SaveAsFinishedButton = ({ book, userId }: ButtonProps) => {
             queryClient.setQueryData(queryKeys.userLibrary(userId), {
                ...dataBooks,
                library: {
-                  ...dataBooks?.library,
+                  ...dataBooks,
                   finished: [...(finishedBooks as string[]), book.id],
                },
             });

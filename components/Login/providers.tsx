@@ -4,9 +4,7 @@ import GoogleDark from './google-dark.svg';
 import Facebook from './facebook.svg';
 import FacebookDark from './facebook-dark.svg';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import { StyleLogo, Providers } from '../../lib/types/providers';
-import { baseURL } from '../../utils/config';
 
 // if more providers to be added just add it on nextauth api and page/auth/signin.tsx and on here
 const styleProvider: { [key: string]: StyleLogo } = {
@@ -30,18 +28,16 @@ const styleProvider: { [key: string]: StyleLogo } = {
 
 // fix this page and trim down coding for conciseness
 // i dont know if this truly typesafe recommend looking at this one more time
-const LoginPage = ({ providers }: Providers) => {
+const LoginPage = ({ providers, callbackUrl }: Providers) => {
    const { Provider, ProviderDark, text, textDark, bg, bgDark } =
       styleProvider[providers?.id as string];
-   const router = useRouter();
-   const { callbackUrl } = router.query;
 
    return (
       <div className='flex flex-row'>
          <button
             onClick={() =>
                signIn(providers?.id as string, {
-                  callbackUrl: (callbackUrl ?? baseURL) as string,
+                  callbackUrl: callbackUrl,
                })
             }
             className={`

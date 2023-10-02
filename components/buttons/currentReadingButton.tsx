@@ -22,7 +22,7 @@ const AddPrimary = ({ book, userId }: ButtonProps) => {
    const queryClient = useQueryClient();
    const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
 
-   const currentlyReading = dataBooks?.library?.currentlyReading || [];
+   const currentlyReading = dataBooks?.library?.reading || [];
 
    const { mutate: mutateUpdate, isLoading } = useMutation(
       queryKeys.currentlyReading,
@@ -54,10 +54,7 @@ const AddPrimary = ({ book, userId }: ButtonProps) => {
                ...dataBooks,
                library: {
                   ...dataBooks?.library,
-                  currentlyReading: currentlyReading && [
-                     ...(currentlyReading as string[]),
-                     book.id,
-                  ],
+                  reading: currentlyReading && [...(currentlyReading as string[]), book.id],
                },
             });
          },

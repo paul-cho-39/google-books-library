@@ -51,19 +51,3 @@ export default class BookRetriever {
       });
    }
 }
-
-// async getAllBooks() {
-//     // for concurrently fetching all books
-//     const books = await Promise.all([
-//        await this.getIdsForBook<'finished'>(prisma.finished),
-//        await this.getIdsForBook<'want'>(prisma.want),
-//        await this.getIdsForBook<'reading'>(prisma.reading),
-//     ]);
-//     return {
-//        library: {
-//           finished: books[0],
-//           wantToRead: books[1],
-//           currentlyReading: books[2],
-//        },
-//     };
-//  }

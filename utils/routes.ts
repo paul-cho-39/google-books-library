@@ -4,8 +4,10 @@ import { MetaProps } from '../models/_api/fetchGoogleUrl';
 const ROUTES = {
    HOME: '/',
    AUTH: {
+      SIGNIN_NEXT: (path?: string) => `/auth/signin?next=${path?.trim()}`,
+      SIGNUP_NEXT: (path?: string) => `/auth/signup?next=${path?.trim()}`,
+      SIGNUP: `/auth/signup`,
       SIGNIN: '/auth/signin',
-      SIGNUP: '/auth',
    },
    AUTHORS: (slug: string) => `/author/${slug}`,
    BOOKS: {

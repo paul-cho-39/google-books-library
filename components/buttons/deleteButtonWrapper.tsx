@@ -3,25 +3,22 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import queryKeys from '../../utils/queryKeys';
 import React from 'react';
-import { QueryData } from '../../lib/hooks/useGetBookData';
 import { isBookInData } from '../../lib/helper/books/isBooksInLibrary';
+import { Library } from '../../lib/types/models/books';
 
 interface WrapperProps {
    id: string;
    userId: string;
    toggleHide: () => void;
 }
-// TODO //
-// if clicked EVERY button should be disabled so ATOM would be a great choice
 const DeleteButtonWrapper = ({ toggleHide, userId, id }: WrapperProps) => {
    const queryClient = useQueryClient();
-   const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
-   const currentlyReading = dataBooks?.library?.currentlyReading;
-   const finished = dataBooks?.library?.finished;
-   const wantToRead = dataBooks?.library?.wantToRead;
-   const booksAbleToDelete = currentlyReading &&
-      finished &&
-      wantToRead && [...currentlyReading, ...finished, ...wantToRead];
+   const dataBooks = queryClient.getQueryData<Library>(queryKeys.userLibrary(userId));
+
+   const currentlyReading = dataBooks?.reading || [];
+   const finished = dataBooks?.finished || [];
+   const wantToRead = dataBooks?.want || [];
+   const booksAbleToDelete = [...currentlyReading, ...finished, ...wantToRead];
 
    const isDisplayed = useMemo(
       () => isBookInData(id, booksAbleToDelete as string[]),
@@ -45,4 +42,4 @@ const DeleteButtonWrapper = ({ toggleHide, userId, id }: WrapperProps) => {
    );
 };
 
-export default React.memo(DeleteButtonWrapper);
+export default DeleteButtonWrapper;

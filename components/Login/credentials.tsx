@@ -109,7 +109,7 @@ export function Inputs({
                <span
                   className={`${
                      isSubmitted && errorsToString.includes(name)
-                        ? 'relatie top-10 text-red-300 rounded-full font-semibold text-left'
+                        ? 'relative top-10 text-red-300 rounded-full font-semibold text-left'
                         : 'hidden'
                   }
             `}

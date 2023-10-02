@@ -2,33 +2,27 @@ import { useMemo } from 'react';
 import { isBookInData } from '../../lib/helper/books/isBooksInLibrary';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import React from 'react';
+import { Library } from '../../lib/types/models/books';
 
 interface FilterStatusProps {
    bookId: string;
-   finishedData?: string[];
-   currentlyReading?: string[];
-   wantToRead?: string[];
+   library: Library | undefined;
 }
 
-const FilterStatus = ({
-   bookId,
-   finishedData,
-   currentlyReading,
-   wantToRead,
-}: FilterStatusProps) => {
+const FilterStatus = ({ bookId, library }: FilterStatusProps) => {
    const readingStatusMap = {
       finished: {
-         data: finishedData,
+         data: library?.finished,
          text: 'Finished reading',
          iconProps: { fill: 'green', stroke: 'green' },
       },
       current: {
-         data: currentlyReading,
+         data: library?.reading,
          text: 'Currently reading',
          iconProps: { fill: 'green', stroke: 'green' },
       },
       wantToRead: {
-         data: wantToRead,
+         data: library?.want,
          text: 'Want to read',
          iconProps: { fill: 'white', stroke: 'white' },
       },
@@ -42,8 +36,9 @@ const FilterStatus = ({
          }
       }
       return null;
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [bookId, finishedData, currentlyReading, wantToRead]);
+   }, [bookId, library]);
 
    if (!readingStatus) return null;
 

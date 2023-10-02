@@ -11,6 +11,7 @@ export default class BookCreator extends Books {
    }
    async createOrUpdateBookAndState(data: Data, stateData: UserBookWithoutId) {
       this.checkIds();
+
       await prisma.book.upsert({
          where: this.getBookId,
          create: {
@@ -26,17 +27,10 @@ export default class BookCreator extends Books {
          },
          update: {
             users: {
-               update: {
-                  where: {
-                     userId_bookId: this.getBothIds,
-                  },
-                  data: {
+               upsert: {
+                  where: { userId_bookId: this.getBothIds },
+                  update: {
                      ...stateData,
-                  },
-               },
-               connectOrCreate: {
-                  where: {
-                     userId_bookId: this.getBothIds,
                   },
                   create: {
                      userId: this.userId,
@@ -44,6 +38,21 @@ export default class BookCreator extends Books {
                   },
                },
             },
+         },
+      });
+   }
+   async createBook(data: Data, state?: UserBookWithoutId) {
+      await prisma.book.create({
+         data: {
+            id: this.bookId,
+            title: data.title,
+            subtitle: data.subtitle,
+            publishedDate: new Date(data.publishedDate),
+            categories: data.categories ?? [],
+            language: data.language,
+            pageCount: data.pageCount,
+            industryIdentifiers: (data.industryIdentifiers as Prisma.JsonArray) ?? Prisma.JsonNull,
+            authors: data.authors ?? [],
          },
       });
    }
@@ -57,6 +66,8 @@ export default class BookCreator extends Books {
             userId_bookId: this.getBothIds,
          },
          data: {
+            bookId: this.bookId,
+            userId: this.userId,
             ...stateData,
          },
       });

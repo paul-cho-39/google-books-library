@@ -15,6 +15,12 @@ export interface ApiRequestOptions<T> {
    delay?: number;
 }
 
+export type ServerCacheType = {
+   source: 'google' | 'nyt';
+   endpoint: 'relevant' | 'recent' | 'best-seller';
+   category: string;
+};
+
 export type Body = ReadPostBody | DeleteBody | FinishedPostBody;
 export type Method = 'POST' | 'DELETE' | 'PUT' | 'GET' | 'PATCH';
-export type UrlProps = 'reading' | 'finished' | 'want' | 'primary';
+export type UrlProps = 'reading' | 'finished' | 'want';

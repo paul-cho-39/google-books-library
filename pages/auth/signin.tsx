@@ -24,13 +24,16 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
    const [isOpen, setIsOpen] = useState(true);
    const [error, setError] = useState(false);
    const resolver = yupResolver(validateSignUp());
+
    const router = useRouter();
+   const nextPath = (router.query.next as string) || '/';
 
    const onSubmit = async (data: SignInForm) => {
       const res = await signIn('credentials', {
          email: data.email,
          password: data.password,
-         redirect: false,
+         redirect: true,
+         callbackUrl: nextPath,
       });
 
       if (!res || status === 'unauthenticated') {
@@ -40,12 +43,10 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
 
    const text = status === 'loading' ? 'Logging In' : 'Login';
 
-   // TODO // if the form is submitted have a loader -- what will the loader be?
-   // TODO // if session then replace this with dashboard/profile page
    useLayoutEffect(() => {
       if (status === 'authenticated') {
          setIsOpen(false);
-         router.push('/');
+         router.push(nextPath);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [session]);
@@ -83,7 +84,7 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
                         </div>
 
                         <Inputs name='password' type='password' />
-                        <button className='rounded-xl bg-beige dark:bg-charcoal tracking-wider max-w-md w-full h-[40px] border-2 border-orange-200 dark:border-dark-charcoal disabled:opacity-25'>
+                        <button className='rounded-xl shadow-md bg-beige dark:bg-charcoal tracking-wider w-full h-[40px] border-2 border-orange-200 dark:border-dark-charcoal disabled:opacity-25'>
                            <span className='text-slate-800 dark:text-slate-200'>{text}</span>
                         </button>
                      </FormSignIn>
@@ -93,7 +94,7 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
                   </div>
                </div>
                {authProviders?.map((provider) => (
-                  <LoginPage key={provider?.id} providers={provider} />
+                  <LoginPage key={provider?.id} providers={provider} callbackUrl={nextPath} />
                ))}
             </div>
             <div className='flex flex-col justify-center items-center'>

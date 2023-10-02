@@ -5,22 +5,22 @@ import filterId from '../../lib/helper/books/filterId';
 import { useMemo } from 'react';
 import { isBookInData } from '../../lib/helper/books/isBooksInLibrary';
 import Button from '../buttons/basicButton';
-import { QueryData } from '../../lib/hooks/useGetBookData';
 import toast from 'react-hot-toast';
 import MyToaster from './toaster';
 import { bookApiUpdate } from '../../utils/fetchData';
+import { Library } from '../../lib/types/models/books';
 
 const RemovePrimary = ({ book, userId }: ButtonProps) => {
    const { id, volumeInfo: _ } = book;
    const body = { id, userId };
 
    const queryClient = useQueryClient();
-   const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
-   const readingBooks = dataBooks?.library?.currentlyReading;
+   const dataBooks = queryClient.getQueryData<Library>(queryKeys.userLibrary(userId));
+   const readingBooks = dataBooks?.reading;
 
    const { mutate, isLoading } = useMutation(
       queryKeys.deleted,
-      () => bookApiUpdate('POST', userId, 'primary', body),
+      () => bookApiUpdate('PUT', userId, 'reading', body),
       {
          onMutate: async () => {
             await queryClient.cancelQueries(queryKeys.deleted, {
@@ -47,8 +47,8 @@ const RemovePrimary = ({ book, userId }: ButtonProps) => {
             queryClient.setQueryData(queryKeys.userLibrary(userId), {
                ...dataBooks,
                library: {
-                  ...dataBooks?.library,
-                  currentlyReading: filterId(readingBooks as string[], id),
+                  ...dataBooks,
+                  reading: filterId(readingBooks as string[], id),
                },
             });
          },

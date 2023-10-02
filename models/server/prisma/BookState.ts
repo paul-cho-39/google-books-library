@@ -14,9 +14,6 @@ export default class BookStateHandler {
    static getBookState(state: BookState, args: StateArgs) {
       switch (state) {
          case 'Finished':
-            if (!args?.day || !args?.month || !args?.year) {
-               throw new Error("Required parameters for 'finished' state not provided");
-            }
             return this.createFinished(args.day, args.month, args.year);
 
          case 'Reading':
@@ -35,7 +32,7 @@ export default class BookStateHandler {
    }
 
    // shouldReset(?) - if resetting this will reset everything;
-   static createFinished(day: number, month: number, year: number): Partial<UserBookWithoutId> {
+   static createFinished(day?: number, month?: number, year?: number): Partial<UserBookWithoutId> {
       return {
          state: 'Finished' as BookState,
          dateFinishedYear: year,

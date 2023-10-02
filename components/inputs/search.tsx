@@ -10,8 +10,9 @@ interface SearchInputInterface {
 }
 
 const SearchInput = ({ filterQuery }: SearchInputInterface) => {
-   const [isFocus, setIsFocus] = useState(false);
    const router = useRouter();
+
+   const [disabled, setDisabled] = useState(true);
    const [query, setQuery] = useState('');
 
    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -22,11 +23,14 @@ const SearchInput = ({ filterQuery }: SearchInputInterface) => {
       router.push(url);
    };
 
-   const disabled = !router.isReady;
-
    useEffect(() => {
-      console.log('is ready: ', router.isReady);
+      if (!router.isReady) return;
+
+      setDisabled(false);
    }, [router.isReady]);
+
+   // debugging
+   // console.log('is it disabled?: ', disabled);
 
    return (
       <form onSubmit={handleSubmit} className='w-full' action='#' method='GET'>
@@ -40,7 +44,6 @@ const SearchInput = ({ filterQuery }: SearchInputInterface) => {
                id='search'
                placeholder='Search books'
                onChange={(e) => setQuery(e.target.value)}
-               onFocus={() => setIsFocus(true)}
                className='flex-grow rounded-md border-0 py-1.5 pr-14 text-gray-900 shadow-sm ring-[0.5px] ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-orange-300 sm:text-sm sm:leading-6'
             />
             <button disabled={disabled} type='submit'>

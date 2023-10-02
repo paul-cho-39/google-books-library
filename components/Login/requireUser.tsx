@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { ChevronDownIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { Suspense, useEffect, useRef } from 'react';
 import { ButtonSkeleton } from '../loaders/bookcardsSkeleton';
+import ROUTES from '../../utils/routes';
 
 interface SignInRequiredButtonProps {
    type: 'finished' | 'popover';
@@ -21,7 +22,8 @@ const SignInRequiredButton = ({
    const router = useRouter();
 
    const handlePress = () => {
-      isReady && router.push('/auth/signup');
+      console.log('router asPath is: ', router.asPath);
+      isReady && router.push(ROUTES.AUTH.SIGNIN_NEXT(router.asPath));
    };
 
    useEffect(() => {

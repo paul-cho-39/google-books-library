@@ -87,7 +87,7 @@ function PopOverButtons({ userId, book }: ButtonProps) {
                                              isClosed &&
                                                 setTimeout(() => {
                                                    close();
-                                                }, 800);
+                                                }, 200);
                                           }}
                                           key={allButton.name}
                                        >

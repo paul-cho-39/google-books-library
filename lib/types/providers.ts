@@ -1,20 +1,21 @@
-import { ClientSafeProvider } from "next-auth/react";
+import { ClientSafeProvider } from 'next-auth/react';
 
 export interface StyleLogo {
-  Provider: any;
-  ProviderDark?: any;
-  text: string;
-  textDark?: string;
-  bg: string;
-  bgDark?: string;
+   Provider: any;
+   ProviderDark?: any;
+   text: string;
+   textDark?: string;
+   bg: string;
+   bgDark?: string;
 }
 
 export type Providers = {
-  providers:
-    | ClientSafeProvider
-    | {
-        id: string;
-        name: string;
-      }
-    | undefined;
+   providers:
+      | ClientSafeProvider
+      | {
+           id: string;
+           name: string;
+        }
+      | undefined;
+   callbackUrl: string;
 };

@@ -1,10 +1,4 @@
-import { UrlProps } from '../lib/types/fetchbody';
-
-type CacheType = {
-   source: 'google' | 'nyt';
-   endpoint: 'relevant' | 'recent' | 'best-seller';
-   category: string;
-};
+import { UrlProps, ServerCacheType } from '../lib/types/fetchbody';
 
 const BASE_PATH = '/api';
 const DOMAIN_BOOKS = 'books';
@@ -21,7 +15,7 @@ const API_ROUTES = {
    },
    // DEPRECATED
    THIRD_PARTY: {
-      path: (pathTypes: CacheType) => {
+      path: (pathTypes: ServerCacheType) => {
          const { source, endpoint, category } = pathTypes;
          return `${BASE_PATH}/${DOMAIN_THIRD_PARTY}/${source}/${category}/${endpoint}`;
       },

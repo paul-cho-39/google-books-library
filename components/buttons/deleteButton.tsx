@@ -3,10 +3,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import queryKeys from '../../utils/queryKeys';
 import { ButtonProps } from './currentReadingButton';
 import filterId from '../../lib/helper/books/filterId';
-import { QueryData } from '../../lib/hooks/useGetBookData';
 import toast from 'react-hot-toast';
 import MyToaster from '../bookcards/toaster';
 import { bookApiUpdate } from '../../utils/fetchData';
+import { Library } from '../../lib/types/models/books';
 
 const DeleteButton = ({ userId, book }: ButtonProps) => {
    const { id, volumeInfo: _ } = book;
@@ -14,8 +14,8 @@ const DeleteButton = ({ userId, book }: ButtonProps) => {
 
    const queryClient = useQueryClient();
    // PARSE THIS PART AND REFACTOR
-   const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
-   const unfinishedBooks = dataBooks?.library?.unfinished;
+   const dataBooks = queryClient.getQueryData<Library>(queryKeys.userLibrary(userId));
+   const unfinishedBooks = dataBooks?.unfinished;
 
    const { mutate, isLoading, isSuccess } = useMutation(
       queryKeys.deleted,
@@ -25,7 +25,7 @@ const DeleteButton = ({ userId, book }: ButtonProps) => {
             await queryClient.cancelQueries(queryKeys.deleted);
             const beforeDeletion = unfinishedBooks;
             queryClient.setQueryData(queryKeys.deleted, {
-               ...dataBooks?.library,
+               ...dataBooks,
                unfinished: filterId(unfinishedBooks as string[], id),
             });
             return beforeDeletion;
@@ -42,9 +42,9 @@ const DeleteButton = ({ userId, book }: ButtonProps) => {
             queryClient.setQueryData(queryKeys.userLibrary(userId), {
                ...dataBooks,
                library: {
-                  finished: filterId(dataBooks?.library?.finished as string[], id),
-                  currentlyReading: filterId(dataBooks?.library?.currentlyReading as string[], id),
-                  wantToRead: filterId(dataBooks?.library?.wantToRead as string[], id),
+                  finished: filterId(dataBooks?.finished as string[], id),
+                  reading: filterId(dataBooks?.reading as string[], id),
+                  want: filterId(dataBooks?.want as string[], id),
                },
             });
             queryClient.refetchQueries(queryKeys.userLibrary(userId));

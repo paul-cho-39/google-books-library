@@ -14,21 +14,20 @@ datasource db {
 // *Their reading logs are not yet updated on the UI, as of yet.
 // Another feature is rating the system from lists of books without adding to their library
 
-// Represents a reading log for a user for a specific book.
-// Tracks reading progress including starting and ending pages for a reading session.
-model Log {
-  id        Int      @id @default(autoincrement())
-  date      DateTime @default(now())
-  userId    String
-  bookId    String
-  start     Int
-  end       Int
-  pagesRead Int
-  UserBook  UserBook @relation(fields: [userId, bookId], references: [userId, bookId])
+// can add logs for later 
+// model Log {
+//     id           Int        @id @default(autoincrement())
+//     start        DateTime[]
+//     end          DateTime[]
+//     dayOfTheWeek String[]
+//     pagesRead   Int?
+//     userId        String 
+//     bookId       String
+//     userBook      UserBook    @relation(fields: [userId, bookId], references: [bookId, userId])
 
-  @@unique([userId, bookId])
-  @@map("reading_logs")
-}
+//     @@map("reading_logs")
+//     @@unique([userId, bookId, id])
+// }
 
 // Represents a user's rating for a specific book.
 // Each user can rate a book only once but can update their rating.
@@ -72,7 +71,7 @@ enum BookState {
 // Also a model for user-specific details like the 'BookState', 'Logs' and 'Rating'
 // When adding additional details it would likely be added here
 
-// primary and primaryAdded:
+// primary and primaryAdded is required if the book is to be logged in "Log" 
 // when Log is written then primary and primaryAdded is automatically added
 // and if 'BookState' is in 'want' it is changed to 'reading'
 model UserBook {
@@ -91,7 +90,6 @@ model UserBook {
   primaryAdded      DateTime?
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   book              Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  log               Log[]
   rating            Rating?
 
   @@id([userId, bookId])
@@ -114,7 +112,6 @@ model User {
 
   @@unique([id, email])
   @@index([id], type: Hash)
-  @@map("users")
 }
 
 model Account {

@@ -3,7 +3,7 @@ import React, { lazy, Suspense } from 'react';
 import { Items } from '../../lib/types/googleBookTypes';
 import SingleOrMultipleAuthors from '../bookcover/authors';
 import FilterStatus from './filterStatus';
-import useGetBookData, { QueryData } from '../../lib/hooks/useGetBookData';
+import useGetBookData from '../../lib/hooks/useGetBookData';
 import { getBookWidth } from '../../lib/helper/books/getBookWidth';
 import BookImage from '../bookcover/bookImages';
 import SignInRequiredButton from '../Login/requireUser';
@@ -22,10 +22,8 @@ const Cards: React.FunctionComponent<{
    totalItems: number;
    userId: string | null;
 }> = ({ query, books, userId, totalItems }) => {
-   const dataBooks = useGetBookData(userId);
-   const finishedData = dataBooks?.library?.finished;
-   const currentlyReading = dataBooks?.library?.currentlyReading;
-   const wantToRead = dataBooks?.library?.wantToRead;
+   // TODO: refetch data and invalidate the data after refetching it
+   const dataBooks = useGetBookData(userId as string);
 
    return (
       <div className=''>
@@ -93,12 +91,7 @@ const Cards: React.FunctionComponent<{
                                     }
                                  />
                               </div>
-                              <FilterStatus
-                                 bookId={book.id}
-                                 currentlyReading={currentlyReading}
-                                 finishedData={finishedData}
-                                 wantToRead={wantToRead}
-                              />
+                              <FilterStatus bookId={book.id} library={dataBooks} />
                            </div>
                         </div>
                      </li>
