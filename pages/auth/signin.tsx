@@ -1,5 +1,4 @@
 import { getProviders } from 'next-auth/react';
-import { Dialog, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
 import { useSession, signIn } from 'next-auth/react';
 import { InferGetServerSidePropsType } from 'next';
@@ -21,7 +20,6 @@ interface Providers {
 
 export function Account({ authProviders }: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const { data: session, status } = useSession();
-   const [isOpen, setIsOpen] = useState(true);
    const [error, setError] = useState(false);
    const resolver = yupResolver(validateSignUp());
 
@@ -37,15 +35,16 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
       });
 
       if (!res || status === 'unauthenticated') {
+         console.log('not authenticated');
          setError(true);
       }
    };
 
    const text = status === 'loading' ? 'Logging In' : 'Login';
 
+   // if user is already signed in and goes to this page
    useLayoutEffect(() => {
       if (status === 'authenticated') {
-         setIsOpen(false);
          router.push(nextPath);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,7 +61,7 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
                      </h3>
                   </div>
                   <Divider />
-                  <p className='mb-3 tracking-tight text-red-500 transition duration-200'>
+                  <p className='mb-3 tracking-tight text-red-500 transition duration-200 dark:text-red-400'>
                      {error && 'Email or password is invalid'}
                   </p>
 
@@ -84,7 +83,7 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
                         </div>
 
                         <Inputs name='password' type='password' />
-                        <button className='rounded-xl shadow-md bg-beige dark:bg-charcoal tracking-wider w-full h-[40px] border-2 border-orange-200 dark:border-dark-charcoal disabled:opacity-25'>
+                        <button className='rounded-xl shadow-md bg-beige dark:bg-charcoal tracking-wider w-full h-[40px] border-2 border-orange-200 dark:border-dark-charcoal disabled:opacity-25 focus:ring-1 focus:ring-black'>
                            <span className='text-slate-800 dark:text-slate-200'>{text}</span>
                         </button>
                      </FormSignIn>

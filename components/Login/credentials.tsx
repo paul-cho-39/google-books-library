@@ -1,11 +1,9 @@
 // refactor by separating the logics of each components separately
-import { ErrorMessage } from '@hookform/error-message';
 import React, { useEffect, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
-import toast, { Toaster } from 'react-hot-toast';
 import { SignInForm, InputProps, SignInProps } from '../../lib/types/forms';
+import classNames from 'classnames';
 
-// TODO // find all relevant name and change the name
 export default function FormSignIn<TFieldValues extends FieldValues>({
    hidden,
    children,
@@ -63,7 +61,6 @@ export default function FormSignIn<TFieldValues extends FieldValues>({
    );
 }
 
-// change the typescript so that if isDisclosure is true labelname is REQUIRED
 export function Inputs({
    register,
    errors,
@@ -74,7 +71,10 @@ export function Inputs({
    isDisclosure = false,
    ...rest
 }: InputProps) {
-   const errorsToString = Object.keys(errors).toString();
+   const errorsToString = Object.keys(errors).toString().toLocaleLowerCase();
+   const containsError = (name: keyof SignInForm) => {
+      return errorsToString.includes(name.toLocaleLowerCase());
+   };
    return (
       <>
          {register && (
@@ -88,72 +88,26 @@ export function Inputs({
                         : 'hidden'
                   } my-1.5`}
                >
-                  {labelName}
+                  {labelName}{' '}
                </label>
                <input
                   className={`${
                      isDisclosure
                         ? 'mt-1 px-3 focus:outline-gray-600'
-                        : 'my-4 px-1.5 max-w-xsm border-[1px] rounded-md focus:outline-none focus:border-blue-500/40'
-                  } ${
-                     isSubmitted && errorsToString.includes(name)
-                        ? 'border-red-500 border-[1px] shadow-sm'
-                        : null
-                  }
-              text-lg block w-full rounded-md text-blue-gray-900 border-slate-600 shadow-sm h-10 border-[1px] transition-colors duration-200`}
+                        : 'my-2 px-1.5 max-w-xsm border-[1px] rounded-md focus:outline-none focus:border-blue-500/40'
+                  } ${isSubmitted && containsError(name) ? 'ring-2 ring-red-500 shadow-md' : null}
+              text-lg block p-2 w-full rounded-md text-blue-gray-900 border-slate-600 shadow-sm h-10 border-[1px] transition-colors duration-200`}
                   type={type}
                   {...register(name)}
                   {...rest}
                />
-               {/* REFACTORING one component and wrap it around div tag  */}
                <span
-                  className={`${
-                     isSubmitted && errorsToString.includes(name)
-                        ? 'relative top-10 text-red-300 rounded-full font-semibold text-left'
-                        : 'hidden'
-                  }
-            `}
+                  className={classNames(containsError(name) ? 'text-red-500 -mt-4 mb-1' : 'hidden')}
                >
-                  !
+                  {containsError(name) && 'One or more input is incorrect'}
                </span>
-               <ErrorMessage
-                  errors={errors}
-                  name={name}
-                  render={({ message }) =>
-                     message && (
-                        <ErrorNotificationWrapper name={name} errors={errors} message={message} />
-                     )
-                  }
-               />
             </>
          )}
       </>
-   );
-}
-
-interface ErrorProps {
-   key?: React.Key;
-   errors?: any;
-   message: string;
-   name: string;
-}
-
-// TODO // have an icon ready
-// might change the containerStyle?
-function ErrorNotificationWrapper({ key, errors, message, name }: ErrorProps) {
-   // eslint-disable-next-line react-hooks/exhaustive-deps
-   useEffect(() => {
-      toast.error(message, {
-         id: name,
-         position: 'bottom-center',
-      });
-      return () => {
-         toast.dismiss(message);
-      };
-   }, [errors, message, name]);
-   return (
-      <div key={key}>
-         <Toaster />
-      </div>
    );
 }

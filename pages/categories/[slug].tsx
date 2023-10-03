@@ -167,6 +167,9 @@ export default function BookCategoryPages({
                                     subtitle={book.volumeInfo.subtitle}
                                     authors={book.volumeInfo.authors}
                                     description={book.volumeInfo.description}
+                                    // TODO: with rating write a helper function for total reviews
+                                    averageRating={book.volumeInfo?.averageRating}
+                                    totalReviews={book.volumeInfo?.ratingsCount}
                                     routeQuery={encodeRoutes.category(category, meta)}
                                  />
                               </Suspense>

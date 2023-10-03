@@ -13,7 +13,8 @@ const queryKeys = {
    currentlyReading: ['bookLibrary', 'currentlyReading'] as const,
    finished: ['booklibrary', 'finished'] as const,
    allGoogleCategories: ['google', 'categories'] as const,
-   ratings: ['ratings', 'receieved'] as const,
+   ratings: ['ratings', 'all'] as const,
+   ratingsByBook: (bookId: string) => ['ratings', { id: bookId }] as const,
    categories: (category: string | string[], meta?: MetaProps) =>
       ['category', { type: category }, meta] as const,
    nytReview: (key: ReviewType, value: string) => [key, { value }] as const,
