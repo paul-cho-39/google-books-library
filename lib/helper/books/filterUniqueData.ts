@@ -29,10 +29,3 @@ export function createUniqueData<TData extends Pages<any> | Items<any>[]>(data: 
       return arr;
    }, []);
 }
-
-// this should be the default export and change
-// across the field
-function convertDataToStrings(data: Data<any>) {
-   const arrayData = createUniqueDataSets(data);
-   return arrayData && arrayData[0].toString();
-}

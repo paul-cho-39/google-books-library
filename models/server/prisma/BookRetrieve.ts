@@ -17,7 +17,6 @@ export default class BookRetriever {
 
       return userBooks.map((ub) => ub.book);
    }
-
    async getAllUserBooks(userId: string) {
       return await prisma.userBook.findMany({
          where: { userId: userId },
@@ -29,6 +28,18 @@ export default class BookRetriever {
    async getAllRatingsFromUser(userId: string) {
       return await prisma.rating.findMany({
          where: { userId: { equals: userId } },
+      });
+   }
+   async getRatingByBook(bookId: string) {
+      return await prisma.rating.findMany({
+         where: { bookId: { contains: bookId } },
+         select: {
+            bookId: true,
+            userId: true,
+            ratingValue: true,
+            dateAdded: true,
+            dateUpdated: true,
+         },
       });
    }
    async getBatchRatingsByBooks(bookIds: string[]) {

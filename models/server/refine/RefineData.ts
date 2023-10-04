@@ -6,7 +6,7 @@ type AllUserBooks = (UserBook & {
 })[];
 
 // keep it decouped in general to maintain cleaner code
-export default class RefineData {
+export class RefineData {
    constructor() {}
 
    refineBooks(userBooks: AllUserBooks) {
@@ -26,4 +26,23 @@ export default class RefineData {
 
       return library;
    }
+   // TODO: change title (inaccurate title)
+   refineDates<T>(data: T) {
+      if (data instanceof Date) {
+         return data.toISOString() as unknown as T;
+      }
+
+      if (typeof data === 'object' && data !== null) {
+         for (let key in data) {
+            if (data.hasOwnProperty(key)) {
+               (data as any)[key] = this.refineDates((data as any)[key]);
+            }
+         }
+      }
+
+      return data;
+   }
 }
+
+const refiner = new RefineData();
+export default refiner;

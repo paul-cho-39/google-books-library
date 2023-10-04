@@ -1,14 +1,20 @@
 import { Book } from '@prisma/client';
+import { IndustryIdentifiers } from '../googleBookTypes';
+
+export interface DataWithRatings {
+   bookData: Data;
+   rating: number;
+}
 
 export interface Data {
    title: string;
    subtitle: string;
-   publishedDate: Date;
+   publishedDate: string | Date;
    language: string;
    pageCount: number;
    categories: string[];
    authors: string[];
-   industryIdentifiers: string[];
+   industryIdentifiers?: string[];
 }
 
 export interface IdParams {

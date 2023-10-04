@@ -1,9 +1,10 @@
-import { BookState, Prisma, UserBook } from '@prisma/client';
+import { Book, BookState, Prisma, UserBook } from '@prisma/client';
 import prisma from '../../../lib/prisma';
 import { Data } from '../../../lib/types/models/books';
 import Books from './Books';
 
 export type UserBookWithoutId = Omit<UserBook, 'userId' | 'bookId'>;
+export type BookWithoutDeletion = Omit<Book, 'isDeleted' | 'dateDeleted'>;
 
 export default class BookCreator extends Books {
    constructor(userId: string, bookId: string) {
@@ -24,6 +25,15 @@ export default class BookCreator extends Books {
             publishedDate: new Date(data.publishedDate),
             pageCount: data.pageCount,
             industryIdentifiers: (data.industryIdentifiers as Prisma.JsonArray) ?? Prisma.JsonNull,
+            users: {
+               connectOrCreate: {
+                  where: { userId_bookId: this.getBothIds },
+                  create: {
+                     userId: this.userId,
+                     ...stateData,
+                  },
+               },
+            },
          },
          update: {
             users: {
@@ -41,7 +51,7 @@ export default class BookCreator extends Books {
          },
       });
    }
-   async createBook(data: Data, state?: UserBookWithoutId) {
+   async createBook(data: Data) {
       await prisma.book.create({
          data: {
             id: this.bookId,

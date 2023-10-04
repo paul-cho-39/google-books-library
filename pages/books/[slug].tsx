@@ -1,6 +1,6 @@
 import { getSession } from 'next-auth/react';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import { lazy, useState } from 'react';
+import { lazy, useEffect, useState } from 'react';
 
 import BookImage from '../../components/bookcover/bookImages';
 import { getBookWidth } from '../../lib/helper/books/getBookWidth';
@@ -16,10 +16,14 @@ import useGetBookById from '../../lib/hooks/useGetBookById';
 import { CategoryRouteParams, RouteParams } from '../../lib/types/routes';
 import APIErrorBoundary from '../../components/error/errorBoundary';
 import DisplayRating, { ActiveRating } from '../../components/bookcover/ratings';
-import useMutateRatings from '../../lib/hooks/useMutateRatings';
+import { useMutateCreateRatings, useMutateUpdateRatings } from '../../lib/hooks/useMutateRatings';
 import BookRatings from '../../models/server/prisma/Rating';
 import { errorLogger } from '../../models/server/winston';
 import { useGetRating } from '../../lib/hooks/useGetRatings';
+import { getBody, getBodyFromFilteredGoogleFields } from '../../lib/helper/books/getBookBody';
+import refiner, { RefineData } from '../../models/server/refine/RefineData';
+import BookRetriever from '../../models/server/prisma/BookRetrieve';
+import { getAverageRatings, getServerAverage, getTotalRatings } from '../../lib/helper/getRating';
 
 const HEIGHT = 225;
 
@@ -27,34 +31,63 @@ const SaveAsFinishedButton = lazy(() => import('../../components/buttons/finishe
 const PopOverButtons = lazy(() => import('../../components/buttons/popoverButtons'));
 // const Ratings = lazy(() => import('../../components/'));
 
-// whenever a key is applied it does not seem to work?
+// when refreshed the serversideProps will fetch the data
+// when navigating between pages and coming back useQuery to check
 export default function BookPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const { id, userId, rateData } = props;
 
-   const [selectedRating, setSelectedRating] = useState<number>(0);
+   const [selectedRating, setSelectedRating] = useState(0);
 
    const router = useRouter();
    const query = router.query as CategoryRouteParams | RouteParams;
 
+   const usersRateData = rateData?.find((data) => data.userId === userId);
+
+   console.log('-------DEBUGGING-------');
+   console.log('--------------------');
+   console.log('--------------------');
+   console.log('--------------------');
+   console.log('--------------------');
+   console.log('THE USER DATA IS: ', usersRateData);
+   console.log('just the rate data: ', rateData);
+
    const { data, isSuccess, isLoading } = useGetBookById({ routeParams: query });
 
    // ratings
-   const { data: currentRating } = useGetRating({
+   const { data: currentRatingData } = useGetRating({
       bookId: id,
       userId: userId as string,
-      initialData: rateData,
+      // initialData: rateData,
    });
 
-   console.log('BEGINNING TO DEBUG HERE: ');
-   console.log('-------------------------');
-   console.log('-------------------------');
-   console.log('-------------------------');
-   console.log('-------------------------');
-   console.log('data is now: ', currentRating);
-   console.log('user data is: ', userId);
-   console.log('id is : ', id);
+   console.log('------- SECOND DEBUGGING -------');
+   console.log('--------------------');
+   console.log('--------------------');
+   console.log('--------------------');
+   console.log('--------------------');
+   console.log('THE currentRatingData DATA IS: ', currentRatingData);
 
-   const { mutate } = useMutateRatings({ bookId: id, userId: userId });
+   const { mutate: mutateCreate, isSuccess: isCreatedSuccess } = useMutateCreateRatings({
+      bookId: id,
+      userId: userId,
+   });
+   const { mutate: mutateUpdate } = useMutateUpdateRatings({ bookId: id, userId: userId });
+
+   const handleMutation = (rating: number) => {
+      const notCreated = !currentRatingData;
+      const bookData = getBodyFromFilteredGoogleFields(data);
+      const body = { bookData, rating };
+      notCreated ? mutateCreate(body) : mutateUpdate(rating);
+   };
+
+   // TEST:
+   const serverTotal = currentRatingData?.length || 0;
+   const googleTotal = data?.volumeInfo?.totalReviews || 0;
+   const totalRatings = getTotalRatings(serverTotal, googleTotal);
+
+   const serverAvg = getServerAverage(currentRatingData);
+   const googleAvg = data?.volumeInfo?.averageRating || 0;
+   const avgRating = getAverageRatings(serverAvg, serverTotal, googleAvg, googleTotal);
 
    if (isLoading) {
       return <div>Loading...</div>;
@@ -66,7 +99,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
             <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 md:grid md:grid-cols-3 lg:max-w-4xl'>
                <div className='flex flex-col items-center justify-center md:col-span-1 md:gap-x-0'>
                   <BookImage
-                     id={data.id}
+                     id={data?.id}
                      hidden={true}
                      bookImage={data?.volumeInfo?.imageLinks}
                      title={data?.volumeInfo.title as string}
@@ -96,7 +129,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                      )}
                   </div>
                   <ActiveRating
-                     onRatingSelected={mutate}
+                     onRatingSelected={handleMutation}
                      selectedRating={selectedRating}
                      setSelectedRating={setSelectedRating}
                      size='large'
@@ -121,7 +154,11 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                      date={data?.volumeInfo.publishedDate}
                      className='mb-1 lg:mb-1 text-md dark:text-slate-100'
                   />
-                  <DisplayRating size='large' />
+                  <DisplayRating
+                     totalReviews={totalRatings}
+                     averageRating={avgRating}
+                     size='large'
+                  />
                   <BookDetails
                      categories={data?.volumeInfo.categories}
                      page={data?.volumeInfo.pageCount}
@@ -160,17 +197,15 @@ export const getServerSideProps: GetServerSideProps<RateServerTypes> = async (co
    const user = session?.user as CustomSession;
    const userId = user?.id || null;
 
-   const rater = new BookRatings(userId as string, bookId as string);
-   const data = await rater.getRatingByBook();
-
-   console.log('the book Id is: ', bookId);
-   console.log('the userID here is: ', userId);
+   const retrieve = new BookRetriever();
+   const data = await retrieve.getRatingByBook(bookId);
+   const refinedData = refiner.refineDates<RateServerTypes['rateData']>(data);
 
    return {
       props: {
          userId: userId,
-         id: bookId, // pass the original id
-         ratingData: data,
+         id: bookId,
+         ratingData: refinedData,
       },
    };
 };

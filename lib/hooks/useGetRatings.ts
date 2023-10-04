@@ -1,8 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import queryKeys from '../../utils/queryKeys';
-import { CategoriesQueries, SingleRateData } from '../types/serverPropsTypes';
+import { CategoriesQueries, RatingData, ResponseRatingData } from '../types/serverPropsTypes';
 import apiRequest from '../../utils/fetchData';
 import API_ROUTES from '../../utils/apiRoutes';
+import { Rating } from '@prisma/client';
 
 // returning batch rating of book from /categories and '/'
 export default function useGetRatings(data: CategoriesQueries, isSuccess: boolean) {
@@ -39,20 +40,27 @@ export default function useGetRatings(data: CategoriesQueries, isSuccess: boolea
 interface SingleRatingParams {
    bookId: string;
    userId: string;
-   initialData?: SingleRateData;
+   initialData?: RatingData[] | null;
 }
 
 export function useGetRating({ bookId, userId, initialData }: SingleRatingParams) {
-   return useQuery(
-      queryKeys.singleBook(bookId),
+   return useQuery<ResponseRatingData | RatingData[] | null, unknown, RatingData[] | null>(
+      queryKeys.ratingsByBook(bookId),
       () =>
          apiRequest({
-            apiUrl: API_ROUTES.RATING.RATE_BOOK(bookId, userId),
+            apiUrl: API_ROUTES.RATING.RATE_BOOK.CREATE(bookId, userId),
             method: 'GET',
          }),
       {
-         enabled: !!bookId && !!userId && !initialData,
-         initialData: initialData,
+         enabled: !!bookId && !!userId,
+         initialData: () => initialData,
+         select: (data) => {
+            if (!initialData) {
+               const rateData = data as ResponseRatingData;
+               return rateData.data;
+            }
+            return data as RatingData[] | null;
+         },
       }
    );
 }
@@ -68,9 +76,4 @@ function extractIdsToArray(data: CategoriesQueries, initialData?: CategoriesQuer
    const store = !initialData ? storeIds(data) : storeIds(initialData);
 
    return store;
-}
-
-//
-function extraIdsFromArray(bookId: string, initialData?: string[]): string {
-   return '';
 }

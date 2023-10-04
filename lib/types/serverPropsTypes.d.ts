@@ -1,4 +1,4 @@
-import { BookState } from '@prisma/client';
+import { BookState, Rating } from '@prisma/client';
 import { GoogleUpdatedFields, Items, Pages } from './googleBookTypes';
 import { BestSellerData, ReviewData } from './nytBookTypes';
 import { DefaultSession } from 'next-auth';
@@ -9,18 +9,17 @@ export type BasicServerProps = {
    id: string;
 };
 
-// data for returning ratings
-export type SingleRateData = {
+export interface RatingData {
+   userId: string;
    bookId: string;
    dateAdded: Date;
    ratingValue: number;
-   UserBook: {
-      state: BookState;
-   } | null;
-};
+   dateUpdated: Date;
+}
 
 export type RateServerTypes = BasicServerProps & {
-   rateData?: SingleRateData;
+   // inLibrary: boolean;
+   rateData?: RatingData[] | null;
 };
 
 type CombinedData = {
@@ -45,3 +44,10 @@ export interface ReturnedCacheData<Data extends GoogleUpdatedFields | ReviewData
    lastUpdated: string;
    source: 'cache' | 'api';
 }
+
+// change the name to serverTypes
+export type ResponseRatingData = {
+   success: boolean;
+   data: RatingData[] | null;
+   inLibrary: boolean;
+};

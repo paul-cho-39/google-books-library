@@ -37,7 +37,12 @@ const API_ROUTES = {
    },
    RATING: {
       BATCH: `${BASE_PATH}/${DOMAIN_RATING}/batch-categories`,
-      RATE_BOOK: (userId: string, id: string) => `${BASE_PATH}/${DOMAIN_RATING}/${userId}/${id}`,
+      RATE_BOOK: {
+         UPDATE: (userId: string, id: string) =>
+            `${BASE_PATH}/${DOMAIN_RATING}/${userId}/${id}/update`,
+         CREATE: (userId: string, id: string) => `${BASE_PATH}/${DOMAIN_RATING}/${userId}/${id}`,
+      },
+      // RATE_BOOK: (userId: string, id: string) => `${BASE_PATH}/${DOMAIN_RATING}/${userId}/${id}`,
    },
 };
 
