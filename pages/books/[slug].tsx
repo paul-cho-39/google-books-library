@@ -1,6 +1,6 @@
 import { getSession } from 'next-auth/react';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import { lazy } from 'react';
+import { lazy, useState } from 'react';
 
 import BookImage from '../../components/bookcover/bookImages';
 import { getBookWidth } from '../../lib/helper/books/getBookWidth';
@@ -10,25 +10,51 @@ import BookDescription from '../../components/bookcover/description';
 import BookPublisher from '../../components/bookcover/publisher';
 import BookDetails from '../../components/bookcover/bookDetails';
 import SignInRequiredButton from '../../components/Login/requireUser';
-import { CustomSession } from '../../lib/types/serverPropsTypes';
+import { CustomSession, RateServerTypes } from '../../lib/types/serverPropsTypes';
 import { useRouter } from 'next/router';
 import useGetBookById from '../../lib/hooks/useGetBookById';
 import { CategoryRouteParams, RouteParams } from '../../lib/types/routes';
 import APIErrorBoundary from '../../components/error/errorBoundary';
+import DisplayRating, { ActiveRating } from '../../components/bookcover/ratings';
+import useMutateRatings from '../../lib/hooks/useMutateRatings';
+import BookRatings from '../../models/server/prisma/Rating';
+import { errorLogger } from '../../models/server/winston';
+import { useGetRating } from '../../lib/hooks/useGetRatings';
 
 const HEIGHT = 225;
 
 const SaveAsFinishedButton = lazy(() => import('../../components/buttons/finishedButton'));
 const PopOverButtons = lazy(() => import('../../components/buttons/popoverButtons'));
+// const Ratings = lazy(() => import('../../components/'));
 
 // whenever a key is applied it does not seem to work?
 export default function BookPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-   const { id, userId } = props;
+   const { id, userId, rateData } = props;
+
+   const [selectedRating, setSelectedRating] = useState<number>(0);
 
    const router = useRouter();
    const query = router.query as CategoryRouteParams | RouteParams;
 
    const { data, isSuccess, isLoading } = useGetBookById({ routeParams: query });
+
+   // ratings
+   const { data: currentRating } = useGetRating({
+      bookId: id,
+      userId: userId as string,
+      initialData: rateData,
+   });
+
+   console.log('BEGINNING TO DEBUG HERE: ');
+   console.log('-------------------------');
+   console.log('-------------------------');
+   console.log('-------------------------');
+   console.log('-------------------------');
+   console.log('data is now: ', currentRating);
+   console.log('user data is: ', userId);
+   console.log('id is : ', id);
+
+   const { mutate } = useMutateRatings({ bookId: id, userId: userId });
 
    if (isLoading) {
       return <div>Loading...</div>;
@@ -37,12 +63,12 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    return (
       <APIErrorBoundary>
          <div className='mx-auto w-full min-h-screen overflow-y-auto dark:bg-slate-800'>
-            <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 lg:grid lg:grid-cols-3 lg:max-w-4xl'>
-               <div className='flex flex-col items-center justify-center lg:col-span-1 lg:gap-x-0'>
+            <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 md:grid md:grid-cols-3 lg:max-w-4xl'>
+               <div className='flex flex-col items-center justify-center md:col-span-1 md:gap-x-0'>
                   <BookImage
                      id={data.id}
                      hidden={true}
-                     bookImage={data?.volumeInfo.imageLinks}
+                     bookImage={data?.volumeInfo?.imageLinks}
                      title={data?.volumeInfo.title as string}
                      height={HEIGHT}
                      width={getBookWidth(HEIGHT)}
@@ -69,16 +95,22 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                         </>
                      )}
                   </div>
+                  <ActiveRating
+                     onRatingSelected={mutate}
+                     selectedRating={selectedRating}
+                     setSelectedRating={setSelectedRating}
+                     size='large'
+                  />
                </div>
-               <div className='flex flex-col justify-start px-2 gap-y-2 lg:col-span-2'>
+               <div className='flex flex-col justify-start px-2 gap-y-2 md:col-span-2'>
                   <BookTitle
                      id={id}
                      hasLink={false}
                      title={data?.volumeInfo.title as string}
                      subtitle={data?.volumeInfo.subtitle}
-                     className='text-xl mb-2 lg:mb-4 lg:text-3xl'
+                     className='text-xl mb-1 lg:text-3xl'
                   />
-                  <div className='mb-1 lg:mb-1 '>
+                  <div className='mb-1'>
                      <span className='text-slate-800 dark:text-slate-200'>By: </span>
                      <SingleOrMultipleAuthors
                         hoverUnderline={true}
@@ -89,6 +121,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                      date={data?.volumeInfo.publishedDate}
                      className='mb-1 lg:mb-1 text-md dark:text-slate-100'
                   />
+                  <DisplayRating size='large' />
                   <BookDetails
                      categories={data?.volumeInfo.categories}
                      page={data?.volumeInfo.pageCount}
@@ -120,20 +153,24 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    );
 }
 
-export const getServerSideProps: GetServerSideProps<{
-   id: string;
-   userId: string | null;
-}> = async (context: any) => {
-   const { slug } = context.query as { slug: string };
+export const getServerSideProps: GetServerSideProps<RateServerTypes> = async (context) => {
+   const { slug: bookId } = context.query as { slug: string };
 
    const session = await getSession(context);
    const user = session?.user as CustomSession;
    const userId = user?.id || null;
 
+   const rater = new BookRatings(userId as string, bookId as string);
+   const data = await rater.getRatingByBook();
+
+   console.log('the book Id is: ', bookId);
+   console.log('the userID here is: ', userId);
+
    return {
       props: {
          userId: userId,
-         id: slug, // pass the original id
+         id: bookId, // pass the original id
+         ratingData: data,
       },
    };
 };

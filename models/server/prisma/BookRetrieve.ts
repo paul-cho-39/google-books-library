@@ -28,15 +28,18 @@ export default class BookRetriever {
    }
    async getAllRatingsFromUser(userId: string) {
       return await prisma.rating.findMany({
-         where: { userId: userId },
+         where: { userId: { equals: userId } },
       });
    }
-   async getAllRatingsByBook(bookId: string) {
-      return await prisma.userBook.findMany({
-         where: { bookId: bookId },
+   async getBatchRatingsByBooks(bookIds: string[]) {
+      return await prisma.rating.findMany({
+         where: {
+            bookId: { in: bookIds },
+         },
       });
    }
-   async getBatchRatings(bookIds: string[]) {
+   // for users info at their /dashboard
+   async getBatchRatingsWithCountAndAvg(bookIds: string[]) {
       return await prisma.rating.groupBy({
          by: ['bookId'],
          where: {

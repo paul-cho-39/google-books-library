@@ -1,6 +1,27 @@
+import { BookState } from '@prisma/client';
 import { GoogleUpdatedFields, Items, Pages } from './googleBookTypes';
 import { BestSellerData, ReviewData } from './nytBookTypes';
 import { DefaultSession } from 'next-auth';
+
+//
+export type BasicServerProps = {
+   userId: string | null;
+   id: string;
+};
+
+// data for returning ratings
+export type SingleRateData = {
+   bookId: string;
+   dateAdded: Date;
+   ratingValue: number;
+   UserBook: {
+      state: BookState;
+   } | null;
+};
+
+export type RateServerTypes = BasicServerProps & {
+   rateData?: SingleRateData;
+};
 
 type CombinedData = {
    displayName?: string;

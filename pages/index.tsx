@@ -48,14 +48,14 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       returnNumberOfItems: MAX_RESULT,
    });
 
-   // useGetRatings(googleDataSuccess, googleData);
+   // console.log('nytimes data is: ', nytData);
 
    const { transformedData: nytData, dataIsSuccess: nytDataSuccess } = useGetNytBestSellers({});
 
-   // console.log('nytimes data is: ', nytData);
-
    const combinedData = { ...nytData, ...googleData };
-   console.log('the google data is: ', googleData);
+
+   const { data: allRatings } = useGetRatings(googleData || {}, googleDataSuccess);
+   console.log('all ratings are: ', allRatings);
 
    const floatingRef = useRef<HTMLDivElement>(null);
    const categoryRefs = useRef<HTMLDivElement>(null);

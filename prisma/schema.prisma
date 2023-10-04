@@ -32,14 +32,18 @@ datasource db {
 // Represents a user's rating for a specific book.
 // Each user can rate a book only once but can update their rating.
 model Rating {
+  id          Int      @id @default(autoincrement())
   userId      String
   bookId      String
   ratingValue Int
   dateAdded   DateTime @default(now())
   dateUpdated DateTime @updatedAt
-  UserBook    UserBook @relation(fields: [userId, bookId], references: [userId, bookId], onDelete: NoAction)
+  reviewTitle String?  @db.VarChar(150)
+  comment     String?  @db.VarChar(500)
+  user        User     @relation(fields: [userId], references: [id])
+  book        Book     @relation(fields: [bookId], references: [id])
 
-  @@id([userId, bookId])
+  @@unique([userId, bookId])
   @@map("ratings")
 }
 
@@ -54,8 +58,10 @@ model Book {
   pageCount           Int?
   industryIdentifiers Json?
   authors             String[]
+  isDeleted           Boolean    @default(false)
   dateDeleted         DateTime?
   users               UserBook[]
+  ratings             Rating[]
 
   @@index([id], type: Hash)
   @@map("books")
@@ -90,7 +96,6 @@ model UserBook {
   primaryAdded      DateTime?
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   book              Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  rating            Rating?
 
   @@id([userId, bookId])
 }
@@ -109,6 +114,7 @@ model User {
   account       Account[]
   sessions      Session[]
   books         UserBook[]
+  ratings       Rating[]
 
   @@unique([id, email])
   @@index([id], type: Hash)

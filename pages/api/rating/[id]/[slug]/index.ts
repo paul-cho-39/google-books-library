@@ -15,15 +15,23 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       }
    }
    if (req.method === 'POST') {
-      const { bookId, userId } = req.query;
+      const { id: userId, slug: bookId } = req.query;
       const { rating } = req.body;
+
+      // console.log('DEBUGGING*****');
+      // console.log('--------------------');
+      // console.log('--------------------');
+      // console.log('--------------------');
+      // console.log('THE RATING IS: ', rating);
+      // console.log('THE USERID IS: ', userId);
+
       const rater = new BookRatings(userId as string, bookId as string);
       try {
          rater.createOrUpdateRatings(rating as number);
-         return res.status(201).json({ success: true });
+         res.status(201).json({ success: true });
       } catch (err) {
          errorLogger(err, req);
-         return res.end(err);
+         res.end(err);
       }
    } else {
       internalServerErrorLogger(req);

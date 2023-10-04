@@ -21,7 +21,7 @@ const Categories = ({ categories, hasLink = false, className }: CategoriesProps)
                   <Link passHref href={'/categories/[slug]'} as={ROUTES.CATEGORIES(category)}>
                      <a>
                         {category}
-                        <span>{filteredCategories.length - 1 >= index ? ', ' : ''}</span>
+                        <span>{filteredCategories.length - 1 > index ? ', ' : ''}</span>
                      </a>
                   </Link>
                ) : (

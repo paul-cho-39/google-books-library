@@ -2,10 +2,10 @@ import Star, { Size, StarProps } from '../icons/starIcon';
 
 export interface StarRatingProps {
    averageRating?: number;
-   size?: Size;
+   size: Size;
 }
 
-const StarRating = ({ averageRating = 0, size }: StarRatingProps) => {
+const StarRating = ({ averageRating = 0, size = 'small' }: StarRatingProps) => {
    const filledStars = Math.floor(averageRating);
    const remainder = averageRating - filledStars;
    return (
@@ -18,7 +18,7 @@ const StarRating = ({ averageRating = 0, size }: StarRatingProps) => {
                   return <Star fillPercentage={remainder * 100} size={size} key={index} />;
                }
             }
-            return <Star fillPercentage={0} key={index} />;
+            return <Star size={size} fillPercentage={0} key={index} />;
          })}
       </div>
    );

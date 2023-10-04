@@ -10,6 +10,13 @@ export default class BookRatings extends Books {
       this.checkIds();
       const ratingNum = this.toNumber(rating);
 
+      console.log('DEBUGGING*****');
+      console.log('--------------------');
+      console.log('--------------------');
+      console.log('--------------------');
+      console.log('THE RATING IS: ', this.bookId);
+      console.log('THE USERID IS: ', this.userId);
+
       await prisma.rating.upsert({
          where: {
             userId_bookId: this.getBothIds,
@@ -30,16 +37,7 @@ export default class BookRatings extends Books {
    async getRatingByBook() {
       return await prisma.rating.findFirst({
          where: { bookId: this.bookId },
-         select: {
-            bookId: true,
-            dateAdded: true,
-            ratingValue: true,
-            UserBook: {
-               select: {
-                  state: true,
-               },
-            },
-         },
+         cursor: {},
       });
    }
    private toNumber(rating?: number | string) {

@@ -1,17 +1,15 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import queryKeys from '../../utils/queryKeys';
-import { CategoriesQueries } from '../types/serverPropsTypes';
+import { CategoriesQueries, SingleRateData } from '../types/serverPropsTypes';
 import apiRequest from '../../utils/fetchData';
 import API_ROUTES from '../../utils/apiRoutes';
 
 // returning batch rating of book from /categories and '/'
-export default function useGetRatings(isSuccess: boolean, data?: CategoriesQueries) {
+export default function useGetRatings(data: CategoriesQueries, isSuccess: boolean) {
    const queryClient = useQueryClient();
 
-   if (!isSuccess || !data) return;
-
    const initialData = queryClient.getQueryData<CategoriesQueries>(queryKeys.allGoogleCategories);
-   const bookIds = extractIdsToArray(data, initialData);
+   const bookIds = extractIdsToArray(data as CategoriesQueries, initialData);
 
    // debugging
    console.log('-------------------------');
@@ -23,36 +21,29 @@ export default function useGetRatings(isSuccess: boolean, data?: CategoriesQueri
    console.log('-------------------------');
 
    // require dynamic?
-   //    useQuery(
-   //       queryKeys.ratings,
-   //       () =>
-   //          apiRequest({
-   //             apiUrl: API_ROUTES.RATING.BATCH,
-   //             method: 'POST',
-   //             data: bookIds,
-   //             shouldRoute: false,
-   //          }),
-   //       {
-   //          enabled: !!data,
-   //       }
-   //    );
+   return useQuery(
+      queryKeys.ratings,
+      () =>
+         apiRequest({
+            apiUrl: API_ROUTES.RATING.BATCH,
+            method: 'POST',
+            data: bookIds,
+            shouldRoute: false,
+         }),
+      {
+         enabled: !!data && isSuccess,
+      }
+   );
 }
 
 interface SingleRatingParams {
    bookId: string;
    userId: string;
+   initialData?: SingleRateData;
 }
 
-export function useGetRating({ bookId, userId }: SingleRatingParams) {
-   const queryClient = useQueryClient();
-   const initialData = queryClient.getQueryData(queryKeys.ratings, {
-      stale: false,
-      type: 'active',
-   });
-
-   // see what the type is for the data
-
-   const queryData = useQuery(
+export function useGetRating({ bookId, userId, initialData }: SingleRatingParams) {
+   return useQuery(
       queryKeys.singleBook(bookId),
       () =>
          apiRequest({
@@ -60,7 +51,8 @@ export function useGetRating({ bookId, userId }: SingleRatingParams) {
             method: 'GET',
          }),
       {
-         enabled: !!bookId && !!userId,
+         enabled: !!bookId && !!userId && !initialData,
+         initialData: initialData,
       }
    );
 }
