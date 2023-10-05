@@ -3,36 +3,40 @@ import { MetaDataParams, ResponseError, ResponseMeta } from '../../../lib/types/
 import winston from 'winston/lib/winston/config';
 import { errorLogger, internalServerErrorLogger } from '../winston';
 
-// creating more maintainable structure if continuing
-export default class ApiResponseBase<T> {
-   data: T | null;
-   meta: ResponseMeta;
-   success: boolean | null;
-   error?: ResponseError;
-   constructor(data: T | null, error?: ResponseError, meta?: MetaDataParams) {
-      this.data = data;
-      this.meta = {
-         dateTime: new Date().toISOString(),
-         ...meta,
-      };
-      this.success = !error;
-      if (error) {
-         this.setError(error);
+export default function createApiResponse<T>(
+   data: T | null,
+   meta?: MetaDataParams,
+   error?: ResponseError,
+   req?: NextApiRequest
+) {
+   if (error && req) {
+      logError(error, req);
+   }
+
+   let finalError: ResponseError | undefined;
+
+   if (error) {
+      if (error.code === 500) {
+         finalError = {
+            ...error,
+            message: error.message || 'Internal server error',
+         };
+      } else {
+         finalError = error;
       }
    }
-   setLogError(error: ResponseError, req: NextApiRequest) {
-      error.code === 500 ? internalServerErrorLogger(req) : errorLogger(error, req);
-   }
-   toJson() {
-      const { data, meta, success, error } = this;
-      return {
-         data: data,
-         metaInfo: meta,
-         success: success,
-         error,
-      };
-   }
-   private setError(error: ResponseError) {
-      this.error = error;
-   }
+
+   return {
+      data,
+      meta: {
+         dateTime: new Date().toISOString(),
+         ...meta,
+      },
+      success: !error,
+      error: finalError,
+   };
+}
+
+function logError(error: ResponseError, req: NextApiRequest) {
+   error.code === 500 ? internalServerErrorLogger(req) : errorLogger(error, req);
 }

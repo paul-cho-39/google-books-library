@@ -2,6 +2,8 @@ import { BookState, Rating } from '@prisma/client';
 import { GoogleUpdatedFields, Items, Pages } from './googleBookTypes';
 import { BestSellerData, ReviewData } from './nytBookTypes';
 import { DefaultSession } from 'next-auth';
+import { MetaDataParams } from './response';
+import { Library } from './models/books';
 
 //
 export type BasicServerProps = {
@@ -44,9 +46,16 @@ export interface ReturnedCacheData<Data extends GoogleUpdatedFields | ReviewData
    source: 'cache' | 'api';
 }
 
-// change the name to serverTypes
-export type ResponseRatingData = {
+type ResponseBase = {
    success: boolean;
+   meta: MetaDataParams;
+};
+
+export type ResponseRatingData = ResponseBase & {
    data: RatingData[] | null;
    inLibrary: boolean;
+};
+
+export type ResponseFinishedData = ResponseBase & {
+   data: Library;
 };

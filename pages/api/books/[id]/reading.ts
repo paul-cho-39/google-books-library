@@ -1,44 +1,42 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import BookCreator, { UserBookWithoutId } from '../../../../models/server/prisma/BookCreator';
-import BookStateHandler from '../../../../models/server/prisma/BookState';
 import { errorLogger, internalServerErrorLogger } from '../../../../models/server/winston';
 import { Prisma } from '@prisma/client';
+import BookService from '../../../../models/server/service/BookService';
+import createApiResponse from '../../../../models/server/response/apiResponse';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
       const { userId, id, ...data } = req.body;
 
-      const creator = new BookCreator(userId, id);
-      const stateData = BookStateHandler.getBookState('Reading', {
-         isPrimary: true,
-      });
-
+      const service = new BookService(userId, id);
       try {
-         await creator.createOrUpdateBookAndState(data, stateData as UserBookWithoutId);
-         return res.status(201).json({ success: true });
-      } catch (err) {
-         errorLogger(err, req);
-         return res.end(err);
+         await service.handleCreateReading(data);
+         const response = createApiResponse(null, {
+            message: 'Added / updated book status to reading',
+         });
+         return res.status(200).json(response);
+      } catch (err: any) {
+         const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
+         return res.status(404).json(errorResponse);
       }
    }
    if (req.method === 'PUT') {
       // make sure that it doesnt add duplicates
       const { id, userId } = req.body;
-      const creator = new BookCreator(userId, id);
-      const stateData = BookStateHandler.getBookState('Reading', {
-         isPrimary: false,
-      });
+      const service = new BookService(userId, id);
       try {
-         await creator.updateBookState(stateData as UserBookWithoutId);
-         return res.status(201).json({ success: true });
-      } catch (error) {
+         await service.handlePrimary();
+         const response = createApiResponse(null, { message: 'Book primary status changed' });
+         return res.status(201).json(response);
+      } catch (error: any) {
          if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
             throw new Error('Book does not exist for this user.');
          }
-         errorLogger(error, req);
+         const errorResponse = createApiResponse(null, {}, { code: 404, message: error.message });
+         res.status(404).json(errorResponse);
       }
    } else {
-      internalServerErrorLogger(req);
-      return res.status(500).end({ message: 'Internal Server Error' });
+      const errorResponse = createApiResponse(null, {}, { code: 500 });
+      return res.status(500).json(errorResponse);
    }
 }

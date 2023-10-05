@@ -2,7 +2,7 @@ import prisma from '../../../lib/prisma';
 import { Book, BookState } from '@prisma/client';
 import Books from './Books';
 
-class BookRetriever {
+export class BookRetriever {
    constructor() {}
    async getBooksByState(userId: string, state: BookState) {
       const userBooks = await prisma.userBook.findMany({

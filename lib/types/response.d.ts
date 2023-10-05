@@ -1,7 +1,7 @@
 // getting the rating data here:
 export interface ResponseError {
    code: number;
-   message: string;
+   message?: string;
 }
 
 export type MetaDataParams = Omit<ResponseMeta, 'dateTime'>;

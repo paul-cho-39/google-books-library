@@ -21,11 +21,7 @@ export default class Books {
          userId: this.userId,
       };
    }
-   async findExistingBook() {
-      return await prisma?.book.findUnique({
-         where: this.getBookId,
-      });
-   }
+
    checkIds() {
       if (!this.bookId || !this.userId) throw Error(`Required parameter id has not been provided`);
    }
