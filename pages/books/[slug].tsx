@@ -19,9 +19,10 @@ import DisplayRating, { ActiveRating } from '../../components/bookcover/ratings'
 import { useMutateCreateRatings, useMutateUpdateRatings } from '../../lib/hooks/useMutateRatings';
 import { useGetRating } from '../../lib/hooks/useGetRatings';
 import { getBody, getBodyFromFilteredGoogleFields } from '../../lib/helper/books/getBookBody';
-import refiner, { RefineData } from '../../models/server/format/RefineData';
+import refiner, { RefineData } from '../../models/server/decorator/RefineData';
 import BookRetriever from '../../models/server/prisma/BookRetrieve';
 import { getAverageRatings, getServerAverage, getTotalRatings } from '../../lib/helper/getRating';
+import retriever from '../../models/server/prisma/BookRetrieve';
 
 const HEIGHT = 225;
 
@@ -183,8 +184,7 @@ export const getServerSideProps: GetServerSideProps<RateServerTypes> = async (co
    const user = session?.user as CustomSession;
    const userId = user?.id || null;
 
-   const retrieve = new BookRetriever();
-   const data = await retrieve.getRatingByBook(bookId);
+   const data = await retriever.getRatingByBook(bookId);
    const refinedData = refiner.refineDates<RateServerTypes['placerData']>(data);
 
    return {

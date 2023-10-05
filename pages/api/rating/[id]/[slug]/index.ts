@@ -2,13 +2,13 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import BookRatings from '../../../../../models/server/prisma/Rating';
 import { errorLogger, internalServerErrorLogger } from '../../../../../models/server/winston';
 import BookRetriever from '../../../../../models/server/prisma/BookRetrieve';
+import retriever from '../../../../../models/server/prisma/BookRetrieve';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'GET') {
       const { bookId, userId } = req.query;
-      const retrieve = new BookRetriever();
       try {
-         const data = await retrieve.getRatingByBook(bookId as string);
+         const data = await retriever.getRatingByBook(bookId as string);
          const inLibrary = data.length > 0;
          return res.status(201).json({
             success: true,

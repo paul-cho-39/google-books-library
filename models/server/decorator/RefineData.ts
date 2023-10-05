@@ -6,6 +6,7 @@ type AllUserBooks = (UserBook & {
 })[];
 
 // keep it decouped in general to maintain cleaner code
+// refines data and acts more like a decorator;
 export class RefineData {
    constructor() {}
 
@@ -26,12 +27,13 @@ export class RefineData {
 
       return library;
    }
-   // TODO: change title (inaccurate title)
    refineDates<T>(data: T) {
       if (data instanceof Date) {
          return data.toISOString() as unknown as T;
       }
 
+      // add an array type if needed
+      // and can separate the logic into different functions depending on the data type?
       if (typeof data === 'object' && data !== null) {
          for (let key in data) {
             if (data.hasOwnProperty(key)) {
@@ -44,5 +46,6 @@ export class RefineData {
    }
 }
 
+//
 const refiner = new RefineData();
 export default refiner;

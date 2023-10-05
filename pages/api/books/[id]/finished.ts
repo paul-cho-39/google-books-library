@@ -1,18 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import BookRetriever from '../../../../models/server/prisma/BookRetrieve';
-import refiner from '../../../../models/server/format/RefineData';
 import { errorLogger, internalServerErrorLogger } from '../../../../models/server/winston';
 import BookCreator, { UserBookWithoutId } from '../../../../models/server/prisma/BookCreator';
 import BookStateHandler from '../../../../models/server/prisma/BookState';
 import BookDelete from '../../../../models/server/prisma/BookDelete';
 
+import refiner from '../../../../models/server/decorator/RefineData';
+import retriever from '../../../../models/server/prisma/BookRetrieve';
+
 // this means also updating finishedBooks DATES if date is NULL
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'GET') {
       const { id: userId } = req.query;
-      const getBooks = new BookRetriever();
       try {
-         const userBooks = await getBooks.getAllUserBooks(userId as string);
+         const userBooks = await retriever.getAllUserBooks(userId as string);
          const refinedBooks = refiner.refineBooks(userBooks);
          return res.status(200).json(refinedBooks);
       } catch (err) {

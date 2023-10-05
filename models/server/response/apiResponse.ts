@@ -22,7 +22,6 @@ export default class ApiResponseBase<T> {
    }
    setLogError(error: ResponseError, req: NextApiRequest) {
       error.code === 500 ? internalServerErrorLogger(req) : errorLogger(error, req);
-      this.error = error;
    }
    toJson() {
       const { data, meta, success, error } = this;
