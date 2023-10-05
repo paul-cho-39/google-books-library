@@ -32,7 +32,7 @@ export default class BookRetriever {
    }
    async getRatingByBook(bookId: string) {
       return await prisma.rating.findMany({
-         where: { bookId: { contains: bookId } },
+         where: { bookId: { equals: bookId } },
          select: {
             bookId: true,
             userId: true,

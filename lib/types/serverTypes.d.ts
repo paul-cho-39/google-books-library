@@ -18,8 +18,7 @@ export interface RatingData {
 }
 
 export type RateServerTypes = BasicServerProps & {
-   // inLibrary: boolean;
-   rateData?: RatingData[] | null;
+   placerData?: RatingData[] | null;
 };
 
 type CombinedData = {

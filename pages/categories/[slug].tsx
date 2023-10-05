@@ -5,7 +5,7 @@ import useGetCategoryQuery from '../../lib/hooks/useGetCategoryQuery';
 import useGetNytBestSeller from '../../lib/hooks/useGetNytBestSeller';
 import useHoverDisplayDescription from '../../lib/hooks/useHoverDisplay';
 
-import { CategoryQuery } from '../../lib/types/serverPropsTypes';
+import { CategoryQuery } from '../../lib/types/serverTypes';
 import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '../../lib/types/googleBookTypes';
 import { Categories, categories } from '../../constants/categories';
 import { CategoryQualifiers } from '../../models/_api/fetchNytUrl';
@@ -38,9 +38,9 @@ const BookImage = lazy(() => import('../../components/bookcover/bookImages'));
 const MAX_ITEMS = 15;
 
 export default function BookCategoryPages({
-       category,
-       data,
-    }: InferGetStaticPropsType<typeof getStaticProps>) {
+   category,
+   data,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
    const [currentPage, setCurrentPage] = useState(0);
 
    const router = useRouter();

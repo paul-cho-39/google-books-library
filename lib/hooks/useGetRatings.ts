@@ -1,6 +1,6 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import queryKeys from '../../utils/queryKeys';
-import { CategoriesQueries, RatingData, ResponseRatingData } from '../types/serverPropsTypes';
+import { CategoriesQueries, RatingData, ResponseRatingData } from '../types/serverTypes';
 import apiRequest from '../../utils/fetchData';
 import API_ROUTES from '../../utils/apiRoutes';
 import { Rating } from '@prisma/client';
@@ -44,7 +44,12 @@ interface SingleRatingParams {
 }
 
 export function useGetRating({ bookId, userId, initialData }: SingleRatingParams) {
-   return useQuery<ResponseRatingData | RatingData[] | null, unknown, RatingData[] | null>(
+   const queryClient = useQueryClient();
+   const { data, isSuccess, ...queryInfo } = useQuery<
+      ResponseRatingData | RatingData[] | null,
+      unknown,
+      RatingData[] | null
+   >(
       queryKeys.ratingsByBook(bookId),
       () =>
          apiRequest({
@@ -55,16 +60,33 @@ export function useGetRating({ bookId, userId, initialData }: SingleRatingParams
          enabled: !!bookId && !!userId,
          initialData: () => initialData,
          select: (data) => {
-            if (!initialData) {
+            if (!initialData || initialData.length <= 0) {
                const rateData = data as ResponseRatingData;
                return rateData.data;
             }
             return data as RatingData[] | null;
          },
+         onSuccess: (data) => {
+            const findBook = findId(data, userId);
+            if (findBook) {
+               queryClient.setQueryData<RatingData>(
+                  queryKeys.ratingsByBookAndUser(bookId, userId),
+                  findBook
+               );
+               return;
+            }
+            return;
+         },
       }
    );
-}
 
+   let userRatingData: RatingData | undefined;
+   if (data && isSuccess && data?.length > 0) {
+      userRatingData = findId(data, userId);
+   }
+
+   return { data, userRatingData, ...queryInfo };
+}
 // store bookIds into an array of string and store them into query cache
 function extractIdsToArray(data: CategoriesQueries, initialData?: CategoriesQueries): string[] {
    function storeIds(data: CategoriesQueries) {
@@ -76,4 +98,8 @@ function extractIdsToArray(data: CategoriesQueries, initialData?: CategoriesQuer
    const store = !initialData ? storeIds(data) : storeIds(initialData);
 
    return store;
+}
+
+function findId(data: RatingData[] | null | undefined, userId: string) {
+   return data?.find((_data) => _data.userId === userId);
 }

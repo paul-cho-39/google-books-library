@@ -10,18 +10,16 @@ import BookDescription from '../../components/bookcover/description';
 import BookPublisher from '../../components/bookcover/publisher';
 import BookDetails from '../../components/bookcover/bookDetails';
 import SignInRequiredButton from '../../components/Login/requireUser';
-import { CustomSession, RateServerTypes } from '../../lib/types/serverPropsTypes';
+import { CustomSession, RateServerTypes } from '../../lib/types/serverTypes';
 import { useRouter } from 'next/router';
 import useGetBookById from '../../lib/hooks/useGetBookById';
 import { CategoryRouteParams, RouteParams } from '../../lib/types/routes';
 import APIErrorBoundary from '../../components/error/errorBoundary';
 import DisplayRating, { ActiveRating } from '../../components/bookcover/ratings';
 import { useMutateCreateRatings, useMutateUpdateRatings } from '../../lib/hooks/useMutateRatings';
-import BookRatings from '../../models/server/prisma/Rating';
-import { errorLogger } from '../../models/server/winston';
 import { useGetRating } from '../../lib/hooks/useGetRatings';
 import { getBody, getBodyFromFilteredGoogleFields } from '../../lib/helper/books/getBookBody';
-import refiner, { RefineData } from '../../models/server/refine/RefineData';
+import refiner, { RefineData } from '../../models/server/format/RefineData';
 import BookRetriever from '../../models/server/prisma/BookRetrieve';
 import { getAverageRatings, getServerAverage, getTotalRatings } from '../../lib/helper/getRating';
 
@@ -34,47 +32,33 @@ const PopOverButtons = lazy(() => import('../../components/buttons/popoverButton
 // when refreshed the serversideProps will fetch the data
 // when navigating between pages and coming back useQuery to check
 export default function BookPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-   const { id, userId, rateData } = props;
+   const { id, userId, placerData } = props;
 
    const [selectedRating, setSelectedRating] = useState(0);
 
    const router = useRouter();
    const query = router.query as CategoryRouteParams | RouteParams;
 
-   const usersRateData = rateData?.find((data) => data.userId === userId);
-
-   console.log('-------DEBUGGING-------');
-   console.log('--------------------');
-   console.log('--------------------');
-   console.log('--------------------');
-   console.log('--------------------');
-   console.log('THE USER DATA IS: ', usersRateData);
-   console.log('just the rate data: ', rateData);
-
    const { data, isSuccess, isLoading } = useGetBookById({ routeParams: query });
 
-   // ratings
-   const { data: currentRatingData } = useGetRating({
+   // TEST whether multiple users updating will have the same effect for updating
+   const { data: currentRatingData, userRatingData } = useGetRating({
       bookId: id,
       userId: userId as string,
-      // initialData: rateData,
+      initialData: placerData,
    });
 
-   console.log('------- SECOND DEBUGGING -------');
-   console.log('--------------------');
-   console.log('--------------------');
-   console.log('--------------------');
-   console.log('--------------------');
-   console.log('THE currentRatingData DATA IS: ', currentRatingData);
-
-   const { mutate: mutateCreate, isSuccess: isCreatedSuccess } = useMutateCreateRatings({
+   const { mutate: mutateCreate } = useMutateCreateRatings({
       bookId: id,
-      userId: userId,
+      userId: userId as string,
    });
-   const { mutate: mutateUpdate } = useMutateUpdateRatings({ bookId: id, userId: userId });
+   const { mutate: mutateUpdate } = useMutateUpdateRatings({
+      bookId: id,
+      userId: userId as string,
+   });
 
    const handleMutation = (rating: number) => {
-      const notCreated = !currentRatingData;
+      const notCreated = !userRatingData;
       const bookData = getBodyFromFilteredGoogleFields(data);
       const body = { bookData, rating };
       notCreated ? mutateCreate(body) : mutateUpdate(rating);
@@ -88,6 +72,8 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    const serverAvg = getServerAverage(currentRatingData);
    const googleAvg = data?.volumeInfo?.averageRating || 0;
    const avgRating = getAverageRatings(serverAvg, serverTotal, googleAvg, googleTotal);
+
+   // PUBLISHED DATE (VIEW),
 
    if (isLoading) {
       return <div>Loading...</div>;
@@ -199,13 +185,13 @@ export const getServerSideProps: GetServerSideProps<RateServerTypes> = async (co
 
    const retrieve = new BookRetriever();
    const data = await retrieve.getRatingByBook(bookId);
-   const refinedData = refiner.refineDates<RateServerTypes['rateData']>(data);
+   const refinedData = refiner.refineDates<RateServerTypes['placerData']>(data);
 
    return {
       props: {
          userId: userId,
          id: bookId,
-         ratingData: refinedData,
+         placerData: refinedData,
       },
    };
 };

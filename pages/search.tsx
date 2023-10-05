@@ -7,7 +7,7 @@ import useInfiniteFetcher from '../lib/hooks/useInfiniteFetcher';
 import BookSearchSkeleton from '../components/loaders/bookcardsSkeleton';
 import { useRouter } from 'next/router';
 import { FilterProps, Items } from '../lib/types/googleBookTypes';
-import { CustomSession } from '../lib/types/serverPropsTypes';
+import { CustomSession } from '../lib/types/serverTypes';
 import EmptyResult from '../components/error/emptyResult';
 import { MetaProps } from '../models/_api/fetchGoogleUrl';
 import FilterInput from '../components/inputs/filter';

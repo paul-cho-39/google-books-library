@@ -1,4 +1,4 @@
-import { RatingData } from '../types/serverPropsTypes';
+import { RatingData } from '../types/serverTypes';
 
 export const getAverageRatings = (
    serverAverage: number = 0,
@@ -20,7 +20,11 @@ export const getTotalRatings = (serverTotal: number = 0, localTotal: number = 0)
 };
 
 export const getServerAverage = (ratingData: RatingData[] | null | undefined) => {
-   if (!ratingData) return 0;
+   if (!ratingData || ratingData.length <= 0) {
+      return 0;
+   }
+
+   console.log('rating data is: ', ratingData);
 
    const totalSum = ratingData
       .map((data) => data.ratingValue)
@@ -34,4 +38,13 @@ export const getServerAverage = (ratingData: RatingData[] | null | undefined) =>
 
 const toNearestTenth = (num: number) => {
    return Math.round(num * 10) / 10;
+};
+
+const checkData = <T>(data: T | null | undefined) => {
+   if (Array.isArray(data) && data) {
+      const check = data.length <= 0;
+      return check ? 0 : data;
+   }
+   // if null or undefined return 0
+   return 0;
 };

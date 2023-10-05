@@ -15,6 +15,8 @@ const queryKeys = {
    allGoogleCategories: ['google', 'categories'] as const,
    ratings: ['ratings', 'all'] as const,
    ratingsByBook: (bookId: string) => ['ratings', { id: bookId }] as const,
+   ratingsByBookAndUser: (bookId: string, userId: string) =>
+      [...queryKeys.ratingsByBook(bookId), { user: userId }] as const,
    categories: (category: string | string[], meta?: MetaProps) =>
       ['category', { type: category }, meta] as const,
    nytReview: (key: ReviewType, value: string) => [key, { value }] as const,

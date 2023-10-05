@@ -35,7 +35,7 @@ export class RefineData {
       if (typeof data === 'object' && data !== null) {
          for (let key in data) {
             if (data.hasOwnProperty(key)) {
-               (data as any)[key] = this.refineDates((data as any)[key]);
+               (data as T)[key] = this.refineDates((data as T)[key]);
             }
          }
       }

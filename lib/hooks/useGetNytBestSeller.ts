@@ -8,7 +8,7 @@ import nytApi, {
 import { fetcher, throttledFetcher } from '../../utils/fetchData';
 import queryKeys from '../../utils/queryKeys';
 import { BestSellerData, BookReview, Books, ReviewData } from '../types/nytBookTypes';
-import { CategoriesNytQueries, CategoriesQueries } from '../types/serverPropsTypes';
+import { CategoriesNytQueries, CategoriesQueries } from '../types/serverTypes';
 import { transformStrToArray } from '../helper/transformChar';
 import { handleNytId } from '../../utils/handleIds';
 

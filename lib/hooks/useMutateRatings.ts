@@ -3,10 +3,10 @@ import queryKeys from '../../utils/queryKeys';
 import apiRequest from '../../utils/fetchData';
 import API_ROUTES from '../../utils/apiRoutes';
 import { DataWithRatings } from '../types/models/books';
-import { RatingData } from '../types/serverPropsTypes';
+import { RatingData } from '../types/serverTypes';
 
 interface MutationBase {
-   userId: string | null;
+   userId: string;
    bookId: string;
 }
 
@@ -23,27 +23,30 @@ export function useMutateUpdateRatings({ bookId, userId }: MutationBase) {
          }),
       {
          onMutate: async (rating: number) => {
-            await queryClient.cancelQueries(queryKeys.ratingsByBook(bookId));
+            await queryClient.cancelQueries(queryKeys.ratingsByBookAndUser(bookId, userId));
             // from the same data that is being returned
             // set that data 'rating' for optimistic update
             const prevRatingData = queryClient.getQueryData<RatingData>(
-               queryKeys.ratingsByBook(bookId)
+               queryKeys.ratingsByBookAndUser(bookId, userId)
             );
             const optimisticData = setOptimisticData(prevRatingData, rating);
-            queryClient.setQueryData<RatingData>(queryKeys.ratingsByBook(bookId), optimisticData);
+            queryClient.setQueryData<RatingData>(
+               queryKeys.ratingsByBookAndUser(bookId, userId),
+               optimisticData
+            );
 
             return { prevRatingData };
          },
          onError: (_err, _variables, context) => {
             if (context?.prevRatingData) {
                queryClient.setQueryData<RatingData>(
-                  queryKeys.ratingsByBook(bookId),
+                  queryKeys.ratingsByBookAndUser(bookId, userId),
                   context?.prevRatingData
                );
             }
          },
          onSettled: () => {
-            queryClient.invalidateQueries(queryKeys.ratingsByBook(bookId));
+            queryClient.invalidateQueries(queryKeys.ratingsByBookAndUser(bookId, userId));
          },
       }
    );
@@ -63,19 +66,22 @@ export function useMutateCreateRatings({ userId, bookId }: MutationBase) {
          }),
       {
          onMutate: async (data: DataWithRatings) => {
-            await queryClient.cancelQueries(queryKeys.ratingsByBook(bookId));
+            await queryClient.cancelQueries(queryKeys.ratingsByBookAndUser(bookId, userId));
             const prevRatingData = queryClient.getQueryData<RatingData>(
-               queryKeys.ratingsByBook(bookId)
+               queryKeys.ratingsByBookAndUser(bookId, userId)
             );
             const optimisticData = setOptimisticData(prevRatingData, data.rating);
-            queryClient.setQueryData<RatingData>(queryKeys.ratingsByBook(bookId), optimisticData);
+            queryClient.setQueryData<RatingData>(
+               queryKeys.ratingsByBookAndUser(bookId, userId),
+               optimisticData
+            );
 
             return { prevRatingData };
          },
          onError: (_err, _variables, context) => {
             if (context?.prevRatingData) {
                queryClient.setQueryData<RatingData>(
-                  queryKeys.ratingsByBook(bookId),
+                  queryKeys.ratingsByBookAndUser(bookId, userId),
                   context?.prevRatingData
                );
             }

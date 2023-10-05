@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import BookRetriever from '../../../../models/server/prisma/BookRetrieve';
-import RefineData from '../../../../models/server/refine/RefineData';
+import refiner from '../../../../models/server/format/RefineData';
 import { errorLogger, internalServerErrorLogger } from '../../../../models/server/winston';
 import BookCreator, { UserBookWithoutId } from '../../../../models/server/prisma/BookCreator';
 import BookStateHandler from '../../../../models/server/prisma/BookState';
@@ -11,7 +11,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
    if (req.method === 'GET') {
       const { id: userId } = req.query;
       const getBooks = new BookRetriever();
-      const refiner = new RefineData();
       try {
          const userBooks = await getBooks.getAllUserBooks(userId as string);
          const refinedBooks = refiner.refineBooks(userBooks);
@@ -44,9 +43,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       const bookDelete = new BookDelete(userId, id);
       try {
          bookDelete.deleteBook();
-         return res
-            .status(200)
-            .json({ success: true, method: req.method, message: 'Successfully deleted' });
+         return res.status(200).json({ success: true, deletedId: id });
       } catch (err) {
          errorLogger(err, req);
          return res.status(404).end(err);

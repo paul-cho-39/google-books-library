@@ -17,7 +17,7 @@ import layoutManager from '../constants/layouts';
 import { batchFetchGoogleCategories } from '../models/cache/handleGoogleCache';
 import { getSession, useSession } from 'next-auth/react';
 import { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
-import { CategoriesQueries } from '../lib/types/serverPropsTypes';
+import { CategoriesQueries } from '../lib/types/serverTypes';
 import { encodeRoutes } from '../utils/routes';
 import { changeDirection } from '../lib/helper/getContainerPos';
 import useGetRatings from '../lib/hooks/useGetRatings';
