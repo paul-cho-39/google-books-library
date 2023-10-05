@@ -1,49 +1,48 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import BookRatings from '../../../../../models/server/prisma/Rating';
-import { errorLogger, internalServerErrorLogger } from '../../../../../models/server/winston';
-import BookRetriever from '../../../../../models/server/prisma/BookRetrieve';
-import retriever from '../../../../../models/server/prisma/BookRetrieve';
+import BookService from '../../../../../models/server/service/BookService';
+import createApiResponse from '../../../../../models/server/response/apiResponse';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
+   const { id: userId, slug: bookId } = req.query;
+   const service = new BookService(userId as string, bookId as string);
    if (req.method === 'GET') {
-      const { bookId, userId } = req.query;
       try {
-         const data = await retriever.getRatingByBook(bookId as string);
-         const inLibrary = data.length > 0;
-         return res.status(201).json({
-            success: true,
-            totalItems: data.length,
-            data: data,
-            inLibrary: inLibrary,
+         const ratingData = await service.getAllRatingOfSingleBook(bookId as string);
+         const response = createApiResponse<typeof ratingData>(ratingData, {
+            message: 'all ratings from single book',
          });
-      } catch (err) {
-         errorLogger(err, req);
-         return res.end(err);
+         res.status(201).json(response);
+      } catch (err: any) {
+         const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
+         return res.status(404).end(errorResponse);
       }
    }
    if (req.method === 'POST') {
-      const { id: userId, slug: bookId } = req.query;
       const {
          data: { bookData, rating },
       } = req.body;
-
-      // console.log('DEBUGGING*****');
-      // console.log('--------------------');
-      // console.log('--------------------');
-      // console.log('--------------------');
-      // console.log('THE DATA IS: ', bookData);
-      // console.log('THE RATING IS: ', rating);
-
-      const rater = new BookRatings(userId as string, bookId as string);
       try {
-         rater.upsertBookAndRating(bookData, rating as number);
-         res.status(201).json({ success: true });
-      } catch (err) {
-         errorLogger(err, req);
-         res.end(err);
+         service.handleCreateBookAndRating(bookData, rating as number);
+         const response = createApiResponse(null);
+         return res.status(201).json(response);
+      } catch (err: any) {
+         const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
+         return res.status(404).end(errorResponse);
+      }
+   }
+   if (req.method === 'DELETE') {
+      try {
+         service.deleteSingleRating();
+         const response = createApiResponse(null, {
+            message: 'Deleted rating',
+         });
+         return res.status(201).json(response);
+      } catch (err: any) {
+         const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
+         return res.status(404).end(errorResponse);
       }
    } else {
-      internalServerErrorLogger(req);
-      return res.status(500).json({ message: 'Internal server error' });
+      const errorResponse = createApiResponse(null, {}, { code: 500 });
+      return res.status(500).json(errorResponse);
    }
 }

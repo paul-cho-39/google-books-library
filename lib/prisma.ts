@@ -23,7 +23,7 @@ if (typeof window === 'undefined') {
    }
 }
 
-// middleware for logging whenever prisma query runs
+// middleware for logging inside /logs file whenever prisma query is executed
 prisma!.$use(async (params, next) => {
    const startTime = Date.now();
 

@@ -1,22 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import BookRatings from '../../../../../models/server/prisma/Rating';
-import { errorLogger, internalServerErrorLogger } from '../../../../../models/server/winston';
+import BookService from '../../../../../models/server/service/BookService';
+import createApiResponse from '../../../../../models/server/response/apiResponse';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
       const { id: userId, slug: bookId } = req.query;
       const { rating } = req.body;
-
-      const rater = new BookRatings(userId as string, bookId as string);
+      const service = new BookService(userId as string, bookId as string);
       try {
-         rater.updateRatings(rating as number);
-         res.status(201).json({ success: true });
-      } catch (err) {
-         errorLogger(err, req);
-         res.end(err);
+         service.handleUpdateRating(rating as number);
+         const response = createApiResponse(null);
+         res.status(201).json(response);
+      } catch (err: any) {
+         const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
+         return res.status(404).end(errorResponse);
       }
    } else {
-      internalServerErrorLogger(req);
-      return res.status(500).json({ message: 'Internal server error' });
+      const errorResponse = createApiResponse(null, {}, { code: 500 });
+      return res.status(500).json(errorResponse);
    }
 }
