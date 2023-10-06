@@ -32,10 +32,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
             throw new Error('Book does not exist for this user.');
          }
          const errorResponse = createApiResponse(null, {}, { code: 404, message: error.message });
-         res.status(404).json(errorResponse);
+         return res.status(404).json(errorResponse);
       }
-   } else {
-      const errorResponse = createApiResponse(null, {}, { code: 500 });
-      return res.status(500).json(errorResponse);
    }
+   const errorResponse = createApiResponse(null, {}, { code: 500 });
+   res.status(500).json(errorResponse);
 }

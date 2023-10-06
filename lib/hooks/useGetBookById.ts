@@ -26,9 +26,6 @@ export default function useGetBookById<
    const queryClient = useQueryClient();
    const initialData = queryClient.getQueryData<CacheData>(queryKeys.singleBook(id));
 
-   console.log('SHOULD BE NYT RIGHT?: ', !isGoogle);
-   console.log('THE INITIAL DATA INSIDER HERE IS: ', initialData);
-
    if (isGoogle && (!initialData || initialData === null)) {
       console.log('----------------------------');
       console.log('should not be running here');

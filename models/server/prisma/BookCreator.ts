@@ -132,11 +132,18 @@ export default class BookCreator extends Books {
       });
    }
    private toNumber(rating?: number | string) {
-      rating = Number(rating);
+      const numberToRating = Number(rating);
 
-      if (!rating || isNaN(rating)) {
+      console.log('----------------------------');
+      console.log('----------------------------');
+      console.log('----------------------------');
+      console.log('THE NUMBER TO RATING INSIDE THE SERVER IS: ', numberToRating);
+      console.log('----------------------------');
+      console.log('----------------------------');
+
+      if (!rating || isNaN(numberToRating)) {
          throw new Error('Required rating type is missing or have the wrong type');
       }
-      return rating;
+      return numberToRating;
    }
 }

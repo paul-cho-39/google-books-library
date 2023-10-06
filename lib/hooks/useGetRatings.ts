@@ -1,9 +1,14 @@
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import queryKeys from '../../utils/queryKeys';
-import { CategoriesQueries, RatingData, ResponseRatingData } from '../types/serverTypes';
+import {
+   CategoriesQueries,
+   MultipleRatingData,
+   SingleRatingData,
+   ResponseRatingData,
+   RatingInfo,
+} from '../types/serverTypes';
 import apiRequest from '../../utils/fetchData';
 import API_ROUTES from '../../utils/apiRoutes';
-import { Rating } from '@prisma/client';
 
 // returning batch rating of book from /categories and '/'
 export default function useGetRatings(data: CategoriesQueries, isSuccess: boolean) {
@@ -15,10 +20,6 @@ export default function useGetRatings(data: CategoriesQueries, isSuccess: boolea
    // debugging
    console.log('-------------------------');
    console.log('the INITIAL DATA IS : ', initialData);
-   console.log('-------------------------');
-   // debugging
-   console.log('-------------------------');
-   console.log('the book ids are : ', bookIds);
    console.log('-------------------------');
 
    // require dynamic?
@@ -40,36 +41,39 @@ export default function useGetRatings(data: CategoriesQueries, isSuccess: boolea
 interface SingleRatingParams {
    bookId: string;
    userId: string;
-   initialData?: RatingData[] | null;
+   initialData?: MultipleRatingData | null;
 }
 
 export function useGetRating({ bookId, userId, initialData }: SingleRatingParams) {
    const queryClient = useQueryClient();
+   const cache = queryClient.getQueryData<MultipleRatingData>(queryKeys.ratingsByBook(bookId));
+
    const { data, isSuccess, ...queryInfo } = useQuery<
-      ResponseRatingData | RatingData[] | null,
+      ResponseRatingData | MultipleRatingData | null,
       unknown,
-      RatingData[] | null
+      MultipleRatingData | null
    >(
       queryKeys.ratingsByBook(bookId),
       () =>
          apiRequest({
-            apiUrl: API_ROUTES.RATING.RATE_BOOK.CREATE(bookId, userId),
+            apiUrl: API_ROUTES.RATING.RATE_BOOK.CREATE(userId as string, bookId),
             method: 'GET',
          }),
       {
          enabled: !!bookId && !!userId,
-         initialData: () => initialData,
+         initialData: () => cache ?? initialData,
          select: (data) => {
-            if (!initialData || initialData.length <= 0) {
+            if ((data && 'success' in data) || !initialData) {
                const rateData = data as ResponseRatingData;
                return rateData.data;
             }
-            return data as RatingData[] | null;
+            return data as MultipleRatingData | null;
          },
          onSuccess: (data) => {
             const findBook = findId(data, userId);
             if (findBook) {
-               queryClient.setQueryData<RatingData>(
+               console.log('FOUND THE BOOK!');
+               queryClient.setQueryData<SingleRatingData>(
                   queryKeys.ratingsByBookAndUser(bookId, userId),
                   findBook
                );
@@ -80,12 +84,9 @@ export function useGetRating({ bookId, userId, initialData }: SingleRatingParams
       }
    );
 
-   let userRatingData: RatingData | undefined;
-   if (data && isSuccess && data?.length > 0) {
-      userRatingData = findId(data, userId);
-   }
+   // if ()
 
-   return { data, userRatingData, ...queryInfo };
+   return { data, ...queryInfo };
 }
 // store bookIds into an array of string and store them into query cache
 function extractIdsToArray(data: CategoriesQueries, initialData?: CategoriesQueries): string[] {
@@ -100,6 +101,18 @@ function extractIdsToArray(data: CategoriesQueries, initialData?: CategoriesQuer
    return store;
 }
 
-function findId(data: RatingData[] | null | undefined, userId: string) {
-   return data?.find((_data) => _data.userId === userId);
+export function findId(
+   data: MultipleRatingData | null | undefined,
+   userId: string
+): SingleRatingData | undefined {
+   if (!data || data?.ratingInfo?.length < 1) return;
+
+   const singleRateInfo = data?.ratingInfo?.find((_data) => _data?.userId === userId);
+
+   return {
+      avg: data.avg,
+      count: data.count,
+      inLibrary: data.inLibrary,
+      ratingInfo: singleRateInfo as RatingInfo,
+   };
 }

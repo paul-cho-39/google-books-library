@@ -4,35 +4,30 @@ import apiRequest from '../../utils/fetchData';
 import API_ROUTES from '../../utils/apiRoutes';
 import { DataWithRatings } from '../types/models/books';
 import { RatingInfo, SingleRatingData } from '../types/serverTypes';
+import { Method } from '../types/fetchbody';
 
+type MutationRatingActionType = 'create' | 'update' | 'remove';
 interface MutationBase {
    userId: string;
    bookId: string;
    initialData?: SingleRatingData;
 }
 
-interface InitializeDataParams extends MutationBase {
-   queryClient: QueryClient;
-}
-
-export function useMutateUpdateRatings(params: MutationBase) {
+export default function useMutateRatings(
+   params: MutationBase,
+   action: 'create' | 'update' | 'remove'
+) {
    const { bookId, userId } = params;
    const queryClient = useQueryClient();
 
+   const { apiUrl, method } = getApiUrl(action, userId, bookId);
    const currentRatingData = initializeData({ queryClient, ...params });
-
-   console.log('DEBUGGING');
-   console.log('------------------');
-   console.log('------------------');
-   console.log('------------------');
-   console.log('------------------');
-   console.log('the currentRatingData is: ', currentRatingData);
 
    const mutation = useMutation(
       (rating) =>
          apiRequest({
-            apiUrl: API_ROUTES.RATING.RATE_BOOK.UPDATE(userId as string, bookId),
-            method: 'POST',
+            apiUrl: apiUrl,
+            method: method,
             data: { rating: rating },
             shouldRoute: false,
          }),
@@ -66,65 +61,42 @@ export function useMutateUpdateRatings(params: MutationBase) {
          },
       }
    );
-
-   return { mutation, currentRatingData };
 }
 
-export function useMutateCreateRatings(params: MutationBase) {
-   const { bookId, userId } = params;
-   const queryClient = useQueryClient();
+function getApiUrl(action: MutationRatingActionType, userId: string, bookId: string) {
+   let apiUrl: string, method: Method;
+   switch (action) {
+      case 'create':
+         apiUrl = API_ROUTES.RATING.RATE_BOOK.CREATE(userId as string, bookId);
+         method = 'POST';
+         break;
+      case 'update':
+         apiUrl = API_ROUTES.RATING.RATE_BOOK.UPDATE(userId as string, bookId);
+         method = 'POST';
+         break;
+      case 'remove':
+         apiUrl = API_ROUTES.RATING.RATE_BOOK.CREATE(userId as string, bookId);
+         method = 'DELETE';
+         break;
+   }
 
-   const currentRatingData = initializeData({ queryClient, ...params });
-
-   return useMutation(
-      (data) =>
-         apiRequest({
-            apiUrl: API_ROUTES.RATING.RATE_BOOK.CREATE(userId as string, bookId),
-            method: 'POST',
-            data: { data: data },
-         }),
-      {
-         onMutate: async (data: DataWithRatings) => {
-            await queryClient.cancelQueries(queryKeys.ratingsByBookAndUser(bookId, userId));
-            const prevRatingData = queryClient.getQueryData<SingleRatingData>(
-               queryKeys.ratingsByBookAndUser(bookId, userId)
-            );
-            const optimisticData = setOptimisticData(prevRatingData, data.rating, 'create');
-            queryClient.setQueryData<SingleRatingData>(
-               queryKeys.ratingsByBookAndUser(bookId, userId),
-               optimisticData
-            );
-
-            return { prevRatingData };
-         },
-         onError: (_err, _variables, context) => {
-            if (context?.prevRatingData) {
-               queryClient.setQueryData<SingleRatingData>(
-                  queryKeys.ratingsByBookAndUser(bookId, userId),
-                  context?.prevRatingData
-               );
-            }
-         },
-         onSettled: () => {
-            queryClient.invalidateQueries(queryKeys.ratingsByBook(bookId));
-         },
-      }
-   );
+   return { apiUrl, method };
 }
 
-// if create then it should update the new total
-// if update then old value but average changes
-// if delete then delete the old value and total is subtracted
+interface InitializeDataParams extends MutationBase {
+   queryClient: QueryClient;
+}
+
 function setOptimisticData(
    initialData: SingleRatingData | undefined,
    rating: number,
-   type: 'create' | 'update' | 'delete'
+   action: MutationRatingActionType
 ): SingleRatingData | undefined {
    if (!initialData) {
       return;
    }
-   const newCount = initialData.count + (type === 'create' ? 1 : type === 'delete' ? -1 : 0);
-   const newAvg = calculateNewAverage(type, initialData.avg, initialData.count, rating);
+   const newCount = initialData.count + (action === 'create' ? 1 : action === 'remove' ? -1 : 0);
+   const newAvg = calculateNewAverage(action, initialData.avg, initialData.count, rating);
 
    return {
       ...initialData,
@@ -138,7 +110,7 @@ function setOptimisticData(
 }
 
 function calculateNewAverage(
-   type: 'create' | 'update' | 'delete',
+   type: MutationRatingActionType,
    oldAvg: number,
    oldCount: number,
    rating: number
@@ -148,7 +120,7 @@ function calculateNewAverage(
          return (oldAvg * oldCount + rating) / (oldCount + 1);
       case 'update':
          return (oldAvg * (oldCount - 1) + rating) / oldCount;
-      case 'delete':
+      case 'remove':
          return (oldAvg * oldCount - rating) / (oldCount - 1);
       default:
          return oldAvg;

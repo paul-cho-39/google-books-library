@@ -1,6 +1,5 @@
 import prisma from '../../../lib/prisma';
 import { Book, BookState } from '@prisma/client';
-import Books from './Books';
 
 export class BookRetriever {
    constructor() {}

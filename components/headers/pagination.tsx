@@ -5,7 +5,7 @@ export interface PaginationProps {
    currentPage: number;
    totalItems: number;
    itemsPerPage: number;
-   onPageChange: (currentPage: number) => void;
+   onPageChange: (currentPage: number, type?: 'next' | 'prev') => void;
 }
 
 const Pagination = ({ currentPage, totalItems, itemsPerPage, onPageChange }: PaginationProps) => {
@@ -88,7 +88,7 @@ const Pagination = ({ currentPage, totalItems, itemsPerPage, onPageChange }: Pag
                   'flex flex-row items-center mx-2 text-sm text-slate-900 dark:text-slate-100 font-medium hover:underline-offset-1 hover:underline hover:decoration-orange-400 dark:hover:decoration-orange-200'
                )}
                disabled={currentPage === totalPages}
-               onClick={() => onPageChange(currentPage + 1)}
+               onClick={() => onPageChange(currentPage + 15)}
             >
                <span className='mx-2'>Next</span>
                <ArrowLongRightIcon

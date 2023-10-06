@@ -40,14 +40,14 @@ export default class BookService {
    }
 
    setUserId(id: string) {
-      if (this.bookId) return;
-
-      this.bookId = id;
-   }
-   setBookId(id: string) {
       if (this.userId) return;
 
       this.userId = id;
+   }
+   setBookId(id: string) {
+      if (this.bookId) return;
+
+      this.bookId = id;
    }
    checkIdsAndInit() {
       if (!this.userId || !this.bookId) {
@@ -97,8 +97,13 @@ export default class BookService {
       const count = this.analyzer.getTotal(data);
       const avg = this.analyzer.getAverage(data);
 
+      // makes it easier for client side where an empty array is returned
+      if (!data || data.length < 1) {
+         return [];
+      }
+
       return {
-         ...data,
+         ratingInfo: data,
          count: count,
          avg: avg,
          inLibrary: count > 0,

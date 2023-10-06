@@ -27,7 +27,7 @@ Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
    defaultOptions: {
       queries: {
          // if in production mode may have to turn this on?
@@ -38,7 +38,7 @@ const queryClient = new QueryClient({
    },
 });
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }) {
    // adjusting proper time as it refreshes the refreshtoken
    // may be expired { PROVIDE URL HERE }
    const [interval, setInterval] = useState(0);

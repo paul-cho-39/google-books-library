@@ -54,14 +54,24 @@ export default function useGetCategoryQuery({
          select: (data) => data,
          initialData: cache ?? initialData,
          keepPreviousData: keepPreviousData,
+         cacheTime: Infinity,
       }
    );
+
+   console.log('THE DATA INSIDE THE CATEGORY QUERY IS: ', data.data);
 
    if (data.isError) {
       throw new Error(`${data.failureReason}`);
    }
 
    const cleanedData = createUniqueData(data?.data?.items);
+
+   console.log('DEBUGGING HERE!!');
+   console.log('-----------------------------------');
+   console.log('-----------------------------------');
+   console.log('-----------------------------------');
+   console.log('-----------------------------------');
+   console.log('CLEANED DATA IS: ', cleanedData);
 
    return {
       cleanedData,

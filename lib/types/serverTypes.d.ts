@@ -5,13 +5,13 @@ import { DefaultSession } from 'next-auth';
 import { MetaDataParams } from './response';
 import { Library } from './models/books';
 
-//
+// types for serverside props
 export type BasicServerProps = {
    userId: string | null;
    id: string;
 };
 
-export interface RatingData {
+export interface RatingInfo {
    userId: string;
    bookId: string;
    dateAdded: Date;
@@ -19,8 +19,24 @@ export interface RatingData {
    dateUpdated: Date;
 }
 
+export interface RatingData {
+   count: number;
+   avg: number;
+   inLibrary: boolean;
+}
+
+// contains multiple ratings
+export interface MultipleRatingData extends RatingData {
+   ratingInfo: RatingInfo[];
+}
+
+// contains single rating for the said user
+export interface SingleRatingData extends RatingData {
+   ratingInfo: RatingInfo | undefined | null;
+}
+
 export type RateServerTypes = BasicServerProps & {
-   placerData?: RatingData[] | null;
+   placerData?: MultipleRatingData | null;
 };
 
 type CombinedData = {
@@ -52,8 +68,7 @@ type ResponseBase = {
 };
 
 export type ResponseRatingData = ResponseBase & {
-   data: RatingData[] | null;
-   inLibrary: boolean;
+   data: MultipleRatingData | null;
 };
 
 export type ResponseFinishedData = ResponseBase & {

@@ -2,8 +2,8 @@ import { RatingData } from '../types/serverTypes';
 
 export const getAverageRatings = (
    serverAverage: number = 0,
-   serverTotal: number = 0,
    localAverage: number = 0,
+   serverTotal: number = 0,
    localTotal: number = 0
 ) => {
    const combinedTotal = localTotal + serverTotal;
@@ -11,8 +11,9 @@ export const getAverageRatings = (
 
    const combinedAverage = localTotal * localAverage + serverTotal * serverAverage;
 
-   //    return Math.round(combinedAverage * 10) / 10;
-   return toNearestTenth(combinedAverage);
+   const avg = combinedAverage / combinedTotal;
+
+   return toNearestTenth(avg);
 };
 
 export const getTotalRatings = (serverTotal: number = 0, localTotal: number = 0) => {
@@ -24,10 +25,8 @@ export const getServerAverage = (ratingData: RatingData[] | null | undefined) =>
       return 0;
    }
 
-   console.log('rating data is: ', ratingData);
-
    const totalSum = ratingData
-      .map((data) => data.ratingValue)
+      .map((data) => data.avg)
       .reduce((prev, acc) => {
          return prev + acc;
       }, 0);

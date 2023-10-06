@@ -7,7 +7,7 @@ export interface RatingProps extends StarRatingProps {
 }
 
 const DisplayRating = ({ averageRating = 0, totalReviews, size = 'small' }: RatingProps) => {
-   const reviews = totalReviews && totalReviews > 0 ? totalReviews + ' ' + 'ratings' : 'No rating';
+   const reviews = totalReviews && totalReviews > 0 ? totalReviews + ' ' + 'ratings' : ' No rating';
 
    return (
       <div className='flex flex-row items-center justify-start overflow-hidden'>
@@ -26,23 +26,27 @@ const DisplayRating = ({ averageRating = 0, totalReviews, size = 'small' }: Rati
 };
 
 interface ActiveRatingProps {
+   ratingTitle: string;
    onRatingSelected?: (rating: number) => void;
    size?: Size;
-   selectedRating: number;
-   setSelectedRating: Dispatch<SetStateAction<number>>;
+   selectedRating: number | null;
+   setSelectedRating: Dispatch<SetStateAction<number | null>>;
 }
 
 export const ActiveRating = ({
+   ratingTitle,
    onRatingSelected,
    selectedRating,
    setSelectedRating,
    size = 'small',
 }: ActiveRatingProps) => {
    const [hoveredStar, setHoveredStar] = useState<number | null>(null);
-   //    const [selectedRating, setSelectedRating] = useState<number>(0);
+   const adjustRating = (num: number) => {
+      return num + 1;
+   };
 
    const handleMouseEnter = (index: number) => {
-      setHoveredStar(index);
+      setHoveredStar(adjustRating(index));
    };
 
    const handleMouseLeave = () => {
@@ -51,26 +55,25 @@ export const ActiveRating = ({
 
    //   may have to change this logic here
    const handleClick = (rating: number) => {
-      setSelectedRating(rating);
+      const adjustedRating = adjustRating(rating);
+      setSelectedRating(adjustedRating);
       if (onRatingSelected) {
-         onRatingSelected(rating + 1);
+         onRatingSelected(adjustedRating);
       }
    };
 
    const getFillPercentage = (index: number) => {
       if (hoveredStar !== null) {
-         return index <= hoveredStar ? 100 : 0;
+         return adjustRating(index) <= hoveredStar ? 100 : 0;
       } else if (selectedRating !== null) {
-         return index <= selectedRating ? 100 : 0;
+         return adjustRating(index) <= selectedRating ? 100 : 0;
       }
       return 0;
    };
 
-   console.log('the current star rating is: ', selectedRating);
-
    return (
       <div className='flex flex-col'>
-         <div className='flex flex-row'>
+         <div className='flex flex-row cursor-pointer'>
             {Array.from({ length: 5 }).map((_, index) => (
                <div
                   key={index}
@@ -82,7 +85,7 @@ export const ActiveRating = ({
                </div>
             ))}
          </div>
-         <h3 className='text-center my-2 text-slate-800 dark:text-slate-200'>Rate this book</h3>
+         <h3 className='text-center my-2 text-slate-800 dark:text-slate-200'>{ratingTitle}</h3>
       </div>
    );
 };

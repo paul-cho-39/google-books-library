@@ -35,26 +35,41 @@ const CategoryDescription = lazy(
 );
 const BookImage = lazy(() => import('../../components/bookcover/bookImages'));
 
-const MAX_ITEMS = 15;
+const MAX_ITEMS = 20;
 
 export default function BookCategoryPages({
-   category,
-   data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-   const [currentPage, setCurrentPage] = useState(0);
+       category,
+       data,
+    }: InferGetStaticPropsType<typeof getStaticProps>) {
+   const [currentPage, setCurrentPage] = useState(1);
+   const [pageIndex, setPageIndex] = useState(0);
 
    const router = useRouter();
    // const { category } = router.query;
 
    const enableNytData = category === 'fiction' || category === 'nonfiction';
 
-   const handlePageChange = (newPage: number) => {
+   const handlePageChange = (newPage: number, type?: 'next' | 'prev') => {
       setCurrentPage(newPage);
+
+      switch (type) {
+         case 'next':
+            setPageIndex((prev) => prev + MAX_ITEMS);
+            break;
+         case 'prev':
+            if (pageIndex >= MAX_ITEMS) {
+               setPageIndex((prev) => prev - MAX_ITEMS);
+            }
+            break;
+         default:
+            setPageIndex(newPage * MAX_ITEMS);
+            break;
+      }
    };
 
    const meta = {
       maxResultNumber: MAX_ITEMS,
-      pageIndex: currentPage,
+      pageIndex: pageIndex,
       byNewest: true,
    };
 
@@ -133,12 +148,16 @@ export default function BookCategoryPages({
       return <div>...Loading</div>;
    }
 
+   if (googleData.isFetching) {
+      return <div>...isFetching</div>;
+   }
+
    return (
       <div className='min-h-screen w-full'>
          <APIErrorBoundary>
             {googleData.isSuccess && googleData && (
                <CategoryGridLarge
-                  currentPage={currentPage}
+                  currentPage={currentPage + 1}
                   itemsPerPage={MAX_ITEMS}
                   onPageChange={handlePageChange}
                   totalItems={googleData.data.totalItems}
@@ -279,6 +298,7 @@ export const getStaticProps: GetStaticProps<{
 
    // change this to categories when testing this out
    const googleData = await batchFetchGoogleCategories(sampleCat, {
+      // maxResultNumber: MAX_ITEMS,
       maxResultNumber: 15,
       pageIndex: 0,
       byNewest: true,

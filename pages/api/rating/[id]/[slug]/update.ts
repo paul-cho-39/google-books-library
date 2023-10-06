@@ -10,13 +10,13 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       try {
          service.handleUpdateRating(rating as number);
          const response = createApiResponse(null);
-         res.status(201).json(response);
+         return res.status(201).json(response);
       } catch (err: any) {
          const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
-         return res.status(404).end(errorResponse);
+         return res.status(404).json(errorResponse);
       }
    } else {
       const errorResponse = createApiResponse(null, {}, { code: 500 });
-      return res.status(500).json(errorResponse);
+      res.status(500).json(errorResponse);
    }
 }
