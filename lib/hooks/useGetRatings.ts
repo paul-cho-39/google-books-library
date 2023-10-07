@@ -105,7 +105,7 @@ export function findId(
    data: MultipleRatingData | null | undefined,
    userId: string
 ): SingleRatingData | undefined {
-   if (!data || data?.ratingInfo?.length < 1) return;
+   if (!data || (data.ratingInfo && data.ratingInfo.length < 1)) return;
 
    const singleRateInfo = data?.ratingInfo?.find((_data) => _data?.userId === userId);
 

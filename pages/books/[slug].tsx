@@ -57,6 +57,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
       userId: userId as string,
       initialData: userRatingData,
    });
+
    const {
       mutation: { mutate: mutateUpdate },
       currentRatingData: currentRating,
@@ -94,22 +95,8 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
 
       return [avgRating, totalRatings];
    }, [currentRating]);
-   // const googleTotal = data?.volumeInfo?.totalReviews || 0;
-   // const googleAvg = data?.volumeInfo?.averageRating || 0;
 
-   // const totalRatings = getTotalRatings(userRatingData?.count || 0, googleTotal);
-   // const avgRating = getAverageRatings(
-   //    userRatingData?.avg || 0,
-   //    googleAvg,
-   //    userRatingData?.count || 0,
-   //    googleTotal
-   // );
-
-   console.log('user rating average is: ', currentRating);
-   console.log('THE CURRENT RATING IS: ', avgRating);
-   console.log('THE TOTAL REVIEW IS: ', totalRatings);
-
-   const ratingTitle = !userRatingData ? 'Rate Book' : 'Rated';
+   const ratingTitle = !userRatingData ? 'Rate Book' : 'Rating Saved';
    // console.log('MUTATION DATA IS: ', currentRatingData);
    // console.log('userRating data is: ', userRatingData);
 

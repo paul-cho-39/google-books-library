@@ -44,6 +44,13 @@ export function useMutateUpdateRatings(params: MutationBase) {
             const prevRatingData = queryClient.getQueryData<SingleRatingData>(
                queryKeys.ratingsByBookAndUser(bookId, userId)
             );
+            console.log('the rating data is: ', prevRatingData);
+            console.log('the CURRENT RATING DATA is: ', currentRatingData);
+            console.log('-----------------------');
+            console.log('-----------------------');
+            console.log('-----------------------');
+            console.log('-----------------------');
+
             const optimisticData = setOptimisticData(prevRatingData, rating, 'update');
             queryClient.setQueryData<SingleRatingData>(
                queryKeys.ratingsByBookAndUser(bookId, userId),
@@ -60,7 +67,12 @@ export function useMutateUpdateRatings(params: MutationBase) {
                );
             }
          },
-         onSettled: () => {
+         onSettled: (data, error, variables, context) => {
+            console.log('WHAT THE FUCK IS THE VARIABLES?: ', variables);
+            console.log(
+               'THE CONTEXT IS THE PREVIOUS RATING VALUE? : ',
+               context?.prevRatingData?.ratingInfo?.ratingValue
+            );
             console.log('after settling: ', currentRatingData);
             queryClient.invalidateQueries(queryKeys.ratingsByBookAndUser(bookId, userId));
          },

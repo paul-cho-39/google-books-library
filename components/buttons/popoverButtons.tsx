@@ -5,7 +5,7 @@ import AddPrimary, { ButtonProps } from './currentReadingButton';
 import WantReadButton from './wantReadButton';
 import RemovePrimary from '../bookcards/removeCurrent';
 import DeleteButton from './deleteButton';
-import DeleteButtonWrapper from './deleteButtonWrapper';
+import DeleteButtonWrapper from './wrappers/deleteButtonWrapper';
 
 const allButtons = [
    {

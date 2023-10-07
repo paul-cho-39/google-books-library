@@ -5,7 +5,14 @@ import createApiResponse from '../../../../../models/server/response/apiResponse
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
       const { id: userId, slug: bookId } = req.query;
-      const { rating } = req.body;
+      const { rating } = req.body.data;
+
+      console.log('---------------------');
+      console.log('---------------------');
+      console.log('handling rating here and ensuring: ', rating);
+      console.log('---------------------');
+      console.log('---------------------');
+
       const service = new BookService(userId as string, bookId as string);
       try {
          service.handleUpdateRating(rating as number);

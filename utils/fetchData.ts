@@ -80,9 +80,6 @@ export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
 
 export const throttledFetcher = (input: RequestInfo, init?: RequestInit) => {
    const isNYT = input.toString().includes('api.nytimes.com');
-   // debugging
-   console.log('the url is: ', isNYT);
-
    const fetcherFunction = async () => fetcher(input, init);
 
    if (isNYT) {

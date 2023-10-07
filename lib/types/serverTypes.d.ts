@@ -27,7 +27,7 @@ export interface RatingData {
 
 // contains multiple ratings
 export interface MultipleRatingData extends RatingData {
-   ratingInfo: RatingInfo[];
+   ratingInfo: RatingInfo[] | undefined;
 }
 
 // contains single rating for the said user

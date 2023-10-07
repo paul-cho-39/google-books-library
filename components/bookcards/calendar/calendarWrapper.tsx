@@ -1,6 +1,6 @@
 import React from 'react';
 import { initialDateRecallerAtom } from '../../../lib/store/atomDates';
-import ButtonWrapper from '../../buttons/buttonWrapper';
+import ButtonWrapper from '../../buttons/wrappers/buttonWrapper';
 import { useInitialCalendar } from './calendar';
 import { CalendarAccordian } from './calendarAccordion';
 
