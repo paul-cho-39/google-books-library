@@ -1,6 +1,16 @@
 import { Book } from '@prisma/client';
 import { IndustryIdentifiers } from '../googleBookTypes';
 
+export type BaseNullIdParams = {
+   userId: string | null;
+   bookId: string;
+};
+
+export type BaseIdParams = {
+   userId: string;
+   bookId: string;
+};
+
 export interface DataWithRatings {
    bookData: Data;
    rating: number;

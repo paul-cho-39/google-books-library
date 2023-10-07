@@ -5,6 +5,7 @@ import { Suspense, useEffect, useRef } from 'react';
 import { ButtonSkeleton } from '../loaders/bookcardsSkeleton';
 import ROUTES from '../../utils/routes';
 
+// make this into an object where it can wrap the logic;
 interface SignInRequiredButtonProps {
    type: 'finished' | 'popover';
    signedInActiveButton: JSX.Element;
