@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -14,7 +15,16 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true
+    "incremental": true,
+    "paths": {
+        "@/lib/*": ["lib/*"],
+        "@/components/*": ["components/*"],
+        "@/utils/*": ["utils/*"],
+        "@/constants/*": ["constants/*"],
+        "@/models/*": ["models/*"],
+        "@/styles/*": ["styles/*"],
+        
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/third-party/google"],
   "exclude": ["node_modules"]

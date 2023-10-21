@@ -15,13 +15,14 @@ import { useRouter } from 'next/router';
 import useGetBookById from '../../lib/hooks/useGetBookById';
 import { CategoryRouteParams, RouteParams } from '../../lib/types/routes';
 import APIErrorBoundary from '../../components/error/errorBoundary';
-import DisplayRating, { ActiveRating } from '../../components/bookcover/ratings';
+import DisplayRating from '../../components/bookcover/ratings';
 import { useMutateCreateRatings, useMutateUpdateRatings } from '../../lib/hooks/useMutateRatings';
 import { findId, useGetRating } from '../../lib/hooks/useGetRatings';
 import { getBody, getBodyFromFilteredGoogleFields } from '../../lib/helper/books/getBookBody';
 import refiner, { RefineData } from '../../models/server/decorator/RefineData';
 import { getAverageRatings, getServerAverage, getTotalRatings } from '../../lib/helper/getRating';
 import BookService from '../../models/server/service/BookService';
+import { ActiveRating } from '../../components/rating/activeRating';
 
 const HEIGHT = 225;
 
