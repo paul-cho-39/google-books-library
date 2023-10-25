@@ -1,10 +1,10 @@
 import Image, { ImageProps } from 'next/image';
-import { ImageLinks, ImageLinksPairs } from '../../lib/types/googleBookTypes';
-import { getAvailableThumbnail } from '../../lib/helper/books/editBookPageHelper';
+import { ImageLinks, ImageLinksPairs } from '@/lib/types/googleBookTypes';
+import { getAvailableThumbnail } from '@/lib/helper/books/editBookPageHelper';
 import clsx from 'clsx';
 import Link from 'next/link';
-import ROUTES from '../../utils/routes';
-import { RouteParams } from '../../lib/types/routes';
+import ROUTES from '@/utils/routes';
+import { RouteParams } from '@/lib/types/routes';
 
 type OmittedImageProps = Omit<ImageProps, 'src' | 'width' | 'height' | 'priority'>;
 type GoogleImages = ImageLinksPairs | ImageLinks;

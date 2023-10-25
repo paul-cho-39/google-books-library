@@ -1,11 +1,11 @@
 import { NextApiResponse } from 'next';
-import { Categories, categories } from '../../constants/categories';
-import lruCache, { StatusLRUType } from '../../utils/LRUcache';
-import { fetcher, throttledFetcher } from '../../utils/fetchData';
-import { handleCacheKeys } from '../../utils/handleIds';
+import { Categories, categories } from '@/constants/categories';
+import lruCache, { StatusLRUType } from '@/utils/LRUcache';
+import { fetcher, throttledFetcher } from '@/utils/fetchData';
+import { handleCacheKeys } from '@/utils/handleIds';
 import googleApi, { MetaProps } from '../_api/fetchGoogleUrl';
 import assert from 'assert';
-import { CategoriesQueries, CategoryQuery } from '../../lib/types/serverTypes';
+import { CategoriesQueries, CategoryQuery } from '@/lib/types/serverTypes';
 
 export default async function handleGoogleCache(
    res: NextApiResponse,

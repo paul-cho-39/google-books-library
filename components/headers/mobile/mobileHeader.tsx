@@ -3,12 +3,12 @@ import { Close, MenuBars } from '../../icons/openCloseIcons';
 import IconLink from '../linksToIcon';
 import IsSession from '../../Login/isSession';
 import { ThemeToggler } from '../../buttons/themeToggler';
-import { NavigationProps } from '../../../lib/types/theme';
+import { NavigationProps } from '@/lib/types/theme';
 import { IconProps, Icons, Navigation } from '../../icons/headerIcons';
 import Link from 'next/link';
 import { ChevronUpIcon } from '@heroicons/react/20/solid';
 import SearchInput from '../../inputs/search';
-import ROUTES from '../../../utils/routes';
+import ROUTES from '@/utils/routes';
 
 export const MobileNavigation = ({
    user,

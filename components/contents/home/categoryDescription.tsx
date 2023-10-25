@@ -1,4 +1,4 @@
-import { RouteParams } from '../../../lib/types/routes';
+import { RouteParams } from '@/lib/types/routes';
 import SingleOrMultipleAuthors from '../../bookcover/authors';
 import BookDescription from '../../bookcover/description';
 import DisplayRating, { RatingProps } from '../../bookcover/ratings';

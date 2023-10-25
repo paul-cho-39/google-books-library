@@ -1,8 +1,8 @@
 import { signOut, useSession } from 'next-auth/react';
-import useDarkMode from '../../lib/hooks/useDarkMode';
+import useDarkMode from '@/lib/hooks/useDarkMode';
 import { useState } from 'react';
 import IconProviders from '../icons/headerIcons';
-import getUserId from '../../lib/helper/getUserId';
+import getUserId from '@/lib/helper/getUserId';
 import { LargeNavigation } from './largeNavbar';
 import { MobileNavigation } from './mobile/mobileHeader';
 import SideNavigation, { SideNavigationProps } from './sidebar';

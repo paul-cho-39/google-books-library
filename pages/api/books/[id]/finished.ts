@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import BookService from '../../../../models/server/service/BookService';
-import createApiResponse from '../../../../models/server/response/apiResponse';
+import BookService from '@/models/server/service/BookService';
+import createApiResponse from '@/models/server/response/apiResponse';
 
 // this means also updating finishedBooks DATES if date is NULL
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {

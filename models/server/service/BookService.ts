@@ -1,4 +1,4 @@
-import { Data } from '../../../lib/types/models/books';
+import { Data } from '@/lib/types/models/books';
 import { DataAnalyzer } from '../decorator/Analyzer';
 import { RefineData } from '../decorator/RefineData';
 import BookCreator, { UserBookWithoutId } from '../prisma/BookCreator';

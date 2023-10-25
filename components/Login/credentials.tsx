@@ -1,7 +1,7 @@
 // refactor by separating the logics of each components separately
 import React, { useEffect, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
-import { SignInForm, InputProps, SignInProps } from '../../lib/types/forms';
+import { SignInForm, InputProps, SignInProps } from '@/lib/types/forms';
 import classNames from 'classnames';
 
 export default function FormSignIn<TFieldValues extends FieldValues>({

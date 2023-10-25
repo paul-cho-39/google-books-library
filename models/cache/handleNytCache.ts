@@ -1,8 +1,8 @@
 import { NextApiResponse } from 'next';
-import { handleCacheKeys } from '../../utils/handleIds';
-import lruCache, { StatusLRUType } from '../../utils/LRUcache';
+import { handleCacheKeys } from '@/utils/handleIds';
+import lruCache, { StatusLRUType } from '@/utils/LRUcache';
 import nytApi from '../_api/fetchNytUrl';
-import { fetcher } from '../../utils/fetchData';
+import { fetcher } from '@/utils/fetchData';
 
 // have to use 503 to indicate when the api is hit too often for nyt;
 

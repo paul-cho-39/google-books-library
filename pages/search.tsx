@@ -1,22 +1,22 @@
 import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
 import { getSession } from 'next-auth/react';
 import { Suspense, lazy, useMemo, useRef, useState } from 'react';
-import createUniqueDataSets from '../lib/helper/books/filterUniqueData';
-import useInteractionObserver from '../lib/hooks/useIntersectionObserver';
-import useInfiniteFetcher from '../lib/hooks/useInfiniteFetcher';
-import BookSearchSkeleton from '../components/loaders/bookcardsSkeleton';
+import createUniqueDataSets from '@/lib/helper/books/filterUniqueData';
+import useInteractionObserver from '@/lib/hooks/useIntersectionObserver';
+import useInfiniteFetcher from '@/lib/hooks/useInfiniteFetcher';
+import BookSearchSkeleton from '@/components/loaders/bookcardsSkeleton';
 import { useRouter } from 'next/router';
-import { FilterProps, Items } from '../lib/types/googleBookTypes';
-import { CustomSession } from '../lib/types/serverTypes';
-import EmptyResult from '../components/error/emptyResult';
-import { MetaProps } from '../models/_api/fetchGoogleUrl';
-import FilterInput from '../components/inputs/filter';
-import { Divider } from '../components/layout/dividers';
-import SearchLayoutPage from '../components/layout/searchLayout';
-import Spinner from '../components/loaders/spinner';
-import APIErrorBoundary from '../components/error/errorBoundary';
+import { FilterProps, Items } from '@/lib/types/googleBookTypes';
+import { CustomSession } from '@/lib/types/serverTypes';
+import EmptyResult from '@/components/error/emptyResult';
+import { MetaProps } from '@/models/_api/fetchGoogleUrl';
+import FilterInput from '@/components/inputs/filter';
+import { Divider } from '@/components/layout/dividers';
+import SearchLayoutPage from '@/components/layout/searchLayout';
+import Spinner from '@/components/loaders/spinner';
+import APIErrorBoundary from '@/components/error/errorBoundary';
 
-const Cards = lazy(() => import('../components/bookcards/cards'));
+const Cards = lazy(() => import('@/components/bookcards/cards'));
 
 export default function Search(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const { userId } = props;

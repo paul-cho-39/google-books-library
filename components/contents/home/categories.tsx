@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { capitalizeWords, formatCategoryName } from '../../../lib/helper/transformChar';
+import { capitalizeWords, formatCategoryName } from '@/lib/helper/transformChar';
 import CategoryLayout, { CategoryLayoutProps } from '../../layout/page/categoryLayout';
-import { CategoryHeaderParams } from '../../../constants/categories';
+import { CategoryHeaderParams } from '@/constants/categories';
 import classNames from 'classnames';
-import ROUTES from '../../../utils/routes';
+import ROUTES from '@/utils/routes';
 
 export const CategoryDisplay = ({ category, children, forwardRef }: CategoryLayoutProps) => {
    return (

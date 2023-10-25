@@ -1,4 +1,4 @@
-import logger from '../../utils/winston';
+import logger from '@/utils/winston';
 import { NextApiResponse, NextApiRequest } from 'next';
 
 const requestLogger = (req: NextApiRequest, res: NextApiResponse) => {

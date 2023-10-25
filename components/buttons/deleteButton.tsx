@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useMemo, useState } from 'react';
-import queryKeys from '../../utils/queryKeys';
+import queryKeys from '@/utils/queryKeys';
 import { ButtonProps } from './currentReadingButton';
-import filterId from '../../lib/helper/books/filterId';
+import filterId from '@/lib/helper/books/filterId';
 import toast from 'react-hot-toast';
 import MyToaster from '../bookcards/toaster';
-import { bookApiUpdate } from '../../utils/fetchData';
-import { Library } from '../../lib/types/models/books';
+import { bookApiUpdate } from '@/utils/fetchData';
+import { Library } from '@/lib/types/models/books';
 
 const DeleteButton = ({ userId, book }: ButtonProps) => {
    const { id, volumeInfo: _ } = book;

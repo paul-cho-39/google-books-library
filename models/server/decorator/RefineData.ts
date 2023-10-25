@@ -1,5 +1,5 @@
 import { Book, UserBook } from '@prisma/client';
-import { RefinedBookState, Library } from '../../../lib/types/models/books';
+import { RefinedBookState, Library } from '@/lib/types/models/books';
 
 type AllUserBooks = (UserBook & {
    book: Book;

@@ -2,7 +2,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useState } from 'react';
-import ROUTES from '../../utils/routes';
+import ROUTES from '@/utils/routes';
 
 interface SearchInputInterface {
    // disabled: boolean;

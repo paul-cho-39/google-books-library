@@ -1,5 +1,5 @@
 import queryKeys from './queryKeys';
-import { MetaProps } from '../models/_api/fetchGoogleUrl';
+import { MetaProps } from '@/models/_api/fetchGoogleUrl';
 
 const ROUTES = {
    HOME: '/',

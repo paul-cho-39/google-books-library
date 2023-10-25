@@ -1,29 +1,29 @@
 import { GetServerSideProps, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
-import { CategoryDisplay } from '../components/contents/home/categories';
-import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '../lib/types/googleBookTypes';
+import { CategoryDisplay } from '@/components/contents/home/categories';
+import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '@/lib/types/googleBookTypes';
 import classNames from 'classnames';
 
-import { useDisableBreakPoints } from '../lib/hooks/useDisableBreakPoints';
-import useHoverDisplayDescription from '../lib/hooks/useHoverDisplay';
-import { useGetCategoriesQueries } from '../lib/hooks/useGetCategoryQuery';
+import { useDisableBreakPoints } from '@/lib/hooks/useDisableBreakPoints';
+import useHoverDisplayDescription from '@/lib/hooks/useHoverDisplay';
+import { useGetCategoriesQueries } from '@/lib/hooks/useGetCategoryQuery';
 
-import { Categories, serverSideCategories, topCategories } from '../constants/categories';
-import { getBookWidth, getContainerWidth } from '../lib/helper/books/getBookWidth';
+import { Categories, serverSideCategories, topCategories } from '@/constants/categories';
+import { getBookWidth, getContainerWidth } from '@/lib/helper/books/getBookWidth';
 
-import { BookImageSkeleton, DescriptionSkeleton } from '../components/loaders/bookcardsSkeleton';
-import { DividerButtons } from '../components/layout/dividers';
-import layoutManager from '../constants/layouts';
-import { batchFetchGoogleCategories } from '../models/cache/handleGoogleCache';
+import { BookImageSkeleton, DescriptionSkeleton } from '@/components/loaders/bookcardsSkeleton';
+import { DividerButtons } from '@/components/layout/dividers';
+import layoutManager from '@/constants/layouts';
+import { batchFetchGoogleCategories } from '@/models/cache/handleGoogleCache';
 import { getSession, useSession } from 'next-auth/react';
-import { useGetNytBestSellers } from '../lib/hooks/useGetNytBestSeller';
-import { CategoriesQueries } from '../lib/types/serverTypes';
-import { encodeRoutes } from '../utils/routes';
-import { changeDirection } from '../lib/helper/getContainerPos';
-import useGetRatings from '../lib/hooks/useGetRatings';
+import { useGetNytBestSellers } from '@/lib/hooks/useGetNytBestSeller';
+import { CategoriesQueries } from '@/lib/types/serverTypes';
+import { encodeRoutes } from '@/utils/routes';
+import { changeDirection } from '@/lib/helper/getContainerPos';
+import useGetRatings from '@/lib/hooks/useGetRatings';
 
-const CategoryDescription = lazy(() => import('../components/contents/home/categoryDescription'));
-const BookImage = lazy(() => import('../components/bookcover/bookImages'));
+const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
+const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
 
 const MAX_RESULT = 6;
 

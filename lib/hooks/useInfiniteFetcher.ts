@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
-import queryKeys from '../../utils/queryKeys';
-import { throttledFetcher } from '../../utils/fetchData';
+import googleApi, { MetaProps } from '@/models/_api/fetchGoogleUrl';
+import queryKeys from '@/utils/queryKeys';
+import { throttledFetcher } from '@/utils/fetchData';
 import { FilterProps } from '../types/googleBookTypes';
 
 interface FetcherProps {

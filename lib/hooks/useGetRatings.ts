@@ -1,5 +1,5 @@
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import queryKeys from '../../utils/queryKeys';
+import queryKeys from '@/utils/queryKeys';
 import {
    CategoriesQueries,
    MultipleRatingData,
@@ -7,8 +7,8 @@ import {
    ResponseRatingData,
    RatingInfo,
 } from '../types/serverTypes';
-import apiRequest from '../../utils/fetchData';
-import API_ROUTES from '../../utils/apiRoutes';
+import apiRequest from '@/utils/fetchData';
+import API_ROUTES from '@/utils/apiRoutes';
 
 // returning batch rating of book from /categories and '/'
 export default function useGetRatings(data: CategoriesQueries, isSuccess: boolean) {

@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import googleApi, { MetaProps } from '../../../../../models/_api/fetchGoogleUrl';
-import { handleCacheKeys } from '../../../../../utils/handleIds';
-import lruCache, { StatusLRUType } from '../../../../../utils/LRUcache';
-import { throttledFetcher } from '../../../../../utils/fetchData';
-import { Categories, categories } from '../../../../../constants/categories';
+import googleApi, { MetaProps } from '@/models/_api/fetchGoogleUrl';
+import { handleCacheKeys } from '@/utils/handleIds';
+import lruCache, { StatusLRUType } from '@/utils/LRUcache';
+import { throttledFetcher } from '@/utils/fetchData';
+import { Categories, categories } from '@/constants/categories';
 import { ComputerDesktopIcon } from '@heroicons/react/20/solid';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {

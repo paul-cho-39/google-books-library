@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import queryKeys from '../../utils/queryKeys';
-import { isBookInData } from '../../lib/helper/books/isBooksInLibrary';
+import queryKeys from '@/utils/queryKeys';
+import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import Button from './basicButton';
 import { ButtonProps } from './currentReadingButton';
 import toast from 'react-hot-toast';
 import MyToaster from '../bookcards/toaster';
-import { getBody } from '../../lib/helper/books/getBookBody';
-import { bookApiUpdate } from '../../utils/fetchData';
-import { Library } from '../../lib/types/models/books';
+import { getBody } from '@/lib/helper/books/getBookBody';
+import { bookApiUpdate } from '@/utils/fetchData';
+import { Library } from '@/lib/types/models/books';
 
 const WantToReadButton = ({ book, userId }: ButtonProps) => {
    const body = getBody(userId, book);

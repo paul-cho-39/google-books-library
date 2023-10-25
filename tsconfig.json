@@ -23,7 +23,6 @@
         "@/constants/*": ["constants/*"],
         "@/models/*": ["models/*"],
         "@/styles/*": ["styles/*"],
-        
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/third-party/google"],

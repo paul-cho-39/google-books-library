@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { ChevronDownIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { Suspense, useEffect, useRef } from 'react';
 import { ButtonSkeleton } from '../loaders/bookcardsSkeleton';
-import ROUTES from '../../utils/routes';
+import ROUTES from '@/utils/routes';
 
 // make this into an object where it can wrap the logic;
 interface SignInRequiredButtonProps {

@@ -4,12 +4,12 @@ import {
    TopCateogry,
    serverSideCategories,
    topCategories,
-} from '../../constants/categories';
-import queryKeys from '../../utils/queryKeys';
-import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
+} from '@/constants/categories';
+import queryKeys from '@/utils/queryKeys';
+import googleApi, { MetaProps } from '@/models/_api/fetchGoogleUrl';
 import { Pages, Items, GoogleUpdatedFields } from '../types/googleBookTypes';
 import { createUniqueData } from '../helper/books/filterUniqueData';
-import { fetcher, throttledFetcher } from '../../utils/fetchData';
+import { fetcher, throttledFetcher } from '@/utils/fetchData';
 import { CategoriesQueries, CategoryQuery } from '../types/serverTypes';
 
 interface CategoryQueryParams<TData extends CategoriesQueries | GoogleUpdatedFields> {

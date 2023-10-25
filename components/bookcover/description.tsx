@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { removeHtmlTags, sliceDescription } from '../../lib/helper/books/editBookPageHelper';
+import { removeHtmlTags, sliceDescription } from '@/lib/helper/books/editBookPageHelper';
 import { ArrowDownIcon, ArrowUpIcon, ArrowRightIcon } from '@heroicons/react/20/solid';
 import Link, { LinkProps } from 'next/link';
 import classNames from 'classnames';
@@ -44,6 +44,7 @@ const BookDescription = ({
    const SeeMoreElement = isLink ? (
       <Link {...props}>
          <a
+            data-testid='visible-link'
             aria-label='See more about this book'
             className='flex items-center justify-end px-2 hover:translate-x-1 hover:text-slate-300 transition-all duration-200'
          >
@@ -99,7 +100,7 @@ const BookDescription = ({
                   : 'flex font-semibold hover:cursor-pointer hover:opacity-50 dark:text-slate-200'
             } py-2`}
          >
-            <span>See Less</span> <ArrowUpIcon height='25' width='20' />
+            <span>See Less</span> <ArrowUpIcon aria-hidden height='25' width='20' />
          </button>
       </>
    );

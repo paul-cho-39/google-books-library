@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { ButtonProps } from './currentReadingButton';
-import queryKeys from '../../utils/queryKeys';
-import { initialNullDateAtom, getYear, getMonth, getDay } from '../../lib/store/atomDates';
+import queryKeys from '@/utils/queryKeys';
+import { initialNullDateAtom, getYear, getMonth, getDay } from '@/lib/store/atomDates';
 import { useAtomValue } from 'jotai';
 import CalendarModal from '../modal/calendarModal';
 import toast, { Toaster } from 'react-hot-toast';
 import MyToaster from '../bookcards/toaster';
-import { getBody } from '../../lib/helper/books/getBookBody';
-import { bookApiUpdate } from '../../utils/fetchData';
-import { Library } from '../../lib/types/models/books';
+import { getBody } from '@/lib/helper/books/getBookBody';
+import { bookApiUpdate } from '@/utils/fetchData';
+import { Library } from '@/lib/types/models/books';
 
 const SaveAsFinishedButton = ({ book, userId }: ButtonProps) => {
    const body = getBody(userId, book);

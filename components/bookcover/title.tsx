@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { LineClamp } from './description';
 import classNames from 'classnames';
-import ROUTES from '../../utils/routes';
-import { RouteParams } from '../../lib/types/routes';
+import ROUTES from '@/utils/routes';
+import { RouteParams } from '@/lib/types/routes';
 
 interface BookTitleProps {
    id: string;
@@ -23,23 +23,23 @@ const BookTitle = ({
    routeQuery,
    className,
 }: BookTitleProps) => {
+   const textContent = subtitle ? `${title}: ${subtitle}` : title;
+
    const content = (
-      <a className={`${lineClamp} text-ellipsis`}>
-         <span className='sr-only'>
-            {title}: {subtitle}
-         </span>
-         {subtitle ? title + ': ' + subtitle : title}
-      </a>
+      <span className={`${lineClamp} text-ellipsis`}>
+         <span className='sr-only'>{textContent}</span>
+         <span data-testid='visible-title'>{textContent}</span>
+      </span>
    );
+
    return (
       <h3 className={classNames('font-medium py-1 text-slate-800 dark:text-slate-100', className)}>
          {hasLink ? (
             <Link
                as={ROUTES.BOOKS.GOOGLE(id)}
                href={{ pathname: '/books/[slug]/', query: routeQuery }}
-               passHref
             >
-               {content}
+               <a role='link'>{content}</a>
             </Link>
          ) : (
             content

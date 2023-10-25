@@ -1,13 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
-import FormSignIn, { Inputs } from '../../../../components/Login/credentials';
-import { SignInForm } from '../../../../lib/types/forms';
-import { validatePassword } from '../../../../lib/resolvers/validation';
+import FormSignIn, { Inputs } from '@/components/Login/credentials';
+import { SignInForm } from '@/lib/types/forms';
+import { validatePassword } from '@/lib/resolvers/validation';
 import { toast, Toaster } from 'react-hot-toast';
-import API_ROUTES from '../../../../utils/apiRoutes';
-import apiRequest from '../../../../utils/fetchData';
-import ROUTES from '../../../../utils/routes';
+import API_ROUTES from '@/utils/apiRoutes';
+import apiRequest from '@/utils/fetchData';
+import ROUTES from '@/utils/routes';
 
 export default function ChangePassowrd(props) {
    const [isVerified, setIsVerified] = useState(true);

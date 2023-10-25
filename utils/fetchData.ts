@@ -1,10 +1,10 @@
 import router from 'next/router';
 import { IncomingMessage } from 'http';
-import { GOOGLE_THROTTLE_TIME, NYT_THROTTLE_TIME } from '../constants/throttle';
-import { GoogleUpdatedFields, Items } from '../lib/types/googleBookTypes';
-import { BestSellerData, ReviewData } from '../lib/types/nytBookTypes';
-import { ReturnedCacheData } from '../lib/types/serverTypes';
-import { ApiRequestOptions, Method, UrlProps } from '../lib/types/fetchbody';
+import { GOOGLE_THROTTLE_TIME, NYT_THROTTLE_TIME } from '@/constants/throttle';
+import { GoogleUpdatedFields, Items } from '@/lib/types/googleBookTypes';
+import { BestSellerData, ReviewData } from '@/lib/types/nytBookTypes';
+import { ReturnedCacheData } from '@/lib/types/serverTypes';
+import { ApiRequestOptions, Method, UrlProps } from '@/lib/types/fetchbody';
 import API_ROUTES from './apiRoutes';
 
 import { throttle } from 'lodash';

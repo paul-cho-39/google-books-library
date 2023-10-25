@@ -1,46 +1,40 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 
-import useGetCategoryQuery from '../../lib/hooks/useGetCategoryQuery';
-import useGetNytBestSeller from '../../lib/hooks/useGetNytBestSeller';
-import useHoverDisplayDescription from '../../lib/hooks/useHoverDisplay';
+import useGetCategoryQuery from '@/lib/hooks/useGetCategoryQuery';
+import useGetNytBestSeller from '@/lib/hooks/useGetNytBestSeller';
+import useHoverDisplayDescription from '@/lib/hooks/useHoverDisplay';
 
-import { CategoryQuery } from '../../lib/types/serverTypes';
-import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '../../lib/types/googleBookTypes';
-import { Categories, categories } from '../../constants/categories';
-import { CategoryQualifiers } from '../../models/_api/fetchNytUrl';
-import { capitalizeWords } from '../../lib/helper/transformChar';
-import {
-   CategoryGridLarge,
-   CategoryGridSmall,
-} from '../../components/contents/category/categoryGrids';
-import { BookImageSkeleton, DescriptionSkeleton } from '../../components/loaders/bookcardsSkeleton';
-import { getBookWidth, getContainerWidth } from '../../lib/helper/books/getBookWidth';
+import { CategoryQuery } from '@/lib/types/serverTypes';
+import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '@/lib/types/googleBookTypes';
+import { Categories, categories } from '@/constants/categories';
+import { CategoryQualifiers } from '@/models/_api/fetchNytUrl';
+import { capitalizeWords } from '@/lib/helper/transformChar';
+import { CategoryGridLarge, CategoryGridSmall } from '@/components/contents/category/categoryGrids';
+import { BookImageSkeleton, DescriptionSkeleton } from '@/components/loaders/bookcardsSkeleton';
+import { getBookWidth, getContainerWidth } from '@/lib/helper/books/getBookWidth';
 import classNames from 'classnames';
-import { useDisableBreakPoints } from '../../lib/hooks/useDisableBreakPoints';
-import { handleNytId } from '../../utils/handleIds';
-import { Divider } from '../../components/layout/dividers';
-import BookTitle from '../../components/bookcover/title';
-import SingleOrMultipleAuthors from '../../components/bookcover/authors';
-import layoutManager from '../../constants/layouts';
-import { batchFetchGoogleCategories } from '../../models/cache/handleGoogleCache';
+import { useDisableBreakPoints } from '@/lib/hooks/useDisableBreakPoints';
+import { handleNytId } from '@/utils/handleIds';
+import { Divider } from '@/components/layout/dividers';
+import BookTitle from '@/components/bookcover/title';
+import SingleOrMultipleAuthors from '@/components/bookcover/authors';
+import layoutManager from '@/constants/layouts';
+import { batchFetchGoogleCategories } from '@/models/cache/handleGoogleCache';
 import { useRouter } from 'next/router';
-import BookLoader from '../../components/loaders/bookFlipper';
-import { encodeRoutes } from '../../utils/routes';
-import { changeDirection } from '../../lib/helper/getContainerPos';
-import APIErrorBoundary from '../../components/error/errorBoundary';
+import { encodeRoutes } from '@/utils/routes';
+import { changeDirection } from '@/lib/helper/getContainerPos';
+import APIErrorBoundary from '@/components/error/errorBoundary';
 
-const CategoryDescription = lazy(
-   () => import('../../components/contents/home/categoryDescription')
-);
-const BookImage = lazy(() => import('../../components/bookcover/bookImages'));
+const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
+const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
 
 const MAX_ITEMS = 20;
 
 export default function BookCategoryPages({
-       category,
-       data,
-    }: InferGetStaticPropsType<typeof getStaticProps>) {
+   category,
+   data,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
    const [currentPage, setCurrentPage] = useState(1);
    const [pageIndex, setPageIndex] = useState(0);
 
@@ -144,6 +138,7 @@ export default function BookCategoryPages({
 
    const HEIGHT = layoutManager.constants.imageHeight;
 
+   // TODO: create a component for these fallbacks
    if (router.isFallback) {
       return <div>...Loading</div>;
    }

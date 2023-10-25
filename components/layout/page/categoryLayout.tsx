@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { ReactNode } from 'react';
-import { CategoryHeaderParams } from '../../../constants/categories';
+import { CategoryHeaderParams } from '@/constants/categories';
 
 export interface CategoryLayoutProps {
    category: CategoryHeaderParams;

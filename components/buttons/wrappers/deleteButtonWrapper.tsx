@@ -1,10 +1,10 @@
 import { TrashIcon } from '@heroicons/react/20/solid';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import queryKeys from '../../../utils/queryKeys';
+import queryKeys from '@/utils/queryKeys';
 import React from 'react';
-import { isBookInData } from '../../../lib/helper/books/isBooksInLibrary';
-import { Library } from '../../../lib/types/models/books';
+import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
+import { Library } from '@/lib/types/models/books';
 
 interface WrapperProps {
    id: string;

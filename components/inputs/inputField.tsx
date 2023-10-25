@@ -1,5 +1,5 @@
 import { FieldError, UseFormRegister } from 'react-hook-form';
-import { FormInput } from '../../lib/types/forms';
+import { FormInput } from '@/lib/types/forms';
 
 interface InputFieldProps {
    register: UseFormRegister<FormInput>;

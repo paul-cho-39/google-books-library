@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { FilterProps } from '../../lib/types/googleBookTypes';
+import { FilterProps } from '@/lib/types/googleBookTypes';
 import classNames from 'classnames';
 import { FunnelIcon } from '@heroicons/react/20/solid';
-import { FilterParams } from '../../models/_api/fetchGoogleUrl';
+import { FilterParams } from '@/models/_api/fetchGoogleUrl';
 
 interface FilterComponentProps {
    filter: FilterProps;

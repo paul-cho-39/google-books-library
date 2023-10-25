@@ -4,7 +4,7 @@ import GoogleDark from './google-dark.svg';
 import Facebook from './facebook.svg';
 import FacebookDark from './facebook-dark.svg';
 import Image from 'next/image';
-import { StyleLogo, Providers } from '../../lib/types/providers';
+import { StyleLogo, Providers } from '@/lib/types/providers';
 
 // if more providers to be added just add it on nextauth api and page/auth/signin.tsx and on here
 const styleProvider: { [key: string]: StyleLogo } = {

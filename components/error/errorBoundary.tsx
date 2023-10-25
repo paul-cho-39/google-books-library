@@ -1,7 +1,7 @@
 import { ErrorBoundary } from 'react-error-boundary';
 import SearchLayoutPage from '../layout/searchLayout';
 import Link from 'next/link';
-import ROUTES from '../../utils/routes';
+import ROUTES from '@/utils/routes';
 
 const ErrorFallback = ({ error }: { error: Error }) => {
    return (

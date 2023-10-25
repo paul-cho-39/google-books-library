@@ -1,15 +1,15 @@
 import Link from 'next/link';
 import React, { lazy, Suspense } from 'react';
-import { Items } from '../../lib/types/googleBookTypes';
+import { Items } from '@/lib/types/googleBookTypes';
 import SingleOrMultipleAuthors from '../bookcover/authors';
 import FilterStatus from './filterStatus';
-import useGetBookData from '../../lib/hooks/useGetBookData';
-import { getBookWidth } from '../../lib/helper/books/getBookWidth';
+import useGetBookData from '@/lib/hooks/useGetBookData';
+import { getBookWidth } from '@/lib/helper/books/getBookWidth';
 import BookImage from '../bookcover/bookImages';
 import SignInRequiredButton from '../Login/requireUser';
 import BookTitle from '../bookcover/title';
 import { Divider } from '../layout/dividers';
-import { encodeRoutes } from '../../utils/routes';
+import { encodeRoutes } from '@/utils/routes';
 
 const HEIGHT = 125;
 

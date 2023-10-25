@@ -1,4 +1,4 @@
-import { formatDate } from '../../lib/helper/books/formatBookDate';
+import { formatDate } from '@/lib/helper/books/formatBookDate';
 
 const BookPublisher = ({ date, className }: { date: string | undefined; className?: string }) => {
    if (!date) return <></>;

@@ -1,11 +1,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CategoryRouteParams, RouteNames, RouteParams } from '../types/routes';
-import queryKeys from '../../utils/queryKeys';
-import googleApi, { MetaProps } from '../../models/_api/fetchGoogleUrl';
-import { APISource, getBookIdAndSource } from '../../utils/handleIds';
+import queryKeys from '@/utils/queryKeys';
+import googleApi, { MetaProps } from '@/models/_api/fetchGoogleUrl';
+import { APISource, getBookIdAndSource } from '@/utils/handleIds';
 import { Data, GoogleUpdatedFields, Items } from '../types/googleBookTypes';
-import { throttledFetcher } from '../../utils/fetchData';
-import { decodeRoutes } from '../../utils/routes';
+import { throttledFetcher } from '@/utils/fetchData';
+import { decodeRoutes } from '@/utils/routes';
 
 export interface SingleBookQueryParams<TRoute extends CategoryRouteParams | RouteParams> {
    routeParams: TRoute;
@@ -23,9 +23,11 @@ export default function useGetBookById<
    const { id, source } = getBookIdAndSource(routeParams.slug as string);
    const isGoogle = isSource(source, 'google');
 
+   // it first looks for singeBook cache which is the most relevant cache
    const queryClient = useQueryClient();
    const initialData = queryClient.getQueryData<CacheData>(queryKeys.singleBook(id));
 
+   // if data is not in the first cache proceed to look inside the second cache
    if (isGoogle && (!initialData || initialData === null)) {
       console.log('----------------------------');
       console.log('should not be running here');

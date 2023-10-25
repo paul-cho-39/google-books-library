@@ -1,5 +1,5 @@
 import { Session } from 'next-auth';
-import { IconProps } from '../../components/icons/headerIcons';
+import { IconProps } from '@/components/icons/headerIcons';
 
 export type ColorTheme = 'light' | 'dark';
 

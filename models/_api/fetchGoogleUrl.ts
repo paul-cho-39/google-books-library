@@ -1,4 +1,4 @@
-import { Categories } from '../../constants/categories';
+import { Categories } from '@/constants/categories';
 
 interface QueryQualifiers {
    inauthor?: string;

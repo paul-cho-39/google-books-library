@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import queryKeys from '../../utils/queryKeys';
+import queryKeys from '@/utils/queryKeys';
 import { ButtonProps } from '../buttons/currentReadingButton';
-import filterId from '../../lib/helper/books/filterId';
+import filterId from '@/lib/helper/books/filterId';
 import { useMemo } from 'react';
-import { isBookInData } from '../../lib/helper/books/isBooksInLibrary';
+import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import Button from '../buttons/basicButton';
 import toast from 'react-hot-toast';
 import MyToaster from './toaster';
-import { bookApiUpdate } from '../../utils/fetchData';
-import { Library } from '../../lib/types/models/books';
+import { bookApiUpdate } from '@/utils/fetchData';
+import { Library } from '@/lib/types/models/books';
 
 const RemovePrimary = ({ book, userId }: ButtonProps) => {
    const { id, volumeInfo: _ } = book;

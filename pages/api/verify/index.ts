@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '../../../lib/prisma';
-import sendMail from '../../../lib/auth/email/sendMail';
+import prisma from '@/lib/prisma';
+import sendMail from '@/lib/auth/email/sendMail';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    const email = req.body;

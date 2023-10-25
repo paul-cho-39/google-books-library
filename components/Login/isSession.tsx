@@ -1,7 +1,7 @@
 import { SignOutParams } from 'next-auth/react';
 import Link from 'next/link';
 import clsx from 'clsx';
-import ROUTES from '../../utils/routes';
+import ROUTES from '@/utils/routes';
 
 type SessionProps = {
    name: string;

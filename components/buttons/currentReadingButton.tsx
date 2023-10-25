@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
-import { Items } from '../../lib/types/googleBookTypes';
-import queryKeys from '../../utils/queryKeys';
-import { isBookInData } from '../../lib/helper/books/isBooksInLibrary';
+import { Items } from '@/lib/types/googleBookTypes';
+import queryKeys from '@/utils/queryKeys';
+import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import Button from './basicButton';
-import { QueryData } from '../../lib/hooks/useGetBookData';
+import { QueryData } from '@/lib/hooks/useGetBookData';
 import MyToaster from '../bookcards/toaster';
 import { toast } from 'react-hot-toast';
-import { getBody } from '../../lib/helper/books/getBookBody';
-import { bookApiUpdate } from '../../utils/fetchData';
+import { getBody } from '@/lib/helper/books/getBookBody';
+import { bookApiUpdate } from '@/utils/fetchData';
 
 export type ButtonProps = {
    book: Items<any>;

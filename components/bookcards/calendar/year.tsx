@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAtom } from 'jotai';
 import DatePicker from 'react-datepicker';
-import { initialDateAtom, isYearUnknownAtom } from '../../../lib/store/atomDates';
+import { initialDateAtom, isYearUnknownAtom } from '@/lib/store/atomDates';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import { useUpdateAtom } from 'jotai/utils';

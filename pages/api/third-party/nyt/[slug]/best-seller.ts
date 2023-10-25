@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import handleNytCache from '../../../../../models/cache/handleNytCache';
+import handleNytCache from '@/models/cache/handleNytCache';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    const category = req.query.slug as string;

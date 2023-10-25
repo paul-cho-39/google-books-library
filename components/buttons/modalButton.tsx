@@ -1,6 +1,6 @@
 import { signOut } from 'next-auth/react';
-import apiRequest from '../../utils/fetchData';
-import { ApiRequestOptions, Method } from '../../lib/types/fetchbody';
+import apiRequest from '@/utils/fetchData';
+import { ApiRequestOptions, Method } from '@/lib/types/fetchbody';
 
 interface ButtonProps {
    name: string;

@@ -1,5 +1,5 @@
-import { MetaProps } from '../models/_api/fetchGoogleUrl';
-import { CategoryQualifiers, ReviewQualifiers } from '../models/_api/fetchNytUrl';
+import { MetaProps } from '@/models/_api/fetchGoogleUrl';
+import { CategoryQualifiers, ReviewQualifiers } from '@/models/_api/fetchNytUrl';
 
 type NytDataType = CategoryQualifiers['type'];
 type ReviewType = keyof ReviewQualifiers;

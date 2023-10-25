@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { transformStrToArray } from '../../lib/helper/transformChar';
+import { transformStrToArray } from '@/lib/helper/transformChar';
 import classNames from 'classnames';
 import { Fragment } from 'react';
-import ROUTES from '../../utils/routes';
+import ROUTES from '@/utils/routes';
 
 interface AuthorProps<T extends string[] | string> {
    authors: T;

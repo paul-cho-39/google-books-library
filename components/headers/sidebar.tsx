@@ -1,5 +1,5 @@
 import { Transition, Dialog } from '@headlessui/react';
-import { Categories, categories } from '../../constants/categories';
+import { Categories, categories } from '@/constants/categories';
 import { Dispatch, Fragment, SetStateAction, useEffect, useState } from 'react';
 import {
    ArrowLeftOnRectangleIcon,
@@ -7,11 +7,11 @@ import {
    ViewColumnsIcon,
 } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
-import { capitalizeWords } from '../../lib/helper/transformChar';
-import { useScrollDirection } from '../../lib/hooks/useScrollDirection';
+import { capitalizeWords } from '@/lib/helper/transformChar';
+import { useScrollDirection } from '@/lib/hooks/useScrollDirection';
 import Link from 'next/link';
 import HomeIcon from '../icons/homeIcon';
-import ROUTES from '../../utils/routes';
+import ROUTES from '@/utils/routes';
 
 export interface SideNavigationProps {
    sidebarOpen: boolean;

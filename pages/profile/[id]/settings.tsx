@@ -1,16 +1,16 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import SettingsWithDisclosure from '../../../components/disclosures/disclosure';
-import FormSignIn, { Inputs } from '../../../components/Login/credentials';
-import { SignInForm } from '../../../lib/types/forms';
+import SettingsWithDisclosure from '@/components/disclosures/disclosure';
+import FormSignIn, { Inputs } from '@/components/Login/credentials';
+import { SignInForm } from '@/lib/types/forms';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { changeEmail, changeNames, changePassword } from '../../../lib/resolvers/accountSettings';
+import { changeEmail, changeNames, changePassword } from '@/lib/resolvers/accountSettings';
 import Link from 'next/link';
-import { getDataApiUrl } from '../../../lib/helper/onetimepassword';
-import ModalOpener from '../../../components/modal/openModal';
-import DeleteModalContent from '../../../components/modal/modalContentDeletion';
-import { ModalInnerButton } from '../../../components/modal/modalButton';
-import ROUTES from '../../../utils/routes';
+import { getDataApiUrl } from '@/lib/helper/onetimepassword';
+import ModalOpener from '@/components/modal/openModal';
+import DeleteModalContent from '@/components/modal/modalContentDeletion';
+import { ModalInnerButton } from '@/components/modal/modalButton';
+import ROUTES from '@/utils/routes';
 
 // the setting page may be broken into multiple components?
 export default function SettingPage(props) {

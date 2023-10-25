@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Items } from '../../lib/types/googleBookTypes';
+import { Items } from '@/lib/types/googleBookTypes';
 
 const BookSearchSkeleton: React.FunctionComponent<{
    books: string[] | Record<string, unknown>[] | number;

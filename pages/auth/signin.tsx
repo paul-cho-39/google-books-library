@@ -3,16 +3,16 @@ import { useRouter } from 'next/router';
 import { useSession, signIn } from 'next-auth/react';
 import { InferGetServerSidePropsType } from 'next';
 import { useState, Fragment, useLayoutEffect } from 'react';
-import LoginPage from '../../components/Login/providers';
-import FormSignIn, { Inputs } from '../../components/Login/credentials';
-import { SignInForm } from '../../lib/types/forms';
+import LoginPage from '@/components/Login/providers';
+import FormSignIn, { Inputs } from '@/components/Login/credentials';
+import { SignInForm } from '@/lib/types/forms';
 // lazy-load? like later in the inputs
-import { validateSignUp } from '../../lib/resolvers/validation';
+import { validateSignUp } from '@/lib/resolvers/validation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Link from 'next/link';
-import AuthLayout from '../../components/layout/authLayout';
-import { Divider, LabelDivider } from '../../components/layout/dividers';
-import ROUTES from '../../utils/routes';
+import AuthLayout from '@/components/layout/authLayout';
+import { Divider, LabelDivider } from '@/components/layout/dividers';
+import ROUTES from '@/utils/routes';
 
 interface Providers {
    authProviders: Awaited<ReturnType<typeof getProviders>>;

@@ -1,4 +1,4 @@
-import { BookIdProps, Items } from '../lib/types/googleBookTypes';
+import { BookIdProps, Items } from '@/lib/types/googleBookTypes';
 
 export type APISource = 'google' | 'nyt';
 

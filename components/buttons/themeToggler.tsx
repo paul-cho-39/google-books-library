@@ -1,5 +1,5 @@
 import { SunIcon, MoonIcon } from '@heroicons/react/20/solid';
-import { ThemeContextStyleParams } from '../../lib/types/theme';
+import { ThemeContextStyleParams } from '@/lib/types/theme';
 import clsx from 'clsx';
 
 export const ThemeToggler = ({ theme, setTheme, className }: ThemeContextStyleParams) => {

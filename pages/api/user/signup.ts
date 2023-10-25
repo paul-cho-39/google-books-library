@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '../../../lib/prisma';
+import prisma from '@/lib/prisma';
 import { getProviders } from 'next-auth/react';
 import { SHA256 } from 'crypto-js';
-import sendMail from '../../../lib/auth/email/sendMail';
+import sendMail from '@/lib/auth/email/sendMail';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    // do not have to include here

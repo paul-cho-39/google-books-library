@@ -1,4 +1,4 @@
-import prisma from '../../../lib/prisma';
+import prisma from '@/lib/prisma';
 import { Book, BookState } from '@prisma/client';
 
 export class BookRetriever {

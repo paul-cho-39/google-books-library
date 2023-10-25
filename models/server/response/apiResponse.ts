@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { MetaDataParams, ResponseError, ResponseMeta } from '../../../lib/types/response';
+import { MetaDataParams, ResponseError, ResponseMeta } from '@/lib/types/response';
 import winston from 'winston/lib/winston/config';
 import { errorLogger, internalServerErrorLogger } from '../winston';
 

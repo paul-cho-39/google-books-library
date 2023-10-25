@@ -1,4 +1,4 @@
-import { FilterParams } from '../../models/_api/fetchGoogleUrl';
+import { FilterParams } from '@/models/_api/fetchGoogleUrl';
 
 export interface Data<T extends Record<string, string>> {
    pageParams?: unknown[] | [];

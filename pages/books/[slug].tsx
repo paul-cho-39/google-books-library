@@ -2,33 +2,33 @@ import { getSession } from 'next-auth/react';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { lazy, useEffect, useMemo, useState } from 'react';
 
-import BookImage from '../../components/bookcover/bookImages';
-import { getBookWidth } from '../../lib/helper/books/getBookWidth';
-import BookTitle from '../../components/bookcover/title';
-import SingleOrMultipleAuthors from '../../components/bookcover/authors';
-import BookDescription from '../../components/bookcover/description';
-import BookPublisher from '../../components/bookcover/publisher';
-import BookDetails from '../../components/bookcover/bookDetails';
-import SignInRequiredButton from '../../components/Login/requireUser';
-import { CustomSession, RateServerTypes, MultipleRatingData } from '../../lib/types/serverTypes';
+import BookImage from '@/components/bookcover/bookImages';
+import { getBookWidth } from '@/lib/helper/books/getBookWidth';
+import BookTitle from '@/components/bookcover/title';
+import SingleOrMultipleAuthors from '@/components/bookcover/authors';
+import BookDescription from '@/components/bookcover/description';
+import BookPublisher from '@/components/bookcover/publisher';
+import BookDetails from '@/components/bookcover/bookDetails';
+import SignInRequiredButton from '@/components/Login/requireUser';
+import { CustomSession, RateServerTypes, MultipleRatingData } from '@/lib/types/serverTypes';
 import { useRouter } from 'next/router';
-import useGetBookById from '../../lib/hooks/useGetBookById';
-import { CategoryRouteParams, RouteParams } from '../../lib/types/routes';
-import APIErrorBoundary from '../../components/error/errorBoundary';
-import DisplayRating from '../../components/bookcover/ratings';
-import { useMutateCreateRatings, useMutateUpdateRatings } from '../../lib/hooks/useMutateRatings';
-import { findId, useGetRating } from '../../lib/hooks/useGetRatings';
-import { getBody, getBodyFromFilteredGoogleFields } from '../../lib/helper/books/getBookBody';
-import refiner, { RefineData } from '../../models/server/decorator/RefineData';
-import { getAverageRatings, getServerAverage, getTotalRatings } from '../../lib/helper/getRating';
-import BookService from '../../models/server/service/BookService';
-import { ActiveRating } from '../../components/rating/activeRating';
+import useGetBookById from '@/lib/hooks/useGetBookById';
+import { CategoryRouteParams, RouteParams } from '@/lib/types/routes';
+import APIErrorBoundary from '@/components/error/errorBoundary';
+import DisplayRating from '@/components/bookcover/ratings';
+import { useMutateCreateRatings, useMutateUpdateRatings } from '@/lib/hooks/useMutateRatings';
+import { findId, useGetRating } from '@/lib/hooks/useGetRatings';
+import { getBody, getBodyFromFilteredGoogleFields } from '@/lib/helper/books/getBookBody';
+import refiner, { RefineData } from '@/models/server/decorator/RefineData';
+import { getAverageRatings, getServerAverage, getTotalRatings } from '@/lib/helper/getRating';
+import BookService from '@/models/server/service/BookService';
+import { ActiveRating } from '@/components/rating/activeRating';
 
 const HEIGHT = 225;
 
-const SaveAsFinishedButton = lazy(() => import('../../components/buttons/finishedButton'));
-const PopOverButtons = lazy(() => import('../../components/buttons/popoverButtons'));
-// const Ratings = lazy(() => import('../../components/'));
+const SaveAsFinishedButton = lazy(() => import('@/components/buttons/finishedButton'));
+const PopOverButtons = lazy(() => import('@/components/buttons/popoverButtons'));
+// const Ratings = lazy(() => import('@/components/'));
 
 // when refreshed the serversideProps will fetch the data
 // when navigating between pages and coming back useQuery to check

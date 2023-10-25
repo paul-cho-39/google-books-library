@@ -1,4 +1,4 @@
-import { encodeRoutes } from '../utils/routes';
+import { encodeRoutes } from '@/utils/routes';
 
 export type RouteNames = 'home' | 'search' | 'category';
 

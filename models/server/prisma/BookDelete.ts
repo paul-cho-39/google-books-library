@@ -1,4 +1,4 @@
-import prisma from '../../../lib/prisma';
+import prisma from '@/lib/prisma';
 import Books from './Books';
 
 export default class BookDelete extends Books {

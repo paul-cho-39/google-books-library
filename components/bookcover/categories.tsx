@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { breakCategories } from '../../lib/helper/books/editBookPageHelper';
+import { breakCategories } from '@/lib/helper/books/editBookPageHelper';
 import classNames from 'classnames';
-import ROUTES from '../../utils/routes';
+import ROUTES from '@/utils/routes';
 
 interface CategoriesProps {
    categories?: string[];

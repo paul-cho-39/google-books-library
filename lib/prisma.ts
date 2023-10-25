@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import logger from '../utils/winston';
+import logger from '@/utils/winston';
 
 let prisma: PrismaClient;
 

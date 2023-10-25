@@ -1,6 +1,6 @@
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import queryKeys from '../../utils/queryKeys';
-import { bookApiUpdate } from '../../utils/fetchData';
+import queryKeys from '@/utils/queryKeys';
+import { bookApiUpdate } from '@/utils/fetchData';
 import { Library } from '../types/models/books';
 import { ResponseFinishedData } from '../types/serverTypes';
 

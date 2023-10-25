@@ -1,6 +1,6 @@
 import React from 'react';
-import { SingleRatingData } from '../../lib/types/serverTypes';
-import useMutateRatings from '../../lib/hooks/useMutateRating';
+import { SingleRatingData } from '@/lib/types/serverTypes';
+import useMutateRatings from '@/lib/hooks/useMutateRating';
 import { PencilIcon } from '@heroicons/react/20/solid';
 
 type DeleteRatingButtonProps = {

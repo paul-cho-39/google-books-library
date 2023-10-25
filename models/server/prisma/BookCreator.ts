@@ -1,6 +1,6 @@
 import { Book, BookState, Prisma, UserBook } from '@prisma/client';
-import prisma from '../../../lib/prisma';
-import { Data } from '../../../lib/types/models/books';
+import prisma from '@/lib/prisma';
+import { Data } from '@/lib/types/models/books';
 import Books from './Books';
 
 export type UserBookWithoutId = Omit<UserBook, 'userId' | 'bookId'>;

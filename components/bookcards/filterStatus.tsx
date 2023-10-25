@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { isBookInData } from '../../lib/helper/books/isBooksInLibrary';
+import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import React from 'react';
-import { Library } from '../../lib/types/models/books';
+import { Library } from '@/lib/types/models/books';
 
 interface FilterStatusProps {
    bookId: string;

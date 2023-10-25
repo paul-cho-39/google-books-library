@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import BookRetriever from '../../../models/server/prisma/BookRetrieve';
-import { errorLogger, internalServerErrorLogger } from '../../../models/server/winston';
+import BookRetriever from '@/models/server/prisma/BookRetrieve';
+import { errorLogger, internalServerErrorLogger } from '@/models/server/winston';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {

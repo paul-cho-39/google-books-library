@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Prisma } from '@prisma/client';
-import BookService from '../../../../models/server/service/BookService';
-import createApiResponse from '../../../../models/server/response/apiResponse';
+import BookService from '@/models/server/service/BookService';
+import createApiResponse from '@/models/server/response/apiResponse';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {

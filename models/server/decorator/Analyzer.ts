@@ -1,4 +1,4 @@
-import { RatingData } from '../../../lib/types/serverTypes';
+import { RatingData } from '@/lib/types/serverTypes';
 
 export class DataAnalyzer {
    constructor() {}

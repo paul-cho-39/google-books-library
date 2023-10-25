@@ -1,7 +1,7 @@
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
-import queryKeys from '../../utils/queryKeys';
-import apiRequest from '../../utils/fetchData';
-import API_ROUTES from '../../utils/apiRoutes';
+import queryKeys from '@/utils/queryKeys';
+import apiRequest from '@/utils/fetchData';
+import API_ROUTES from '@/utils/apiRoutes';
 import { DataWithRatings } from '../types/models/books';
 import { RatingInfo, SingleRatingData } from '../types/serverTypes';
 

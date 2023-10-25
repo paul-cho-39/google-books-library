@@ -1,10 +1,10 @@
 import { Dispatch, useState, SetStateAction } from 'react';
 import Star, { Size } from '../icons/starIcon';
-import { BaseIdParams } from '../../lib/types/models/books';
-import { GoogleUpdatedFields, Items } from '../../lib/types/googleBookTypes';
-import { MultipleRatingData, SingleRatingData } from '../../lib/types/serverTypes';
-import useMutateRatings from '../../lib/hooks/useMutateRating';
-import { getBodyFromFilteredGoogleFields } from '../../lib/helper/books/getBookBody';
+import { BaseIdParams } from '@/lib/types/models/books';
+import { GoogleUpdatedFields, Items } from '@/lib/types/googleBookTypes';
+import { MultipleRatingData, SingleRatingData } from '@/lib/types/serverTypes';
+import useMutateRatings from '@/lib/hooks/useMutateRating';
+import { getBodyFromFilteredGoogleFields } from '@/lib/helper/books/getBookBody';
 
 export type ActiveRatingProps = BaseIdParams & {
    ratingTitle: string;

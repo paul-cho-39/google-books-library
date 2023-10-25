@@ -1,15 +1,15 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import prisma from '../../lib/prisma';
+import prisma from '@/lib/prisma';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { InferGetStaticPropsType } from 'next';
-import { Validate } from '../../lib/resolvers/validation';
+import { Validate } from '@/lib/resolvers/validation';
 import { yupResolver } from '@hookform/resolvers/yup';
-import AuthLayout from '../../components/layout/authLayout';
-import { Divider } from '../../components/layout/dividers';
-import { FormInput } from '../../lib/types/forms';
-import InputField from '../../components/inputs/inputField';
-import ROUTES from '../../utils/routes';
+import AuthLayout from '@/components/layout/authLayout';
+import { Divider } from '@/components/layout/dividers';
+import { FormInput } from '@/lib/types/forms';
+import InputField from '@/components/inputs/inputField';
+import ROUTES from '@/utils/routes';
 
 // this page should be connected to auth/signin
 export default function Signup({

@@ -10,11 +10,11 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import '../styles/globals.css';
 
-import ThemeProvider from '../lib/context/ThemeContext';
-import RefreshTokenHandler from '../lib/auth/refreshTokenHandler';
+import ThemeProvider from '@/lib/context/ThemeContext';
+import RefreshTokenHandler from '@/lib/auth/refreshTokenHandler';
 
-import Navigation from '../components/headers';
-import HomeLayout from '../components/layout/page/home';
+import Navigation from '@/components/headers';
+import HomeLayout from '@/components/layout/page/home';
 
 NProgress.configure({
    minimum: 0.3,

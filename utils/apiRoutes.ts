@@ -1,4 +1,4 @@
-import { UrlProps, ServerCacheType } from '../lib/types/fetchbody';
+import { UrlProps, ServerCacheType } from '@/lib/types/fetchbody';
 
 const BASE_PATH = '/api';
 const DOMAIN_BOOKS = 'books';

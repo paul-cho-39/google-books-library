@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { ThemeToggler } from '../buttons/themeToggler';
 import IsSession from '../Login/isSession';
-import { NavigationProps } from '../../lib/types/theme';
+import { NavigationProps } from '@/lib/types/theme';
 import SearchInput from '../inputs/search';
 import HomeIcon from '../icons/homeIcon';
-import ROUTES from '../../utils/routes';
+import ROUTES from '@/utils/routes';
 
 export const LargeNavigation = ({
    user,
