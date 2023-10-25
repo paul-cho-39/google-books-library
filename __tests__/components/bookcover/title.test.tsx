@@ -21,6 +21,8 @@ describe('BookTitle component', () => {
    it('renders the title with subtitle when subtitle is provided', () => {
       render(<BookTitle {...baseProps} hasLink={false} subtitle='Test Subtitle' />);
 
+      // testing the data-testid here
+      // should switch out
       const titles = screen.getByTestId('visible-title');
       expect(titles).toBeInTheDocument();
    });

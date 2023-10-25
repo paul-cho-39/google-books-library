@@ -24,7 +24,7 @@ const SingleOrMultipleAuthors = <T extends string[] | string>({
    const numberOfAuthors = transformedAuthor?.length;
 
    if (!authors || numberOfAuthors < 1) {
-      return <span>Unknown author</span>;
+      return <span aria-readonly>Unknown author</span>;
    }
 
    if (!authors) {
@@ -98,7 +98,7 @@ const SingleAuthor = ({
          <a className={className}>
             {authorToString.length < (textLimit || 30)
                ? authorToString
-               : `${authorToString.slice(0, textLimit || 29)}...`}
+               : `${authorToString.slice(0, textLimit || 30)}...`}
          </a>
       </Link>
    );

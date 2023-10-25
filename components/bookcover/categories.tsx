@@ -18,7 +18,12 @@ const Categories = ({ categories, hasLink = false, className }: CategoriesProps)
          {filteredCategories.map((category, index) => (
             <li className={classNames(className, 'mr-1')} key={index}>
                {hasLink ? (
-                  <Link passHref href={'/categories/[slug]'} as={ROUTES.CATEGORIES(category)}>
+                  <Link
+                     role='link'
+                     passHref
+                     href={'/categories/[slug]'}
+                     as={ROUTES.CATEGORIES(category)}
+                  >
                      <a>
                         {category}
                         <span>{filteredCategories.length - 1 > index ? ', ' : ''}</span>

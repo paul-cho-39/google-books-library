@@ -53,6 +53,7 @@ const BookImage = <T extends GoogleImages | string>({
             hidden={isLinkHidden}
             href={{ pathname: `/books/[slug]`, query: routeQuery }}
             as={ROUTES.BOOKS.GOOGLE(id)}
+            aria-label={`Link to book: ${title}`}
          >
             <Image
                src={imageSrc}
