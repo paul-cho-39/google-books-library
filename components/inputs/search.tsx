@@ -9,6 +9,7 @@ interface SearchInputInterface {
    filterQuery?: string;
 }
 
+// be used as context instead since it may be global?
 const SearchInput = ({ filterQuery }: SearchInputInterface) => {
    const router = useRouter();
 
@@ -23,7 +24,9 @@ const SearchInput = ({ filterQuery }: SearchInputInterface) => {
       router.push(url);
    };
 
+   // if router is not ready search wont trigger
    useEffect(() => {
+      // ensuring that router is ready
       if (!router.isReady) return;
 
       setDisabled(false);
@@ -33,16 +36,17 @@ const SearchInput = ({ filterQuery }: SearchInputInterface) => {
    // console.log('is it disabled?: ', disabled);
 
    return (
-      <form onSubmit={handleSubmit} className='w-full' action='#' method='GET'>
+      <form role='search' onSubmit={handleSubmit} className='w-full' action='#' method='GET'>
          <label htmlFor='search' className='sr-only'>
             Search Books
          </label>
-         <div className='relative mt-2 flex w-full'>
+         <div role='searchbox' className='relative mt-2 flex w-full'>
             <input
                type='text'
                name='search'
                id='search'
                placeholder='Search books'
+               value={query}
                onChange={(e) => setQuery(e.target.value)}
                className='flex-grow rounded-md border-0 py-1.5 pr-14 text-gray-900 shadow-sm ring-[0.5px] ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-orange-300 sm:text-sm sm:leading-6'
             />

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import React, { lazy, Suspense } from 'react';
 import { Items } from '@/lib/types/googleBookTypes';
 import SingleOrMultipleAuthors from '../bookcover/authors';

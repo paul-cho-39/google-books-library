@@ -39,6 +39,7 @@ const BookDescription = ({
    const displayedDescription = sliceDescription(filteredDescription, descriptionLimit);
    const minimumDescriptionChar = filteredDescription?.toString().length;
 
+   // if there isnt any description
    const isDescriptionEmpty = !filteredDescription || !displayedDescription;
 
    const SeeMoreElement = isLink ? (
@@ -58,6 +59,7 @@ const BookDescription = ({
          role='button'
          onClick={() => setToggleDescription(true)}
          className={`${
+            //
             minimumDescriptionChar && minimumDescriptionChar < descriptionLimit
                ? 'hidden'
                : 'inline-flex font-semibold mt-2.5 transition-opacity dark:text-slate-200 duration-100 hover:opacity-50 hover:cursor-pointer'
@@ -107,7 +109,7 @@ const BookDescription = ({
 };
 
 const NoDescription = () => (
-   <p aria-live='polite' className='text-lg dark:text-slate-100'>
+   <p aria-live='assertive' className='text-lg dark:text-slate-100'>
       No description provided
    </p>
 );

@@ -20,13 +20,12 @@ describe('BookDescription component', () => {
       expect(getByText('No description provided')).toBeInTheDocument();
    });
 
+   // in the front of the page ./categories inside the container when mouse is hovered
    it('renders "See More" link when isLink prop is true', () => {
       const { getByText } = render(
          <BookDescription {...basicProps} description='Some text here' isLink={true} />
       );
       expect(screen.getByTestId('visible-link')).toBeInTheDocument();
-
-      // expect(getByText('See more about this book')).toBeInTheDocument();
    });
 
    it('renders "See More" button for longer descriptions', () => {
