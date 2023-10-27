@@ -95,7 +95,7 @@ export type ImageLinks = {
 
 export interface FilterProps {
    filterBy: 'all' | 'title' | 'author' | 'isbn';
-   filterBookParams?: FilterParams;
+   filterParams?: FilterParams;
 }
 
 export interface GoogleUpdatedFields {

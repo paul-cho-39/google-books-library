@@ -8,7 +8,7 @@ interface QueryQualifiers {
    filter?: FilterParams;
 }
 
-export type FilterParams = 'partial' | 'full' | 'free-ebooks' | 'paid-ebooks' | 'ebooks';
+export type FilterParams = 'partial' | 'full' | 'free-ebooks' | 'paid-ebooks' | 'ebooks' | 'None';
 
 export interface MetaProps {
    maxResultNumber: number;

@@ -28,6 +28,7 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
 
    const [filter, setFilter] = useState<FilterProps>({
       filterBy: 'all',
+      filterParams: 'None',
    });
 
    const meta = (page: number): MetaProps => {
