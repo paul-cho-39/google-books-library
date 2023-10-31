@@ -1,56 +1,59 @@
-import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import prisma from '@/lib/prisma';
-import { useForm, SubmitHandler } from 'react-hook-form';
 import { InferGetStaticPropsType } from 'next';
-import { Validate } from '@/lib/resolvers/validation';
+import Link from 'next/link';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+
+import { Validate } from '@/lib/resolvers/validation';
+import { FormInput } from '@/lib/types/forms';
+import ROUTES from '@/utils/routes';
+
 import AuthLayout from '@/components/layout/authLayout';
 import { Divider } from '@/components/layout/dividers';
-import { FormInput } from '@/lib/types/forms';
-import InputField from '@/components/inputs/inputField';
-import ROUTES from '@/utils/routes';
+import SignupField from '@/components/inputs/signupForm';
+import API_ROUTES from '@/utils/apiRoutes';
+import getUsers from '@/models/server/prisma/Users';
+import apiRequest from '@/utils/fetchData';
 
 // this page should be connected to auth/signin
 export default function Signup({
-   username,
-   email,
+   emailAndUsername,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-   const validationSchemaSignUp = Validate(username, email);
+   const validationSchemaSignUp = Validate(emailAndUsername);
    const formOption = {
       shouldUseNativeValidation: false,
       resolver: yupResolver(validationSchemaSignUp),
    };
+
    const {
       register,
       handleSubmit,
       reset,
-      formState: { errors },
+      formState: { errors, isSubmitSuccessful },
    } = useForm<FormInput>(formOption);
 
-   // TODO //
-   // also have to include "GET" resolvers for ALL emails and verify there
+   // once the user successfully signs in it should reroute to login page
    const onSubmit: SubmitHandler<FormInput> = async (data): Promise<void> => {
       const { username, email, password } = data;
       const body = { username, email, password };
-      try {
-         await fetch('/api/user/signup', {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: { 'Content-Type': 'application/json' },
-         }).then((res) => res.status === 201 && reset());
-      } catch (e) {
-         console.error(e);
-      }
+      await apiRequest({
+         apiUrl: API_ROUTES.USERS.SIGNUP,
+         method: 'POST',
+         data: body,
+         headers: { 'Content-Type': 'application/json' },
+         shouldRoute: true,
+         routeTo: ROUTES.HOME, // goes home with sign
+      });
+
+      if (isSubmitSuccessful) reset();
    };
 
    return (
       <AuthLayout>
-         <div className='flex flex-col  '>
+         <div className='flex flex-col'>
             <form
                className='flex-1 flex-col'
                onSubmit={handleSubmit(onSubmit)}
-               id='signup'
                method='POST'
                action='/signup'
             >
@@ -63,22 +66,22 @@ export default function Signup({
                <Divider />
                {/* block element for all labels and inputs */}
                <div className='py-5 w-full flex flex-col '>
-                  <div role='form'>
-                     <InputField
+                  <div role='region'>
+                     <SignupField
                         type='text'
                         register={register}
                         label='Username'
                         name='username'
                         error={errors.username}
                      />
-                     <InputField
+                     <SignupField
                         type='email'
                         register={register}
                         label='Email'
                         name='email'
                         error={errors.email}
                      />
-                     <InputField
+                     <SignupField
                         type='password'
                         register={register}
                         label='Password'
@@ -88,6 +91,8 @@ export default function Signup({
                   </div>
                   <div className='mt-7 mb-3 w-full'>
                      <button
+                        role='button'
+                        type='submit'
                         disabled={errors.email || errors.password || errors.username ? true : false}
                         className='rounded-xl bg-beige dark:bg-charcoal tracking-wider max-w-md w-full h-[40px] border-2 border-orange-200 dark:border-dark-charcoal disabled:opacity-25'
                      >
@@ -101,7 +106,10 @@ export default function Signup({
             <div className='w-full flex flex-col my-3 justify-center items-center text-slate-800 dark:text-slate-200'>
                <p className='mb-2 font-teritary text-md'>Already have an account?</p>
                <Link href={ROUTES.AUTH.SIGNIN}>
-                  <a className='font-teritary text-md hover:underline hover:underline-offset-1 hover:decoration-slate-800 dark:hover:decoration-slate-200'>
+                  <a
+                     role='navigation'
+                     className='font-teritary text-md hover:underline hover:underline-offset-1 hover:decoration-slate-800 dark:hover:decoration-slate-200'
+                  >
                      Sign In
                   </a>
                </Link>
@@ -112,21 +120,14 @@ export default function Signup({
 }
 
 export async function getStaticProps() {
-   const allUsers = await prisma.user.findMany({
-      select: {
-         email: true,
-         username: true,
-      },
-   });
-   return {
-      props: {
-         username: JSON.parse(JSON.stringify(allUsers)).map((user: User) => user.username),
-         email: JSON.parse(JSON.stringify(allUsers)).map((user: User) => user.email),
-      },
-   };
-}
+   const users = await getUsers.findAllUsersEmailAndUsername();
 
-type User = {
-   email?: string;
-   username?: string;
-};
+   const emailAndUsername = users.map((user) => {
+      return {
+         username: user.username,
+         email: user.email,
+      };
+   });
+
+   return { props: { emailAndUsername } };
+}

@@ -1,25 +1,24 @@
-import { getProviders } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { useState, Fragment, useLayoutEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { InferGetServerSidePropsType } from 'next';
-import { useState, Fragment, useLayoutEffect } from 'react';
-import LoginPage from '@/components/Login/providers';
-import FormSignIn, { Inputs } from '@/components/Login/credentials';
-import { SignInForm } from '@/lib/types/forms';
-// lazy-load? like later in the inputs
-import { validateSignUp } from '@/lib/resolvers/validation';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { useRouter } from 'next/router';
+import { getProviders } from 'next-auth/react';
 import Link from 'next/link';
-import AuthLayout from '@/components/layout/authLayout';
-import { Divider, LabelDivider } from '@/components/layout/dividers';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+import { SignInForm } from '@/lib/types/forms';
+import { validateSignUp } from '@/lib/resolvers/validation';
 import ROUTES from '@/utils/routes';
 
-interface Providers {
-   authProviders: Awaited<ReturnType<typeof getProviders>>;
-}
+import AuthLayout from '@/components/layout/authLayout';
+import LoginPage from '@/components/Login/providers';
+import FormSignIn, { Inputs } from '@/components/Login/credentials';
+import { Divider, LabelDivider } from '@/components/layout/dividers';
 
 export function Account({ authProviders }: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const { data: session, status } = useSession();
+   session?.expires;
+   session?.user;
    const [error, setError] = useState(false);
    const resolver = yupResolver(validateSignUp());
 
@@ -61,7 +60,10 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
                      </h3>
                   </div>
                   <Divider />
-                  <p className='mb-3 tracking-tight text-red-500 transition duration-200 dark:text-red-400'>
+                  <p
+                     role='alert'
+                     className='mb-3 tracking-tight text-red-500 transition duration-200 dark:text-red-400'
+                  >
                      {error && 'Email or password is invalid'}
                   </p>
 

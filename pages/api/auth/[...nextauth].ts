@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
       // should be 60 secs
       maxAge: 1000 * 60 * 60,
    },
-   // Configure one or more authentication providers
+   // set this in the environment
    providers: [
       GoogleProvider({
          clientId: process.env.GOOGLE_CLIENT_ID,
