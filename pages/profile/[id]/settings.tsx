@@ -6,11 +6,11 @@ import { SignInForm } from '@/lib/types/forms';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { changeEmail, changeNames, changePassword } from '@/lib/resolvers/accountSettings';
 import Link from 'next/link';
-import { getDataApiUrl } from '@/lib/helper/onetimepassword';
-import ModalOpener from '@/components/modal/openModal';
 import DeleteModalContent from '@/components/modal/modalContentDeletion';
-import { ModalInnerButton } from '@/components/modal/modalButton';
 import ROUTES from '@/utils/routes';
+import { getDataApiUrl } from '@/lib/auth/onetimepassword';
+import ModalOpener from '@/components/modal/openModal';
+import { ModalInnerButton } from '@/components/buttons/modalButton';
 
 // the setting page may be broken into multiple components?
 export default function SettingPage(props) {
@@ -21,18 +21,6 @@ export default function SettingPage(props) {
    const router = useRouter();
    const { id } = router?.query;
    const userId = id as string;
-
-   //   if the user is not signed in it will be redirected
-   // ** use layouteffect?
-   // useEffect(() => {
-   //     if (!router.isReady) return;
-   //     if (!user) {
-   //         router.push("/auth/signup");
-   //     }
-   // }, [!router.isReady])
-
-   // should the api url be /user-settings/[userid]/${apiUrlKey}?
-   // lazy load getDataApiUrl
 
    // refactored into cleaner code?
    const onSubmit = async (data: SignInForm) => {
@@ -109,9 +97,9 @@ export default function SettingPage(props) {
                            <Inputs
                               labelName={'First Name'}
                               name={'firstName'}
-                              isDisclosure={true}
+                              displayLabel={true}
                            />
-                           <Inputs labelName={'Last Name'} name={'lastName'} isDisclosure={true} />
+                           <Inputs labelName={'Last Name'} name={'lastName'} displayLabel={true} />
                            <button
                               type='submit'
                               className='inline-flex justify-center rounded-md border border-transparent bg-black py-3 px-4 text-sm font-medium text-white shadow-sm hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2'
@@ -131,7 +119,7 @@ export default function SettingPage(props) {
                            onSubmit={onSubmit}
                            shouldReset={true}
                         >
-                           <Inputs labelName={'Email'} name={'email'} isDisclosure={true} />
+                           <Inputs labelName={'Email'} name={'email'} displayLabel={true} />
                            <button
                               type='submit'
                               className='my-4 inline-flex justify-center rounded-md border border-transparent bg-black py-2 px-4 text-sm font-medium text-white shadow-sm hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2'
@@ -154,19 +142,19 @@ export default function SettingPage(props) {
                               labelName={'Current password'}
                               name={'password'}
                               type='password'
-                              isDisclosure={true}
+                              displayLabel={true}
                            />
                            <Inputs
                               labelName={'New password'}
                               name={'newPassword'}
                               type='password'
-                              isDisclosure={true}
+                              displayLabel={true}
                            />
                            <Inputs
                               labelName={'Confirm password'}
                               name={'confirmPassword'}
                               type='password'
-                              isDisclosure={true}
+                              displayLabel={true}
                            />
                            <button
                               type='submit'

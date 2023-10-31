@@ -7,10 +7,6 @@ import prisma from '@/lib/prisma';
 import { NextApiHandler } from 'next';
 import { JWT } from 'next-auth/jwt';
 
-// TODO // have to set time to an appropriate time
-// 2) google provider refresh token
-// the refresh token should only be provided once
-// thus useful to use google since it only requires when the user first signs in
 export const authOptions: NextAuthOptions = {
    adapter: PrismaAdapter(prisma),
    secret: process.env.NEXTAUTH_SECRET,

@@ -14,11 +14,13 @@ import SignupField from '@/components/inputs/signupForm';
 import API_ROUTES from '@/utils/apiRoutes';
 import getUsers from '@/models/server/prisma/Users';
 import apiRequest from '@/utils/fetchData';
+import { signIn } from 'next-auth/react';
+import useRedirectIfAuthenticated from '@/lib/hooks/useRedirectAfterAuthenticated';
 
 // this page should be connected to auth/signin
 export default function Signup({
-   emailAndUsername,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+       emailAndUsername,
+    }: InferGetStaticPropsType<typeof getStaticProps>) {
    const validationSchemaSignUp = Validate(emailAndUsername);
    const formOption = {
       shouldUseNativeValidation: false,
@@ -29,23 +31,44 @@ export default function Signup({
       register,
       handleSubmit,
       reset,
-      formState: { errors, isSubmitSuccessful },
+      formState: { errors },
    } = useForm<FormInput>(formOption);
+
+   const [signInError, setError] = useState(false);
+
+   // if the user is already authenticated the page is redirected back
+   useRedirectIfAuthenticated();
 
    // once the user successfully signs in it should reroute to login page
    const onSubmit: SubmitHandler<FormInput> = async (data): Promise<void> => {
       const { username, email, password } = data;
       const body = { username, email, password };
-      await apiRequest({
-         apiUrl: API_ROUTES.USERS.SIGNUP,
-         method: 'POST',
-         data: body,
-         headers: { 'Content-Type': 'application/json' },
-         shouldRoute: true,
-         routeTo: ROUTES.HOME, // goes home with sign
-      });
 
-      if (isSubmitSuccessful) reset();
+      try {
+         const response = await apiRequest<typeof body, { success: boolean }>({
+            apiUrl: API_ROUTES.USERS.SIGNUP,
+            method: 'POST',
+            data: body,
+            headers: { 'Content-Type': 'application/json' },
+         });
+
+         // debugging
+         console.log('debugging the response: ', response);
+
+         if (response.success) {
+            await signIn('credentials', {
+               email: email,
+               password: password,
+               redirect: true,
+               callbackUrl: ROUTES.HOME,
+            });
+         } else {
+            setError(true);
+            reset(); // reset and try again
+         }
+      } catch (err) {
+         console.error(err);
+      }
    };
 
    return (
@@ -62,6 +85,15 @@ export default function Signup({
                   <h3 className='font-bold font-primary text-2xl lg:text-4xl text-slate-800 dark:text-slate-200'>
                      Sign Up
                   </h3>
+                  {signInError && (
+                     <span
+                        role='alert'
+                        data-testid='signin-field-error'
+                        className='text-red-300 text-sm py-1 mb-2'
+                     >
+                        There seems to be an issue. Please try again
+                     </span>
+                  )}
                </div>
                <Divider />
                {/* block element for all labels and inputs */}

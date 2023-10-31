@@ -48,20 +48,16 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       // if (!emailInData?.includes(email) && !usernameInData?.includes(username)) {
       const hasehdPassword = SHA256(password).toString();
       try {
-         const newUser = await prisma.user.create({
+         await prisma.user.create({
             data: {
                username,
                email,
                password: hasehdPassword,
             },
          });
-         res.status(201).end();
-
-         // when the new user is made send the mail
-         // newUser && sendMail(newUser, "24h", "verify");
+         res.status(201).json({ success: true });
       } catch (e) {
-         res.status(401).json({ message: 'Failed to create a new account' });
-         res.end();
+         res.status(401).json({ success: false, message: 'Failed to create a new account' });
       }
    } else {
       res.status(500).end();

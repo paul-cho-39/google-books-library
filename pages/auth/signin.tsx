@@ -14,11 +14,9 @@ import AuthLayout from '@/components/layout/authLayout';
 import LoginPage from '@/components/Login/providers';
 import FormSignIn, { Inputs } from '@/components/Login/credentials';
 import { Divider, LabelDivider } from '@/components/layout/dividers';
+import useRedirectIfAuthenticated from '@/lib/hooks/useRedirectAfterAuthenticated';
 
 export function Account({ authProviders }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-   const { data: session, status } = useSession();
-   session?.expires;
-   session?.user;
    const [error, setError] = useState(false);
    const resolver = yupResolver(validateSignUp());
 
@@ -33,21 +31,13 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
          callbackUrl: nextPath,
       });
 
-      if (!res || status === 'unauthenticated') {
+      if (!res) {
          console.log('not authenticated');
          setError(true);
       }
    };
 
-   const text = status === 'loading' ? 'Logging In' : 'Login';
-
-   // if user is already signed in and goes to this page
-   useLayoutEffect(() => {
-      if (status === 'authenticated') {
-         router.push(nextPath);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [session]);
+   useRedirectIfAuthenticated();
 
    return (
       <AuthLayout>
@@ -69,14 +59,14 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
 
                   <div>
                      <FormSignIn resolver={resolver} onSubmit={onSubmit}>
-                        <label className='block text-md flex-1 text-slate-800 dark:text-slate-100 font-normal text-primary'>
-                           Email
-                        </label>
-                        <Inputs name='email' type='email' />
-                        <div className='w-full flex flex-row justify-between items-stretch '>
-                           <label className='block text-md flex-1 text-slate-800 dark:text-slate-100 font-normal text-primary'>
-                              Password
-                           </label>
+                        <Inputs
+                           name='email'
+                           type='email'
+                           className='block text-md flex-1 text-slate-800 dark:text-slate-100 font-normal text-primary'
+                           displayLabel={true}
+                           labelName='email'
+                        />
+                        <div className='w-full flex flex-row justify-end'>
                            <Link href='/verify/reset/sendverification'>
                               <span className='self-end underline font-extralight text-primary cursor-pointer dark:text-slate-100'>
                                  Forgot password?
@@ -84,9 +74,15 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
                            </Link>
                         </div>
 
-                        <Inputs name='password' type='password' />
-                        <button className='rounded-xl shadow-md bg-beige dark:bg-charcoal tracking-wider w-full h-[40px] border-2 border-orange-200 dark:border-dark-charcoal disabled:opacity-25 focus:ring-1 focus:ring-black'>
-                           <span className='text-slate-800 dark:text-slate-200'>{text}</span>
+                        <Inputs
+                           name='password'
+                           type='password'
+                           displayLabel={true}
+                           labelName='password'
+                           className='block text-md flex-1 text-slate-800 dark:text-slate-100 font-normal text-primary'
+                        />
+                        <button className='my-2 rounded-xl shadow-md bg-beige dark:bg-charcoal tracking-wider w-full h-[40px] border-2 border-orange-200 dark:border-dark-charcoal disabled:opacity-25 focus:ring-1 focus:ring-black'>
+                           <span className='text-slate-800 dark:text-slate-200'>Login</span>
                         </button>
                      </FormSignIn>
                   </div>
