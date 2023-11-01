@@ -17,6 +17,8 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
+        "@/": ["./"],
+        "@/pages/*": ["pages/*"],
         "@/lib/*": ["lib/*"],
         "@/components/*": ["components/*"],
         "@/utils/*": ["utils/*"],
@@ -25,6 +27,6 @@
         "@/styles/*": ["styles/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/third-party/google"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/third-party/google", "__tests__/pages/auth/signin.test.tsx", "__tests__/lib/hooks/useRedirectAfterAuthenticated.test.tsx"],
   "exclude": ["node_modules"]
 }

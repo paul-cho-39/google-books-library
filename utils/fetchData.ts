@@ -21,7 +21,10 @@ export type FetchCacheType = {
    category: string;
 };
 
-async function apiRequest<T, TData>(options: ApiRequestOptions<T>): Promise<TData> {
+async function apiRequest<T, TData>(
+   options: ApiRequestOptions<T>,
+   callback?: () => void
+): Promise<TData> {
    const { apiUrl, method, data, headers, shouldRoute, routeTo, delay } = options;
 
    try {
@@ -37,6 +40,7 @@ async function apiRequest<T, TData>(options: ApiRequestOptions<T>): Promise<TDat
       }
 
       // Special handling for POST and PUT requests with routing
+      if (callback) callback();
       if ((method === 'POST' || method === 'PUT') && shouldRoute && routeTo) {
          setTimeout(() => {
             router.push(routeTo);
@@ -89,6 +93,8 @@ export const throttledFetcher = (input: RequestInfo, init?: RequestInit) => {
    }
 };
 
+// this fetcher should not be used anymore
+// it is now unnecessary since it wont be fetching from the server
 export const getAbsoluteUrl = (req: Request) => {
    const protocol = req.headers['x-forwarded-proto'] || 'http';
    const host = req.headers['x-forwarded-host'] || req.headers['host'];

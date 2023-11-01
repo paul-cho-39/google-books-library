@@ -28,13 +28,14 @@ const styleProvider: { [key: string]: StyleLogo } = {
 
 // fix this page and trim down coding for conciseness
 // i dont know if this truly typesafe recommend looking at this one more time
-const LoginPage = ({ providers, callbackUrl }: Providers) => {
+const AuthProviders = ({ providers, callbackUrl }: Providers) => {
    const { Provider, ProviderDark, text, textDark, bg, bgDark } =
       styleProvider[providers?.id as string];
 
    return (
-      <div className='flex flex-row'>
+      <div role='' className='flex flex-row'>
          <button
+            aria-label={`${providers?.id}-login-button`}
             onClick={() =>
                signIn(providers?.id as string, {
                   callbackUrl: callbackUrl,
@@ -75,4 +76,4 @@ const LoginPage = ({ providers, callbackUrl }: Providers) => {
    );
 };
 
-export default LoginPage;
+export default AuthProviders;

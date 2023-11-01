@@ -19,3 +19,8 @@ export type Providers = {
       | undefined;
    callbackUrl: string;
 };
+
+export type Users = {
+   username: string | null;
+   email: string | null;
+};

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import { SignInForm, InputProps, SignInProps } from '@/lib/types/forms';
 import classNames from 'classnames';
+import { capitalizeWords } from '@/lib/helper/transformChar';
 
 export default function FormSignIn<TFieldValues extends FieldValues>({
    hidden,
@@ -29,10 +30,28 @@ export default function FormSignIn<TFieldValues extends FieldValues>({
    useEffect(() => {
       isSubmitted && clearErrors();
       if (shouldReset && isSubmitSuccessful) {
-         reset();
+         reset({ type: 'password', password: '' }, { keepErrors: true });
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [isSubmitSuccessful, isSubmitted]);
+
+   const enhancedChildren = React.Children.map(children, (child) => {
+      if (React.isValidElement(child) && child.props.name) {
+         return React.cloneElement(
+            child,
+            // the spread syntax is to shut the typescript error
+            {
+               ...{
+                  ...child.props,
+                  register,
+                  errors,
+                  isSubmitted,
+               },
+            }
+         );
+      }
+      return child;
+   });
 
    return (
       <>
@@ -40,22 +59,7 @@ export default function FormSignIn<TFieldValues extends FieldValues>({
             className={`${isDisclosure ? 'mt-6 space-y-2' : null}`}
             onSubmit={handleSubmit(onSubmit)}
          >
-            {Array.isArray(children)
-               ? children.map((child) => {
-                    // if child props contain name pass all props to children
-                    return child.props.name
-                       ? React.createElement(child.type, {
-                            ...{
-                               ...child.props,
-                               register,
-                               isSubmitted,
-                               errors,
-                               key: child.props.name,
-                            },
-                         })
-                       : child;
-                 })
-               : children}
+            {enhancedChildren}
          </form>
       </>
    );
@@ -68,44 +72,40 @@ export function Inputs({
    name,
    labelName,
    isSubmitted,
-   isDisclosure = false,
+   displayLabel = false,
+   className,
    ...rest
 }: InputProps) {
-   const errorsToString = Object.keys(errors).toString().toLocaleLowerCase();
-   const containsError = (name: keyof SignInForm) => {
-      return errorsToString.includes(name.toLocaleLowerCase());
-   };
+   const hasError = errors[name];
+   const classname = !className
+      ? 'block text-sm font-semibold text-blue-gray-900 -my-1'
+      : className;
    return (
       <>
          {register && (
             <>
-               {/* REFACTORING another component */}
-               <label
-                  htmlFor={labelName}
-                  className={`${
-                     isDisclosure
-                        ? 'block text-sm font-semibold text-blue-gray-900 -my-1'
-                        : 'hidden'
-                  } my-1.5`}
-               >
-                  {labelName}{' '}
-               </label>
+               {displayLabel && (
+                  <label htmlFor={labelName} className={classname}>
+                     {labelName && capitalizeWords(labelName)}
+                  </label>
+               )}
                <input
+                  id={labelName}
                   className={`${
-                     isDisclosure
+                     displayLabel
                         ? 'mt-1 px-3 focus:outline-gray-600'
                         : 'my-2 px-1.5 max-w-xsm border-[1px] rounded-md focus:outline-none focus:border-blue-500/40'
-                  } ${isSubmitted && containsError(name) ? 'ring-2 ring-red-500 shadow-md' : null}
+                  } ${isSubmitted && hasError ? 'ring-2 ring-red-500 shadow-md' : null}
               text-lg block p-2 w-full rounded-md text-blue-gray-900 border-slate-600 shadow-sm h-10 border-[1px] transition-colors duration-200`}
                   type={type}
                   {...register(name)}
                   {...rest}
                />
-               <span
-                  className={classNames(containsError(name) ? 'text-red-500 -mt-4 mb-1' : 'hidden')}
-               >
-                  {containsError(name) && 'One or more input is incorrect'}
-               </span>
+               {hasError && (
+                  <span role='alert' className='text-red-500 -mt-4 mb-1'>
+                     {capitalizeWords(name)} is incorrect
+                  </span>
+               )}
             </>
          )}
       </>

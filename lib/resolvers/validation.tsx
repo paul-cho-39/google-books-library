@@ -1,26 +1,23 @@
 import * as Yup from 'yup';
+import { Users } from '../types/providers';
 
 // change username -> name
-export const Validate = (usernames: string[], emails: string[]) => {
+export const Validate = (users: Users[]) => {
    const validationSchemaSignUp = Yup.object().shape({
       username: Yup.string()
          .required('Username is required')
          .test('This username is available', 'Username already exists', (values, context) => {
-            if (usernames.length <= 0) return true;
-            if (usernames?.length) {
-               return !usernames.includes(values as string);
-            } else return false;
+            if (users.length <= 0) return true;
+            return !users.some((user) => user.email === values);
          })
          .min(4, 'Please enter a username that is at least 4 characters')
          .max(30, (object) => {
             `Please enter a username that is less than 30 characters (Username: (${object.value.length}))`;
          }),
       email: Yup.string()
-         .test('is-available', 'Please enter a valid email', (values, context) => {
-            if (emails.length <= 0) return true;
-            if (values?.length) {
-               return !emails?.includes(values);
-            } else return false;
+         .test('is-available', 'Email is not available', (values, context) => {
+            if (users.length <= 0) return true;
+            return !users.some((user) => user.email === values);
          })
          .required('Email is required')
          .email("Email must have '@' "),

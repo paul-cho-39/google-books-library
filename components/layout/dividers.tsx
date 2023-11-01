@@ -10,7 +10,7 @@ type DividerButtonsProps = {
 
 export const Divider = () => {
    return (
-      <div className='relative flex justify-center'>
+      <div role='separator' className='relative flex justify-center'>
          <div className='absolute border-t-[1.5px] border-gray-600 dark:border-gray-200 w-full' />
       </div>
    );
@@ -54,7 +54,7 @@ export const LabelDivider = ({ label, className }: { label: string; className?: 
    // likely wont change but here for reference
    const platformBG = 'bg-white dark:bg-slate-800';
    return (
-      <div className='relative'>
+      <div role='separator' className='relative'>
          <div className='absolute inset-0 flex items-center' aria-hidden='true'>
             <div className='w-full border-t border-gray-300' />
          </div>

@@ -1,13 +1,15 @@
+import { Suspense, lazy, useMemo, useRef, useState } from 'react';
 import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
 import { getSession } from 'next-auth/react';
-import { Suspense, lazy, useMemo, useRef, useState } from 'react';
-import createUniqueDataSets from '@/lib/helper/books/filterUniqueData';
-import useInteractionObserver from '@/lib/hooks/useIntersectionObserver';
-import useInfiniteFetcher from '@/lib/hooks/useInfiniteFetcher';
-import BookSearchSkeleton from '@/components/loaders/bookcardsSkeleton';
 import { useRouter } from 'next/router';
+
+import useInteractionObserver from '@/lib/hooks/useIntersectionObserver';
+import createUniqueDataSets from '@/lib/helper/books/filterUniqueData';
 import { FilterProps, Items } from '@/lib/types/googleBookTypes';
+import useInfiniteFetcher from '@/lib/hooks/useInfiniteFetcher';
 import { CustomSession } from '@/lib/types/serverTypes';
+
+import BookSearchSkeleton from '@/components/loaders/bookcardsSkeleton';
 import EmptyResult from '@/components/error/emptyResult';
 import { MetaProps } from '@/models/_api/fetchGoogleUrl';
 import FilterInput from '@/components/inputs/filter';
@@ -67,12 +69,30 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
       );
    }
 
+   const renderLoadingState = () => (
+      <SearchLayoutPage isSuccess={false}>
+         <FilterInput filter={filter} setFilter={setFilter} />
+         <Divider />
+         <Spinner />
+      </SearchLayoutPage>
+   );
+
+   const renderEmptyOrErrorState = () => (
+      <EmptyResult isError={isError} query={search}>
+         <FilterInput filter={filter} setFilter={setFilter} />
+      </EmptyResult>
+   );
+
+   const renderSuccessState = () => (
+      <Suspense fallback={<BookSearchSkeleton books={5} />}>
+         <Cards query={search} books={uniqueDataSets} userId={userId} totalItems={totalItems} />
+      </Suspense>
+   );
+
+   if (!data && (isLoading || isFetching)) return renderLoadingState();
+
    if (!data || isError || ((!isLoading || !isFetching) && totalItems < 1)) {
-      return (
-         <EmptyResult isError={isError} query={search}>
-            <FilterInput filter={filter} setFilter={setFilter} />
-         </EmptyResult>
-      );
+      return renderEmptyOrErrorState();
    }
 
    // TODO: error boundary here;
@@ -85,16 +105,7 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
                   {isFetching && isLoading ? (
                      <BookSearchSkeleton books={5} />
                   ) : (
-                     isSuccess && (
-                        <Suspense fallback={<BookSearchSkeleton books={5} />}>
-                           <Cards
-                              query={search}
-                              books={uniqueDataSets}
-                              userId={userId}
-                              totalItems={totalItems}
-                           />
-                        </Suspense>
-                     )
+                     isSuccess && renderSuccessState()
                   )}
                </div>
             </main>

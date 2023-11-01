@@ -1,7 +1,7 @@
 import { FieldError, UseFormRegister } from 'react-hook-form';
 import { FormInput } from '@/lib/types/forms';
 
-interface InputFieldProps {
+interface SignupFieldProps {
    register: UseFormRegister<FormInput>;
    name: keyof FormInput;
    label: string;
@@ -9,11 +9,11 @@ interface InputFieldProps {
    type: React.HTMLInputTypeAttribute;
 }
 
-const InputField = ({ label, type, name, register, error }: InputFieldProps) => {
+const SignupField = ({ label, type, name, register, error }: SignupFieldProps) => {
    return (
       <div className='mb-2 w-full'>
          <label
-            htmlFor={label}
+            htmlFor={name}
             className='block text-md flex-1 font-medium text-slate-800 dark:text-slate-100'
          >
             {label}*
@@ -27,9 +27,13 @@ const InputField = ({ label, type, name, register, error }: InputFieldProps) => 
             type={type}
             {...register(name)}
          />
-         {error && <span className='block text-red-600 mt-0 text-sm'>{error.message}</span>}
+         {error && (
+            <span role='alert' className='block text-red-600 mt-0 text-sm'>
+               {error.message}
+            </span>
+         )}
       </div>
    );
 };
 
-export default InputField;
+export default SignupField;
