@@ -22,6 +22,7 @@ const Cards = lazy(() => import('@/components/bookcards/cards'));
 
 export default function Search(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const { userId } = props;
+
    // required when selecting the books later to connect w/ api route
    const router = useRouter();
    const search = router.query.q as string;
@@ -57,17 +58,7 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
       [data]
    );
 
-   const totalItems = data?.pages?.[0]?.totalItems || 0;
-
-   if (!data && (isLoading || isFetching)) {
-      return (
-         <SearchLayoutPage isSuccess={false}>
-            <FilterInput filter={filter} setFilter={setFilter} />
-            <Divider />
-            <Spinner />
-         </SearchLayoutPage>
-      );
-   }
+   const totalItems: number = data?.pages?.[0]?.totalItems || 0;
 
    const renderLoadingState = () => (
       <SearchLayoutPage isSuccess={false}>
@@ -89,19 +80,22 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
       </Suspense>
    );
 
+   // when theres no data and it is loading/fetching it is in a loading state
    if (!data && (isLoading || isFetching)) return renderLoadingState();
 
+   // if totalItems array is empty or if there is an error then it returns
+   // an empty state
    if (!data || isError || ((!isLoading || !isFetching) && totalItems < 1)) {
       return renderEmptyOrErrorState();
    }
 
-   // TODO: error boundary here;
    return (
       <APIErrorBoundary>
          <SearchLayoutPage isSuccess={true}>
             <main>
                <FilterInput filter={filter} setFilter={setFilter} />
                <div>
+                  {/* this also works with interaction observer */}
                   {isFetching && isLoading ? (
                      <BookSearchSkeleton books={5} />
                   ) : (
