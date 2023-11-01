@@ -11,10 +11,10 @@ import { validateSignUp } from '@/lib/resolvers/validation';
 import ROUTES from '@/utils/routes';
 
 import AuthLayout from '@/components/layout/authLayout';
-import LoginPage from '@/components/Login/providers';
 import FormSignIn, { Inputs } from '@/components/Login/credentials';
 import { Divider, LabelDivider } from '@/components/layout/dividers';
 import useRedirectIfAuthenticated from '@/lib/hooks/useRedirectAfterAuthenticated';
+import AuthProviders from '@/components/Login/providers';
 
 export function Account({ authProviders }: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const [error, setError] = useState(false);
@@ -27,12 +27,13 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
       const res = await signIn('credentials', {
          email: data.email,
          password: data.password,
-         redirect: true,
-         callbackUrl: nextPath,
+         redirect: false,
+         // callbackUrl: nextPath,
       });
 
-      if (!res) {
-         console.log('not authenticated');
+      if (res?.ok) {
+         router.push(nextPath);
+      } else {
          setError(true);
       }
    };
@@ -43,7 +44,7 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
       <AuthLayout>
          <div className='flex flex-col '>
             <div className='flex flex-col'>
-               <div>
+               <div role='main'>
                   <div className='inline-flex mt-10 mb-4 w-full'>
                      <h3 className='font-bold font-primary text-2xl lg:text-4xl text-slate-800 dark:text-slate-200'>
                         Sign In
@@ -62,9 +63,9 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
                         <Inputs
                            name='email'
                            type='email'
-                           className='block text-md flex-1 text-slate-800 dark:text-slate-100 font-normal text-primary'
-                           displayLabel={true}
                            labelName='email'
+                           displayLabel={true}
+                           className='block text-md flex-1 text-slate-800 dark:text-slate-100 font-normal text-primary'
                         />
                         <div className='w-full flex flex-row justify-end'>
                            <Link href='/verify/reset/sendverification'>
@@ -77,11 +78,14 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
                         <Inputs
                            name='password'
                            type='password'
-                           displayLabel={true}
                            labelName='password'
+                           displayLabel={true}
                            className='block text-md flex-1 text-slate-800 dark:text-slate-100 font-normal text-primary'
                         />
-                        <button className='my-2 rounded-xl shadow-md bg-beige dark:bg-charcoal tracking-wider w-full h-[40px] border-2 border-orange-200 dark:border-dark-charcoal disabled:opacity-25 focus:ring-1 focus:ring-black'>
+                        <button
+                           data-testid='signin-button'
+                           className='my-2 rounded-xl shadow-md bg-beige dark:bg-charcoal tracking-wider w-full h-[40px] border-2 border-orange-200 dark:border-dark-charcoal disabled:opacity-25 focus:ring-1 focus:ring-black'
+                        >
                            <span className='text-slate-800 dark:text-slate-200'>Login</span>
                         </button>
                      </FormSignIn>
@@ -91,7 +95,7 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
                   </div>
                </div>
                {authProviders?.map((provider) => (
-                  <LoginPage key={provider?.id} providers={provider} callbackUrl={nextPath} />
+                  <AuthProviders key={provider?.id} providers={provider} callbackUrl={nextPath} />
                ))}
             </div>
             <div className='flex flex-col justify-center items-center'>
