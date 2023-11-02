@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
-import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
+import React, { useMemo } from 'react';
 import { CheckIcon } from '@heroicons/react/20/solid';
-import React from 'react';
+
+import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import { Library } from '@/lib/types/models/books';
 
 interface FilterStatusProps {
@@ -28,6 +28,7 @@ const FilterStatus = ({ bookId, library }: FilterStatusProps) => {
       },
    };
 
+   // returns book status if users reading the book in the library
    const readingStatus = useMemo(() => {
       for (const statusKey in readingStatusMap) {
          const status = readingStatusMap[statusKey as keyof typeof readingStatusMap];
@@ -40,14 +41,15 @@ const FilterStatus = ({ bookId, library }: FilterStatusProps) => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [bookId, library]);
 
+   // early exit when there is no user or the library is empty
    if (!readingStatus) return null;
 
    return (
-      <div className='inline-flex flex-row -my-2'>
-         <CheckIcon height='16' width='16' {...readingStatus.iconProps} />
-         <span className='text-slate-600 px-2 dark:text-slate-400 font-semibold text-sm'>
+      <div role='status' className='inline-flex flex-row -my-2'>
+         <CheckIcon aria-disabled={true} height='16' width='16' {...readingStatus.iconProps} />
+         <h4 className='text-slate-600 px-2 dark:text-slate-400 font-semibold text-sm'>
             {readingStatus.text}
-         </span>
+         </h4>
       </div>
    );
 };

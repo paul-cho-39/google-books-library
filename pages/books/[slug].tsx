@@ -142,7 +142,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   </div>
                   <ActiveRating
                      ratingTitle={ratingTitle}
-                     onRatingSelected={handleMutation}
+                     // onRatingSelected={handleMutation}
                      selectedRating={selectedRating}
                      setSelectedRating={setSelectedRating}
                      size='large'

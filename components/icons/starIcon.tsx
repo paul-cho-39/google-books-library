@@ -15,7 +15,11 @@ export interface StarProps {
 const Star: React.FunctionComponent<StarProps> = ({ fillPercentage, size = 'small' }) => {
    const { container, icon } = sizes[size];
    return (
-      <div className={`${container} relative`}>
+      <div
+         className={`${container} relative`}
+         role='img'
+         aria-label={`Rating: ${fillPercentage} percent`}
+      >
          <StarIcon className={`absolute text-gray-600 dark:text-gray-300 ${icon}`} />
          <div
             style={{ width: `${fillPercentage}%` }}

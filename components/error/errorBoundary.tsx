@@ -10,7 +10,10 @@ const ErrorFallback = ({ error }: { error: Error }) => {
             <p className='mt-16 text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-200'>
                Something went wrong:
             </p>
-            <pre className='mt-6 text-base leading-7 text-slate-800 dark:text-slate-200'>
+            <pre
+               role='alert'
+               className='mt-6 text-base leading-7 text-slate-800 dark:text-slate-200'
+            >
                {error.message}
             </pre>
             <div className='mt-10'>

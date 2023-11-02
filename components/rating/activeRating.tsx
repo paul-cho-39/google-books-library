@@ -85,7 +85,7 @@ export const ActiveRating = ({
 
    return (
       <div className='flex flex-col'>
-         <div className='flex flex-row cursor-pointer'>
+         <div role='rowgroup' className='flex flex-row cursor-pointer'>
             {Array.from({ length: 5 }).map((_, index) => (
                <div
                   key={index}

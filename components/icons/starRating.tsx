@@ -6,21 +6,23 @@ export interface StarRatingProps {
 }
 
 const StarRating = ({ averageRating = 0, size = 'small' }: StarRatingProps) => {
-   const adjustRating = 1 + averageRating;
-   const filledStars = Math.floor(adjustRating);
-   const remainder = adjustRating - filledStars;
+   const filledStars = Math.floor(averageRating);
+   const remainder = (averageRating - filledStars) * 100;
+
+   const fillPercentages = [
+      ...Array(filledStars).fill(100),
+      remainder,
+      ...Array(5 - filledStars - 1).fill(0),
+   ];
    return (
-      <div className='flex flex-row'>
-         {Array.from({ length: 5 }).map((_, index) => {
-            if (averageRating) {
-               if (index + 1 < filledStars) {
-                  return <Star fillPercentage={100} size={size} key={index} />;
-               } else if (index === filledStars) {
-                  return <Star fillPercentage={remainder * 100} size={size} key={index} />;
-               }
-            }
-            return <Star size={size} fillPercentage={0} key={index} />;
-         })}
+      <div
+         role='group'
+         aria-label={`Rating: ${averageRating.toFixed(1)} out of 5 stars`}
+         className='flex flex-row'
+      >
+         {fillPercentages.map((fill, index) => (
+            <Star fillPercentage={fill} size={size} key={index} />
+         ))}
       </div>
    );
 };

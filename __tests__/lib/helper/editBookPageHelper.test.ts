@@ -1,7 +1,13 @@
 import '@testing-library/jest-dom';
 
-import { breakCategories, removeHtmlTags } from '@/lib/helper/books/editBookPageHelper';
+import {
+   breakCategories,
+   removeHtmlTags,
+   getAvailableThumbnail,
+   getHighestQualityImage,
+} from '@/lib/helper/books/editBookPageHelper';
 
+// testing breaking tags for google descriptions
 describe('removeHtmlTags', () => {
    it('removes HTML tags from the description', () => {
       const description = '<p>This is a <strong>test</strong> description.</p>';
@@ -46,5 +52,35 @@ describe('breakCategories', () => {
    it('should return undefined for undefined categories', () => {
       const result = breakCategories(undefined);
       expect(result).toBeUndefined();
+   });
+});
+
+// testing for images here
+describe('Available images ', () => {
+   it('returns default image when image is not available', () => {
+      const thumbnail = getAvailableThumbnail({});
+      expect(thumbnail).toBe('/unavailableThumbnail.png');
+   });
+
+   it('returns medium quality image when available', () => {
+      const imageLinks = {
+         medium: 'http://example.com/medium.jpg',
+         thumbnail: 'http://example.com/thumbnail.jpg',
+      };
+      expect(getAvailableThumbnail(imageLinks)).toBe(imageLinks.medium);
+   });
+
+   it('returns thumbnail when medium quality is not available', () => {
+      const imageLinks = {
+         thumbnail: 'http://example.com/thumbnail.jpg',
+      };
+      expect(getAvailableThumbnail(imageLinks)).toBe(imageLinks.thumbnail);
+   });
+
+   it('returns the highest quality image', () => {
+      const imageLinks = {
+         thumbnail: 'http://example.com/thumbnail.jpg?zoom=1',
+      };
+      expect(getHighestQualityImage(imageLinks)).toBe('http://example.com/thumbnail.jpg?zoom=3');
    });
 });

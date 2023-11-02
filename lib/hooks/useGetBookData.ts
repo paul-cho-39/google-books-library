@@ -5,7 +5,7 @@ import { Library } from '../types/models/books';
 import { ResponseFinishedData } from '../types/serverTypes';
 
 export default function useGetBookData(userId: string) {
-   const { data: dataBooks } = useQuery<ResponseFinishedData, unknown, Library>(
+   return useQuery<ResponseFinishedData, unknown, Library>(
       queryKeys.userLibrary(userId),
       () => bookApiUpdate('GET', userId, 'finished'),
       {
@@ -17,7 +17,4 @@ export default function useGetBookData(userId: string) {
          select: (data) => data.data,
       }
    );
-
-   console.log('INSIDE useGetBookData.ts and data is:, ', dataBooks);
-   return dataBooks;
 }

@@ -3,7 +3,6 @@ import SingleOrMultipleAuthors from '../../bookcover/authors';
 import BookDescription from '../../bookcover/description';
 import DisplayRating, { RatingProps } from '../../bookcover/ratings';
 import BookTitle from '../../bookcover/title';
-import StarRating from '../../icons/starRating';
 
 interface CategoryDescriptionParams extends RatingProps {
    id: string;
