@@ -138,7 +138,6 @@ function setOptimisticData(
 ): SingleRatingData {
    const { initialData } = params;
 
-   // const newRating = action === 'remove' ? 0 : rating;
    const newCount = setNewCount(initialData, action);
    const newAvg = calculateNewAverage(action, initialData?.avg, initialData?.count, rating);
 

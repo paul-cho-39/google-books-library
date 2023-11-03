@@ -19,14 +19,17 @@ function DeleteRatingButton({
 
    return (
       <>
-         <PencilIcon aria-hidden className='h-6 w-6 text-slate-800 dark:text-slate-200' />
          <button
             {...buttonProps}
             onClick={handleRemoveMutation}
             aria-label='delete rating'
-            className='bg-transparent font-medium text-lg text-slate-800 dark:text-slate-200 hover:underline focus:outline-none'
+            className='lg:my-2 flex flex-row justify-center bg-transparent font-medium text-lg text-slate-800 dark:text-slate-200 hover:underline focus:outline-none'
          >
-            Delete Rating
+            <PencilIcon
+               aria-hidden
+               className='h-4 w-4 text-slate-800 dark:text-slate-200 lg:h-6 lg:w-6 lg:px-1'
+            />
+            <span className='lg:text-lg text-center'>Delete Rating</span>
          </button>
       </>
    );

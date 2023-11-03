@@ -41,7 +41,7 @@ function useHandleRating(
 
    // use it without callback and see
    const handleRemoveMutation = useCallback(() => {
-      removeMutation();
+      removeMutation(null);
    }, [removeMutation]);
 
    return { handleMutation, handleRemoveMutation, currentRatingData };

@@ -41,16 +41,19 @@ export const ActiveRating = ({
    };
 
    const getFillPercentage = (index: number) => {
+      // first evaluate hovered state
       if (hoveredStar !== null) {
          return adjustRating(index) <= hoveredStar ? 100 : 0;
       } else if (selectedRating !== null) {
-         return adjustRating(index) <= selectedRating ? 100 : 0;
+         // should not display means rating has been removed
+         if (!shouldDisplay) return 0;
+         else return adjustRating(index) <= selectedRating ? 100 : 0;
       }
       return 0;
    };
 
    return (
-      <div className='flex flex-col'>
+      <div className='flex flex-col items-center'>
          <div className='flex flex-row cursor-pointer'>
             {Array.from({ length: 5 }).map((_, index) => (
                <div
@@ -62,12 +65,14 @@ export const ActiveRating = ({
                   <Star fillPercentage={getFillPercentage(index)} size={size} />
                </div>
             ))}
+         </div>
+         <div role='' className='lg:text-lg flex items-center space-x-2'>
+            <h3 className='text-center my-2 text-slate-800 dark:text-slate-200'>{ratingTitle}</h3>
             <DeleteRatingButton
                shouldDisplay={shouldDisplay}
                handleRemoveMutation={handleRemoveMutation}
             />
          </div>
-         <h3 className='text-center my-2 text-slate-800 dark:text-slate-200'>{ratingTitle}</h3>
       </div>
    );
 };

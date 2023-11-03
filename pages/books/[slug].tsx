@@ -56,7 +56,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    );
 
    const [selectedRating, setSelectedRating] = useState<null | number>(
-      userRatingData?.ratingInfo?.ratingValue ?? null
+      userRatingData?.ratingInfo?.ratingValue || 0
    );
 
    const { handleMutation, handleRemoveMutation, currentRatingData } = useHandleRating(
@@ -140,10 +140,11 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   <ActiveRating
                      ratingTitle={ratingTitle}
                      selectedRating={selectedRating}
-                     setSelectedRating={setSelectedRating}
                      handleMutation={handleMutation}
                      handleRemoveMutation={handleRemoveMutation}
-                     shouldDisplay={!!currentRatingData?.ratingInfo?.ratingValue}
+                     setSelectedRating={setSelectedRating}
+                     // display remove rating
+                     shouldDisplay={!!userRatingData}
                      size='large'
                   />
                </div>
