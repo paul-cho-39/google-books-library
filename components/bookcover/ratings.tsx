@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction, useState } from 'react';
-import Star, { Size } from '../icons/starIcon';
 import StarRating, { StarRatingProps } from '../icons/starRating';
 
 export interface RatingProps extends StarRatingProps {

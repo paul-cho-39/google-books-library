@@ -2,10 +2,9 @@ import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 import queryKeys from '@/utils/queryKeys';
 import apiRequest from '@/utils/fetchData';
 import API_ROUTES from '@/utils/apiRoutes';
-import { DataWithRatings } from '../types/models/books';
-import { MultipleRatingData, RatingInfo, SingleRatingData } from '../types/serverTypes';
+import { DataWithRatings, RatingsWithoutData } from '../types/models/books';
+import { MultipleRatingData, RatingData, RatingInfo, SingleRatingData } from '../types/serverTypes';
 import { Method } from '../types/fetchbody';
-import { findId } from './useGetRatings';
 
 interface InitializeDataParams extends MutationBase {
    queryClient: QueryClient;
@@ -14,23 +13,35 @@ interface InitializeDataParams extends MutationBase {
 type MutationRatingActionType = 'create' | 'update' | 'remove';
 type MutationRatingDataTypes = {
    create: DataWithRatings;
-   update: Omit<DataWithRatings, 'bookData'>;
+   update: RatingsWithoutData;
    remove: null;
 };
 type MutationRatingData<ActionType extends MutationRatingActionType> =
    MutationRatingDataTypes[ActionType];
 
-interface MutationBase {
+export interface MutationBase {
    userId: string;
    bookId: string;
+   inLibrary: boolean;
    initialData?: SingleRatingData;
+}
+
+interface MultipleQueryDataParams extends Omit<MutationBase, 'initialData'> {
+   queryClient: QueryClient;
+   context:
+      | {
+           prevRatingData: SingleRatingData | undefined;
+           action: MutationRatingActionType;
+        }
+      | undefined;
+   newRating: number | undefined;
 }
 
 export default function useMutateRatings<ActionType extends MutationRatingActionType>(
    params: MutationBase,
    action: ActionType
 ) {
-   const { bookId, userId } = params;
+   const { bookId, userId, inLibrary } = params;
    const queryClient = useQueryClient();
 
    const { apiUrl, method } = getApiUrl(action, userId, bookId);
@@ -49,18 +60,28 @@ export default function useMutateRatings<ActionType extends MutationRatingAction
             let rating: number;
             await queryClient.cancelQueries(queryKeys.ratingsByBookAndUser(bookId, userId));
             // from the same data that is being returned
-            // set that data 'rating' for optimistic update
+            // setting the data 'rating' for optimistic update
             const prevRatingData = queryClient.getQueryData<SingleRatingData>(
                queryKeys.ratingsByBookAndUser(bookId, userId)
             );
 
-            // if there is no data rating is 0
+            // if there is no previous rating data the rating value is 0
             if (!currentRatingData) {
                rating = 0;
             }
             rating = getRatingFromMutation(data, action, prevRatingData);
 
-            const optimisticData = setOptimisticData(prevRatingData, rating, action);
+            const optimisticData = setOptimisticData(
+               {
+                  initialData: prevRatingData,
+                  bookId,
+                  userId,
+                  inLibrary,
+               },
+               action,
+               rating
+            );
+
             queryClient.setQueryData<SingleRatingData>(
                queryKeys.ratingsByBookAndUser(bookId, userId),
                optimisticData
@@ -70,6 +91,7 @@ export default function useMutateRatings<ActionType extends MutationRatingAction
             return { prevRatingData, action };
          },
          onError: (_err, _variables, context) => {
+            console.error('RECIEVED AN ERROR', _err);
             if (context?.prevRatingData) {
                queryClient.setQueryData<SingleRatingData>(
                   queryKeys.ratingsByBookAndUser(bookId, userId),
@@ -77,9 +99,16 @@ export default function useMutateRatings<ActionType extends MutationRatingAction
                );
             }
          },
-         onSettled: (_data, _error, _variables, context) => {
-            // console.log('after settling: ', currentRatingData);
-            setQueryDataOnRemove(queryClient, bookId, context);
+         onSettled: (_data, _error, variables, context) => {
+            setMultipleQueryData({
+               queryClient,
+               bookId,
+               userId,
+               context,
+               inLibrary,
+               newRating: variables?.rating,
+            });
+
             // the previous currentRatingData is invalidated and currentRatingData is fresh
             queryClient.invalidateQueries(queryKeys.ratingsByBookAndUser(bookId, userId));
          },
@@ -99,26 +128,48 @@ function getApiUrl(action: MutationRatingActionType, userId: string, bookId: str
    return routeMap[action] || {};
 }
 
-function setOptimisticData(
-   initialData: SingleRatingData | undefined,
-   rating: number,
-   action: MutationRatingActionType
-): SingleRatingData | undefined {
-   if (!initialData) return;
+// it wont update properly because create is not ACTUALLY create
+// when the rating is deleted it is still 'UPDATE' not 'CREATE'
 
-   const incrementBy = action === 'create' ? 1 : action === 'remove' ? -1 : 0;
-   const newCount = initialData.count + incrementBy;
-   const newAvg = calculateNewAverage(action, initialData.avg, initialData.count, rating);
+function setOptimisticData(
+   params: MutationBase,
+   action: MutationRatingActionType,
+   rating: number
+): SingleRatingData {
+   const { initialData } = params;
+
+   // const newRating = action === 'remove' ? 0 : rating;
+   const newCount = setNewCount(initialData, action);
+   const newAvg = calculateNewAverage(action, initialData?.avg, initialData?.count, rating);
 
    return {
       ...initialData,
       ratingInfo: {
-         ...(initialData.ratingInfo as RatingInfo),
+         ...(initialData?.ratingInfo as RatingInfo),
+         bookId: params.bookId,
+         userId: params.userId,
          ratingValue: rating,
       },
+      inLibrary: params.inLibrary,
       count: newCount,
       avg: newAvg,
    };
+}
+
+function setNewCount(initialData: SingleRatingData | undefined, action: MutationRatingActionType) {
+   const currentCount = initialData?.count || 0;
+   switch (action) {
+      case 'create':
+         return currentCount + 1;
+      case 'update':
+         // if the book is already recorded in the library
+         // and if the rating is deleted the current count should equal to 0
+         return currentCount <= 0 ? Math.max(currentCount, 0) + 1 : currentCount;
+      case 'remove':
+         return currentCount - 1;
+      default:
+         return currentCount;
+   }
 }
 
 function calculateNewAverage(
@@ -131,15 +182,17 @@ function calculateNewAverage(
       case 'create':
          return (oldAvg * oldCount + rating) / (oldCount + 1);
       case 'update':
-         return (oldAvg * (oldCount - 1) + rating) / oldCount;
+         const currentCount = oldCount <= 0 ? oldCount + 1 : oldCount;
+         return (oldAvg * (oldCount - 1) + rating) / currentCount;
       case 'remove':
-         return (oldAvg * oldCount - rating) / (oldCount - 1);
+         // should equal to 0 when removing
+         return oldCount <= 1 ? 0 : (oldAvg * oldCount - rating) / (oldCount - 1);
       default:
          return oldAvg;
    }
 }
 
-// thought react query would handle this but had to force update the cache
+// have to manually update the cache
 // for it to be updated and persist over in useMutation
 function initializeData(params: InitializeDataParams) {
    const { queryClient, bookId, userId, initialData } = params;
@@ -166,57 +219,98 @@ function getRatingFromMutation<ActionType extends MutationRatingActionType>(
       return prevData?.ratingInfo?.ratingValue || 0;
    }
 
-   return data?.rating ?? 0;
+   return data?.rating || 0;
 }
 
-function setQueryDataOnRemove(
-   queryClient: QueryClient,
-   bookId: string,
-   context:
-      | {
-           prevRatingData: SingleRatingData | undefined;
-           action: MutationRatingActionType;
-        }
-      | undefined
-) {
-   if (!context) return;
-
-   const { prevRatingData } = context;
-
-   // if removed ratingData has to be available
+function setMultipleQueryData(params: MultipleQueryDataParams) {
+   const { context, queryClient, ...restParams } = params;
    const ratingData = queryClient.getQueryData<MultipleRatingData>(
-      queryKeys.ratingsByBook(bookId)
+      queryKeys.ratingsByBook(restParams.bookId)
    ) as MultipleRatingData;
 
-   if (!ratingData || !prevRatingData) return;
+   if (!ratingData || !context || !context.prevRatingData) return;
+
+   const { prevRatingData, action } = context;
 
    const newAvg = calculateNewAverage(
-      'remove',
-      prevRatingData?.avg,
-      prevRatingData?.count,
-      prevRatingData?.ratingInfo?.ratingValue
+      action,
+      ratingData?.avg,
+      ratingData?.count,
+      restParams.newRating
    );
-   const count = Math.max(prevRatingData?.count || 0 - 1, 0);
 
-   const updatedRatingInfo = ratingData.ratingInfo?.filter((rating) => {
-      if (prevRatingData) {
-         rating.userId !== prevRatingData?.ratingInfo?.userId ||
-            rating.bookId !== prevRatingData.ratingInfo.bookId;
-      }
-   });
+   const count = setNewCount(prevRatingData, action);
+   const ratingInfo = getRatingInfo(ratingData, prevRatingData, action, restParams);
 
-   console.log('DEBUGGING INSDIE SETQUERYONREMOVE');
-   console.log('--------------------------');
-   console.log('--------------------------');
-   console.log('--------------------------');
-   console.log('--------------------------');
-   console.log('after removing, this is the data: ', updatedRatingInfo);
-
-   // it may be better to pass params with 'isDeleted' instead
-   queryClient.setQueryData<MultipleRatingData>(queryKeys.ratingsByBook(bookId), {
+   queryClient.setQueryData<MultipleRatingData>(queryKeys.ratingsByBook(restParams.bookId), {
       ...ratingData,
       avg: newAvg,
       count: count,
-      ratingInfo: updatedRatingInfo,
+      ratingInfo: ratingInfo,
    });
+}
+
+interface RatingInfoParams {
+   bookId: string;
+   userId: string;
+   inLibrary: boolean;
+   newRating: number | undefined;
+}
+
+function getRatingInfo(
+   ratingData: MultipleRatingData,
+   prevData: SingleRatingData,
+   action: MutationRatingActionType,
+   params: RatingInfoParams
+): RatingInfo[] | undefined {
+   const { bookId, userId, newRating, inLibrary } = params;
+
+   switch (action) {
+      case 'remove':
+         return ratingData.ratingInfo?.filter((data) => data.userId !== userId);
+      // if the userId is not found then create a new one
+      case 'update':
+         const userRatingData = ratingData.ratingInfo?.find((data) => data.userId === userId);
+         const dateAdded = !userRatingData ? new Date() : userRatingData.dateAdded;
+
+         const updatedRatingInfo: RatingInfo = {
+            bookId: bookId,
+            userId: userId,
+            ratingValue: newRating || 0,
+            dateAdded: dateAdded,
+            dateUpdated: new Date(),
+         };
+
+         return ratingData.ratingInfo
+            ? upsertRatingInfo([...ratingData.ratingInfo], updatedRatingInfo)
+            : [updatedRatingInfo];
+
+      case 'create':
+         const newRatingInfo: RatingInfo = {
+            bookId: bookId,
+            userId: userId,
+            ratingValue: newRating || 0,
+            dateAdded: new Date(),
+            dateUpdated: new Date(),
+         };
+
+         return ratingData.ratingInfo
+            ? upsertRatingInfo([...ratingData.ratingInfo], newRatingInfo)
+            : [newRatingInfo];
+
+      default:
+         return ratingData.ratingInfo;
+   }
+}
+
+function upsertRatingInfo(ratingInfoArray: RatingInfo[], newInfo: RatingInfo): RatingInfo[] {
+   const index = ratingInfoArray.findIndex((info) => info.userId === newInfo.userId);
+   if (index > -1) {
+      // if found then update it to the new info
+      ratingInfoArray[index] = newInfo;
+   } else {
+      // add the new rating info if it doesn't exist
+      ratingInfoArray.push(newInfo);
+   }
+   return ratingInfoArray;
 }

@@ -84,8 +84,6 @@ export function useGetRating({ bookId, userId, initialData }: SingleRatingParams
       }
    );
 
-   // if ()
-
    return { data, ...queryInfo };
 }
 // store bookIds into an array of string and store them into query cache

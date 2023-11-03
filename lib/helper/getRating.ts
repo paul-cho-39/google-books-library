@@ -2,8 +2,8 @@ import { RatingData } from '../types/serverTypes';
 
 export const getAverageRatings = (
    serverAverage: number = 0,
-   localAverage: number = 0,
    serverTotal: number = 0,
+   localAverage: number = 0,
    localTotal: number = 0
 ) => {
    const combinedTotal = localTotal + serverTotal;

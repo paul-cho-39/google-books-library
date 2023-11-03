@@ -24,7 +24,7 @@ export type FetchCacheType = {
 async function apiRequest<T, TData>(
    options: ApiRequestOptions<T>,
    callback?: () => void
-): Promise<TData> {
+): Promise<TData | undefined> {
    const { apiUrl, method, data, headers, shouldRoute, routeTo, delay } = options;
 
    try {
@@ -45,6 +45,10 @@ async function apiRequest<T, TData>(
          setTimeout(() => {
             router.push(routeTo);
          }, delay ?? 0);
+      }
+
+      if (response.status === 204) {
+         return;
       }
 
       return response.json() as Promise<TData>;
@@ -119,7 +123,7 @@ export const fetchDataFromCache = async <
       method: 'GET',
    });
 
-   return res;
+   return res as ReturnedCacheData<CacheData>;
 };
 
 // fetcher for user update
@@ -136,7 +140,7 @@ export const bookApiUpdate = async <T>(
       shouldRoute: false,
    });
 
-   return res;
+   return res as Promise<T>;
 };
 
 export default apiRequest;

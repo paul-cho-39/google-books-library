@@ -25,12 +25,12 @@ export interface RatingData {
    inLibrary: boolean;
 }
 
-// contains multiple ratings
+// contains all ratings of a book
 export interface MultipleRatingData extends RatingData {
    ratingInfo: RatingInfo[] | undefined;
 }
 
-// contains single rating for the said user
+// contains single rating for a user
 export interface SingleRatingData extends RatingData {
    ratingInfo: RatingInfo | undefined | null;
 }

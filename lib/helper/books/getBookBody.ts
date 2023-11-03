@@ -18,9 +18,9 @@ export const getBody = (userId: string, book: Items<any>) => {
 };
 
 export const getBodyFromFilteredGoogleFields = (data: Items<any>): Data => {
-   const volumeInfo = data.volumeInfo;
+   const volumeInfo = data?.volumeInfo;
    return {
-      title: volumeInfo.title,
+      title: volumeInfo?.title,
       subtitle: volumeInfo?.subtitle || '',
       publishedDate: volumeInfo?.publishedDate || '',
       language: volumeInfo?.language || '',

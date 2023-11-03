@@ -16,6 +16,11 @@ export interface DataWithRatings {
    rating: number;
 }
 
+export interface RatingsWithoutData {
+   rating: number;
+   bookData?: Data;
+}
+
 export interface Data {
    title: string;
    subtitle: string;

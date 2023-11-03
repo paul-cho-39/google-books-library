@@ -1,35 +1,26 @@
 import { Dispatch, useState, SetStateAction } from 'react';
 import Star, { Size } from '../icons/starIcon';
-import { BaseIdParams } from '@/lib/types/models/books';
-import { GoogleUpdatedFields, Items } from '@/lib/types/googleBookTypes';
-import { MultipleRatingData, SingleRatingData } from '@/lib/types/serverTypes';
-import useMutateRatings from '@/lib/hooks/useMutateRating';
-import { getBodyFromFilteredGoogleFields } from '@/lib/helper/books/getBookBody';
+import DeleteRatingButton, { DeleteRatingButtonProps } from '../buttons/deleteRatingButton';
 
-export type ActiveRatingProps = BaseIdParams & {
+export type ActiveRatingProps = {
    ratingTitle: string;
-   //    onRatingSelected?: (rating: number) => void;
-   size?: Size;
    selectedRating: number | null;
    setSelectedRating: Dispatch<SetStateAction<number | null>>;
-   data: Items<any>;
-   currentRatingData: MultipleRatingData | null | undefined;
-   initialData?: SingleRatingData;
-};
+   handleMutation: (rating: number) => void;
+   size?: Size;
+} & DeleteRatingButtonProps;
 
 export const ActiveRating = ({
    ratingTitle,
-   //    onRatingSelected,
+   shouldDisplay,
+   handleRemoveMutation,
    selectedRating,
    setSelectedRating,
+   handleMutation,
    size = 'small',
-   userId,
-   bookId,
-   data,
-   currentRatingData,
-   initialData,
 }: ActiveRatingProps) => {
    const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+
    const adjustRating = (num: number) => {
       return num + 1;
    };
@@ -42,36 +33,11 @@ export const ActiveRating = ({
       setHoveredStar(null);
    };
 
-   const {
-      mutation: { mutate: mutateCreate },
-   } = useMutateRatings<'create'>(
-      { bookId: bookId, userId: userId, initialData: initialData },
-      'create'
-   );
-
-   const {
-      mutation: { mutate: mutateUpdate },
-   } = useMutateRatings<'update'>(
-      { bookId: bookId, userId: userId, initialData: initialData },
-      'update'
-   );
-
-   const handleMutation = (rating: number) => {
-      const notCreated = currentRatingData && !currentRatingData.inLibrary;
-      const bookData = getBodyFromFilteredGoogleFields(data);
-      const createBody = { bookData, rating };
-      const updateBody = { rating };
-      notCreated ? mutateCreate(createBody) : mutateUpdate(updateBody);
-   };
-
    //   may have to change this logic here
    const handleClick = (rating: number) => {
       const adjustedRating = adjustRating(rating);
       setSelectedRating(adjustedRating);
       handleMutation(rating);
-      //   if (onRatingSelected) {
-      //  onRatingSelected(adjustedRating);
-      //   }
    };
 
    const getFillPercentage = (index: number) => {
@@ -85,7 +51,7 @@ export const ActiveRating = ({
 
    return (
       <div className='flex flex-col'>
-         <div role='rowgroup' className='flex flex-row cursor-pointer'>
+         <div className='flex flex-row cursor-pointer'>
             {Array.from({ length: 5 }).map((_, index) => (
                <div
                   key={index}
@@ -96,6 +62,10 @@ export const ActiveRating = ({
                   <Star fillPercentage={getFillPercentage(index)} size={size} />
                </div>
             ))}
+            <DeleteRatingButton
+               shouldDisplay={shouldDisplay}
+               handleRemoveMutation={handleRemoveMutation}
+            />
          </div>
          <h3 className='text-center my-2 text-slate-800 dark:text-slate-200'>{ratingTitle}</h3>
       </div>

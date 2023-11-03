@@ -9,9 +9,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       try {
          const ratingData = await service.getAllRatingOfSingleBook(bookId as string);
          const response = createApiResponse<typeof ratingData>(ratingData, {
-            message: 'all ratings from single book',
+            message: 'GET',
          });
-         return res.status(201).json(response);
+         return res.status(200).json(response);
       } catch (err: any) {
          const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
          return res.status(404).json(errorResponse);
@@ -37,10 +37,14 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       const service = new BookService(userId as string, bookId as string);
       try {
          service.deleteSingleRating();
-         const response = createApiResponse(null, {
-            message: 'Deleted rating',
-         });
-         return res.status(201).json(response);
+         const response = createApiResponse(
+            {},
+            {
+               message: 'Deleted rating',
+            }
+         );
+         // return res.status(204).json(response);
+         return res.status(204).end();
       } catch (err: any) {
          const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
          return res.status(404).json(errorResponse);

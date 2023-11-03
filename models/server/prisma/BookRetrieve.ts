@@ -63,6 +63,11 @@ export class BookRetriever {
          },
       });
    }
+   async isBookInLibrary(bookId: string) {
+      return await prisma.book.findUnique({
+         where: { id: bookId },
+      });
+   }
 }
 
 const retriever = new BookRetriever();

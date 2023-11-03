@@ -1,28 +1,29 @@
-import { getSession } from 'next-auth/react';
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { lazy, useEffect, useMemo, useState } from 'react';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { useRouter } from 'next/router';
+import { getSession } from 'next-auth/react';
+
+import { getBookWidth } from '@/lib/helper/books/getBookWidth';
+import { CustomSession, RateServerTypes, MultipleRatingData } from '@/lib/types/serverTypes';
+import useGetBookById from '@/lib/hooks/useGetBookById';
+import { CategoryRouteParams, RouteParams } from '@/lib/types/routes';
+import { findId, useGetRating } from '@/lib/hooks/useGetRatings';
+import { getAverageRatings, getServerAverage, getTotalRatings } from '@/lib/helper/getRating';
+
+import refiner, { RefineData } from '@/models/server/decorator/RefineData';
+import BookService from '@/models/server/service/BookService';
 
 import BookImage from '@/components/bookcover/bookImages';
-import { getBookWidth } from '@/lib/helper/books/getBookWidth';
 import BookTitle from '@/components/bookcover/title';
 import SingleOrMultipleAuthors from '@/components/bookcover/authors';
 import BookDescription from '@/components/bookcover/description';
 import BookPublisher from '@/components/bookcover/publisher';
 import BookDetails from '@/components/bookcover/bookDetails';
 import SignInRequiredButton from '@/components/Login/requireUser';
-import { CustomSession, RateServerTypes, MultipleRatingData } from '@/lib/types/serverTypes';
-import { useRouter } from 'next/router';
-import useGetBookById from '@/lib/hooks/useGetBookById';
-import { CategoryRouteParams, RouteParams } from '@/lib/types/routes';
 import APIErrorBoundary from '@/components/error/errorBoundary';
 import DisplayRating from '@/components/bookcover/ratings';
-import { useMutateCreateRatings, useMutateUpdateRatings } from '@/lib/hooks/useMutateRatings';
-import { findId, useGetRating } from '@/lib/hooks/useGetRatings';
-import { getBody, getBodyFromFilteredGoogleFields } from '@/lib/helper/books/getBookBody';
-import refiner, { RefineData } from '@/models/server/decorator/RefineData';
-import { getAverageRatings, getServerAverage, getTotalRatings } from '@/lib/helper/getRating';
-import BookService from '@/models/server/service/BookService';
 import { ActiveRating } from '@/components/rating/activeRating';
+import useHandleRating from '@/lib/hooks/useHandleRating';
 
 const HEIGHT = 225;
 
@@ -41,44 +42,33 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    const { data, isSuccess, isLoading } = useGetBookById({ routeParams: query });
 
    // TEST whether multiple users updating will have the same effect for updating
-   const { data: currentRatingData } = useGetRating({
+   const { data: allRatingData } = useGetRating({
       bookId: id,
       userId: userId as string,
       initialData: placerData,
    });
 
+   // this is used for initializing the rating
    const userRatingData = useMemo(
-      () => findId(currentRatingData, userId as string),
+      () => findId(allRatingData, userId as string),
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [currentRatingData]
+      [allRatingData]
    );
-
-   const { mutate: mutateCreate } = useMutateCreateRatings({
-      bookId: id,
-      userId: userId as string,
-      initialData: userRatingData,
-   });
-
-   const {
-      mutation: { mutate: mutateUpdate },
-      currentRatingData: currentRating,
-   } = useMutateUpdateRatings({
-      bookId: id,
-      userId: userId as string,
-      initialData: userRatingData,
-   });
 
    const [selectedRating, setSelectedRating] = useState<null | number>(
       userRatingData?.ratingInfo?.ratingValue ?? null
    );
 
-   console.log('ARE THE BOOKS CREATED?: ', currentRatingData && !currentRatingData.inLibrary);
-   const handleMutation = (rating: number) => {
-      const notCreated = currentRatingData && !currentRatingData.inLibrary;
-      const bookData = getBodyFromFilteredGoogleFields(data);
-      const body = { bookData, rating };
-      notCreated ? mutateCreate(body) : mutateUpdate(rating);
-   };
+   const { handleMutation, handleRemoveMutation, currentRatingData } = useHandleRating(
+      {
+         bookId: id,
+         userId: userId as string,
+         inLibrary: allRatingData?.inLibrary!,
+         initialData: userRatingData,
+      },
+      data,
+      allRatingData
+   );
 
    // TEST: NO NEED TO CALCULATE THE SERVER TOTAL
    // set this in another function
@@ -86,21 +76,28 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
       const googleTotal = data?.volumeInfo?.totalReviews || 0;
       const googleAvg = data?.volumeInfo?.averageRating || 0;
 
-      const totalRatings = getTotalRatings(currentRatingData?.count || 0, googleTotal);
+      const totalRatings = getTotalRatings(allRatingData?.count || 0, googleTotal);
       const avgRating = getAverageRatings(
-         currentRating?.avg || 0,
-         currentRating?.count || 0,
+         allRatingData?.avg || 0,
+         allRatingData?.count || 0,
          googleAvg,
          googleTotal
       );
 
       return [avgRating, totalRatings];
-   }, [currentRating]);
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [currentRatingData, allRatingData]);
 
    const ratingTitle = !userRatingData ? 'Rate Book' : 'Rating Saved';
-   // console.log('MUTATION DATA IS: ', currentRatingData);
-   // console.log('userRating data is: ', userRatingData);
 
+   console.log('currentRatingData DATA IS: ', currentRatingData);
+   console.log('--------------------------');
+   console.log('--------------------------');
+   console.log('--------------------------');
+   console.log('ALL CURRENT DATA IS: ', allRatingData);
+
+   // TODO: set the loading page here
    if (isLoading) {
       return <div>Loading...</div>;
    }
@@ -142,9 +139,11 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   </div>
                   <ActiveRating
                      ratingTitle={ratingTitle}
-                     // onRatingSelected={handleMutation}
                      selectedRating={selectedRating}
                      setSelectedRating={setSelectedRating}
+                     handleMutation={handleMutation}
+                     handleRemoveMutation={handleRemoveMutation}
+                     shouldDisplay={!!currentRatingData?.ratingInfo?.ratingValue}
                      size='large'
                   />
                </div>

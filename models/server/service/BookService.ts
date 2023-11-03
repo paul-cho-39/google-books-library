@@ -92,21 +92,20 @@ export default class BookService {
    }
    async getAllRatingOfSingleBook(bookId?: string) {
       this.ensureBookIdIsSet(bookId);
-      const data = await this.retriever.getRatingByBook(this.bookId!);
 
-      const count = this.analyzer.getTotal(data);
-      const avg = this.analyzer.getAverage(data);
+      const data = await Promise.all([
+         await this.retriever.getRatingByBook(this.bookId!),
+         await this.retriever.isBookInLibrary(this.bookId!),
+      ]);
 
-      // makes it easier for client side where an empty array is returned
-      if (!data || data.length < 1) {
-         return [];
-      }
+      const count = this.analyzer.getTotal(data[0]);
+      const avg = this.analyzer.getAverage(data[0]);
 
       return {
-         ratingInfo: data,
+         ratingInfo: data[0],
          count: count,
          avg: avg,
-         inLibrary: count > 0,
+         inLibrary: !!data[1],
       };
    }
 
