@@ -73,7 +73,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    // TEST: NO NEED TO CALCULATE THE SERVER TOTAL
    // set this in another function
    const [avgRating, totalRatings] = useMemo(() => {
-      const googleTotal = data?.volumeInfo?.totalReviews || 0;
+      const googleTotal = data?.volumeInfo?.ratingsCount || 0;
       const googleAvg = data?.volumeInfo?.averageRating || 0;
 
       const totalRatings = getTotalRatings(allRatingData?.count || 0, googleTotal);
@@ -85,17 +85,8 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
       );
 
       return [avgRating, totalRatings];
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [currentRatingData, allRatingData]);
-
+   }, [allRatingData, data]);
    const ratingTitle = !userRatingData ? 'Rate Book' : 'Rating Saved';
-
-   console.log('currentRatingData DATA IS: ', currentRatingData);
-   console.log('--------------------------');
-   console.log('--------------------------');
-   console.log('--------------------------');
-   console.log('ALL CURRENT DATA IS: ', allRatingData);
 
    // TODO: set the loading page here
    if (isLoading) {

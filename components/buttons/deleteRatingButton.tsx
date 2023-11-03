@@ -29,7 +29,7 @@ function DeleteRatingButton({
                aria-hidden
                className='h-4 w-4 text-slate-800 dark:text-slate-200 lg:h-6 lg:w-6 lg:px-1'
             />
-            <span className='lg:text-lg text-center'>Delete Rating</span>
+            <span className=''>Delete Rating</span>
          </button>
       </>
    );
