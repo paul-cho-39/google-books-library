@@ -47,6 +47,7 @@ async function apiRequest<T, TData>(
          }, delay ?? 0);
       }
 
+      // if HTTP method is DELETE it should not return the content
       if (response.status === 204) {
          return;
       }

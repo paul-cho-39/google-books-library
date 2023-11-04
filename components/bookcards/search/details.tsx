@@ -2,7 +2,7 @@ import { BookCardProps } from '@/lib/types/components/bookcards';
 import { Library } from '@/lib/types/models/books';
 
 import BookTitleAndAuthor from './titleAndAuthor';
-import UserActions from './userAction';
+import BookActionButton from '../../buttons/bookActionButton';
 import FilterStatus from './filterStatus';
 
 interface BookDetailsProps extends Omit<BookCardProps, 'totalItems'> {
@@ -12,7 +12,7 @@ interface BookDetailsProps extends Omit<BookCardProps, 'totalItems'> {
 const BookDetails = ({ book, query, userId, dataBooks }: BookDetailsProps) => (
    <div className='relative grid grid-rows-5 px-4 md:px-6 lg:px-8'>
       <BookTitleAndAuthor book={book} query={query} />
-      <UserActions book={book} userId={userId} />
+      <BookActionButton book={book} userId={userId} />
       <FilterStatus bookId={book.id} library={dataBooks} />
    </div>
 );

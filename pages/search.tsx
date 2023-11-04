@@ -23,7 +23,7 @@ const Cards = lazy(() => import('@/components/bookcards/cards'));
 export default function Search(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const { userId } = props;
 
-   // required when selecting the books later to connect w/ api route
+   // routed from search from /headers
    const router = useRouter();
    const search = router.query.q as string;
 

@@ -266,8 +266,10 @@ function getRatingInfo(
 
    switch (action) {
       case 'remove':
+         // if (ratingData.ratingInfo && ratingData.ratingInfo?.length < 2) {
+         //    //
+         // }
          return ratingData.ratingInfo?.filter((data) => data.userId !== userId);
-      // if the userId is not found then create a new one
       case 'update':
          const userRatingData = ratingData.ratingInfo?.find((data) => data.userId === userId);
          const dateAdded = !userRatingData ? new Date() : userRatingData.dateAdded;
@@ -302,6 +304,7 @@ function getRatingInfo(
    }
 }
 
+// if the userId is not found then create a new one
 function upsertRatingInfo(ratingInfoArray: RatingInfo[], newInfo: RatingInfo): RatingInfo[] {
    const index = ratingInfoArray.findIndex((info) => info.userId === newInfo.userId);
    if (index > -1) {

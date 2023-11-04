@@ -24,6 +24,7 @@ import APIErrorBoundary from '@/components/error/errorBoundary';
 import DisplayRating from '@/components/bookcover/ratings';
 import { ActiveRating } from '@/components/rating/activeRating';
 import useHandleRating from '@/lib/hooks/useHandleRating';
+import BookActionButton from '@/components/buttons/bookActionButton';
 
 const HEIGHT = 225;
 
@@ -86,6 +87,12 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
 
       return [avgRating, totalRatings];
    }, [allRatingData, data]);
+
+   // debugging
+   // console.log('google total count: ', data?.volumeInfo?.averageRating);
+   // console.log('google total count: ', data?.volumeInfo?.ratingsCount);
+   // console.log('all ratings: ', allRatingData);
+
    const ratingTitle = !userRatingData ? 'Rate Book' : 'Rating Saved';
 
    // TODO: set the loading page here
@@ -111,20 +118,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   <div className='flex flex-row w-full py-4 items-center justify-center'>
                      {isSuccess && data && (
                         <>
-                           <SignInRequiredButton
-                              type='finished'
-                              userId={userId}
-                              signedInActiveButton={
-                                 <SaveAsFinishedButton book={data} userId={userId as string} />
-                              }
-                           />
-                           <SignInRequiredButton
-                              type='popover'
-                              userId={userId}
-                              signedInActiveButton={
-                                 <PopOverButtons book={data} userId={userId as string} />
-                              }
-                           />
+                           <BookActionButton book={data} userId={userId as string} />
                         </>
                      )}
                   </div>

@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma';
 import Books from './Books';
+import { Prisma } from '@prisma/client';
 
 export default class BookDelete extends Books {
    constructor(userId: string, bookId: string) {
@@ -16,6 +17,36 @@ export default class BookDelete extends Books {
          where: {
             userId_bookId: this.getBothIds,
          },
+      });
+   }
+   async deleteRatingAndBook() {
+      return await prisma.$transaction(async (tx) => {
+         // delete rating first
+         await tx.rating.deleteMany({
+            where: {
+               bookId: this.bookId,
+               userId: this.userId,
+            },
+         });
+
+         // checking to see if the book is associated with any users
+         const bookAssociations = await tx.book.findUnique({
+            where: { id: this.bookId },
+            include: {
+               users: true,
+               ratings: true,
+            },
+         });
+
+         // if the book has no other associations then delete
+         if (bookAssociations && bookAssociations.users.length === 0) {
+            await tx.book.delete({
+               where: { id: this.bookId },
+            });
+         }
+
+         // Return some indicator of the transaction result if needed
+         return bookAssociations;
       });
    }
    // async deleteLogs(id: number) {

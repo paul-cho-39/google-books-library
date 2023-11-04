@@ -37,13 +37,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       const service = new BookService(userId as string, bookId as string);
       try {
          service.deleteSingleRating();
-         const response = createApiResponse(
-            {},
-            {
-               message: 'Deleted rating',
-            }
-         );
-         // return res.status(204).json(response);
          return res.status(204).end();
       } catch (err: any) {
          const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });

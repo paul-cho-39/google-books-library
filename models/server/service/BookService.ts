@@ -93,20 +93,26 @@ export default class BookService {
    async getAllRatingOfSingleBook(bookId?: string) {
       this.ensureBookIdIsSet(bookId);
 
-      const data = await Promise.all([
-         await this.retriever.getRatingByBook(this.bookId!),
-         await this.retriever.isBookInLibrary(this.bookId!),
-      ]);
+      // use $transaction(?)
+      try {
+         const data = await Promise.all([
+            this.retriever.getRatingByBook(this.bookId!),
+            this.retriever.isBookInLibrary(this.bookId!),
+         ]);
 
-      const count = this.analyzer.getTotal(data[0]);
-      const avg = this.analyzer.getAverage(data[0]);
+         const count = this.analyzer.getTotal(data[0]);
+         const avg = this.analyzer.getAverage(data[0]);
 
-      return {
-         ratingInfo: data[0],
-         count: count,
-         avg: avg,
-         inLibrary: !!data[1],
-      };
+         return {
+            ratingInfo: data[0],
+            count: count,
+            avg: avg,
+            inLibrary: !!data[1],
+         };
+      } catch (err) {
+         console.error('Failed to retrieve book rating data', err);
+         throw err;
+      }
    }
 
    async getUserBooks(userId?: string) {
@@ -121,8 +127,18 @@ export default class BookService {
    }
    async deleteSingleRating() {
       const deleter = this.getDeleter;
+
+      // maybe implement deleting the book as well
+      // if so, have to reroute API endpoint and change https verb from 'delete' to 'post' and
+      // with new returned values including 'inLibrary'.
+      // Also, change the logic of useMutateRating, change getRatingInfo method of case, 'removed'
+      // which will toggle inLibrary to false from the response it gets
+
+      // await deleter.deleteRatingAndBook();
+
       await deleter.deleteRating();
    }
+
    private ensureUserId(userId?: string) {
       if (userId) {
          this.setUserId(userId);
