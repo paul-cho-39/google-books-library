@@ -4,11 +4,11 @@ import { Items } from '@/lib/types/googleBookTypes';
 import queryKeys from '@/utils/queryKeys';
 import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import Button from './basicButton';
-import { QueryData } from '@/lib/hooks/useGetBookData';
 import MyToaster from '../bookcards/toaster';
 import { toast } from 'react-hot-toast';
 import { getBody } from '@/lib/helper/books/getBookBody';
 import { bookApiUpdate } from '@/utils/fetchData';
+import { Library } from '@/lib/types/models/books';
 
 export type ButtonProps = {
    book: Items<any>;
@@ -20,9 +20,9 @@ const AddPrimary = ({ book, userId }: ButtonProps) => {
    const body = getBody(userId, book);
 
    const queryClient = useQueryClient();
-   const dataBooks = queryClient.getQueryData<QueryData>(queryKeys.userLibrary(userId));
+   const library = queryClient.getQueryData<Library>(queryKeys.userLibrary(userId));
 
-   const currentlyReading = dataBooks?.library?.reading || [];
+   const currentlyReading = library?.reading || [];
 
    const { mutate: mutateUpdate, isLoading } = useMutation(
       queryKeys.currentlyReading,
@@ -32,7 +32,7 @@ const AddPrimary = ({ book, userId }: ButtonProps) => {
             await queryClient.cancelQueries(queryKeys.currentlyReading);
             const previousBookData = currentlyReading;
             queryClient.setQueryData(queryKeys.currentlyReading, {
-               ...dataBooks?.library,
+               ...library,
                currentlyReading: currentlyReading && [...(currentlyReading as string[]), book.id],
             });
             return previousBookData;
@@ -51,10 +51,10 @@ const AddPrimary = ({ book, userId }: ButtonProps) => {
                exact: true,
             });
             queryClient.setQueryData(queryKeys.userLibrary(userId), {
-               ...dataBooks,
+               ...library,
                library: {
-                  ...dataBooks?.library,
-                  reading: currentlyReading && [...(currentlyReading as string[]), book.id],
+                  ...library,
+                  reading: currentlyReading && [...currentlyReading, book.id],
                },
             });
          },

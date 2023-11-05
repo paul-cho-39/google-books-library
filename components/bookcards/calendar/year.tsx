@@ -30,6 +30,9 @@ const YearCalendar = () => {
             maxDate={new Date()}
          />
          <Checkmark setUnknown={() => setUnknown()} />
+         <button className='sr-only'>
+            <span>Click here if you cannot remember the year of the finished date</span>
+         </button>
       </>
    );
 };

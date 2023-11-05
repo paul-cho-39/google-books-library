@@ -56,7 +56,7 @@ const RemovePrimary = ({ book, userId }: ButtonProps) => {
    );
 
    const isHidden = useMemo(
-      () => isBookInData(book.id, readingBooks as string[]),
+      () => isBookInData(book.id, readingBooks),
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [readingBooks]
    );

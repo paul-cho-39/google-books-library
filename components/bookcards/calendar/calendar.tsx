@@ -15,19 +15,19 @@ export const useInitialCalendar = (
    return {
       year: {
          id: 1,
-         component: YearCalendar,
+         Component: YearCalendar,
          name: `Year: ${year > 0 ? year : ''}`,
          isKnown: isKnown.year,
       },
       month: {
          id: 2,
-         component: MonthCalendar,
+         Component: MonthCalendar,
          name: `Month: ${month >= 0 ? month + 1 : ''}`,
          isKnown: isKnown.month,
       },
       day: {
          id: 3,
-         component: DayCalendar,
+         Component: DayCalendar,
          name: `Day: ${day > 0 ? day : ''}`,
          isKnown: isKnown.day,
       },

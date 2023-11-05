@@ -1,4 +1,4 @@
-import { lazy, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
@@ -19,7 +19,6 @@ import SingleOrMultipleAuthors from '@/components/bookcover/authors';
 import BookDescription from '@/components/bookcover/description';
 import BookPublisher from '@/components/bookcover/publisher';
 import BookDetails from '@/components/bookcover/bookDetails';
-import SignInRequiredButton from '@/components/Login/requireUser';
 import APIErrorBoundary from '@/components/error/errorBoundary';
 import DisplayRating from '@/components/bookcover/ratings';
 import { ActiveRating } from '@/components/rating/activeRating';
@@ -28,8 +27,6 @@ import BookActionButton from '@/components/buttons/bookActionButton';
 
 const HEIGHT = 225;
 
-const SaveAsFinishedButton = lazy(() => import('@/components/buttons/finishedButton'));
-const PopOverButtons = lazy(() => import('@/components/buttons/popoverButtons'));
 // const Ratings = lazy(() => import('@/components/'));
 
 // when refreshed the serversideProps will fetch the data

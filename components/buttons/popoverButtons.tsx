@@ -7,6 +7,7 @@ import RemovePrimary from '../bookcards/removeCurrent';
 import DeleteButton from './deleteButton';
 import DeleteButtonWrapper from './wrappers/deleteButtonWrapper';
 
+const DURATION = 200;
 const allButtons = [
    {
       name: 'reading',
@@ -66,7 +67,7 @@ function PopOverButtons({ userId, book }: ButtonProps) {
                                  onClick={() =>
                                     setTimeout(() => {
                                        close();
-                                    }, 200)
+                                    }, DURATION)
                                  }
                                  className='w-full inline-flex items-end justify-end px-5'
                               >
@@ -87,7 +88,7 @@ function PopOverButtons({ userId, book }: ButtonProps) {
                                              isClosed &&
                                                 setTimeout(() => {
                                                    close();
-                                                }, 200);
+                                                }, DURATION);
                                           }}
                                           key={allButton.name}
                                        >
