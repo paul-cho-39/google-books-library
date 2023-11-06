@@ -19,7 +19,8 @@ export const CalendarAccordian: React.FunctionComponent<{
    const dateRecaller = useAtomValue(initialDateRecallerAtom);
 
    useEffect(() => {
-      nextAccordion(accordionRefs, dateRecaller);
+      // whenever name changes it closes the current and opens the next following disclosure
+      nextAccordion(accordionRefs);
    }, [calendars.year.name, calendars.month.name, dateRecaller]);
 
    // if the accordion closes the calendar resets
@@ -29,7 +30,7 @@ export const CalendarAccordian: React.FunctionComponent<{
    }, [resetDates, resetRecaller]);
 
    return (
-      <div className='flex flex-col items-stretch justify-evenly'>
+      <div role='dialog' className='flex flex-col items-stretch justify-evenly'>
          {Object.values(calendars).map((calendar, index) => (
             <Disclosure key={calendar.id}>
                {({ open }) => (

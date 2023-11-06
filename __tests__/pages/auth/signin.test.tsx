@@ -43,6 +43,7 @@ describe('<Account />', () => {
    };
    const mockRouter = { push: jest.fn(), query: { next: '/' } };
 
+   // returning the values from getServerSideProps and router to route after successful signin
    beforeEach(() => {
       signInMock.mockReset();
       (useRouter as jest.Mock).mockReturnValue(mockRouter);
