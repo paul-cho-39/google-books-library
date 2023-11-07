@@ -1,5 +1,5 @@
 import { GoogleUpdatedFields, IndustryIdentifiers, Items } from '../../types/googleBookTypes';
-import { Data } from '../../types/models/books';
+import { AddLibraryType, Data } from '../../types/models/books';
 
 export const getBody = (userId: string, book: Items<any>) => {
    const { id, volumeInfo } = book;
@@ -36,10 +36,12 @@ export type ReadPostBody = ReturnType<typeof getBody>;
 export const removeBooksBody = (id: string, userId: string) => {
    return { id, userId };
 };
-export const addBooksBody = (data: Data, userId: string, id: string) => {
+export const addBooksBody = (data: Items<any>, id: string): AddLibraryType => {
+   const bodyData = getBodyFromFilteredGoogleFields(data);
    return {
-      userId,
-      id,
-      ...data,
+      data: {
+         id,
+         ...bodyData,
+      },
    };
 };

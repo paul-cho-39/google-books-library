@@ -48,10 +48,11 @@ export type Library = Record<RefinedBookState, string[] | undefined>;
 export type AddLibraryType = { data: LibraryData };
 export type RemoveLibraryType = IdParams; // should omit userId since it is route?
 
-export interface FinishedBookBody extends LibraryData {
+export interface FinishedBookBody {
    year: number;
    month: number;
    day: number;
+   data: LibraryData;
 }
 
 export type MutationLibraryBodyTypes = {
@@ -62,6 +63,15 @@ export type MutationLibraryBodyTypes = {
    delete: RemoveLibraryType;
 };
 
+export type BookMutationBaseParams = {
+   userId: string;
+   bookId: string;
+   type: MutationLibraryActionTypes;
+};
+
+export type MutationLibraryBodyData<MBody extends MutationLibraryActionTypes> =
+   MutationLibraryBodyTypes[MBody];
+
 type IgnorePrismaBuiltins<S extends string> = string extends S
    ? string
    : S extends ''
@@ -71,3 +81,35 @@ type IgnorePrismaBuiltins<S extends string> = string extends S
    : S;
 
 export type PrismaModelName = IgnorePrismaBuiltins<keyof PrismaClient>;
+
+// useMutateRatings types here
+export interface InitializeDataParams extends MutationBase {
+   queryClient: QueryClient;
+}
+
+export type MutationRatingActionType = 'create' | 'update' | 'remove';
+export type MutationRatingDataTypes = {
+   create: DataWithRatings;
+   update: RatingsWithoutData;
+   remove: null;
+};
+export type MutationRatingData<ActionType extends MutationRatingActionType> =
+   MutationRatingDataTypes[ActionType];
+
+export interface MutationBase {
+   userId: string;
+   bookId: string;
+   inLibrary: boolean;
+   initialData?: SingleRatingData;
+}
+
+export interface MultipleQueryDataParams extends Omit<MutationBase, 'initialData'> {
+   queryClient: QueryClient;
+   context:
+      | {
+           prevRatingData: SingleRatingData | undefined;
+           action: MutationRatingActionType;
+        }
+      | undefined;
+   newRating: number | undefined;
+}

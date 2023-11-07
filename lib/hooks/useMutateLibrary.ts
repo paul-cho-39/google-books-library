@@ -3,23 +3,16 @@ import { toast } from 'react-hot-toast';
 
 import { bookApiUpdate } from '@/utils/fetchData';
 import {
+   BookMutationBaseParams,
    Library,
    MutationLibraryActionTypes,
+   MutationLibraryBodyData,
    MutationLibraryBodyTypes,
    RefinedBookState,
 } from '@/lib/types/models/books';
 import queryKeys from '@/utils/queryKeys';
 import { Method, UrlProps } from '../types/fetchbody';
 import { filterAll, filterId } from '../helper/books/filterId';
-
-type BookMutationBaseParams = {
-   userId: string;
-   bookId: string;
-   type: MutationLibraryActionTypes;
-};
-
-type MutationLibraryBodyData<MBody extends MutationLibraryActionTypes> =
-   MutationLibraryBodyTypes[MBody];
 
 function useMutateLibrary<MBody extends MutationLibraryActionTypes>({
    userId,
@@ -31,7 +24,7 @@ function useMutateLibrary<MBody extends MutationLibraryActionTypes>({
 
    const { method, route, message } = bookUpdateMap[type];
 
-   return useMutation(
+   const mutation = useMutation(
       // the body goes inside mutate(body)
       (body: MutationLibraryBodyData<MBody>) =>
          bookApiUpdate(method as Method, userId, route as UrlProps, body),
@@ -64,6 +57,10 @@ function useMutateLibrary<MBody extends MutationLibraryActionTypes>({
          },
       }
    );
+   return {
+      mutation,
+      library: dataBooks,
+   };
 }
 
 function setUserLibraryData(
@@ -154,7 +151,7 @@ const bookUpdateMap = {
       },
    },
    delete: {
-      method: 'PUT',
+      method: 'DELETE',
       route: 'finished',
       message: {
          onSuccess: 'Successfully deleted from library.',

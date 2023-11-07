@@ -8,18 +8,18 @@ import DeleteButton from './deleteButton';
 import DeleteButtonWrapper from './wrappers/deleteButtonWrapper';
 
 const DURATION = 200;
-const allButtons = [
+const userActionButtons = [
    {
       name: 'reading',
-      component: AddPrimary,
+      Component: AddPrimary,
    },
    {
       name: 'wanttoread',
-      component: WantReadButton,
+      Component: WantReadButton,
    },
    {
       name: 'removeCurrentlyReading',
-      component: RemovePrimary,
+      Component: RemovePrimary,
    },
 ];
 
@@ -82,7 +82,7 @@ function PopOverButtons({ userId, book }: ButtonProps) {
                                  className={`${isHidden ? 'hidden' : 'mt-0'}`}
                               >
                                  <div className='flex flex-col justify-center items-center'>
-                                    {allButtons.map((allButton) => (
+                                    {userActionButtons.map((userActionButton) => (
                                        <div
                                           onClick={() => {
                                              isClosed &&
@@ -90,9 +90,9 @@ function PopOverButtons({ userId, book }: ButtonProps) {
                                                    close();
                                                 }, DURATION);
                                           }}
-                                          key={allButton.name}
+                                          key={userActionButton.name}
                                        >
-                                          <allButton.component userId={userId} book={book} />
+                                          <userActionButton.Component userId={userId} book={book} />
                                        </div>
                                     ))}
 

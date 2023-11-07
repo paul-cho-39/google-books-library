@@ -4,9 +4,10 @@ import createApiResponse from '@/models/server/response/apiResponse';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
-      const { userId, id, ...data } = req.body;
+      const { id: userId } = req.query as { id: string };
+      const { data } = req.body;
 
-      const service = new BookService(userId, id);
+      const service = new BookService(userId, data.id);
 
       try {
          await service.handleCreateReading(data);
