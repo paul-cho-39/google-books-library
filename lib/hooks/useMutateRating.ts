@@ -2,40 +2,17 @@ import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 import queryKeys from '@/utils/queryKeys';
 import apiRequest from '@/utils/fetchData';
 import API_ROUTES from '@/utils/apiRoutes';
-import { DataWithRatings, RatingsWithoutData } from '../types/models/books';
+import {
+   DataWithRatings,
+   InitializeDataParams,
+   MultipleQueryDataParams,
+   MutationBase,
+   MutationRatingActionType,
+   MutationRatingData,
+   RatingsWithoutData,
+} from '../types/models/books';
 import { MultipleRatingData, RatingData, RatingInfo, SingleRatingData } from '../types/serverTypes';
 import { Method } from '../types/fetchbody';
-
-interface InitializeDataParams extends MutationBase {
-   queryClient: QueryClient;
-}
-
-type MutationRatingActionType = 'create' | 'update' | 'remove';
-type MutationRatingDataTypes = {
-   create: DataWithRatings;
-   update: RatingsWithoutData;
-   remove: null;
-};
-type MutationRatingData<ActionType extends MutationRatingActionType> =
-   MutationRatingDataTypes[ActionType];
-
-export interface MutationBase {
-   userId: string;
-   bookId: string;
-   inLibrary: boolean;
-   initialData?: SingleRatingData;
-}
-
-interface MultipleQueryDataParams extends Omit<MutationBase, 'initialData'> {
-   queryClient: QueryClient;
-   context:
-      | {
-           prevRatingData: SingleRatingData | undefined;
-           action: MutationRatingActionType;
-        }
-      | undefined;
-   newRating: number | undefined;
-}
 
 export default function useMutateRatings<ActionType extends MutationRatingActionType>(
    params: MutationBase,
