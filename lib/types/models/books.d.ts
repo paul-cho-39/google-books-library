@@ -32,13 +32,35 @@ export interface Data {
    industryIdentifiers?: string[];
 }
 
+export interface LibraryData extends Data {
+   id: string;
+}
+
 export interface IdParams {
    userId: string;
    id: string;
 }
 
+export type MutationLibraryActionTypes = 'finished' | 'reading' | 'want' | 'remove' | 'delete';
 export type RefinedBookState = 'want' | 'reading' | 'finished' | 'unfinished';
-export type Library = Record<RefinedBookState, string[]>;
+export type Library = Record<RefinedBookState, string[] | undefined>;
+
+export type AddLibraryType = { data: LibraryData };
+export type RemoveLibraryType = IdParams; // should omit userId since it is route?
+
+export interface FinishedBookBody extends LibraryData {
+   year: number;
+   month: number;
+   day: number;
+}
+
+export type MutationLibraryBodyTypes = {
+   finished: FinishedBookBody;
+   reading: AddLibraryType;
+   want: AddLibraryType;
+   remove: RemoveLibraryType;
+   delete: RemoveLibraryType;
+};
 
 type IgnorePrismaBuiltins<S extends string> = string extends S
    ? string

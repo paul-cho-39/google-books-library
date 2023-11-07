@@ -7,6 +7,7 @@ export type InitialDateRecallerProps = {
 };
 
 // if date is unknown
+// the value is -1 for the database since it is an integer in prisma
 const initialNullDate = {
    year: -1,
    month: -1,

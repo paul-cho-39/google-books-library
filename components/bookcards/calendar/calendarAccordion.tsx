@@ -30,7 +30,7 @@ export const CalendarAccordian: React.FunctionComponent<{
    }, [resetDates, resetRecaller]);
 
    return (
-      <div role='dialog' className='flex flex-col items-stretch justify-evenly'>
+      <div role='group' className='flex flex-col items-stretch justify-evenly'>
          {Object.values(calendars).map((calendar, index) => (
             <Disclosure key={calendar.id}>
                {({ open }) => (

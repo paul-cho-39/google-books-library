@@ -90,6 +90,7 @@ export default function useMutateRatings<ActionType extends MutationRatingAction
             // the previous rating data before updating
             return { prevRatingData, action };
          },
+         // TODO: set toast message here when failing to submit
          onError: (_err, _variables, context) => {
             console.error('RECIEVED AN ERROR', _err);
             if (context?.prevRatingData) {

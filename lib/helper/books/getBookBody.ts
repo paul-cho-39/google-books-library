@@ -32,3 +32,14 @@ export const getBodyFromFilteredGoogleFields = (data: Items<any>): Data => {
 };
 
 export type ReadPostBody = ReturnType<typeof getBody>;
+
+export const removeBooksBody = (id: string, userId: string) => {
+   return { id, userId };
+};
+export const addBooksBody = (data: Data, userId: string, id: string) => {
+   return {
+      userId,
+      id,
+      ...data,
+   };
+};

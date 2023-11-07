@@ -9,7 +9,6 @@ interface CalendarModalProps {
    submitWithDates: () => void;
    modalTitle: string;
    className: string;
-   children?: React.ReactNode;
 }
 
 const CalendarModal = ({
@@ -18,7 +17,6 @@ const CalendarModal = ({
    submitWithDates,
    modalTitle,
    className,
-   children,
 }: CalendarModalProps) => {
    const [isOpen, setIsOpen] = useState(false);
 
@@ -44,7 +42,7 @@ const CalendarModal = ({
    return (
       <>
          <button type='button' onClick={openModal} className={className}>
-            Finished
+            {modalTitle}
          </button>
          <Transition appear show={isOpen} as={Fragment}>
             <Dialog as='div' className='relative z-50' onClose={closeModal}>
@@ -79,7 +77,6 @@ const CalendarModal = ({
                               Do you remember when you finished the book?
                            </Dialog.Title>
                            <div className='mt-8'>
-                              {children}
                               <CalendarWrapper
                                  isLoading={isLoading}
                                  skipSubmit={handleSkipSubmit}

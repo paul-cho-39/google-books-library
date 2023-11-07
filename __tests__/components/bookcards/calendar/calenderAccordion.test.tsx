@@ -59,7 +59,7 @@ describe('<CalendarAccordian />', () => {
       // the month and day calendar should not be there
       render(<CalendarAccordian calendars={calendars} />);
 
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByRole('group')).toBeInTheDocument();
 
       expect(screen.getByRole('button', { name: /year/i })).toBeVisible();
       expect(screen.getByRole('button', { name: /month/i })).toBeVisible();

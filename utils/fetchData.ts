@@ -8,6 +8,7 @@ import { ApiRequestOptions, Method, UrlProps } from '@/lib/types/fetchbody';
 import API_ROUTES from './apiRoutes';
 
 import { throttle } from 'lodash';
+import { MutationLibraryActionTypes, MutationLibraryBodyTypes } from '@/lib/types/models/books';
 
 type Request = IncomingMessage & {
    cookies: Partial<{
@@ -127,12 +128,13 @@ export const fetchDataFromCache = async <
    return res as ReturnedCacheData<CacheData>;
 };
 
-// fetcher for user update
-export const bookApiUpdate = async <T>(
+// fetcher for user library update
+export const bookApiUpdate = async <T, TBody extends MutationLibraryActionTypes>(
    method: Method,
    userId: string,
    subdomain: UrlProps,
-   body?: Record<string, unknown> | string
+   body?: MutationLibraryBodyTypes[TBody]
+   // body?: Record<string, unknown> | string
 ): Promise<T> => {
    const res = await apiRequest<typeof body, T>({
       apiUrl: API_ROUTES.BOOKS.path(userId, subdomain),
