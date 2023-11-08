@@ -4,8 +4,6 @@ import { CategoryDisplay } from '@/components/contents/home/categories';
 import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '@/lib/types/googleBookTypes';
 import classNames from 'classnames';
 
-import { useDisableBreakPoints } from '@/lib/hooks/useDisableBreakPoints';
-import useHoverDisplayDescription from '@/lib/hooks/useHoverDisplay';
 import { useGetCategoriesQueries } from '@/lib/hooks/useGetCategoryQuery';
 
 import { Categories, serverSideCategories, topCategories } from '@/constants/categories';
@@ -14,24 +12,20 @@ import { getBookWidth, getContainerWidth } from '@/lib/helper/books/getBookWidth
 import { BookImageSkeleton, DescriptionSkeleton } from '@/components/loaders/bookcardsSkeleton';
 import { DividerButtons } from '@/components/layout/dividers';
 import layoutManager from '@/constants/layouts';
-import { batchFetchGoogleCategories } from '@/models/cache/handleGoogleCache';
-import { getSession, useSession } from 'next-auth/react';
+import { batchFetchGoogleCategories } from '@/utils/fetchData';
 import { useGetNytBestSellers } from '@/lib/hooks/useGetNytBestSeller';
 import { CategoriesQueries } from '@/lib/types/serverTypes';
 import { encodeRoutes } from '@/utils/routes';
-import { changeDirection } from '@/lib/helper/getContainerPos';
-import useGetRatings from '@/lib/hooks/useGetRatings';
+import useFloatingPosition from '@/lib/hooks/useFloatingPosition';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
 
 const MAX_RESULT = 6;
+const TOTAL_COLS = 6;
 
 const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
    const { data } = props;
-
-   const { data: user } = useSession(); // TODO: pass it from route to route
-
    const [categoriesToLoad, setCategoriesToLoad] = useState(0);
 
    const meta = {
@@ -48,67 +42,26 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       returnNumberOfItems: MAX_RESULT,
    });
 
-   // console.log('nytimes data is: ', nytData);
-
    const { transformedData: nytData, dataIsSuccess: nytDataSuccess } = useGetNytBestSellers({});
 
    const combinedData = { ...nytData, ...googleData };
 
-   const { data: allRatings } = useGetRatings(googleData || {}, googleDataSuccess);
-   console.log('all ratings are: ', allRatings);
-
-   const floatingRef = useRef<HTMLDivElement>(null);
+   // use cateogry refs to find the dimension?
    const categoryRefs = useRef<HTMLDivElement>(null);
-   const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-   const { isHovered, onMouseEnter, onMouseLeave, onMouseLeaveDescription } =
-      useHoverDisplayDescription();
 
    const handleProcessData = () => {
       setCategoriesToLoad((prev) => prev + 4);
    };
 
-   const setImageRef = useCallback((id: string, el: HTMLDivElement | null) => {
-      if (imageRefs.current) imageRefs.current[id] = el;
-   }, []);
-
-   // getting number of grids
-   const largeEnabled = useDisableBreakPoints();
-   const smallEnabled = useDisableBreakPoints(layoutManager.constants.smallScreen);
-   const NUMBER_OF_COLS = largeEnabled ? 6 : smallEnabled ? 4 : 3;
-
-   useEffect(() => {
-      if (
-         isHovered.id &&
-         isHovered.index &&
-         isHovered.hovered &&
-         floatingRef.current &&
-         imageRefs.current
-      ) {
-         const el = imageRefs.current[isHovered.id]?.getBoundingClientRect();
-         const largeReverseGrid = largeEnabled ? NUMBER_OF_COLS - 2 : NUMBER_OF_COLS - 1;
-
-         if (el) {
-            const position = changeDirection(
-               el.width,
-               isHovered.index,
-               NUMBER_OF_COLS,
-               largeReverseGrid,
-               layoutManager.home.padding,
-               layoutManager.home.offset
-            );
-
-            floatingRef.current.style.top = `${0}px`;
-            floatingRef.current.style.position = 'absolute';
-
-            if (position.right > 0) {
-               floatingRef.current.style.right = `${position.right}px`;
-            } else {
-               floatingRef.current.style.left = `${position.left}px`;
-            }
-         }
-      }
-   }, [NUMBER_OF_COLS, isHovered, largeEnabled]);
+   const {
+      isHovered,
+      floatingRef,
+      largeEnabled,
+      setImageRef,
+      onMouseEnter,
+      onMouseLeave,
+      onMouseLeaveDescription,
+   } = useFloatingPosition(TOTAL_COLS, false);
 
    // images that are not server rendered are rendered later
    const HEIGHT = layoutManager.constants.imageHeight;
@@ -116,8 +69,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
    const priorityCategories = ['FICTION', 'NONFICTION', ...serverSideCategories];
    const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
 
-   // TODO: Create an error boundary for this?
-
+   // TODO: Create an error boundary for this
    if (!nytDataSuccess && !googleDataSuccess) {
       return <div>Is Loading...</div>;
    }

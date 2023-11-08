@@ -20,11 +20,11 @@ import { Divider } from '@/components/layout/dividers';
 import BookTitle from '@/components/bookcover/title';
 import SingleOrMultipleAuthors from '@/components/bookcover/authors';
 import layoutManager from '@/constants/layouts';
-import { batchFetchGoogleCategories } from '@/models/cache/handleGoogleCache';
 import { useRouter } from 'next/router';
 import { encodeRoutes } from '@/utils/routes';
 import { changeDirection } from '@/lib/helper/getContainerPos';
 import APIErrorBoundary from '@/components/error/errorBoundary';
+import { batchFetchGoogleCategories } from '@/utils/fetchData';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
@@ -32,9 +32,9 @@ const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
 const MAX_ITEMS = 20;
 
 export default function BookCategoryPages({
-   category,
-   data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+       category,
+       data,
+    }: InferGetStaticPropsType<typeof getStaticProps>) {
    const [currentPage, setCurrentPage] = useState(1);
    const [pageIndex, setPageIndex] = useState(0);
 
@@ -76,7 +76,7 @@ export default function BookCategoryPages({
    });
 
    // requring both so that each will have its own publication date?
-   const { data: bestSellers, isSuccess } = useGetNytBestSeller({
+   const { data: bestSellers, isSuccess: isNytDataSuccess } = useGetNytBestSeller({
       category: { format: 'combined-print-and-e-book', type: category } as CategoryQualifiers,
       date: 'current', // the date should be passed(?)
       enabled: enableNytData,
@@ -222,7 +222,7 @@ export default function BookCategoryPages({
                </CategoryGridLarge>
             )}
          </APIErrorBoundary>
-         {isSuccess && bestSellers && (
+         {isNytDataSuccess && bestSellers && (
             <>
                <Divider />
                <CategoryGridSmall category={CATEGORY_NYT_HEADER}>

@@ -11,18 +11,9 @@ import 'nprogress/nprogress.css';
 import '../styles/globals.css';
 
 import ThemeProvider from '@/lib/context/ThemeContext';
-import RefreshTokenHandler from '@/lib/auth/refreshTokenHandler';
 
 import Navigation from '@/components/headers';
 import HomeLayout from '@/components/layout/page/home';
-
-// import { server } from '__mocks__/server';
-
-// import('../__mocks__/').then(({ deferMock }) => {
-//    deferMock();
-// });
-
-// server.listen();
 
 // progress loader at the top of the page
 NProgress.configure({
@@ -48,27 +39,26 @@ export const queryClient = new QueryClient({
 });
 
 function MyApp({ Component, pageProps }) {
-   // adjusting proper time as it refreshes the refreshtoken
-   // may be expired { PROVIDE URL HERE }
-   const [interval, setInterval] = useState(0);
+   // the default is to have the sidebar open
    const [isSidebarOpen, setSidebarOpen] = useState(false);
-   // set isSidebarOpen here and if it is open then the layout is shrunk
 
-   // useEffect(() => {
-   //    if (process.env.NODE_ENV === 'development') {
-   //       import('__mocks__').then(({ deferMock }) => deferMock());
-   //    }
-   // }, []);
+   useEffect(() => {
+      if (process.env.NODE_ENV === 'development') {
+         import('mocks').then(({ deferMock }) => deferMock());
+      } else
+         import('mocks/server').then(({ server }) => {
+            server.listen();
+         });
+   }, []);
 
    return (
       <QueryClientProvider client={queryClient}>
          <ThemeProvider>
-            <SessionProvider session={pageProps.session} refetchInterval={interval}>
+            <SessionProvider session={pageProps.session}>
                <Navigation sidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
                <HomeLayout isOpen={isSidebarOpen}>
                   <Component {...pageProps} />
                </HomeLayout>
-               <RefreshTokenHandler setInterval={setInterval} />
                <ReactQueryDevtools initialIsOpen={true} />
             </SessionProvider>
          </ThemeProvider>

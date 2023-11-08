@@ -3,12 +3,13 @@ import { IncomingMessage } from 'http';
 import { GOOGLE_THROTTLE_TIME, NYT_THROTTLE_TIME } from '@/constants/throttle';
 import { GoogleUpdatedFields, Items } from '@/lib/types/googleBookTypes';
 import { BestSellerData, ReviewData } from '@/lib/types/nytBookTypes';
-import { ReturnedCacheData } from '@/lib/types/serverTypes';
+import { CategoriesQueries, CategoryQuery, ReturnedCacheData } from '@/lib/types/serverTypes';
 import { ApiRequestOptions, Method, UrlProps } from '@/lib/types/fetchbody';
 import API_ROUTES from './apiRoutes';
 
 import { throttle } from 'lodash';
 import { MutationLibraryActionTypes, MutationLibraryBodyTypes } from '@/lib/types/models/books';
+import googleApi, { MetaProps } from '@/models/_api/fetchGoogleUrl';
 
 type Request = IncomingMessage & {
    cookies: Partial<{
@@ -145,5 +146,26 @@ export const bookApiUpdate = async <T, TBody extends MutationLibraryActionTypes>
 
    return res as Promise<T>;
 };
+
+export async function batchFetchGoogleCategories(cats: readonly string[], meta: MetaProps) {
+   const googleData: CategoriesQueries | CategoryQuery = {};
+
+   await Promise.all(
+      cats.map(async (category) => {
+         const catLowerCase = category.toLowerCase();
+         const url = googleApi.getUrlBySubject(catLowerCase, meta);
+
+         try {
+            const res = await fetcher(url);
+            googleData[catLowerCase] = res;
+         } catch (error) {
+            console.error('Error fetching data for category:', category, error);
+            googleData[catLowerCase] = null;
+         }
+      })
+   );
+
+   return googleData;
+}
 
 export default apiRequest;

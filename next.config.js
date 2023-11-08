@@ -45,4 +45,22 @@ module.exports = {
       ],
       domains: ['books.google.com', 'upload.wikimedia.org'],
    },
+   // issues with Next.js see: https://github.com/mswjs/msw/issues/1801
+   webpack: (config, { isServer }) => {
+      // Resolve the 'msw' package differently for server and client-side bundles
+      if (isServer) {
+         // When building the server-side bundle, ignore 'msw/browser'
+         config.resolve.alias = {
+            ...config.resolve.alias,
+            'msw/browser': false,
+         };
+      } else {
+         // When building the client-side bundle, ignore 'msw/node'
+         config.resolve.alias = {
+            ...config.resolve.alias,
+            'msw/node': false,
+         };
+      }
+      return config;
+   },
 };

@@ -6,5 +6,5 @@ export const deferMock = async () => {
       return;
    }
    const { worker } = await import('./worker');
-   worker.start();
+   return worker.start();
 };

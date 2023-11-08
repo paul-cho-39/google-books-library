@@ -58,12 +58,12 @@ export default function useGetCategoryQuery({
       }
    );
 
-   console.log('THE DATA INSIDE THE CATEGORY QUERY IS: ', data.data);
-
    if (data.isError) {
       throw new Error(`${data.failureReason}`);
    }
 
+   // google books return duplicated items
+   // this function returns cleaned data
    const cleanedData = createUniqueData(data?.data?.items);
 
    console.log('DEBUGGING HERE!!');
