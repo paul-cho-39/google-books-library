@@ -1,12 +1,12 @@
 import Router from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { AppProps } from 'next/app';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import NProgress from 'nprogress';
 
+import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import '../styles/globals.css';
 
@@ -16,6 +16,15 @@ import RefreshTokenHandler from '@/lib/auth/refreshTokenHandler';
 import Navigation from '@/components/headers';
 import HomeLayout from '@/components/layout/page/home';
 
+// import { server } from '__mocks__/server';
+
+// import('../__mocks__/').then(({ deferMock }) => {
+//    deferMock();
+// });
+
+// server.listen();
+
+// progress loader at the top of the page
 NProgress.configure({
    minimum: 0.3,
    easing: 'ease',
@@ -44,6 +53,12 @@ function MyApp({ Component, pageProps }) {
    const [interval, setInterval] = useState(0);
    const [isSidebarOpen, setSidebarOpen] = useState(false);
    // set isSidebarOpen here and if it is open then the layout is shrunk
+
+   // useEffect(() => {
+   //    if (process.env.NODE_ENV === 'development') {
+   //       import('__mocks__').then(({ deferMock }) => deferMock());
+   //    }
+   // }, []);
 
    return (
       <QueryClientProvider client={queryClient}>

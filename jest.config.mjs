@@ -12,6 +12,7 @@ const config = {
    setupFilesAfterEnv: ['<rootDir>/jest.setup.js', '<rootDir>/singleton.ts'],
    testEnvironment: 'jest-environment-jsdom',
    moduleNameMapper: { '^@/(.*)$': '<rootDir>/$1' },
+   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
    roots: ['<rootDir>'],
 };
 
