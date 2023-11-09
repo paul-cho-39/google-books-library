@@ -48,7 +48,7 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                      >
                         <Popover.Panel className='fixed left-0 w-full h-[14.7rem] bottom-[0%] z-50 border-t-2 bg-zinc-50 border-slate-300'>
                            <div className='w-full'>
-                              <div
+                              <button
                                  onClick={() =>
                                     setTimeout(() => {
                                        close();
@@ -56,12 +56,15 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                                  }
                                  className='w-full inline-flex items-end justify-end px-5'
                               >
+                                 <span className='sr-only'>Close Button Icon</span>
                                  <XMarkIcon
+                                    title='Close'
+                                    aria-hidden={true}
                                     height='25'
                                     width='25'
                                     className='mt-3 mb-5 hover:rounded-full hover:ring-2 hover:ring-black'
                                  />
-                              </div>
+                              </button>
                               <div
                                  aria-hidden={isHidden}
                                  className={`${isHidden ? 'hidden' : 'mt-0'}`}
@@ -94,7 +97,7 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                                  aria-hidden={!isHidden}
                                  className={`${isHidden ? 'mt-4 px-8' : 'hidden'}`}
                               >
-                                 <p className='mb-5'>
+                                 <p role='alert' className='mb-5'>
                                     All data will be lost containing this book. Are you sure you
                                     want to delete the data?
                                  </p>

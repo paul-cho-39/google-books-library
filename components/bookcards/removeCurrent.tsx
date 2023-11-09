@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import classNames from 'classnames';
 import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import Button from '../buttons/UserActionBaseButton';
-import MyToaster from './toaster';
 
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
 import { UserActionButtonProps } from '@/lib/types/models/books';
@@ -28,7 +27,6 @@ const RemovePrimary = ({ book, userId, className }: UserActionButtonProps) => {
 
    return (
       <>
-         <MyToaster isAdded={false} />
          <Button
             isLoading={isLoading}
             isDisplayed={isHidden}

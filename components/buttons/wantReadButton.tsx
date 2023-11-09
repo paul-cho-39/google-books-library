@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from 'react';
 import classNames from 'classnames';
 import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import Button from './UserActionBaseButton';
-import MyToaster from '../bookcards/toaster';
 import { addBooksBody, getBody } from '@/lib/helper/books/getBookBody';
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
 import { UserActionButtonProps } from '@/lib/types/models/books';
@@ -27,7 +26,6 @@ const WantToReadButton = ({ book, userId, className }: UserActionButtonProps) =>
 
    return (
       <>
-         <MyToaster isAdded={true} />
          <Button
             isLoading={isLoading}
             isDisplayed={isHidden}

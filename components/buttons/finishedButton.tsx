@@ -40,7 +40,6 @@ const SaveAsFinishedButton = ({ book, userId }: UserActionButtonProps) => {
 
    return (
       <>
-         <MyToaster isAdded={true} />
          <CalendarModal
             isLoading={isLoading}
             skipSubmit={submitWithoutDate}

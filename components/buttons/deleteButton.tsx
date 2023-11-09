@@ -17,7 +17,6 @@ const DeleteButton = ({ userId, book }: UserActionButtonProps) => {
 
    return (
       <>
-         <MyToaster isAdded={false} />
          <button
             onClick={() => mutate(body)}
             // disable when lists of books are not available?
@@ -25,7 +24,6 @@ const DeleteButton = ({ userId, book }: UserActionButtonProps) => {
             className='btn-alert w-36 justify-center text-base'
          >
             {isLoading ? 'deleting...' : 'Delete book'}
-            <span className='sr-only'> {isLoading ? 'Loading...' : 'Delete book'}</span>
          </button>
       </>
    );
