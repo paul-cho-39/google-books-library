@@ -14,6 +14,7 @@ import ThemeProvider from '@/lib/context/ThemeContext';
 
 import Navigation from '@/components/headers';
 import HomeLayout from '@/components/layout/page/home';
+import SideBarPortal from '@/components/modal/portal';
 
 // progress loader at the top of the page
 NProgress.configure({
@@ -51,11 +52,19 @@ function MyApp({ Component, pageProps }) {
          });
    }, []);
 
+   // useEffect(() => {
+   //    const root = document.getElementById('__next');
+   //    console.log('the root is: ', root);
+   //    root?.removeAttribute('aria-hidden');
+   //    root?.removeAttribute('inert');
+   // }, [isSidebarOpen]);
+
    return (
       <QueryClientProvider client={queryClient}>
          <ThemeProvider>
             <SessionProvider session={pageProps.session}>
                <Navigation sidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
+               {/* <SideBarPortal sidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} /> */}
                <HomeLayout isOpen={isSidebarOpen}>
                   <Component {...pageProps} />
                </HomeLayout>

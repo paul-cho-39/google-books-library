@@ -1,11 +1,12 @@
 import { signOut, useSession } from 'next-auth/react';
 import useDarkMode from '@/lib/hooks/useDarkMode';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import IconProviders from '../icons/headerIcons';
 import getUserId from '@/lib/helper/getUserId';
 import { LargeNavigation } from './largeNavbar';
 import { MobileNavigation } from './mobile/mobileHeader';
 import SideNavigation, { SideNavigationProps } from './sidebar';
+import SideBarPortal from '../modal/portal';
 
 const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
    const { data: user } = useSession();
@@ -13,6 +14,8 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
    const [icons] = useState(IconProviders);
    const userId = user && getUserId(user as object, 'id');
    const url = '/profile/' + userId;
+
+   // const [isSidebarOpen, setSidebarOpen] = useState(false);
 
    const navProps = {
       darkTheme,
@@ -27,7 +30,8 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
       <header>
          <div className='hidden lg:flex h-16 w-full bg-beige dark:bg-charcoal'>
             <LargeNavigation {...navProps} />
-            <SideNavigation sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            {/* <SideNavigation sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} /> */}
+            <SideBarPortal sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
          </div>
          <div className='flex h-16 w-full lg:hidden bg-beige dark:bg-charcoal'>
             <MobileNavigation {...navProps} />

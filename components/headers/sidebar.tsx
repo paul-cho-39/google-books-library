@@ -40,11 +40,26 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
       <>
          <Transition.Root show={sidebarOpen} as={Fragment}>
             <Dialog
-               as='div'
+               as='aside'
                className='hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-80 lg:flex-col mt-16'
                open={sidebarOpen}
                onClose={() => setSidebarOpen(true)}
             >
+               {/* homeicon and close sidebar button */}
+               <div className='fixed flex w-80 -top-0 z-50 bg-beige dark:bg-charcoal'>
+                  <HomeIcon />
+                  <div className='px-6 flex h-16 shrink-0 items-center justify-end'>
+                     <button onClick={() => setSidebarOpen(false)}>
+                        <span className='sr-only'>Close sidebar</span>
+                        <ArrowLeftOnRectangleIcon
+                           role='button'
+                           title='Close Sidebar'
+                           aria-label='Close sidebar navigation'
+                           className='inline h-6 cursor-pointer dark:stroke-slate-300'
+                        />
+                     </button>
+                  </div>
+               </div>
                <Dialog.Backdrop />
                <Transition.Child
                   as={Fragment}
@@ -61,11 +76,11 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                   >
                      <nav className='flex flex-1 flex-col py-6'>
                         <CategoryHeader />
-                        <ul role='list' className='flex flex-1 flex-col gap-y-7'>
+                        <ul role='navigation' className='flex flex-1 flex-col gap-y-7'>
                            <li>
-                              <ul role='list' className='-mx-2 space-y-1'>
+                              <ul className='-mx-2 space-y-1'>
                                  {navigation.map((item) => (
-                                    <li key={item.name}>
+                                    <nav key={item.name}>
                                        <Link
                                           passHref
                                           as={ROUTES.CATEGORIES(
@@ -85,7 +100,7 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                                              {capitalizeWords(item.name as string)}
                                           </a>
                                        </Link>
-                                    </li>
+                                    </nav>
                                  ))}
                               </ul>
                            </li>
@@ -95,7 +110,8 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                </Transition.Child>
             </Dialog>
          </Transition.Root>
-         {!sidebarOpen ? (
+         {/* when sidebar is not opened */}
+         {!sidebarOpen && (
             <div
                className={classNames(
                   sidebarOpen ? 'opacity-0' : 'opacity-100',
@@ -106,29 +122,30 @@ const SideNavigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) =>
                <button type='button' onClick={() => setSidebarOpen(true)}>
                   <span className='sr-only'>Close sidebar</span>
                   <ArrowRightOnRectangleIcon
-                     aria-hidden
-                     title={sidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
-                     xlinkTitle={sidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
+                     aria-hidden={sidebarOpen}
+                     title={'Open Sidebar'}
+                     xlinkTitle={'Open Sidebar'}
                      role='button'
                      className='inline h-6 cursor-pointer dark:stroke-slate-300'
                   />
                </button>
             </div>
-         ) : (
-            <div className='fixed flex w-80 -top-0 z-50 bg-beige dark:bg-charcoal'>
-               <HomeIcon />
-               <div className='px-6 flex h-16 shrink-0 items-center justify-end'>
-                  <button onClick={() => setSidebarOpen(false)}>
-                     <span className='sr-only'>Close sidebar</span>
-                     <ArrowLeftOnRectangleIcon
-                        role='button'
-                        title='Close Sidebar'
-                        aria-label='Close sidebar navigation'
-                        className='inline h-6 cursor-pointer dark:stroke-slate-300'
-                     />
-                  </button>
-               </div>
-            </div>
+            // )
+            // : (
+            // <div className='fixed flex w-80 -top-0 z-50 bg-beige dark:bg-charcoal'>
+            //    <HomeIcon />
+            //    <div className='px-6 flex h-16 shrink-0 items-center justify-end'>
+            //       <button onClick={() => setSidebarOpen(false)}>
+            //          <span className='sr-only'>Close sidebar</span>
+            //          <ArrowLeftOnRectangleIcon
+            //             role='button'
+            //             title='Close Sidebar'
+            //             aria-label='Close sidebar navigation'
+            //             className='inline h-6 cursor-pointer dark:stroke-slate-300'
+            //          />
+            //       </button>
+            //    </div>
+            // </div>
          )}
       </>
    );
