@@ -1,35 +1,38 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
+import classNames from 'classnames';
 
 import useGetCategoryQuery from '@/lib/hooks/useGetCategoryQuery';
 import useGetNytBestSeller from '@/lib/hooks/useGetNytBestSeller';
-import useHoverDisplayDescription from '@/lib/hooks/useHoverDisplay';
+import useFloatingPosition from '@/lib/hooks/useFloatingPosition';
 
+import { getBookWidth, getContainerWidth } from '@/lib/helper/books/getBookWidth';
 import { CategoryQuery } from '@/lib/types/serverTypes';
 import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '@/lib/types/googleBookTypes';
+
+import { encodeRoutes } from '@/utils/routes';
+import { batchFetchGoogleCategories } from '@/utils/fetchData';
+import { handleNytId } from '@/utils/handleIds';
+import layoutManager from '@/constants/layouts';
 import { Categories, categories } from '@/constants/categories';
+
 import { CategoryQualifiers } from '@/models/_api/fetchNytUrl';
 import { capitalizeWords } from '@/lib/helper/transformChar';
+
 import { CategoryGridLarge, CategoryGridSmall } from '@/components/contents/category/categoryGrids';
 import { BookImageSkeleton, DescriptionSkeleton } from '@/components/loaders/bookcardsSkeleton';
-import { getBookWidth, getContainerWidth } from '@/lib/helper/books/getBookWidth';
-import classNames from 'classnames';
-import { useDisableBreakPoints } from '@/lib/hooks/useDisableBreakPoints';
-import { handleNytId } from '@/utils/handleIds';
+import SingleOrMultipleAuthors from '@/components/bookcover/authors';
 import { Divider } from '@/components/layout/dividers';
 import BookTitle from '@/components/bookcover/title';
-import SingleOrMultipleAuthors from '@/components/bookcover/authors';
-import layoutManager from '@/constants/layouts';
-import { useRouter } from 'next/router';
-import { encodeRoutes } from '@/utils/routes';
-import { changeDirection } from '@/lib/helper/getContainerPos';
 import APIErrorBoundary from '@/components/error/errorBoundary';
-import { batchFetchGoogleCategories } from '@/utils/fetchData';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
 
 const MAX_ITEMS = 20;
+const TOTAL_COLS = 5;
+const HEIGHT = layoutManager.constants.imageHeight;
 
 export default function BookCategoryPages({
        category,
@@ -38,12 +41,18 @@ export default function BookCategoryPages({
    const [currentPage, setCurrentPage] = useState(1);
    const [pageIndex, setPageIndex] = useState(0);
 
-   const router = useRouter();
-   // const { category } = router.query;
+   useEffect(() => {
+      // every time category changes sets back to 0
+      setCurrentPage(1);
+      setPageIndex(0);
+   }, [category]);
 
+   const router = useRouter();
    const enableNytData = category === 'fiction' || category === 'nonfiction';
 
    const handlePageChange = (newPage: number, type?: 'next' | 'prev') => {
+      const apiPageIndex = newPage - 1;
+
       setCurrentPage(newPage);
 
       switch (type) {
@@ -56,7 +65,7 @@ export default function BookCategoryPages({
             }
             break;
          default:
-            setPageIndex(newPage * MAX_ITEMS);
+            setPageIndex(apiPageIndex * MAX_ITEMS);
             break;
       }
    };
@@ -82,61 +91,20 @@ export default function BookCategoryPages({
       enabled: enableNytData,
    });
 
-   const floatingRef = useRef<HTMLDivElement>(null);
-   const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-   const { isHovered, onMouseEnter, onMouseLeave, onMouseLeaveDescription } =
-      useHoverDisplayDescription();
-
-   const setImageRef = useCallback((id: string, el: HTMLDivElement | null) => {
-      if (imageRefs.current) imageRefs.current[id] = el;
-   }, []);
-
-   const largeEnabled = useDisableBreakPoints();
-
-   useEffect(() => {
-      if (
-         isHovered.id &&
-         isHovered.index &&
-         isHovered.hovered &&
-         floatingRef.current &&
-         imageRefs.current
-      ) {
-         const el = imageRefs.current[isHovered.id]?.getBoundingClientRect();
-
-         if (el) {
-            const currentIdx = isHovered.index - 1;
-            const row = Math.floor(currentIdx / 5);
-            const height = (el.top + window.scrollY) / (row + 1);
-            const top = height * row;
-
-            const position = changeDirection(
-               el.width,
-               isHovered.index,
-               5,
-               5 - 1,
-               layoutManager.categories.padding,
-               layoutManager.categories.offset
-            );
-
-            floatingRef.current.style.top = `${top}px`;
-            floatingRef.current.style.position = 'absolute';
-
-            if (position.right > 0) {
-               floatingRef.current.style.right = `${position.right}px`;
-            } else {
-               floatingRef.current.style.left = `${position.left}px`;
-            }
-         }
-      }
-   }, [isHovered, largeEnabled]);
+   const {
+      isHovered,
+      setImageRef,
+      floatingRef,
+      onMouseEnter,
+      onMouseLeave,
+      onMouseLeaveDescription,
+      largeEnabled,
+   } = useFloatingPosition(TOTAL_COLS, true);
 
    // create a function for this too
    const CATEGORY_NYT_HEADER =
       bestSellers &&
       `${capitalizeWords(category as string)} Best Sellers (${bestSellers.published_date})`;
-
-   const HEIGHT = layoutManager.constants.imageHeight;
 
    // TODO: create a component for these fallbacks
    if (router.isFallback) {
@@ -152,7 +120,7 @@ export default function BookCategoryPages({
          <APIErrorBoundary>
             {googleData.isSuccess && googleData && (
                <CategoryGridLarge
-                  currentPage={currentPage + 1}
+                  currentPage={currentPage}
                   itemsPerPage={MAX_ITEMS}
                   onPageChange={handlePageChange}
                   totalItems={googleData.data.totalItems}
@@ -221,48 +189,54 @@ export default function BookCategoryPages({
                   })}
                </CategoryGridLarge>
             )}
-         </APIErrorBoundary>
-         {isNytDataSuccess && bestSellers && (
-            <>
-               <Divider />
-               <CategoryGridSmall category={CATEGORY_NYT_HEADER}>
-                  {bestSellers.books.map((book, index) => (
-                     <div className='flex flex-row items-start space-x-2' key={book.primary_isbn13}>
-                        <Suspense
-                           fallback={<BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />}
+            {/* if it is not fiction or nonfiction or not successful wont work */}
+            {isNytDataSuccess && enableNytData && bestSellers && (
+               <>
+                  <Divider />
+                  <CategoryGridSmall category={CATEGORY_NYT_HEADER}>
+                     {bestSellers.books.map((book, index) => (
+                        <div
+                           className='flex flex-row items-start space-x-2'
+                           key={book.primary_isbn13}
                         >
-                           <BookImage
-                              id={handleNytId.appendSuffix(book.primary_isbn13)}
-                              title={book.title}
-                              width={getBookWidth(HEIGHT)}
-                              height={HEIGHT}
-                              bookImage={book.book_image}
-                              priority={false}
-                              className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
-                              routeQuery={encodeRoutes.category(category, meta)}
-                           />
-                        </Suspense>
-                        <div className='flex flex-col items-start justify-start w-full'>
-                           <h4 className='text-lg dark:text-slate-200'>Rank: {book.rank}</h4>
-                           <BookTitle
-                              id={handleNytId.appendSuffix(book.primary_isbn13)}
-                              title={capitalizeWords(book.title)}
-                              routeQuery={encodeRoutes.category(category, meta)}
-                              className='text-lg lg:text-xl hover:underline hover:decoration-orange-400 hover:dark:decoration-orange-200'
-                           />
-                           <p className='text-sm text-clip space-x-0.5'>
-                              <span className='dark:text-slate-50'>by{': '}</span>
-                              <SingleOrMultipleAuthors
-                                 hoverUnderline={true}
-                                 authors={book.author}
+                           <Suspense
+                              fallback={
+                                 <BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />
+                              }
+                           >
+                              <BookImage
+                                 id={handleNytId.appendSuffix(book.primary_isbn13)}
+                                 title={book.title}
+                                 width={getBookWidth(HEIGHT)}
+                                 height={HEIGHT}
+                                 bookImage={book.book_image}
+                                 priority={false}
+                                 className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
+                                 routeQuery={encodeRoutes.category(category, meta)}
                               />
-                           </p>
+                           </Suspense>
+                           <div className='flex flex-col items-start justify-start w-full'>
+                              <h4 className='text-lg dark:text-slate-200'>Rank: {book.rank}</h4>
+                              <BookTitle
+                                 id={handleNytId.appendSuffix(book.primary_isbn13)}
+                                 title={capitalizeWords(book.title)}
+                                 routeQuery={encodeRoutes.category(category, meta)}
+                                 className='text-lg lg:text-xl hover:underline hover:decoration-orange-400 hover:dark:decoration-orange-200'
+                              />
+                              <p className='text-sm text-clip space-x-0.5'>
+                                 <span className='dark:text-slate-50'>by{': '}</span>
+                                 <SingleOrMultipleAuthors
+                                    hoverUnderline={true}
+                                    authors={book.author}
+                                 />
+                              </p>
+                           </div>
                         </div>
-                     </div>
-                  ))}
-               </CategoryGridSmall>
-            </>
-         )}
+                     ))}
+                  </CategoryGridSmall>
+               </>
+            )}
+         </APIErrorBoundary>
       </div>
    );
 }

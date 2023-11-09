@@ -51,6 +51,7 @@ export default function useGetNytBestSeller({
          select: (data) => data.results,
          enabled: enabled,
          initialData: cache ?? initialData,
+         keepPreviousData: true,
       }
    );
 

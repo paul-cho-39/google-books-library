@@ -16,7 +16,7 @@ const Pagination = ({ currentPage, totalItems, itemsPerPage, onPageChange }: Pag
    const maxVisiblePages = 9;
 
    if (totalPages > maxVisiblePages) {
-      // Calculate the start and end pages for pagination
+      // calculate the start and end pages for pagination
       startPage = Math.max(currentPage - Math.floor(maxVisiblePages / 2), 1);
       endPage = startPage + maxVisiblePages - 1;
 
@@ -49,6 +49,7 @@ const Pagination = ({ currentPage, totalItems, itemsPerPage, onPageChange }: Pag
                <span className='mx-2'>Previous</span>
             </button>
 
+            {/* the minimum is 1 and visible when the current page is more than 1 */}
             {startPage > 1 && (
                <>
                   <button onClick={() => onPageChange(1)}>1</button>
@@ -88,7 +89,9 @@ const Pagination = ({ currentPage, totalItems, itemsPerPage, onPageChange }: Pag
                   'flex flex-row items-center mx-2 text-sm text-slate-900 dark:text-slate-100 font-medium hover:underline-offset-1 hover:underline hover:decoration-orange-400 dark:hover:decoration-orange-200'
                )}
                disabled={currentPage === totalPages}
-               onClick={() => onPageChange(currentPage + 15)}
+               onClick={() => {
+                  onPageChange(currentPage + 1);
+               }}
             >
                <span className='mx-2'>Next</span>
                <ArrowLongRightIcon

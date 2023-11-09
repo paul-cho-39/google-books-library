@@ -14,7 +14,6 @@ import ThemeProvider from '@/lib/context/ThemeContext';
 
 import Navigation from '@/components/headers';
 import HomeLayout from '@/components/layout/page/home';
-import SideBarPortal from '@/components/modal/portal';
 
 // progress loader at the top of the page
 NProgress.configure({
@@ -40,8 +39,8 @@ export const queryClient = new QueryClient({
 });
 
 function MyApp({ Component, pageProps }) {
-   // the default is to have the sidebar open
-   const [isSidebarOpen, setSidebarOpen] = useState(false);
+   // the default is to have the sidebar open when application starts
+   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
    useEffect(() => {
       if (process.env.NODE_ENV === 'development') {
@@ -51,13 +50,6 @@ function MyApp({ Component, pageProps }) {
             server.listen();
          });
    }, []);
-
-   // useEffect(() => {
-   //    const root = document.getElementById('__next');
-   //    console.log('the root is: ', root);
-   //    root?.removeAttribute('aria-hidden');
-   //    root?.removeAttribute('inert');
-   // }, [isSidebarOpen]);
 
    return (
       <QueryClientProvider client={queryClient}>
