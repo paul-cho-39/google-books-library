@@ -2,7 +2,7 @@ import { signOut } from 'next-auth/react';
 import apiRequest from '@/utils/fetchData';
 import { ApiRequestOptions, Method } from '@/lib/types/fetchbody';
 
-interface ButtonProps {
+interface ModalButtonProps {
    name: string;
    id: string;
    url: string;
@@ -10,7 +10,13 @@ interface ButtonProps {
    shouldSignOut: boolean;
 }
 // should this be a component or a hook? function makes sense too?
-export const ModalInnerButton = ({ name, id, url, method, shouldSignOut = false }: ButtonProps) => {
+export const ModalInnerButton = ({
+   name,
+   id,
+   url,
+   method,
+   shouldSignOut = false,
+}: ModalButtonProps) => {
    const params: ApiRequestOptions<string> = {
       apiUrl: url,
       method: method,

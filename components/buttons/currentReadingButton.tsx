@@ -1,17 +1,12 @@
 import React, { useMemo } from 'react';
-import { Items } from '@/lib/types/googleBookTypes';
 import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import Button from './basicButton';
 import MyToaster from '../bookcards/toaster';
 import { addBooksBody, getBody } from '@/lib/helper/books/getBookBody';
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
+import { UserActionButtonProps } from '@/lib/types/models/books';
 
-export type ButtonProps = {
-   book: Items<any>;
-   userId: string;
-};
-
-const AddPrimary = ({ book, userId }: ButtonProps) => {
+const AddPrimary = ({ book, userId }: UserActionButtonProps) => {
    const { id, volumeInfo: _ } = book;
    const body = addBooksBody(book, id);
 

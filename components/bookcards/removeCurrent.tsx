@@ -1,12 +1,12 @@
-import { ButtonProps } from '../buttons/currentReadingButton';
 import { useMemo } from 'react';
 import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import Button from '../buttons/basicButton';
 import MyToaster from './toaster';
 
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
+import { UserActionButtonProps } from '@/lib/types/models/books';
 
-const RemovePrimary = ({ book, userId }: ButtonProps) => {
+const RemovePrimary = ({ book, userId }: UserActionButtonProps) => {
    const { id, volumeInfo: _ } = book;
    const body = { id, userId };
 

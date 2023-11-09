@@ -1,29 +1,14 @@
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/20/solid';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
-import AddPrimary, { ButtonProps } from './currentReadingButton';
-import WantReadButton from './wantReadButton';
-import RemovePrimary from '../bookcards/removeCurrent';
 import DeleteButton from './deleteButton';
 import DeleteButtonWrapper from './wrappers/deleteButtonWrapper';
+import { userActionButtons } from '@/utils/userActionButton';
+import { UserActionButtonProps } from '@/lib/types/models/books';
 
 const DURATION = 200;
-const userActionButtons = [
-   {
-      name: 'reading',
-      Component: AddPrimary,
-   },
-   {
-      name: 'wanttoread',
-      Component: WantReadButton,
-   },
-   {
-      name: 'removeCurrentlyReading',
-      Component: RemovePrimary,
-   },
-];
 
-function PopOverButtons({ userId, book }: ButtonProps) {
+const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
    const [isHidden, setIsHidden] = useState(false);
    const [isClosed] = useState(true);
 
@@ -33,6 +18,13 @@ function PopOverButtons({ userId, book }: ButtonProps) {
 
    const handleClick = () => {
       setIsHidden(false);
+   };
+
+   const handleClose = () => {
+      setTimeout(() => {
+         setIsHidden(false);
+         close();
+      }, DURATION);
    };
 
    return (
@@ -124,9 +116,8 @@ function PopOverButtons({ userId, book }: ButtonProps) {
                                        onClick={() => {
                                           isClosed &&
                                              setTimeout(() => {
-                                                setIsHidden(false);
                                                 close();
-                                             }, 800);
+                                             }, DURATION);
                                        }}
                                     >
                                        <DeleteButton book={book} userId={userId} />
@@ -142,6 +133,9 @@ function PopOverButtons({ userId, book }: ButtonProps) {
          </Popover>
       </>
    );
-}
+};
 
 export default React.memo(PopOverButtons);
+function setIsHidden(arg0: (prev: boolean) => boolean) {
+   throw new Error('Function not implemented.');
+}

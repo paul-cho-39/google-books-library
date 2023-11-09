@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ButtonProps } from './currentReadingButton';
 import MyToaster from '../bookcards/toaster';
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
+import { UserActionButtonProps } from '@/lib/types/models/books';
 
-const DeleteButton = ({ userId, book }: ButtonProps) => {
+const DeleteButton = ({ userId, book }: UserActionButtonProps) => {
    const { id, volumeInfo: _ } = book;
    const body = { id, userId };
 

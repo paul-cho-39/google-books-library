@@ -1,13 +1,13 @@
 import React from 'react';
-import { ButtonProps } from './currentReadingButton';
 import { initialNullDateAtom, getYear, getMonth, getDay } from '@/lib/store/atomDates';
 import { useAtomValue } from 'jotai';
 import CalendarModal from '../modal/calendarModal';
 import MyToaster from '../bookcards/toaster';
 import { addBooksBody, getBody } from '@/lib/helper/books/getBookBody';
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
+import { UserActionButtonProps } from '@/lib/types/models/books';
 
-const SaveAsFinishedButton = ({ book, userId }: ButtonProps) => {
+const SaveAsFinishedButton = ({ book, userId }: UserActionButtonProps) => {
    // const body = getBody(userId, book);
    const body = addBooksBody(book, book.id);
 

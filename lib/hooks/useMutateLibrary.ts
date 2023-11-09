@@ -92,14 +92,14 @@ function addToLibrary(
    bookId: string
 ): Library {
    if (!currentData) {
-      const placerData: Library = {
+      const placeholderData: Library = {
          finished: [],
          reading: [],
          unfinished: [],
          want: [],
       };
       return {
-         ...placerData,
+         ...placeholderData,
          [state]: [bookId],
       };
    }
