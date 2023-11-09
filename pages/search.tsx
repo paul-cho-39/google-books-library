@@ -64,7 +64,7 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
       <SearchLayoutPage isSuccess={false}>
          <FilterInput filter={filter} setFilter={setFilter} />
          <Divider />
-         <Spinner />
+         <Spinner className='mt-24' />
       </SearchLayoutPage>
    );
 

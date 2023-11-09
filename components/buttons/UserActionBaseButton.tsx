@@ -33,7 +33,7 @@ const Button = ({
             }
       `}
          ></span>
-         <span className='sr-only'>, {name}</span>
+         <span className='sr-only'>{name}</span>
       </button>
    );
 };
