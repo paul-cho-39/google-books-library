@@ -3,6 +3,7 @@ import SignInRequiredButton from '@/components/Login/requireUser';
 import { BookCardProps } from '@/lib/types/components/bookcards';
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 import { ButtonSkeleton } from '../loaders/bookcardsSkeleton';
+import MenuButtons from './menuButton';
 
 type UserActionProps = Pick<BookCardProps, 'book' | 'userId'>;
 
@@ -27,6 +28,7 @@ const BookActionButton = ({ book, userId }: UserActionProps) => (
          signedInActiveButton={
             <Suspense fallback={<ButtonSkeleton />}>
                <PopOverButtons book={book} userId={userId as string} />
+               <MenuButtons book={book} userId={userId as string} />
             </Suspense>
          }
       >

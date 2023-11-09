@@ -1,12 +1,14 @@
 import React, { useMemo } from 'react';
+import classNames from 'classnames';
+
 import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
-import Button from './basicButton';
+import Button from './UserActionBaseButton';
 import MyToaster from '../bookcards/toaster';
 import { addBooksBody, getBody } from '@/lib/helper/books/getBookBody';
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
 import { UserActionButtonProps } from '@/lib/types/models/books';
 
-const AddPrimary = ({ book, userId }: UserActionButtonProps) => {
+const AddPrimary = ({ book, userId, className }: UserActionButtonProps) => {
    const { id, volumeInfo: _ } = book;
    const body = addBooksBody(book, id);
 
@@ -37,7 +39,7 @@ const AddPrimary = ({ book, userId }: UserActionButtonProps) => {
             isDisplayed={isHidden}
             name={isLoading ? 'Loading...' : 'Reading currently'}
             onClick={handleClick}
-            className={'mb-2'}
+            className={classNames('mb-2', className)}
          />
       </>
    );

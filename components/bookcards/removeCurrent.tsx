@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
+import classNames from 'classnames';
 import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
-import Button from '../buttons/basicButton';
+import Button from '../buttons/UserActionBaseButton';
 import MyToaster from './toaster';
 
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
 import { UserActionButtonProps } from '@/lib/types/models/books';
 
-const RemovePrimary = ({ book, userId }: UserActionButtonProps) => {
+const RemovePrimary = ({ book, userId, className }: UserActionButtonProps) => {
    const { id, volumeInfo: _ } = book;
    const body = { id, userId };
 
@@ -33,7 +34,7 @@ const RemovePrimary = ({ book, userId }: UserActionButtonProps) => {
             isDisplayed={isHidden}
             name={'Remove Reading'}
             onClick={() => mutate(body)}
-            className={'mb-2'}
+            className={classNames('mb-2', className)}
          />
       </>
    );

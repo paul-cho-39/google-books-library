@@ -9,9 +9,9 @@ import { Library } from '@/lib/types/models/books';
 interface WrapperProps {
    id: string;
    userId: string;
-   toggleHide: () => void;
+   toggleHide?: () => void;
 }
-const DeleteButtonWrapper = ({ toggleHide, userId, id }: WrapperProps) => {
+const DeleteButtonWrapper = ({ userId, id, toggleHide }: WrapperProps) => {
    const queryClient = useQueryClient();
    const dataBooks = queryClient.getQueryData<Library>(queryKeys.userLibrary(userId));
 

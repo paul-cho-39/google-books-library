@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo } from 'react';
+import classNames from 'classnames';
 import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
-import Button from './basicButton';
+import Button from './UserActionBaseButton';
 import MyToaster from '../bookcards/toaster';
 import { addBooksBody, getBody } from '@/lib/helper/books/getBookBody';
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
 import { UserActionButtonProps } from '@/lib/types/models/books';
 
-const WantToReadButton = ({ book, userId }: UserActionButtonProps) => {
+const WantToReadButton = ({ book, userId, className }: UserActionButtonProps) => {
    const body = addBooksBody(book, book.id);
 
    const {
@@ -32,7 +33,7 @@ const WantToReadButton = ({ book, userId }: UserActionButtonProps) => {
             isDisplayed={isHidden}
             name={isLoading ? 'Loading...' : 'Want to read'}
             onClick={() => mutate(body)}
-            className={'mb-2'}
+            className={classNames('mb-2', className)}
          />
       </>
    );

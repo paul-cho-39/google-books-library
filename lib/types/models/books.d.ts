@@ -24,6 +24,7 @@ export interface RatingsWithoutData {
 export type UserActionButtonProps = {
    book: Items<any>;
    userId: string;
+   className?: string;
 };
 
 export interface Data {

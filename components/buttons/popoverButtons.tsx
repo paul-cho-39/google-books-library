@@ -20,16 +20,9 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
       setIsHidden(false);
    };
 
-   const handleClose = () => {
-      setTimeout(() => {
-         setIsHidden(false);
-         close();
-      }, DURATION);
-   };
-
    return (
       <>
-         <Popover className='relative'>
+         <Popover className='relative md:hidden'>
             {({ open, close }) => (
                <>
                   <Popover.Button
@@ -75,7 +68,7 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                               >
                                  <div className='flex flex-col justify-center items-center'>
                                     {userActionButtons.map((userActionButton) => (
-                                       <div
+                                       <button
                                           onClick={() => {
                                              isClosed &&
                                                 setTimeout(() => {
@@ -85,7 +78,7 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                                           key={userActionButton.name}
                                        >
                                           <userActionButton.Component userId={userId} book={book} />
-                                       </div>
+                                       </button>
                                     ))}
 
                                     <DeleteButtonWrapper
@@ -96,6 +89,7 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                                  </div>
                               </div>
                               {/* is hidden until clicked */}
+                              {/* separate the component here */}
                               <div
                                  aria-hidden={!isHidden}
                                  className={`${isHidden ? 'mt-4 px-8' : 'hidden'}`}
@@ -136,6 +130,3 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
 };
 
 export default React.memo(PopOverButtons);
-function setIsHidden(arg0: (prev: boolean) => boolean) {
-   throw new Error('Function not implemented.');
-}

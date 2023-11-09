@@ -20,6 +20,7 @@ const signInMock = nextAuth.signIn as jest.MockedFunction<typeof nextAuth.signIn
 describe('<Account />', () => {
    nextAuthReactMocked.useSession.mockReturnValue({
       data: null,
+      update: jest.fn(),
       status: 'unauthenticated',
    });
 

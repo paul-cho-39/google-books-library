@@ -1,19 +1,18 @@
 import RemovePrimary from '@/components/bookcards/removeCurrent';
 import AddPrimary from '@/components/buttons/currentReadingButton';
 import WantToReadButton from '@/components/buttons/wantReadButton';
-import { Items } from '@/lib/types/googleBookTypes';
 
 export const userActionButtons = [
    {
-      name: 'reading',
+      name: 'Reading',
       Component: AddPrimary,
    },
    {
-      name: 'wanttoread',
+      name: 'Want to read',
       Component: WantToReadButton,
    },
    {
-      name: 'removeCurrentlyReading',
+      name: 'Remove current',
       Component: RemovePrimary,
    },
 ];
