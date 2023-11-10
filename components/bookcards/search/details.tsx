@@ -12,7 +12,7 @@ interface BookDetailsProps extends Omit<BookCardProps, 'totalItems'> {
 const BookDetails = ({ book, query, userId, dataBooks }: BookDetailsProps) => (
    <div className='relative grid grid-rows-5 px-4 md:px-6 lg:px-8'>
       <BookTitleAndAuthor book={book} query={query} />
-      <BookActionButton book={book} userId={userId} />
+      <BookActionButton book={book} userId={userId} className='justify-start' />
       <FilterStatus bookId={book.id} library={dataBooks} />
    </div>
 );

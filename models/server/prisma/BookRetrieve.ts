@@ -16,9 +16,19 @@ export class BookRetriever {
 
       return userBooks.map((ub) => ub.book);
    }
-   async getAllUserBooks(userId: string) {
+   // retrieves books if it has not been soft deleted
+   async getAllValidUserBooks(userId: string) {
       return await prisma.userBook.findMany({
-         where: { userId: userId },
+         where: {
+            AND: [
+               { userId: userId },
+               {
+                  book: {
+                     isNot: { isDeleted: true },
+                  },
+               },
+            ],
+         },
          include: {
             book: true,
          },

@@ -23,10 +23,11 @@ export class RefineData {
          library[key].push(ub.book.id);
       });
 
-      library['unfinished'] = [...library.reading, ...library.want];
+      library['unfinished'] = [...(library.reading || []), ...(library.want || [])];
 
       return library;
    }
+
    refineDates<T>(data: T) {
       if (data instanceof Date) {
          return data.toISOString() as unknown as T;

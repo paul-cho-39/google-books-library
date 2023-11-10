@@ -1,7 +1,10 @@
 import { Library, RefinedBookState } from '@/lib/types/models/books';
 
 export function filterId(book: string[] | undefined, id: string) {
-   return book?.filter((bookId) => bookId !== id);
+   if (book && book.length > 1) {
+      return book?.filter((bookId) => bookId !== id);
+   }
+   return;
 }
 
 export function filterAll(library: Library | undefined, id: string): Library | undefined {

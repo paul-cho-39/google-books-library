@@ -63,7 +63,7 @@ model Book {
   users               UserBook[]
   ratings             Rating[]
 
-  @@index([id], type: Hash)
+  @@index([id, isDeleted], type: Hash)
   @@map("books")
 }
 

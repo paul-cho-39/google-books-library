@@ -7,7 +7,7 @@ import { ResponseFinishedData } from '../types/serverTypes';
 export default function useGetBookData(userId: string) {
    return useQuery<ResponseFinishedData, unknown, Library>(
       queryKeys.userLibrary(userId),
-      () => bookApiUpdate('GET', userId, 'finished'),
+      () => bookApiUpdate('GET', userId, 'main'),
       {
          enabled: !!userId,
          retryOnMount: true,

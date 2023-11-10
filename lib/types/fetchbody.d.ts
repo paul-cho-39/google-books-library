@@ -23,4 +23,4 @@ export type ServerCacheType = {
 
 export type Body = ReadPostBody | DeleteBody | FinishedPostBody;
 export type Method = 'POST' | 'DELETE' | 'PUT' | 'GET' | 'PATCH';
-export type UrlProps = 'reading' | 'finished' | 'want';
+export type UrlProps = 'reading' | 'finished' | 'want' | 'main';

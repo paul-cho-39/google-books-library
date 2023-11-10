@@ -10,9 +10,16 @@ export default class BookCreator extends Books {
    constructor(userId: string, bookId: string) {
       super(userId, bookId);
    }
+
+   async createBook(data: Data) {
+      await prisma.book.create({
+         data: this.createDataObj(data),
+      });
+   }
    async createOrUpdateBookAndState(data: Data, stateData: UserBookWithoutId) {
       this.checkIds();
 
+      // TODO: how to work with this one(?)
       await prisma.book.upsert({
          where: this.getBookId,
          create: {
@@ -51,37 +58,12 @@ export default class BookCreator extends Books {
          },
       });
    }
-   async createBook(data: Data) {
-      await prisma.book.create({
-         data: {
-            id: this.bookId,
-            title: data.title,
-            subtitle: data.subtitle,
-            publishedDate: new Date(data.publishedDate),
-            categories: data.categories ?? [],
-            language: data.language,
-            pageCount: data.pageCount,
-            industryIdentifiers: (data.industryIdentifiers as Prisma.JsonArray) ?? Prisma.JsonNull,
-            authors: data.authors ?? [],
-         },
-      });
-   }
    async upsertBookAndRating(data: Data, rating: number | string) {
       this.checkIds();
       const ratingNum = this.toNumber(rating);
       await prisma.book.upsert({
          where: { id: this.bookId },
-         create: {
-            id: this.bookId,
-            title: data.title,
-            subtitle: data.subtitle,
-            categories: data.categories ?? [],
-            authors: data.authors ?? [],
-            language: data.language,
-            publishedDate: new Date(data.publishedDate),
-            pageCount: data.pageCount,
-            industryIdentifiers: (data.industryIdentifiers as Prisma.JsonArray) ?? Prisma.JsonNull,
-         },
+         create: this.createDataObj(data),
          update: {
             ratings: {
                upsert: {
@@ -131,19 +113,65 @@ export default class BookCreator extends Books {
          },
       });
    }
+   async createOrRecoverDeletedBook(data: Data, stateData: UserBookWithoutId) {
+      await prisma.$transaction(async (tx) => {
+         try {
+            await tx.book.upsert({
+               where: this.getBookId,
+               update: {
+                  isDeleted: false,
+                  dateDeleted: null,
+               },
+               create: this.createDataObj(data),
+            });
+            await tx.userBook.upsert({
+               where: { userId_bookId: this.getBothIds },
+               update: { ...stateData },
+               create: {
+                  bookId: this.bookId,
+                  userId: this.userId,
+                  ...stateData,
+               },
+            });
+         } catch (err) {
+            console.error('Failed to complete the transaction', err);
+         }
+      });
+   }
+
    private toNumber(rating?: number | string) {
       const numberToRating = Number(rating);
-
-      console.log('----------------------------');
-      console.log('----------------------------');
-      console.log('----------------------------');
-      console.log('THE NUMBER TO RATING INSIDE THE SERVER IS: ', numberToRating);
-      console.log('----------------------------');
-      console.log('----------------------------');
 
       if (!rating || isNaN(numberToRating)) {
          throw new Error('Required rating type is missing or have the wrong type');
       }
       return numberToRating;
+   }
+   private createDataObj(data: Data) {
+      return {
+         id: this.bookId,
+         title: data.title,
+         subtitle: data.subtitle,
+         categories: data.categories ?? [],
+         authors: data.authors ?? [],
+         language: data.language,
+         publishedDate: new Date(data.publishedDate),
+         pageCount: data.pageCount,
+         industryIdentifiers: (data.industryIdentifiers as Prisma.JsonArray) ?? Prisma.JsonNull,
+      };
+   }
+   private createDataAndConnect(data: Data, stateData: UserBookWithoutId) {
+      return {
+         ...this.createDataObj(data),
+         users: {
+            connectOrCreate: {
+               where: { userId_bookId: this.getBothIds },
+               create: {
+                  userId: this.userId,
+                  ...stateData,
+               },
+            },
+         },
+      };
    }
 }

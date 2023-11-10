@@ -1,14 +1,23 @@
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { UserActionButtonProps } from '@/lib/types/models/books';
 import { userActionButtons } from '@/utils/userActionButton';
 import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
-import DeleteButtonWrapper from './wrappers/deleteButtonWrapper';
+import DeleteButton from './deleteButton';
+import ModalOpener from '../modal/openModal';
+import { DeleteBookContent } from '../modal/deletebookcontent';
 
 const MenuButtons = ({ userId, book }: UserActionButtonProps) => {
+   const [openDeleteModal, setOpenModal] = useState(false);
+
+   const handleModal = (closeMenu: () => void) => {
+      closeMenu();
+      setOpenModal(true);
+   };
+
    return (
-      <div className='md:relative lg:relative md:z-50 lg:z-50'>
+      <div className='hidden md:flex md:relative lg:relative md:z-50 lg:z-50'>
          <Menu as='div'>
             {({ open, close }) => (
                <>
@@ -31,34 +40,62 @@ const MenuButtons = ({ userId, book }: UserActionButtonProps) => {
                      leaveFrom='transform opacity-100 scale-100'
                      leaveTo='transform opacity-0 scale-95'
                   >
-                     <Menu.Items className='bg-dilutedbeige dark:bg-charcoal absolute right-0 -mt-2 w-48 origin-top-right divide-y divide-gray-100 rounded-3xl shadow-lg ring-1 ring-black/5 focus:outline-none'>
-                        <div className='px-1 py-1'>
+                     <Menu.Items className='dark:bg-slate-500 bg-slate-100 absolute right-0 -mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-3xl shadow-lg ring-1 ring-black/5 focus:outline-none'>
+                        <div className='px-2 py-2'>
                            {userActionButtons.map((userActionButton) => (
                               <Menu.Item key={userActionButton.name}>
                                  {({ active }) => (
                                     <>
-                                       <button
-                                          aria-label={userActionButton.name}
-                                          className={classNames(
-                                             active ? 'bg-slate-200' : 'bg-none',
-                                             'group flex w-full items-center rounded-md px-2 py-2'
-                                          )}
-                                       >
-                                          <userActionButton.Component userId={userId} book={book} />
-                                       </button>
+                                       {userActionButton.name === 'Delete' ? (
+                                          <userActionButton.Component
+                                             userId={userId}
+                                             book={book}
+                                             toggleHide={() => handleModal(close)}
+                                             className={classNames(
+                                                active ? 'bg-slate-200' : 'bg-none',
+                                                'px-2 py-2 w-52 rounded-xl'
+                                             )}
+                                          />
+                                       ) : (
+                                          <userActionButton.Component
+                                             userId={userId}
+                                             book={book}
+                                             close={() => close()}
+                                             className={classNames(
+                                                active ? 'bg-slate-200' : 'bg-none',
+                                                'px-2 py-2 w-52 rounded-xl'
+                                             )}
+                                          />
+                                       )}
                                     </>
                                  )}
                               </Menu.Item>
                            ))}
-                           <Menu.Item>
-                              <DeleteButtonWrapper userId={userId} id={book?.id} />
-                           </Menu.Item>
                         </div>
                      </Menu.Items>
                   </Transition>
                </>
             )}
          </Menu>
+         <ModalOpener
+            isOpen={openDeleteModal}
+            setIsOpen={setOpenModal}
+            DialogTitle='Delete book from library'
+         >
+            {/* name is a bit confusing but isHidden = isShow */}
+            <DeleteBookContent
+               toggleHide={() => setOpenModal(false)}
+               isHidden={openDeleteModal}
+               buttonClassName='w-32 text-center items-center'
+            >
+               <DeleteButton
+                  book={book}
+                  userId={userId}
+                  closeModal={setOpenModal}
+                  className='w-32'
+               />
+            </DeleteBookContent>
+         </ModalOpener>
       </div>
    );
 };

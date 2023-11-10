@@ -5,13 +5,14 @@ import Button from '../buttons/UserActionBaseButton';
 
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
 import { UserActionButtonProps } from '@/lib/types/models/books';
+import { LIBRARY_DURATION } from '@/constants/throttle';
 
 const RemovePrimary = ({ book, userId, className }: UserActionButtonProps) => {
    const { id, volumeInfo: _ } = book;
    const body = { id, userId };
 
    const {
-      mutation: { mutate, isLoading },
+      mutation: { mutate, isLoading, isSuccess, isError },
       library,
    } = useMutateLibrary<'remove'>({
       bookId: id,
@@ -25,13 +26,23 @@ const RemovePrimary = ({ book, userId, className }: UserActionButtonProps) => {
       [library]
    );
 
+   const handleClick = () => {
+      mutate(body);
+
+      if (close) {
+         setTimeout(() => {
+            close();
+         }, LIBRARY_DURATION);
+      }
+   };
+
    return (
       <>
          <Button
             isLoading={isLoading}
             isDisplayed={isHidden}
             name={'Remove Reading'}
-            onClick={() => mutate(body)}
+            onClick={handleClick}
             className={classNames('mb-2', className)}
          />
       </>

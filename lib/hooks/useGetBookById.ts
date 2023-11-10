@@ -7,6 +7,9 @@ import { Data, GoogleUpdatedFields, Items } from '../types/googleBookTypes';
 import { throttledFetcher } from '@/utils/fetchData';
 import { decodeRoutes } from '@/utils/routes';
 
+// this fetches from cache or from google book data
+// NOT FROM API
+
 export interface SingleBookQueryParams<TRoute extends CategoryRouteParams | RouteParams> {
    routeParams: TRoute;
    accessFullBookUrl?: boolean;
@@ -29,8 +32,6 @@ export default function useGetBookById<
 
    // if data is not in the first cache proceed to look inside the second cache
    if (isGoogle && (!initialData || initialData === null)) {
-      console.log('----------------------------');
-      console.log('should not be running here');
       const queryKey = getQueryKeys(routeParams);
       const secondaryCache = queryClient.getQueryData<CacheData>(queryKey);
       book = findBookId(secondaryCache, id);

@@ -11,7 +11,9 @@ const DOMAIN_RATING = 'rating';
 const API_ROUTES = {
    BOOKS: {
       path: (userId: string, subdomain: UrlProps) =>
-         `${BASE_PATH}/${DOMAIN_BOOKS}/${userId}/${subdomain}`,
+         subdomain === 'main'
+            ? `${BASE_PATH}/${DOMAIN_BOOKS}/${userId}`
+            : `${BASE_PATH}/${DOMAIN_BOOKS}/${userId}/${subdomain}`,
    },
    // DEPRECATED
    THIRD_PARTY: {

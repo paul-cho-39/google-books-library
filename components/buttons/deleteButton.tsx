@@ -1,31 +1,60 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import MyToaster from '../bookcards/toaster';
+import React, { Dispatch, SetStateAction } from 'react';
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
 import { UserActionButtonProps } from '@/lib/types/models/books';
+import Button from './UserActionBaseButton';
 
-const DeleteButton = ({ userId, book }: UserActionButtonProps) => {
+interface DeleteButtonProps extends UserActionButtonProps {
+   closeModal?: Dispatch<SetStateAction<boolean>>; // only for medium size screen or larger
+}
+
+const DeleteButton = ({ userId, book, close, closeModal }: DeleteButtonProps) => {
    const { id, volumeInfo: _ } = book;
    const body = { id, userId };
 
    const {
-      mutation: { mutate, isLoading },
+      mutation: { mutateAsync, mutate, isLoading, isSuccess, isError },
    } = useMutateLibrary<'delete'>({
       bookId: id,
       userId: userId,
       type: 'delete',
    });
 
+   // const handleClick = async () => {
+   //    await mutateAsync(body).then(() => {
+   //       // only close after it has stopped loading
+   //       // would this be a problem?
+   //       if (closeModal && !isLoading) {
+   //          closeModal(false);
+   //       }
+   //       if (close) {
+   //          close();
+   //       }
+   //    });
+   // };
+
+   const handleClick = () => {
+      mutate(body);
+      // (() => {
+      //    // only close after it has stopped loading
+      //    // would this be a problem?
+
+      if (closeModal) {
+         closeModal(false);
+      }
+      if (close) {
+         close();
+      }
+   };
+
    return (
-      <>
-         <button
-            onClick={() => mutate(body)}
-            // disable when lists of books are not available?
-            disabled={isLoading}
-            className='btn-alert w-36 justify-center text-base'
-         >
-            {isLoading ? 'deleting...' : 'Delete book'}
-         </button>
-      </>
+      <Button
+         isDisplayed={true}
+         onClick={handleClick}
+         isLoading={isLoading}
+         isDeleteButton={true}
+         className='mb-2'
+         name={'Delete Book'}
+      />
    );
 };
 

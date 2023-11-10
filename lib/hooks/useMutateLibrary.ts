@@ -7,7 +7,6 @@ import {
    Library,
    MutationLibraryActionTypes,
    MutationLibraryBodyData,
-   MutationLibraryBodyTypes,
    RefinedBookState,
 } from '@/lib/types/models/books';
 import queryKeys from '@/utils/queryKeys';
@@ -26,8 +25,7 @@ function useMutateLibrary<MBody extends MutationLibraryActionTypes>({
 
    const mutation = useMutation(
       // the body goes inside mutate(body)
-      (body: MutationLibraryBodyData<MBody>) =>
-         bookApiUpdate(method as Method, userId, route as UrlProps, body),
+      (body: MutationLibraryBodyData<MBody>) => bookApiUpdate(method, userId, route, body),
       {
          onMutate: async () => {
             // cancel any ongoing queries while mutating
@@ -46,6 +44,7 @@ function useMutateLibrary<MBody extends MutationLibraryActionTypes>({
             return prevData;
          },
          onError: (err, _variables, context) => {
+            console.error('Caught an error while mutating, ', err);
             if (context) {
                toast.error(message.onError);
                queryClient.setQueryData(queryKeys.userLibrary(userId), context);
@@ -125,7 +124,18 @@ function removeFromLibrary(
    };
 }
 
-const bookUpdateMap = {
+type BookUpdateMap = {
+   [key in MutationLibraryActionTypes]: {
+      method: Method;
+      route: UrlProps;
+      message: {
+         onSuccess: string;
+         onError: string;
+      };
+   };
+};
+
+const bookUpdateMap: BookUpdateMap = {
    finished: {
       method: 'POST',
       route: 'finished',
@@ -152,7 +162,7 @@ const bookUpdateMap = {
    },
    delete: {
       method: 'DELETE',
-      route: 'finished',
+      route: 'main',
       message: {
          onSuccess: 'Successfully deleted from library.',
          onError: 'Failed to add to delete the book. Please try again',

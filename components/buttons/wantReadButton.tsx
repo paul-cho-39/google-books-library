@@ -5,12 +5,13 @@ import Button from './UserActionBaseButton';
 import { addBooksBody, getBody } from '@/lib/helper/books/getBookBody';
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
 import { UserActionButtonProps } from '@/lib/types/models/books';
+import { LIBRARY_DURATION } from '@/constants/throttle';
 
-const WantToReadButton = ({ book, userId, className }: UserActionButtonProps) => {
+const WantToReadButton = ({ book, userId, close, className }: UserActionButtonProps) => {
    const body = addBooksBody(book, book.id);
 
    const {
-      mutation: { mutate, isLoading },
+      mutation: { mutate, isLoading, isSuccess, isError },
       library,
    } = useMutateLibrary<'want'>({
       bookId: book.id,
@@ -24,13 +25,23 @@ const WantToReadButton = ({ book, userId, className }: UserActionButtonProps) =>
       [library]
    );
 
+   const handleClick = () => {
+      mutate(body);
+
+      if (close) {
+         setTimeout(() => {
+            close();
+         }, LIBRARY_DURATION);
+      }
+   };
+
    return (
       <>
          <Button
             isLoading={isLoading}
             isDisplayed={isHidden}
-            name={isLoading ? 'Loading...' : 'Want to read'}
-            onClick={() => mutate(body)}
+            name={'Want to read'}
+            onClick={handleClick}
             className={classNames('mb-2', className)}
          />
       </>

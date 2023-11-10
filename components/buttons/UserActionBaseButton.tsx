@@ -4,8 +4,8 @@ import Spinner from '../loaders/spinner';
 
 // 'isDisplayed' hides the button depending on 'user state' of library
 interface UserActionBasicButtonProps {
-   isDisplayed: boolean;
    name: string;
+   isDisplayed?: boolean;
    isDeleteButton?: boolean;
    onClick?: (body?: unknown) => void;
    isLoading?: boolean;
@@ -33,7 +33,7 @@ const Button = ({
             isDisplayed ? '' : 'hidden',
             isDeleteButton ? 'btn-alert' : 'btn-primary',
             className,
-            'text-base w-72 p-3 justify-center focus:ring-black hover:ring-black sm:hover:ring-2 focus:ring-2'
+            'text-base justify-center focus:ring-black hover:ring-black sm:hover:ring-2 focus:ring-2'
          )}
       >
          {isLoading ? <Spinner size='sm' color='indigo' /> : name}

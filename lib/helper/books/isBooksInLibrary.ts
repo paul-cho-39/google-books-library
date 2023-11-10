@@ -39,7 +39,8 @@ export function isBookInDataBooks(library: Library | undefined, id: string) {
    if (!library) return false;
 
    for (const state in library) {
-      if (library[state as RefinedBookState]?.includes(id)) {
+      const lib = library[state as RefinedBookState];
+      if (lib && lib?.length > 0 && lib.includes(id)) {
          return true;
       }
    }

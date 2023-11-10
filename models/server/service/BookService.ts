@@ -58,7 +58,7 @@ export default class BookService {
    async handleCreateReading(data: Data) {
       const stateData = BookStateHandler.getBookState('Reading', { isPrimary: true });
       const creator = this.getCreator;
-      await creator.createOrUpdateBookAndState(data, stateData as UserBookWithoutId);
+      await creator.createOrRecoverDeletedBook(data, stateData as UserBookWithoutId);
    }
    async handlePrimary() {
       const creator = this.getCreator;
@@ -70,7 +70,7 @@ export default class BookService {
    async handleCreateWant(data: Data) {
       const creator = this.getCreator;
       const stateData = BookStateHandler.createWant();
-      await creator.createOrUpdateBookAndState(data, stateData as UserBookWithoutId);
+      await creator.createOrRecoverDeletedBook(data, stateData as UserBookWithoutId);
    }
    async handleCreateFinished(data: Data, year?: number, month?: number, day?: number) {
       const creator = this.getCreator;
@@ -80,7 +80,7 @@ export default class BookService {
          month,
          day,
       });
-      await creator.createOrUpdateBookAndState(data, stateData as UserBookWithoutId);
+      await creator.createOrRecoverDeletedBook(data, stateData as UserBookWithoutId);
    }
    async handleCreateBookAndRating(data: Data, rating: number) {
       const creator = this.getCreator;
@@ -93,7 +93,9 @@ export default class BookService {
    async getAllRatingOfSingleBook(bookId?: string) {
       this.ensureBookIdIsSet(bookId);
 
-      // use $transaction(?)
+      // this wont be affected by soft delete
+      // rating / comments only requires the book to be in data
+      // and using the method 'isBookInLibrary' is okay
       try {
          const data = await Promise.all([
             this.retriever.getRatingByBook(this.bookId!),
@@ -117,7 +119,7 @@ export default class BookService {
 
    async getUserBooks(userId?: string) {
       this.ensureUserId(userId);
-      const userBooks = await this.retriever.getAllUserBooks(this.userId!);
+      const userBooks = await this.retriever.getAllValidUserBooks(this.userId!);
       const refinedBooks = this.refiner.refineBooks(userBooks);
       return refinedBooks;
    }

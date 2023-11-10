@@ -17,6 +17,7 @@ import { Divider } from '@/components/layout/dividers';
 import SearchLayoutPage from '@/components/layout/searchLayout';
 import Spinner from '@/components/loaders/spinner';
 import APIErrorBoundary from '@/components/error/errorBoundary';
+import useLibraryChangeToaster from '@/lib/hooks/useGetToaster';
 
 const Cards = lazy(() => import('@/components/bookcards/cards'));
 
@@ -59,6 +60,9 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    );
 
    const totalItems: number = data?.pages?.[0]?.totalItems || 0;
+
+   const added = useLibraryChangeToaster(userId);
+   console.log('HAS IT BEEN ADDED?: ', added);
 
    const renderLoadingState = () => (
       <SearchLayoutPage isSuccess={false}>

@@ -4,14 +4,15 @@ import { BookCardProps } from '@/lib/types/components/bookcards';
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 import { ButtonSkeleton } from '../loaders/bookcardsSkeleton';
 import MenuButtons from './menuButton';
+import classNames from 'classnames';
 
-type UserActionProps = Pick<BookCardProps, 'book' | 'userId'>;
+type UserActionProps = Pick<BookCardProps, 'book' | 'userId'> & { className?: string };
 
 const SaveAsFinishedButton = lazy(() => import('@/components/buttons/finishedButton'));
 const PopOverButtons = lazy(() => import('@/components/buttons/popoverButtons'));
 
-const BookActionButton = ({ book, userId }: UserActionProps) => (
-   <div className='flex flex-row items-center justify-center w-full pr-2 lg:pr-5'>
+const BookActionButton = ({ book, userId, className }: UserActionProps) => (
+   <div className={classNames('flex flex-row items-center w-full pr-2 lg:pr-5')}>
       <SignInRequiredButton
          userId={userId}
          title='Finished'

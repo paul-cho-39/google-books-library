@@ -71,24 +71,3 @@ export default async function handleGoogleCache(
       cacheStatus: status,
    });
 }
-
-export async function batchFetchGoogleCategories(cats: readonly string[], meta: MetaProps) {
-   const googleData: CategoriesQueries | CategoryQuery = {};
-
-   await Promise.all(
-      cats.map(async (category) => {
-         const catLowerCase = category.toLowerCase();
-         const url = googleApi.getUrlBySubject(catLowerCase, meta);
-
-         try {
-            const res = await fetcher(url);
-            googleData[catLowerCase] = res;
-         } catch (error) {
-            console.error('Error fetching data for category:', category, error);
-            googleData[catLowerCase] = null;
-         }
-      })
-   );
-
-   return googleData;
-}

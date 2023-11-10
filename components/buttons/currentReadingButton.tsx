@@ -3,17 +3,17 @@ import classNames from 'classnames';
 
 import { isBookInData } from '@/lib/helper/books/isBooksInLibrary';
 import Button from './UserActionBaseButton';
-import MyToaster from '../bookcards/toaster';
-import { addBooksBody, getBody } from '@/lib/helper/books/getBookBody';
+import { addBooksBody } from '@/lib/helper/books/getBookBody';
 import useMutateLibrary from '@/lib/hooks/useMutateLibrary';
 import { UserActionButtonProps } from '@/lib/types/models/books';
+import { LIBRARY_DURATION } from '@/constants/throttle';
 
-const AddPrimary = ({ book, userId, className }: UserActionButtonProps) => {
+const AddPrimary = ({ book, userId, close, className }: UserActionButtonProps) => {
    const { id, volumeInfo: _ } = book;
    const body = addBooksBody(book, id);
 
    const {
-      mutation: { mutate, isLoading },
+      mutation: { mutate, isLoading, isSuccess, isError },
       library,
    } = useMutateLibrary<'reading'>({
       bookId: id,
@@ -29,11 +29,16 @@ const AddPrimary = ({ book, userId, className }: UserActionButtonProps) => {
 
    const handleClick = () => {
       mutate(body);
+
+      if (close) {
+         setTimeout(() => {
+            close();
+         }, LIBRARY_DURATION);
+      }
    };
 
    return (
       <>
-         <MyToaster isAdded={true} />
          <Button
             isLoading={isLoading}
             isDisplayed={isHidden}
