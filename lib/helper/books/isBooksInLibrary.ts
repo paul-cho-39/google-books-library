@@ -24,6 +24,7 @@
 // }
 
 import { Library, RefinedBookState } from '@/lib/types/models/books';
+import { ResponseFinishedData } from '@/lib/types/serverTypes';
 
 // helper function
 function isBookInLib(id: string, bookData: string[]) {
@@ -34,13 +35,23 @@ export function isBookInData(id: string, bookData?: string[]) {
    return bookData ? isBookInLib(id, bookData) : false;
 }
 
+export function ensureLibraryData<TLib extends Library | ResponseFinishedData>(
+   library: TLib
+): Library | undefined {
+   // sometimes react-query fail to return the data but instead return the entire response
+   // so this checks this part
+   if (library && 'data' in library) {
+      return library.data;
+   } else if (library) {
+      return library;
+   } else return;
+}
+
 // entire user library books
 export function isBookInDataBooks(library: Library | undefined, id: string) {
-   if (!library) return false;
-
+   if (!library) return;
    for (const state in library) {
-      const lib = library[state as RefinedBookState];
-      if (lib && lib?.length > 0 && lib.includes(id)) {
+      if (library && library[state as RefinedBookState]?.includes(id)) {
          return true;
       }
    }

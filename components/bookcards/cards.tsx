@@ -3,6 +3,8 @@ import { Items } from '@/lib/types/googleBookTypes';
 import useGetBookData from '@/lib/hooks/useGetBookData';
 import { Divider } from '../layout/dividers';
 import BookListItem from './search/bookLists';
+import useLibraryChangeToaster from '@/lib/hooks/useGetToaster';
+import MyToaster from './toaster';
 
 const Cards: React.FunctionComponent<{
    query: string;
@@ -10,32 +12,35 @@ const Cards: React.FunctionComponent<{
    totalItems: number;
    userId: string | null;
 }> = ({ query, books, userId, totalItems }) => {
-   // TODO: refetch data and invalidate the data after refetching it
-   const { data: databooks, isLoading, isError } = useGetBookData(userId as string);
+   const { data: databooks, isSuccess, isError } = useGetBookData(userId as string);
+   const { toasterAction } = useLibraryChangeToaster(userId, isSuccess);
 
    return (
-      <div className=''>
-         <TotalResults result={totalItems} />
-         <Divider />
-         <div className='mx-auto w-full lg:max-w-2xl'>
-            <ul
-               aria-label='lists of book result'
-               role='listbox'
-               className='divide-y-[0.5px] divide-gray-300'
-            >
-               {books &&
-                  books?.map((book) => (
-                     <BookListItem
-                        key={book.id}
-                        book={book}
-                        query={query}
-                        userId={userId}
-                        dataBooks={databooks}
-                     />
-                  ))}
-            </ul>
+      <>
+         <MyToaster isAdded={toasterAction && toasterAction} />
+         <div className=''>
+            <TotalResults result={totalItems} />
+            <Divider />
+            <div className='mx-auto w-full lg:max-w-2xl'>
+               <ul
+                  aria-label='lists of book result'
+                  role='listbox'
+                  className='divide-y-[0.5px] divide-gray-300'
+               >
+                  {books &&
+                     books?.map((book) => (
+                        <BookListItem
+                           key={book.id}
+                           book={book}
+                           query={query}
+                           userId={userId}
+                           dataBooks={databooks}
+                        />
+                     ))}
+               </ul>
+            </div>
          </div>
-      </div>
+      </>
    );
 };
 

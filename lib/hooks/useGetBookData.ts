@@ -5,16 +5,34 @@ import { Library } from '../types/models/books';
 import { ResponseFinishedData } from '../types/serverTypes';
 
 export default function useGetBookData(userId: string) {
-   return useQuery<ResponseFinishedData, unknown, Library>(
+   // const queryClient = useQueryClient();
+
+   const { data, isSuccess, ...rest } = useQuery<Library, unknown, Library>(
       queryKeys.userLibrary(userId),
-      () => bookApiUpdate('GET', userId, 'main'),
+      async () => {
+         const res = (await bookApiUpdate('GET', userId, 'main')) as ResponseFinishedData;
+         return res.data;
+      },
       {
          enabled: !!userId,
          retryOnMount: true,
          refetchOnReconnect: true,
          retry: true,
          retryDelay: (attempt) => attempt * 2000,
-         select: (data) => data.data,
+         // select: (data) => data,
+         notifyOnChangeProps: ['data'],
       }
    );
+
+   // this is not good will exceed maximum depths
+   // select should store the queryKeys but storing as ResponseFinishedData
+   // if (isSuccess) {
+   //    queryClient.setQueryData(queryKeys.userLibrary(userId), data);
+   // }
+
+   return {
+      data,
+      isSuccess,
+      ...rest,
+   };
 }

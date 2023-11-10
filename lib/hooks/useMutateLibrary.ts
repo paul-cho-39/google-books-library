@@ -8,6 +8,7 @@ import {
    MutationLibraryActionTypes,
    MutationLibraryBodyData,
    RefinedBookState,
+   ToastUserActionType,
 } from '@/lib/types/models/books';
 import queryKeys from '@/utils/queryKeys';
 import { Method, UrlProps } from '../types/fetchbody';
@@ -44,7 +45,7 @@ function useMutateLibrary<MBody extends MutationLibraryActionTypes>({
             return prevData;
          },
          onError: (err, _variables, context) => {
-            console.error('Caught an error while mutating, ', err);
+            console.error('Received an error while mutating, ', err);
             if (context) {
                toast.error(message.onError);
                queryClient.setQueryData(queryKeys.userLibrary(userId), context);
@@ -140,7 +141,7 @@ const bookUpdateMap: BookUpdateMap = {
       method: 'POST',
       route: 'finished',
       message: {
-         onSuccess: 'Successfully added to finished library.',
+         onSuccess: 'Added to finished library.',
          onError: 'Failed to add to finished library. Please try again',
       },
    },
@@ -148,7 +149,7 @@ const bookUpdateMap: BookUpdateMap = {
       method: 'POST',
       route: 'reading',
       message: {
-         onSuccess: 'Successfully added to reading library.',
+         onSuccess: 'Added to reading library.',
          onError: 'Failed to add to reading library. Please try again',
       },
    },
@@ -156,7 +157,7 @@ const bookUpdateMap: BookUpdateMap = {
       method: 'POST',
       route: 'want',
       message: {
-         onSuccess: 'Successfully added to want to read library.',
+         onSuccess: 'Added to want to read library.',
          onError: 'Failed to add to want to read library. Please try again',
       },
    },
@@ -164,7 +165,7 @@ const bookUpdateMap: BookUpdateMap = {
       method: 'DELETE',
       route: 'main',
       message: {
-         onSuccess: 'Successfully deleted from library.',
+         onSuccess: 'Deleted from library.',
          onError: 'Failed to add to delete the book. Please try again',
       },
    },
@@ -172,7 +173,7 @@ const bookUpdateMap: BookUpdateMap = {
       method: 'PUT',
       route: 'reading',
       message: {
-         onSuccess: 'Successfully removed from read library.',
+         onSuccess: 'Removed from read library.',
          onError: 'Failed to add to read library. Please try again',
       },
    },

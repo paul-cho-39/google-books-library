@@ -48,6 +48,7 @@ export interface IdParams {
    id: string;
 }
 
+export type ToastUserActionType = 'removed' | 'added' | 'error' | 'none';
 export type MutationLibraryActionTypes = 'finished' | 'reading' | 'want' | 'remove' | 'delete';
 export type RefinedBookState = 'want' | 'reading' | 'finished' | 'unfinished';
 export type Library = Record<RefinedBookState, string[] | undefined>;

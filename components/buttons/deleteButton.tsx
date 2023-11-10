@@ -19,31 +19,17 @@ const DeleteButton = ({ userId, book, close, closeModal }: DeleteButtonProps) =>
       type: 'delete',
    });
 
-   // const handleClick = async () => {
-   //    await mutateAsync(body).then(() => {
-   //       // only close after it has stopped loading
-   //       // would this be a problem?
-   //       if (closeModal && !isLoading) {
-   //          closeModal(false);
-   //       }
-   //       if (close) {
-   //          close();
-   //       }
-   //    });
-   // };
-
-   const handleClick = () => {
-      mutate(body);
-      // (() => {
-      //    // only close after it has stopped loading
-      //    // would this be a problem?
-
-      if (closeModal) {
-         closeModal(false);
-      }
-      if (close) {
-         close();
-      }
+   const handleClick = async () => {
+      await mutateAsync(body).then(() => {
+         // only close after it has stopped loading
+         // would this be a problem?
+         if (closeModal && !isLoading) {
+            closeModal(false);
+         }
+         if (close) {
+            close();
+         }
+      });
    };
 
    return (

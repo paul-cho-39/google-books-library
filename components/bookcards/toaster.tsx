@@ -1,6 +1,8 @@
 import { Toaster } from 'react-hot-toast';
 
-const MyToaster = ({ isAdded }: { isAdded: boolean }) => {
+export type ToasterMessageType = 'added' | 'removed';
+
+const MyToaster = ({ isAdded }: { isAdded?: ToasterMessageType | null }) => {
    return (
       <Toaster
          toastOptions={{
@@ -13,9 +15,9 @@ const MyToaster = ({ isAdded }: { isAdded: boolean }) => {
                   borderRadius: '0.8rem',
                   height: '3.4rem',
                },
-               icon: `${isAdded ? '✔️📚' : '✔️🗑'}`,
+               icon: `${isAdded === 'added' ? '✔️📚' : '✔️🗑'}`,
             },
-            duration: 750,
+            duration: 1500,
             ariaProps: {
                role: 'status',
                'aria-live': 'assertive',
