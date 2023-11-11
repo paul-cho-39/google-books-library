@@ -17,7 +17,7 @@ const MenuButtons = ({ userId, book }: UserActionButtonProps) => {
    };
 
    return (
-      <div className='hidden md:flex md:relative lg:relative md:z-50 lg:z-50'>
+      <div className='hidden md:flex md:relative lg:relative md:z-50 lg:z-40'>
          <Menu as='div'>
             {({ open, close }) => (
                <>

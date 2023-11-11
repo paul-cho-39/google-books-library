@@ -8,23 +8,17 @@ import { CustomSession, RateServerTypes, MultipleRatingData } from '@/lib/types/
 import useGetBookById from '@/lib/hooks/useGetBookById';
 import { CategoryRouteParams, RouteParams } from '@/lib/types/routes';
 import { findId, useGetRating } from '@/lib/hooks/useGetRatings';
-import { getAverageRatings, getServerAverage, getTotalRatings } from '@/lib/helper/getRating';
 
 import refiner, { RefineData } from '@/models/server/decorator/RefineData';
 import BookService from '@/models/server/service/BookService';
 
 import BookImage from '@/components/bookcover/bookImages';
-import BookTitle from '@/components/bookcover/title';
-import SingleOrMultipleAuthors from '@/components/bookcover/authors';
 import BookDescription from '@/components/bookcover/description';
-import BookPublisher from '@/components/bookcover/publisher';
-import BookDetails from '@/components/bookcover/bookDetails';
 import APIErrorBoundary from '@/components/error/errorBoundary';
-import DisplayRating from '@/components/bookcover/ratings';
 import { ActiveRating } from '@/components/rating/activeRating';
 import useHandleRating from '@/lib/hooks/useHandleRating';
 import BookActionButton from '@/components/buttons/bookActionButton';
-import useGetBookRatings from '@/lib/hooks/useGetBookRatings';
+import PageLayout from '@/components/layout/page/bookPageLayout';
 
 const HEIGHT = 225;
 
@@ -39,8 +33,6 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    const query = router.query as CategoryRouteParams | RouteParams;
 
    const { data, isSuccess, isLoading } = useGetBookById({ routeParams: query });
-
-   console.log('THE DATA WILL BE: ', data);
 
    // TEST whether multiple users updating will have the same effect for updating
    const { data: allRatingData } = useGetRating({
@@ -71,8 +63,6 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
       allRatingData
    );
 
-   // const { avgRating, totalRatings } = useGetBookRatings(data, allRatingData);
-
    // debugging
    // console.log('google total count: ', data?.volumeInfo?.averageRating);
    // console.log('google total count: ', data?.volumeInfo?.ratingsCount);
@@ -80,14 +70,17 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
 
    const ratingTitle = !userRatingData ? 'Rate Book' : 'Rating Saved';
 
-   // TODO: set the loading page here
    if (isLoading) {
-      return <div>Loading...</div>;
+      return (
+         <PageLayout>
+            <div className='dark:text-slate-200 font-medium text-2xl'>Loading...</div>
+         </PageLayout>
+      );
    }
 
    return (
       <APIErrorBoundary>
-         <div className='mx-auto w-full min-h-screen overflow-y-auto dark:bg-slate-800'>
+         <PageLayout>
             <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 md:grid md:grid-cols-3 lg:max-w-4xl'>
                <div className='flex flex-col items-center justify-center md:col-span-1 md:gap-x-0'>
                   <BookImage
@@ -123,7 +116,11 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   />
                </div>
                <Suspense fallback={<div></div>}>
-                  <BookDescriptionSection allRatingData={allRatingData} data={data} />
+                  <BookDescriptionSection
+                     allRatingData={allRatingData}
+                     data={data}
+                     userId={userId}
+                  />
                </Suspense>
             </div>
             <div
@@ -142,7 +139,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   href={''}
                />
             </div>
-         </div>
+         </PageLayout>
       </APIErrorBoundary>
    );
 }

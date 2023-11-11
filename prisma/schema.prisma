@@ -52,7 +52,7 @@ model Book {
   id                  String     @unique
   title               String
   subtitle            String?
-  publishedDate       DateTime   @map("pub_date")
+  publishedDate       DateTime?  @map("pub_date")
   categories          String[]
   language            String?
   pageCount           Int?
@@ -63,7 +63,7 @@ model Book {
   users               UserBook[]
   ratings             Rating[]
 
-  @@index([id, isDeleted], type: Hash)
+  @@index([id], type: Hash)
   @@map("books")
 }
 
