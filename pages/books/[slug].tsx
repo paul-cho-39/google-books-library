@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { Suspense, lazy, useMemo, useState } from 'react';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
@@ -24,10 +24,11 @@ import DisplayRating from '@/components/bookcover/ratings';
 import { ActiveRating } from '@/components/rating/activeRating';
 import useHandleRating from '@/lib/hooks/useHandleRating';
 import BookActionButton from '@/components/buttons/bookActionButton';
+import useGetBookRatings from '@/lib/hooks/useGetBookRatings';
 
 const HEIGHT = 225;
 
-// const Ratings = lazy(() => import('@/components/'));
+const BookDescriptionSection = lazy(() => import('@/components/section/bookDescriptionSection'));
 
 // when refreshed the serversideProps will fetch the data
 // when navigating between pages and coming back useQuery to check
@@ -38,6 +39,8 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    const query = router.query as CategoryRouteParams | RouteParams;
 
    const { data, isSuccess, isLoading } = useGetBookById({ routeParams: query });
+
+   console.log('THE DATA WILL BE: ', data);
 
    // TEST whether multiple users updating will have the same effect for updating
    const { data: allRatingData } = useGetRating({
@@ -68,22 +71,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
       allRatingData
    );
 
-   // TEST: NO NEED TO CALCULATE THE SERVER TOTAL
-   // set this in another function
-   const [avgRating, totalRatings] = useMemo(() => {
-      const googleTotal = data?.volumeInfo?.ratingsCount || 0;
-      const googleAvg = data?.volumeInfo?.averageRating || 0;
-
-      const totalRatings = getTotalRatings(allRatingData?.count || 0, googleTotal);
-      const avgRating = getAverageRatings(
-         allRatingData?.avg || 0,
-         allRatingData?.count || 0,
-         googleAvg,
-         googleTotal
-      );
-
-      return [avgRating, totalRatings];
-   }, [allRatingData, data]);
+   // const { avgRating, totalRatings } = useGetBookRatings(data, allRatingData);
 
    // debugging
    // console.log('google total count: ', data?.volumeInfo?.averageRating);
@@ -115,7 +103,11 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                   <div className='flex flex-row w-full py-4 items-center justify-center'>
                      {isSuccess && data && (
                         <>
-                           <BookActionButton book={data} userId={userId as string} />
+                           <BookActionButton
+                              className='justify-center px-2'
+                              book={data}
+                              userId={userId as string}
+                           />
                         </>
                      )}
                   </div>
@@ -130,39 +122,9 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                      size='large'
                   />
                </div>
-               <div className='flex flex-col justify-start px-2 gap-y-2 md:col-span-2'>
-                  <BookTitle
-                     id={id}
-                     hasLink={false}
-                     title={data?.volumeInfo.title as string}
-                     subtitle={data?.volumeInfo.subtitle}
-                     className='text-xl mb-1 lg:text-3xl'
-                  />
-                  <div className='mb-1'>
-                     <span className='text-slate-800 dark:text-slate-200'>By: </span>
-                     <SingleOrMultipleAuthors
-                        hoverUnderline={true}
-                        authors={data?.volumeInfo.authors}
-                     />
-                  </div>
-                  <BookPublisher
-                     date={data?.volumeInfo.publishedDate}
-                     className='mb-1 lg:mb-1 text-md dark:text-slate-100'
-                  />
-                  <DisplayRating
-                     totalReviews={totalRatings}
-                     averageRating={avgRating}
-                     size='large'
-                  />
-                  <BookDetails
-                     categories={data?.volumeInfo.categories}
-                     page={data?.volumeInfo.pageCount}
-                     publisher={data?.volumeInfo.publisher}
-                     language={data?.volumeInfo.language}
-                     infoLinks={data?.volumeInfo.infoLink}
-                     className='px-6 py-4 md:py-8 lg:py-12'
-                  />
-               </div>
+               <Suspense fallback={<div></div>}>
+                  <BookDescriptionSection allRatingData={allRatingData} data={data} />
+               </Suspense>
             </div>
             <div
                role='contentinfo'

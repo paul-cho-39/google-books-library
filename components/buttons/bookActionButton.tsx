@@ -12,7 +12,7 @@ const SaveAsFinishedButton = lazy(() => import('@/components/buttons/finishedBut
 const PopOverButtons = lazy(() => import('@/components/buttons/popoverButtons'));
 
 const BookActionButton = ({ book, userId, className }: UserActionProps) => (
-   <div className={classNames('flex flex-row items-center w-full pr-2 lg:pr-5')}>
+   <div className={classNames('flex flex-row items-center w-full pr-2 lg:pr-5', className)}>
       <SignInRequiredButton
          userId={userId}
          title='Finished'

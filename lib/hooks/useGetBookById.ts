@@ -30,13 +30,15 @@ export default function useGetBookById<
    const queryClient = useQueryClient();
    const initialData = queryClient.getQueryData<CacheData>(queryKeys.singleBook(id));
 
-   // if data is not in the first cache proceed to look inside the second cache
+   // if it is not in the first cache proceed to look inside the second cache
    if (isGoogle && (!initialData || initialData === null)) {
       const queryKey = getQueryKeys(routeParams);
       const secondaryCache = queryClient.getQueryData<CacheData>(queryKey);
       book = findBookId(secondaryCache, id);
    }
 
+   // the third option is to refetch the entire book id
+   // note that the data is different from fetching using 'id'
    const queryResult = useQuery(
       queryKeys.singleBook(routeParams?.slug as string),
       async () => {
