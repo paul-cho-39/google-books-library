@@ -69,6 +69,17 @@ type AccessInfo = {
 
 export type BookIdProps = { id: string };
 
+export interface GoogleDataById {
+   kind: string;
+   id: string;
+   etag: string;
+   selfLink: string;
+   volumeInfo: VolumeInfo;
+   layerInfo: Record<string, string>;
+   saleInfo: Record<string, string>;
+   accessInfo: Record<string, string>;
+}
+
 export interface SingleBook {
    // id: string;
    authors: string[];

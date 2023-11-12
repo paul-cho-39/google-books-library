@@ -60,6 +60,8 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
 
    const totalItems: number = data?.pages?.[0]?.totalItems || 0;
 
+   console.log('data is ', data);
+
    const renderLoadingState = () => (
       <SearchLayoutPage isSuccess={false}>
          <FilterInput filter={filter} setFilter={setFilter} />

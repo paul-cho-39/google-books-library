@@ -16,6 +16,13 @@ export interface MetaProps {
    byNewest?: boolean;
 }
 
+// there are two types of data that should be returned
+// one with updated 'FIELDS' and the other with 'url_by_id'
+
+// 'URL_BY_ID' is returned when page is refreshed or remounted when there is no cache available
+// otherwise it returns "FIELDS" data
+// 'URL_BY_ID' does not contain google keys because it will return http status 503
+// only returns data without google keys
 class GoogleBookApi {
    private static URL_BASE = 'https://www.googleapis.com/books/v1/volumes?q=';
    private static URL_BY_ID = 'https://www.googleapis.com/books/v1/volumes/';
@@ -41,7 +48,7 @@ class GoogleBookApi {
 
    public getUrlByIsbn(isbn: string) {
       const url = `${GoogleBookApi.URL_BASE}isbn:${isbn}&fields=${GoogleBookApi.FIELDS}`;
-      return this.appender(url);
+      return url;
    }
 
    public getUrlBySubject(subject: Categories | string, meta?: MetaProps) {
