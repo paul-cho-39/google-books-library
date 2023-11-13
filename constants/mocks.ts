@@ -7,7 +7,7 @@ export const TESTING_AUTHOR = 'John Doe';
 
 // there are two types of data that should be returned
 // one with updated 'FIELDS' and the other with 'url_by_id'
-export const googleFieldsData: GoogleUpdatedFields = {
+export const googleFieldsMockData: GoogleUpdatedFields = {
    totalItems: 3,
    items: [
       {
@@ -109,7 +109,7 @@ export const googleFieldsData: GoogleUpdatedFields = {
    ],
 };
 
-export const googleByIdData: GoogleDataById = {
+export const googleByIdMockData: GoogleDataById = {
    accessInfo: {},
    etag: 'abc123',
    id: '123',
