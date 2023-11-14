@@ -11,19 +11,19 @@ const mockFilter: FilterProps = {
 
 describe('<FilterInput />', () => {
    it('renders the component correctly', () => {
-      render(<FilterInput filter={mockFilter} setFilter={jest.fn()} />);
+      render(<FilterInput />);
       expect(screen.getByRole('button')).toBeInTheDocument();
    });
 
    it('renders expanded dropdown by default', () => {
-      render(<FilterInput filter={mockFilter} setFilter={jest.fn()} />);
+      render(<FilterInput />);
 
       expect(screen.getByLabelText('Filter By:')).toBeVisible();
       expect(screen.getByLabelText('Filter Availability:')).toBeVisible();
    });
 
    it('toggles the filtered visibility on click', () => {
-      render(<FilterInput filter={mockFilter} setFilter={jest.fn()} />);
+      render(<FilterInput />);
 
       fireEvent.click(screen.getByRole('button'));
       expect(screen.queryByLabelText('Filter By:')).toBeNull();
@@ -36,7 +36,7 @@ describe('<FilterInput />', () => {
 
    it('updates the filter state on change', () => {
       const setFilterMock = jest.fn();
-      render(<FilterInput filter={mockFilter} setFilter={setFilterMock} />);
+      render(<FilterInput />);
 
       //   fireEvent.click(screen.getByText('Filter'));
       fireEvent.change(screen.getByLabelText('Filter By:'), { target: { value: 'title' } });

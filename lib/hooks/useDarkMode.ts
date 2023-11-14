@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import { ThemeContextParams } from '../types/theme';
 import { ThemeContext } from '../context/ThemeContext';
 
-const useDarkMode = () => {
+function useDarkMode() {
    const context = useContext<ThemeContextParams | undefined>(ThemeContext);
    if (!context) {
       throw new Error('At least one component must be used within ThemeProvider component');
@@ -19,6 +19,6 @@ const useDarkMode = () => {
    }, [theme]);
 
    return { theme, setTheme };
-};
+}
 
 export default useDarkMode;

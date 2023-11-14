@@ -14,7 +14,7 @@ const SearchLayoutPage = ({
       <div
          role={isSuccess ? 'listitem' : 'alert'}
          className={classNames(
-            isSuccess ? '' : 'h-[100vh] px-4 lg:px-16 lg:py-2  overflow-hidden',
+            isSuccess ? 'h-[100%]' : 'h-[100vh] px-4 lg:px-16 lg:py-2  overflow-hidden',
             'dark:bg-slate-800 mx-auto px-4 lg:px-16 lg:py-2',
             className
          )}

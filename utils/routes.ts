@@ -1,5 +1,7 @@
+import { FilterProps } from '@/lib/types/googleBookTypes';
 import queryKeys from './queryKeys';
 import { MetaProps } from '@/models/_api/fetchGoogleUrl';
+import { NextRouter } from 'next/router';
 
 const ROUTES = {
    HOME: '/',
@@ -18,7 +20,25 @@ const ROUTES = {
    PROFILE: {
       SETTINGS: (id: number | string) => `/profile/${id}`,
    },
-   SEARCH: (search: string) => `/search?q=${search}`,
+   SEARCH: (search: string, filters: FilterProps) => {
+      return getSearchUrl(search, filters);
+   },
+};
+
+const getSearchUrl = (search: string, filters: FilterProps) => {
+   const { filterBy, filterParams } = filters;
+
+   let url = `/search?q=${search}`;
+
+   if (filterBy !== 'all') {
+      url += `&filterBy=${encodeURIComponent(filterBy)}`;
+   }
+
+   if (filterParams && filterParams !== 'None') {
+      url += `&view=${encodeURIComponent(filterParams)}`;
+   }
+
+   return url;
 };
 
 export const encodeRoutes = {
@@ -48,9 +68,10 @@ export const encodeRoutes = {
    },
 } as const;
 
+// the query cache that is dependent from the url params
 export const decodeRoutes = {
    home: (category: string, meta?: MetaProps) => queryKeys.categories(category, meta),
-   search: (search: string) => queryKeys.bookSearch(search),
+   search: (search: string, filters: FilterProps) => queryKeys.bookSearch(search, filters),
    category: (category: string, meta?: MetaProps) => queryKeys.categories(category, meta),
 };
 

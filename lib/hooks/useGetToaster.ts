@@ -4,6 +4,9 @@ import { Library } from '../types/models/books';
 import queryKeys from '@/utils/queryKeys';
 import MyToaster, { ToasterMessageType } from '@/components/bookcards/toaster';
 
+// the hook returns whether the book is added to the library or removed from the library
+// by initiating the current library and comparing the previous library and whether the
+// length of the two differs
 function useLibraryChangeToaster(userId: string | null, isInitialSuccess: boolean) {
    const queryClient = useQueryClient();
    const [previousLibrary, setPreviousLibrary] = useState<Library | undefined | null>(null);
@@ -16,6 +19,7 @@ function useLibraryChangeToaster(userId: string | null, isInitialSuccess: boolea
       if (!previousLibrary || previousLibrary === null) {
          setPreviousLibrary(currentLibrary);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [isInitialSuccess]);
 
    // determinining if the library has increased or decreased in size
@@ -43,6 +47,7 @@ function useLibraryChangeToaster(userId: string | null, isInitialSuccess: boolea
          // if it has changed then
          setPreviousLibrary(currentLibrary);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [currentLibrary, previousLibrary]);
 
    const toasterAction: ToasterMessageType | null = useMemo(() => {

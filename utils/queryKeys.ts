@@ -1,3 +1,4 @@
+import { FilterProps } from '@/lib/types/googleBookTypes';
 import { MetaProps } from '@/models/_api/fetchGoogleUrl';
 import { CategoryQualifiers, ReviewQualifiers } from '@/models/_api/fetchNytUrl';
 
@@ -23,7 +24,8 @@ const queryKeys = {
    nytBestSellers: (type: NytDataType | string, date: string | 'current') =>
       ['bestSellers', { type: type }, { date: date }] as const,
    singleBook: (bookId: string) => ['singebook', { bookId }],
-   bookSearch: (search: string) => [...queryKeys.books, { search }] as const,
+   bookSearch: (search: string, filter: FilterProps) =>
+      [...queryKeys.books, { search }, filter] as const,
    userId: (id: string) => [...queryKeys.books, { id: id }] as const,
    userLibrary: (userId: string) => [...queryKeys.bookLibrary, { userId }] as const,
    userAction: (userId: string) => ['action', { userId }] as const,

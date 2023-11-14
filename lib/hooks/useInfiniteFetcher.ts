@@ -20,7 +20,7 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
             googleApi.getCompleteUrlWithQualifiers(
                {
                   inauthor: search,
-                  filter: filter.filterBookParams,
+                  filter: filter.filterParams,
                },
                metaProps
             ),
@@ -28,7 +28,7 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
             googleApi.getCompleteUrlWithQualifiers(
                {
                   intitle: search,
-                  filter: filter.filterBookParams,
+                  filter: filter.filterParams,
                },
                metaProps
             ),
@@ -42,7 +42,7 @@ export default function useInfiniteFetcher({ search, filter, meta }: FetcherProp
 
    const { data, isLoading, isFetching, isError, error, isSuccess, hasNextPage, fetchNextPage } =
       useInfiniteQuery(
-         queryKeys.bookSearch(search.toLocaleLowerCase()),
+         queryKeys.bookSearch(search.toLocaleLowerCase(), filter),
          ({ pageParam = 0 }) => {
             const url = getUrlFromFilter(pageParam);
             return throttledFetcher(url);

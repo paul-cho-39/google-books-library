@@ -19,6 +19,7 @@ import { ActiveRating } from '@/components/rating/activeRating';
 import useHandleRating from '@/lib/hooks/useHandleRating';
 import BookActionButton from '@/components/buttons/bookActionButton';
 import PageLayout from '@/components/layout/page/bookPageLayout';
+import useSearchFilter from '@/lib/hooks/useSearchFilter';
 
 const HEIGHT = 225;
 
@@ -30,9 +31,10 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    const { id, userId, placerData } = props;
 
    const router = useRouter();
+   const { filter } = useSearchFilter(); // returns the current filter
    const query = router.query as CategoryRouteParams | RouteParams;
 
-   const { data, isSuccess, isLoading } = useGetBookById({ routeParams: query });
+   const { data, isSuccess, isLoading } = useGetBookById({ routeParams: query, filter: filter });
 
    // TEST whether multiple users updating will have the same effect for updating
    const { data: allRatingData } = useGetRating({

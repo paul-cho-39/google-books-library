@@ -3,7 +3,7 @@ import { CategoryRouteParams, RouteNames, RouteParams } from '../types/routes';
 import queryKeys from '@/utils/queryKeys';
 import googleApi, { MetaProps } from '@/models/_api/fetchGoogleUrl';
 import { APISource, getBookIdAndSource } from '@/utils/handleIds';
-import { Data, GoogleUpdatedFields, Items } from '../types/googleBookTypes';
+import { Data, FilterProps, GoogleUpdatedFields, Items } from '../types/googleBookTypes';
 import { throttledFetcher } from '@/utils/fetchData';
 import { decodeRoutes } from '@/utils/routes';
 
@@ -12,13 +12,14 @@ import { decodeRoutes } from '@/utils/routes';
 
 export interface SingleBookQueryParams<TRoute extends CategoryRouteParams | RouteParams> {
    routeParams: TRoute;
+   filter: FilterProps;
    accessFullBookUrl?: boolean;
 }
 
 export default function useGetBookById<
    TRoute extends CategoryRouteParams | RouteParams,
    CacheData extends Data<Record<string, string>> | GoogleUpdatedFields
->({ routeParams, accessFullBookUrl = false }: SingleBookQueryParams<TRoute>) {
+>({ routeParams, filter, accessFullBookUrl = false }: SingleBookQueryParams<TRoute>) {
    // if source is equal to nyt then it should go directly
    // to fetching the data instead of the queryKey;
 
@@ -32,7 +33,7 @@ export default function useGetBookById<
 
    // if it is not in the first cache proceed to look inside the second cache
    if (isGoogle && (!initialData || initialData === null)) {
-      const queryKey = getQueryKeys(routeParams);
+      const queryKey = getQueryKeys(routeParams, filter);
       const secondaryCache = queryClient.getQueryData<CacheData>(queryKey);
       book = findBookId(secondaryCache, id);
    }
@@ -76,24 +77,25 @@ function findBookId<CacheData extends Data<Record<string, string>> | GoogleUpdat
    }
 }
 
-function getQueryKeys(routeParams: RouteParams | CategoryRouteParams) {
+function getQueryKeys(routeParams: RouteParams | CategoryRouteParams, filter: FilterProps) {
    if (!routeParams.from || !routeParams.fromQuery) return [];
 
    const from = routeParams.from as RouteNames;
-   const lowerCased = routeParams.fromQuery?.toLocaleLowerCase();
+   const fromQuery = routeParams.fromQuery?.toLocaleLowerCase();
    if (from === 'category' || from === 'home') {
       const { maxResultNumber, pageIndex, byNewest } = routeParams as CategoryRouteParams;
       const meta: MetaProps = {
          maxResultNumber: Number(maxResultNumber),
          pageIndex: Number(pageIndex),
-         byNewest: byNewest === 'true',
+         byNewest: byNewest === 'true', // string not bool
       };
 
       const queryKey = decodeRoutes[from];
-      return queryKey(lowerCased as string, meta);
+      return queryKey(fromQuery as string, meta);
    }
+   // if the path is from 'search' then pass the current filter
    const queryKey = decodeRoutes[from];
-   return queryKey(lowerCased as string);
+   return queryKey(fromQuery as string, filter);
 }
 
 function isSource(source: APISource, matching: APISource) {

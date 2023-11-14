@@ -6,7 +6,7 @@ interface DropdownProps {
    // onChange: (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>, field: string) => void;
    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
    label: string;
-   htmlFor: string;
+   htmlFor?: string;
    ariaLabel?: string;
 }
 
@@ -15,8 +15,8 @@ const Dropdown: React.FunctionComponent<DropdownProps> = ({
    options,
    onChange,
    label,
-   htmlFor,
-   ariaLabel,
+   htmlFor = label,
+   ariaLabel = label,
 }) => (
    <label className='block mb-2' htmlFor={htmlFor}>
       {label}

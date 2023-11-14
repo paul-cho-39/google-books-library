@@ -1,8 +1,8 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import classNames from 'classnames';
 import { useRouter } from 'next/router';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useContext, useEffect, useState } from 'react';
 import ROUTES from '@/utils/routes';
+import useSearchFilter from '@/lib/hooks/useSearchFilter';
 
 interface SearchInputInterface {
    // disabled: boolean;
@@ -16,11 +16,15 @@ const SearchInput = ({ filterQuery }: SearchInputInterface) => {
    const [disabled, setDisabled] = useState(true);
    const [query, setQuery] = useState('');
 
+   const { filter } = useSearchFilter();
+
+   // whether to use context(?) || jotai(?)
    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
       if (!query) return;
+
       e.preventDefault();
 
-      const url = ROUTES.SEARCH(query);
+      const url = ROUTES.SEARCH(query, filter);
       router.push(url);
    };
 

@@ -29,7 +29,7 @@ const SingleOrMultipleAuthors = <T extends string[] | string>({
 
    if (!authors) {
       return (
-         <div className='text-slate-800 dark:text-slate-200 pointer-events-none'>
+         <div className='text-slate-800 dark:text-slate-100 pointer-events-none'>
             Unknown Author
          </div>
       );
@@ -41,7 +41,7 @@ const SingleOrMultipleAuthors = <T extends string[] | string>({
             <MultipleAuthors
                className={classNames(
                   hoverUnderline &&
-                     'text-blue-700 hover:underline-offset-1 hover:underline hover:decoration-blue-400 hover:dark:decoration-blue-200',
+                     'text-blue-600 hover:underline-offset-1 hover:underline hover:decoration-blue-400 hover:dark:decoration-blue-200',
                   className
                )}
                authors={transformedAuthor}
@@ -52,7 +52,7 @@ const SingleOrMultipleAuthors = <T extends string[] | string>({
             <SingleAuthor
                className={classNames(
                   hoverUnderline &&
-                     'text-blue-700 hover:underline-offset-1 hover:underline hover:decoration-blue-400 hover:dark:decoration-blue-200',
+                     'text-blue-600 hover:underline-offset-1 hover:underline hover:decoration-blue-400 hover:dark:decoration-blue-200',
                   className
                )}
                authors={transformedAuthor}

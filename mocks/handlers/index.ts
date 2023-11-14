@@ -2,7 +2,7 @@ import { http, HttpResponse, ResponseResolver, RequestHandler, PathParams } from
 import { authorUrl, filteredUrl, googleHandlers, isbnUrl } from './googleHandlers';
 
 export const handlers = [
-   http.get(filteredUrl, googleHandlers),
-   http.get(authorUrl, googleHandlers),
-   http.get(isbnUrl, googleHandlers),
+   // http.get(filteredUrl, googleHandlers),
+   // http.get(authorUrl, googleHandlers),
+   // http.get(isbnUrl, googleHandlers),
 ];

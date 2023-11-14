@@ -91,7 +91,7 @@ class GoogleBookApi {
          .filter(([key, value]) => key && value)
          .map(([key, value]) => {
             if (key === 'filter') {
-               return `&filter=${value}`;
+               return value === 'None' ? '' : `&filter=${value}`;
             }
             return `+${key}:${value}`;
          })

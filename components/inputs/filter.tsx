@@ -3,15 +3,18 @@ import classNames from 'classnames';
 import { FunnelIcon } from '@heroicons/react/20/solid';
 import Dropdown from './dropdown';
 
-import { FilterProps } from '@/lib/types/googleBookTypes';
 import { FILTER_BY_OPTIONS, FILTER_PARAMS_OPTIONS } from '@/constants/inputs';
+import { FilterContextParams } from '@/lib/types/theme';
+import useSearchFilter from '@/lib/hooks/useSearchFilter';
 
-interface FilterComponentProps {
-   filter: FilterProps;
-   setFilter: React.Dispatch<React.SetStateAction<FilterProps>>;
-}
+// interface FilterComponentProps {
+//    filter: FilterProps;
+//    setFilter: React.Dispatch<React.SetStateAction<FilterProps>>;
+// }
 
-const FilterInput: React.FunctionComponent<FilterComponentProps> = ({ filter, setFilter }) => {
+// const FilterInput: React.FunctionComponent<FilterContextParams> = ({ filter, setFilter }) => {
+const FilterInput = () => {
+   const { filter, setFilter } = useSearchFilter();
    const [isExpanded, setIsExpanded] = useState(true);
 
    const toggleExpand = () => {
@@ -54,17 +57,13 @@ const FilterInput: React.FunctionComponent<FilterComponentProps> = ({ filter, se
                   value={filter.filterBy}
                   options={FILTER_BY_OPTIONS}
                   onChange={(value) => handleChange(value, 'filterBy')}
-                  htmlFor='Filter category'
-                  label='Filter By:'
-                  ariaLabel='Filter by category'
+                  label='Filter category'
                />
                <Dropdown
                   value={filter.filterParams || ''}
                   options={FILTER_PARAMS_OPTIONS}
                   onChange={(value) => handleChange(value, 'filterParams')}
                   label='Filter Availability:'
-                  htmlFor='Filter availability'
-                  ariaLabel='Filter by availability'
                />
             </div>
          )}

@@ -1,7 +1,6 @@
-import { Suspense, lazy, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useContext, useMemo, useRef, useState } from 'react';
 import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
 import { getSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 
 import useInteractionObserver from '@/lib/hooks/useIntersectionObserver';
 import createUniqueDataSets from '@/lib/helper/books/filterUniqueData';
@@ -17,6 +16,7 @@ import { Divider } from '@/components/layout/dividers';
 import SearchLayoutPage from '@/components/layout/searchLayout';
 import Spinner from '@/components/loaders/spinner';
 import APIErrorBoundary from '@/components/error/errorBoundary';
+import useDecodeSearchRoute from '@/lib/hooks/useDecodeSearchRoute';
 
 const Cards = lazy(() => import('@/components/bookcards/cards'));
 
@@ -24,15 +24,10 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    const { userId } = props;
 
    // routed from search from /headers
-   const router = useRouter();
-   const search = router.query.q as string;
+   // decode the search here
+   const { search, filter } = useDecodeSearchRoute();
 
    const pageLoader = useRef<HTMLDivElement>(null);
-
-   const [filter, setFilter] = useState<FilterProps>({
-      filterBy: 'all',
-      filterParams: 'None',
-   });
 
    const meta = (page: number): MetaProps => {
       return {
@@ -60,33 +55,39 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
 
    const totalItems: number = data?.pages?.[0]?.totalItems || 0;
 
-   console.log('data is ', data);
+   // debugging
+   // console.log('data is ', data);
 
    const renderLoadingState = () => (
       <SearchLayoutPage isSuccess={false}>
-         <FilterInput filter={filter} setFilter={setFilter} />
+         <FilterInput />
          <Divider />
          <Spinner className='mt-24' />
       </SearchLayoutPage>
    );
 
    const renderEmptyOrErrorState = () => (
-      <EmptyResult isError={isError} query={search}>
-         <FilterInput filter={filter} setFilter={setFilter} />
+      <EmptyResult isError={isError} query={search} filter={filter}>
+         <FilterInput />
       </EmptyResult>
    );
 
    const renderSuccessState = () => (
       <Suspense fallback={<BookSearchSkeleton books={5} />}>
-         <Cards query={search} books={uniqueDataSets} userId={userId} totalItems={totalItems} />
+         <Cards
+            query={search}
+            books={uniqueDataSets}
+            userId={userId}
+            totalItems={totalItems}
+            filter={filter}
+         />
       </Suspense>
    );
 
    // when theres no data and it is loading/fetching it is in a loading state
    if (!data && (isLoading || isFetching)) return renderLoadingState();
 
-   // if totalItems array is empty or if there is an error then it returns
-   // an empty state
+   // if totalItems array is empty or if there is an error then return an empty state
    if (!data || isError || ((!isLoading || !isFetching) && totalItems < 1)) {
       return renderEmptyOrErrorState();
    }
@@ -95,7 +96,7 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
       <APIErrorBoundary>
          <SearchLayoutPage isSuccess={true}>
             <main>
-               <FilterInput filter={filter} setFilter={setFilter} />
+               <FilterInput />
                <div>
                   {/* this also works with interaction observer */}
                   {isFetching && isLoading ? (
