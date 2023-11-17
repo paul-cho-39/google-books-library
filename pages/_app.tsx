@@ -44,14 +44,14 @@ function MyApp({ Component, pageProps }) {
    const [isSidebarOpen, setSidebarOpen] = useState(true);
 
    // mocking servers
-   useEffect(() => {
-      if (process.env.NODE_ENV === 'development') {
-         import('mocks').then(({ deferMock }) => deferMock());
-      } else
-         import('mocks/server').then(({ server }) => {
-            server.listen();
-         });
-   }, []);
+   // useEffect(() => {
+   //    if (process.env.NODE_ENV === 'development') {
+   //       import('mocks').then(({ deferMock }) => deferMock());
+   //    } else
+   //       import('mocks/server').then(({ server }) => {
+   //          server.listen();
+   //       });
+   // }, []);
 
    return (
       <QueryClientProvider client={queryClient}>

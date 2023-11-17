@@ -8,7 +8,7 @@ export const TESTING_AUTHOR = 'John Doe';
 // there are two types of data that should be returned
 // one with updated 'FIELDS' and the other with 'url_by_id'
 export const googleFieldsMockData: GoogleUpdatedFields = {
-   totalItems: 3,
+   totalItems: 4,
    items: [
       {
          accessInfo: {
@@ -41,6 +41,39 @@ export const googleFieldsMockData: GoogleUpdatedFields = {
             ],
          },
       },
+      // having identical data for testing later
+      {
+         accessInfo: {
+            accessViewStatus: 'NONE',
+            embeddable: false,
+            country: 'en',
+            epub: {
+               isAvailable: false,
+            },
+            pdf: {
+               isAvailable: false,
+            },
+            webReaderLink: '',
+            publicDomain: false,
+            viewability: 'NO_PAGES',
+            quoteSharingAllowed: false,
+            textToSpeechPermission: 'ALLOWED_FOR_ACCESSIBILITY',
+         },
+         id: '456',
+         selfLink: '',
+         volumeInfo: {
+            authors: [TESTING_AUTHOR],
+            title: TESTING_TITLE,
+            subtitle: '',
+            industryIdentifiers: [
+               {
+                  type: 'ISBN_10',
+                  identifier: '123456789',
+               },
+            ],
+         },
+      },
+
       {
          accessInfo: {
             accessViewStatus: 'FULL_PUBLIC_DOMAIN',

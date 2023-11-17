@@ -10,6 +10,7 @@ import { GoogleDataById, GoogleUpdatedFields, Items } from '@/lib/types/googleBo
 import googleApi from '@/models/_api/fetchGoogleUrl';
 import { http, HttpResponse, ResponseResolver, RequestHandler } from 'msw';
 
+// make sure this value goes up after each request
 export let currentRequestCount = 0;
 
 // provide this in a different file?

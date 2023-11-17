@@ -11,6 +11,12 @@ const config = {
    // Add more setup options before each test is run
    setupFilesAfterEnv: ['<rootDir>/jest.setup.js', '<rootDir>/singleton.ts'],
    testEnvironment: 'jest-environment-jsdom',
+   // testEnvironment: {
+   //    customExportConditions: [''],
+   // },
+   testEnvironmentOptions: {
+      customExportConditions: [''],
+   },
    moduleNameMapper: { '^@/(.*)$': '<rootDir>/$1' },
    testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
    roots: ['<rootDir>'],

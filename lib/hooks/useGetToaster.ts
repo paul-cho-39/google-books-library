@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Library } from '../types/models/books';
 import queryKeys from '@/utils/queryKeys';
-import MyToaster, { ToasterMessageType } from '@/components/bookcards/toaster';
+import { ToasterMessageType } from '@/components/bookcards/toaster';
 
 // the hook returns whether the book is added to the library or removed from the library
 // by initiating the current library and comparing the previous library and whether the
@@ -55,7 +55,7 @@ function useLibraryChangeToaster(userId: string | null, isInitialSuccess: boolea
       return hasAdded ? 'added' : 'removed';
    }, [hasLibraryChanged, hasAdded]);
 
-   return { toasterAction, MyToaster };
+   return { toasterAction };
 }
 
 export default useLibraryChangeToaster;
