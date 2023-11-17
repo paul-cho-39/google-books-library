@@ -170,33 +170,3 @@ export const getStaticProps: GetStaticProps<{
       revalidate: 60 * 60 * 12,
    };
 };
-
-// export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-//    const googleData: CategoriesQueries = {};
-
-//    // the caveat here is that this is not full proof of parsing duplicated items
-//    // however given that it will only have six books it will be highly unlikely for
-//    // having mulitple duplicated books
-//    for (let category of serverSideCategories) {
-//       category = category.toLocaleLowerCase();
-
-//       const res = await fetchDataFromCache<GoogleUpdatedFields>(category, {
-//          source: 'google',
-//          endpoint: 'relevant',
-//          req,
-//       });
-//       const data = res.data;
-
-//       if (!data) {
-//          googleData[category] = null;
-//       }
-
-//       googleData[category] = data.items;
-//    }
-
-//    return {
-//       props: {
-//          googleData,
-//       },
-//    };
-// };

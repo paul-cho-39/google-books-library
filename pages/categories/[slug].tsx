@@ -108,11 +108,11 @@ export default function BookCategoryPages({
 
    // TODO: create a component for these fallbacks
    if (router.isFallback) {
-      return <div>...Loading</div>;
+      return <div>Loading...</div>;
    }
 
    if (googleData.isFetching) {
-      return <div>...isFetching</div>;
+      return <div>isFetching...</div>;
    }
 
    return (
@@ -263,6 +263,7 @@ export const getStaticProps: GetStaticProps<{
 }> = async ({ params }) => {
    const category = params?.slug as string;
 
+   // change this after production where it will generate all categories in build time
    const sampleCat = categories.slice(0, 4);
 
    // change this to categories when testing this out
@@ -281,34 +282,3 @@ export const getStaticProps: GetStaticProps<{
       revalidate: 60 * 60 * 6, // wont revalidate for at least the next 6 hours
    };
 };
-
-// export const getServerSideProps: GetServerSideProps<{
-//    category: string;
-//    userId: string | null;
-//    recentlyPublishedData: ReturnedCacheData<GoogleUpdatedFields> | null;
-// }> = async ({ req, params, query }) => {
-//    let data: ReturnedCacheData<GoogleUpdatedFields> | null;
-//    const category = query?.slug as string;
-
-//    const session = await getSession(params);
-//    const user = session?.user as CustomSession;
-//    const userId = user?.id || null;
-
-//    if (category.toUpperCase() === categories[0]) {
-//       data = null;
-//    } else {
-//       data = await fetchDataFromCache<GoogleUpdatedFields>(category, {
-//          source: 'google',
-//          endpoint: 'recent',
-//          req,
-//       });
-//    }
-
-//    return {
-//       props: {
-//          category: category,
-//          userId: userId,
-//          recentlyPublishedData: data,
-//       },
-//    };
-// };

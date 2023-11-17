@@ -158,6 +158,7 @@ export const getServerSideProps: GetServerSideProps<RateServerTypes> = async (co
       bookId
    )) as unknown as MultipleRatingData | null;
 
+   // refines the date so it can be returned inside the SSR
    const refinedData = refiner.refineDates<MultipleRatingData | null>(data);
 
    return {

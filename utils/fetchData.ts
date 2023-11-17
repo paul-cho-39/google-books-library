@@ -75,6 +75,7 @@ export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
          headers,
       });
 
+      // whenever API rate limit is exceeded
       if (res.status === 429) {
          throw new Error('API rate limit exceeded. Please try again later.');
       }
