@@ -65,11 +65,6 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
       allRatingData
    );
 
-   // debugging
-   // console.log('google total count: ', data?.volumeInfo?.averageRating);
-   // console.log('google total count: ', data?.volumeInfo?.ratingsCount);
-   // console.log('all ratings: ', allRatingData);
-
    const ratingTitle = !userRatingData ? 'Rate Book' : 'Rating Saved';
 
    if (isLoading) {
