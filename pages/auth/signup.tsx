@@ -16,11 +16,12 @@ import getUsers from '@/models/server/prisma/Users';
 import apiRequest from '@/utils/fetchData';
 import { signIn } from 'next-auth/react';
 import useRedirectIfAuthenticated from '@/lib/hooks/useRedirectAfterAuthenticated';
+import metaHeaders from '@/constants/headers';
 
 // this page should be connected to auth/signin
 export default function Signup({
-       emailAndUsername,
-    }: InferGetStaticPropsType<typeof getStaticProps>) {
+               emailAndUsername,
+            }: InferGetStaticPropsType<typeof getStaticProps>) {
    const validationSchemaSignUp = Validate(emailAndUsername);
    const formOption = {
       shouldUseNativeValidation: false,
@@ -45,17 +46,14 @@ export default function Signup({
       const body = { username, email, password };
 
       try {
-         const response = await apiRequest<typeof body, { success: boolean }>({
+         const res = await apiRequest<typeof body, { success: boolean }>({
             apiUrl: API_ROUTES.USERS.SIGNUP,
             method: 'POST',
             data: body,
             headers: { 'Content-Type': 'application/json' },
          });
 
-         // debugging
-         console.log('debugging the response: ', response);
-
-         if (response.success) {
+         if (res && res.success) {
             await signIn('credentials', {
                email: email,
                password: password,
@@ -72,7 +70,7 @@ export default function Signup({
    };
 
    return (
-      <AuthLayout>
+      <AuthLayout title={metaHeaders.signup.title} metaTags={metaHeaders.signup.meta()}>
          <div className='flex flex-col'>
             <form
                className='flex-1 flex-col'

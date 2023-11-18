@@ -17,6 +17,7 @@ import { useGetNytBestSellers } from '@/lib/hooks/useGetNytBestSeller';
 import { CategoriesQueries } from '@/lib/types/serverTypes';
 import { encodeRoutes } from '@/utils/routes';
 import useFloatingPosition from '@/lib/hooks/useFloatingPosition';
+import HomeLayout from '@/components/layout/page/homeLayout';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
@@ -71,11 +72,11 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
    // TODO: Create an error boundary for this
    if (!nytDataSuccess && !googleDataSuccess) {
-      return <div>Is Loading...</div>;
+      return( <HomeLayout><div>Is Loading...</div></HomeLayout>)
    }
 
    return (
-      <>
+      <HomeLayout>
          {Object.entries(combinedData).map(([key, value], index) => (
             <CategoryDisplay key={key} forwardRef={categoryRefs} category={key as Categories}>
                {value &&
@@ -146,7 +147,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
             </CategoryDisplay>
          ))}
          <DividerButtons onClick={handleProcessData} condition={false} title='Load More' />
-      </>
+      </HomeLayout>
    );
 };
 

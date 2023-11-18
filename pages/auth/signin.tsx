@@ -15,6 +15,7 @@ import FormSignIn, { Inputs } from '@/components/Login/credentials';
 import { Divider, LabelDivider } from '@/components/layout/dividers';
 import useRedirectIfAuthenticated from '@/lib/hooks/useRedirectAfterAuthenticated';
 import AuthProviders from '@/components/Login/providers';
+import metaHeaders from '@/constants/headers';
 
 export function Account({ authProviders }: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const [error, setError] = useState(false);
@@ -41,7 +42,7 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
    useRedirectIfAuthenticated();
 
    return (
-      <AuthLayout>
+      <AuthLayout title={metaHeaders.signin.title} metaTags={metaHeaders.signin.meta()}>
          <div className='flex flex-col '>
             <div className='flex flex-col'>
                <div role='main'>

@@ -69,7 +69,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
 
    if (isLoading) {
       return (
-         <PageLayout>
+         <PageLayout title={data?.volumeInfo.title}>
             <div className='dark:text-slate-200 font-medium text-2xl'>Loading...</div>
          </PageLayout>
       );
@@ -77,7 +77,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
 
    return (
       <APIErrorBoundary>
-         <PageLayout>
+         <PageLayout title={data?.volumeInfo.title}>
             <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 md:grid md:grid-cols-3 lg:max-w-4xl'>
                <div className='flex flex-col items-center justify-center md:col-span-1 md:gap-x-0'>
                   <BookImage

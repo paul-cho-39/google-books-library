@@ -6,6 +6,7 @@ import ROUTES from '@/utils/routes';
 const ErrorFallback = ({ error }: { error: Error }) => {
    return (
       <SearchLayoutPage className='flex flex-col' isSuccess={false}>
+         
          <main>
             <p className='mt-16 text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-200'>
                Something went wrong:

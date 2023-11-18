@@ -1,5 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
+import NextHead from '../headers/header';
+import metaHeaders from '@/constants/headers';
 
 const SearchLayoutPage = ({
    isSuccess,
@@ -19,6 +21,7 @@ const SearchLayoutPage = ({
             className
          )}
       >
+         <NextHead title={metaHeaders.search.title} metaTags={metaHeaders.search.meta()} />
          {children}
       </div>
    );

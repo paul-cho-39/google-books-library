@@ -26,6 +26,7 @@ import SingleOrMultipleAuthors from '@/components/bookcover/authors';
 import { Divider } from '@/components/layout/dividers';
 import BookTitle from '@/components/bookcover/title';
 import APIErrorBoundary from '@/components/error/errorBoundary';
+import CategoryPageLayout from '@/components/layout/page/categoryPageLayout';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
@@ -76,6 +77,7 @@ export default function BookCategoryPages({
       byNewest: true,
    };
 
+   // stores inside the cache so that it can reference back 
    const { data: googleData, cleanedData } = useGetCategoryQuery({
       initialData: data[category] as GoogleUpdatedFields | undefined,
       category: category as Categories,
@@ -91,6 +93,7 @@ export default function BookCategoryPages({
       enabled: enableNytData,
    });
 
+   // displays another container when mouse is hovered
    const {
       isHovered,
       setImageRef,
@@ -106,17 +109,14 @@ export default function BookCategoryPages({
       bestSellers &&
       `${capitalizeWords(category as string)} Best Sellers (${bestSellers.published_date})`;
 
-   // TODO: create a component for these fallbacks
-   if (router.isFallback) {
-      return <div>Loading...</div>;
-   }
-
-   if (googleData.isFetching) {
-      return <div>isFetching...</div>;
+   if (router.isFallback || googleData.isFetching || googleData.isLoading) {
+      return (<CategoryPageLayout category={category}>
+         <div>Loading...</div>;
+      </CategoryPageLayout>)
    }
 
    return (
-      <div className='min-h-screen w-full'>
+      <CategoryPageLayout category={category}>
          <APIErrorBoundary>
             {googleData.isSuccess && googleData && (
                <CategoryGridLarge
@@ -237,7 +237,7 @@ export default function BookCategoryPages({
                </>
             )}
          </APIErrorBoundary>
-      </div>
+         </CategoryPageLayout>
    );
 }
 

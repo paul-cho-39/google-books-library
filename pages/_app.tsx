@@ -13,7 +13,7 @@ import '../styles/globals.css';
 import ThemeProvider from '@/lib/context/ThemeContext';
 
 import Navigation from '@/components/headers';
-import HomeLayout from '@/components/layout/page/home';
+import MainLayout from '@/components/layout/page/main';
 import SearchFilterProvider from '@/lib/context/SearchFilterContext';
 
 // progress loader at the top of the page
@@ -60,9 +60,9 @@ function MyApp({ Component, pageProps }) {
                <SearchFilterProvider>
                   <Navigation sidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
                   {/* <SideBarPortal sidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} /> */}
-                  <HomeLayout isOpen={isSidebarOpen}>
+                  <MainLayout isOpen={isSidebarOpen}>
                      <Component {...pageProps} />
-                  </HomeLayout>
+                  </MainLayout>
                </SearchFilterProvider>
                <ReactQueryDevtools initialIsOpen={true} />
             </SessionProvider>
