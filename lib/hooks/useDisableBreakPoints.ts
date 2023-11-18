@@ -19,7 +19,7 @@ export const useDisableBreakPoints = (size: number = LARGE_BREAK_POINT) => {
       window.addEventListener('resize', handleResize);
 
       return () => window.removeEventListener('resize', handleResize);
-   }, []);
+   }, [size]);
 
    return isDisabled;
 };
