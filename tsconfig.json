@@ -17,7 +17,7 @@
     "jsx": "preserve",
     "incremental": true,
     "types": ["jest", "node", "@testing-library/jest-dom"],
-    "typeRoots": ["node_modules/@types"],
+    // "typeRoots": ["node_modules/@types"],
     "paths": {
         "@/": ["./"],
         "@/pages/*": ["pages/*"],
@@ -29,6 +29,6 @@
         "@/styles/*": ["styles/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/third-party/google", "__tests__/pages/auth/signin.test.tsx", "__tests__/lib/hooks/useRedirectAfterAuthenticated.test.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/third-party/google", "__tests__/pages/auth/signin.test.tsx", "__tests__/lib/hooks/useRedirectAfterAuthenticated.test.tsx", "next-sitemap.config.js"],
   "exclude": ["node_modules"]
 }
