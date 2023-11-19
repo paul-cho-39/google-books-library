@@ -9,7 +9,7 @@ import API_ROUTES from '@/utils/apiRoutes';
 import apiRequest from '@/utils/fetchData';
 import ROUTES from '@/utils/routes';
 
-export default function ChangePassowrd(props) {
+export default function ChangePassowrd({}) {
    const [isVerified, setIsVerified] = useState(true);
    const [email, setEmail] = useState('');
    const resolver = yupResolver(validatePassword());
@@ -97,18 +97,8 @@ export default function ChangePassowrd(props) {
                         </p>
                      </div>
                      {/* requires the name to be changed */}
-                     <Inputs
-                        name='password'
-                        isDisclosure={true}
-                        type='password'
-                        labelName='Password'
-                     />
-                     <Inputs
-                        name='confirmPassword'
-                        isDisclosure={true}
-                        type='password'
-                        labelName='Confirm password'
-                     />
+                     <Inputs name='password' type='password' labelName='Password' />
+                     <Inputs name='confirmPassword' type='password' labelName='Confirm password' />
                      <button
                         className='my-3 w-full rounded-md border border-transparent bg-black py-3 px-4 text-sm font-medium text-white shadow-sm hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2'
                         type='submit'

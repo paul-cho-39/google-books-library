@@ -10,7 +10,7 @@ import apiRequest from '@/utils/fetchData';
 
 type EmailInput = Pick<SignInForm, 'email'>;
 
-export default function EmailVerify(props) {
+export default function EmailVerify({}) {
    const [isError, setError] = useState(false);
    const { data: session } = useSession();
    const router = useRouter();
@@ -31,8 +31,9 @@ export default function EmailVerify(props) {
          data: email,
       };
 
-      const getEmail = await apiRequest<string>(params);
-      toast.promise(getEmail, message, {
+      await apiRequest(params);
+
+      toast.promise(apiRequest(params), message, {
          duration: 250,
          position: 'bottom-center',
       });
@@ -55,7 +56,7 @@ export default function EmailVerify(props) {
                   >
                      Email
                   </label>
-                  <Inputs isSubmitted={true} isDisclosure={false} name='email' />
+                  <Inputs isSubmitted={true} name='email' displayLabel />
                   <button className='my-3 w-full rounded-md border border-transparent bg-black py-3 px-4 text-sm font-medium text-white shadow-sm hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2'>
                      Send
                   </button>

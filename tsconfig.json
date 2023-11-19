@@ -16,7 +16,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    // "types": ["jest", "node", "@testing-library/jest-dom"],
+    "types": ["jest", "node", "@testing-library/jest-dom"],
+    "typeRoots": ["node_modules/@types"],
     "paths": {
         "@/": ["./"],
         "@/pages/*": ["pages/*"],

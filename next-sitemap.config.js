@@ -1,5 +1,6 @@
-import { Categories, categories } from '@/constants/categories';
+// const { Categories, categories } = require('@/constants/categories');
 
+/** {import()} */
 /** @type {import('next-sitemap').IConfig} */
 
 const config = {
@@ -7,18 +8,18 @@ const config = {
    generateRobotsTxt: true,
    generateIndexSitemap: false,
    sitemapSize: 1000,
-   additionalPaths: async (config) => {
-      const paths = [];
+   // additionalPaths: async (config) => {
+   //    const paths = [];
 
-      // categories path 
-      categories.forEach((slug) => {
-         paths.push(config.transform(config, `/categories/${slug}`))
-      });
+   //    // categories path
+   //    categories.forEach((slug) => {
+   //       paths.push(config.transform(config, `/categories/${slug}`));
+   //    });
 
-      // write functions or pass more categories path here
+   //    // write functions or pass more categories path here
 
-      return paths;
-   }
+   //    return paths;
+   // },
 };
 
-export default config;
+module.exports = config;

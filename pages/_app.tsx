@@ -2,7 +2,7 @@ import Router from 'next/router';
 import React, { useEffect, useState } from 'react';
 import type { AppProps } from 'next/app';
 import { Session } from 'next-auth';
-import { SessionProvider } from 'next-auth/react';
+import { SessionProvider, SessionProviderProps } from 'next-auth/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
@@ -39,7 +39,9 @@ export const queryClient = new QueryClient({
    },
 });
 
-function MyApp({ Component, pageProps }) {
+type MyAppProps = AppProps & SessionProviderProps;
+
+function MyApp({ Component, pageProps }: AppProps<SessionProviderProps>) {
    // the default is to have the sidebar open when application starts
    const [isSidebarOpen, setSidebarOpen] = useState(true);
 

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createAccessToken, sendRefreshToken, createRefreshToken } from '@/lib/auth/token';
-import { verify } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 
 // use getToken for verification?
@@ -15,7 +15,8 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       if (!payload) return res.send({ ok: false, accessToken: '' });
       try {
          // decode and verify
-         const userId = payload.userId;
+         const jwtPayload = payload as JwtPayload; // declaring so it is not a string
+         const userId = jwtPayload.userId;
          const user = await prisma.user.findUnique({
             where: { id: userId },
             select: { id: true, name: true, email: true },

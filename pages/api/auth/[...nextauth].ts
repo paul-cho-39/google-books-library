@@ -1,11 +1,29 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
+import NextAuth, { NextAuthOptions, User } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import FacebookProvider from 'next-auth/providers/facebook';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from '@/lib/prisma';
 import { NextApiHandler } from 'next';
+
 import { JWT } from 'next-auth/jwt';
+import { AdapterUser } from 'next-auth/adapters';
+
+interface ExtendedUser extends User {
+   accessToken?: string;
+   refreshToken?: string;
+}
+
+interface ExtendedAdapterUser extends AdapterUser {
+   accessToken?: string;
+   refreshToken?: string;
+}
+
+interface TokenUser {
+   name?: string | null | undefined;
+   email?: string | null | undefined;
+   image?: string | null | undefined;
+}
 
 export const authOptions: NextAuthOptions = {
    adapter: PrismaAdapter(prisma),
@@ -75,44 +93,29 @@ export const authOptions: NextAuthOptions = {
       async jwt({ token, user, account }) {
          if (user && account) {
             token.user = user;
-            // token.cookies = user.cookies;
-            // if (account.provider === "google") {
-            // const token = googleRefreshAccessToken(account as typeof account);
-            // console.log("account profile", account);
-            // console.log("google TOKEN: ", token);
-            // if (account?.expires_at && Date.now() < account?.expires_at) {
-            //   return account.access_token;
-            // }
 
-            // return Promise.resolve(token);
-            // }
-            // assigning refreshtoken for credentials
-
-            // no google -- fb?
             if (!account.id_token) {
-               token.accessToken = user.accessToken;
-               token.refreshToken = user.refreshToken;
-               console.log('Is google provider still working?', user);
+               const extendedUser = user as ExtendedUser | ExtendedAdapterUser;
+               token.accessToken = extendedUser.accessToken;
+               token.refreshToken = extendedUser.refreshToken;
                // when the token should be refreshed
                const shouldRefreshTime = Math.round(
                   (token.exp as number) - 60 * 60 * 1000 - Date.now()
                );
                if (shouldRefreshTime > 0) {
-                  return Promise.resolve(token);
+                  Promise.resolve(token);
+                  return token;
                }
-               const refreshedToken = refreshToken(token);
+               const refreshedToken = (await refreshToken(token)) as JWT;
                return refreshedToken;
             }
          }
-         return Promise.resolve(token);
+         Promise.resolve(token);
+         return token;
       },
       async session({ session, user, token }) {
-         session.user = token.user;
-         session.error = token?.error;
-         // console.log("token user is: ", token);
-         // console.log("session user is: ", user);
-         // console.log("the session is: ", session);
-         // defining user here is not good since it will reveal the password
+         session.user = token.user as TokenUser;
+         // session.error = token?.error;
 
          return Promise.resolve(session);
       },
@@ -160,75 +163,52 @@ async function refreshToken(token: JWT) {
 }
 
 // facebook does not work the default should for fb should be six months
-async function googleRefreshAccessToken(account: any) {
-   try {
-      const url =
-         'https://oauth2.googleapis.com/token?' +
-         new URLSearchParams({
-            client_id: process.env.GOOGLE_CLIENT_ID as string,
-            client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
-            grant_type: 'refresh_token',
-            refresh_token: account.refresh_token as string,
-         });
-      const response = await fetch(url as string, {
-         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-         },
-         method: 'POST',
-      });
+// async function googleRefreshAccessToken(account: any) {
+//    try {
+//       const url =
+//          'https://oauth2.googleapis.com/token?' +
+//          new URLSearchParams({
+//             client_id: process.env.GOOGLE_CLIENT_ID as string,
+//             client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
+//             grant_type: 'refresh_token',
+//             refresh_token: account.refresh_token as string,
+//          });
+//       const response = await fetch(url as string, {
+//          headers: {
+//             'Content-Type': 'application/x-www-form-urlencoded',
+//          },
+//          method: 'POST',
+//       });
 
-      const refreshedTokens = await response.json();
-      console.log('refreshedTokens for Google Provider: ', refreshedTokens);
+//       const refreshedTokens = await response.json();
+//       console.log('refreshedTokens for Google Provider: ', refreshedTokens);
 
-      if (!response.ok) {
-         throw refreshedTokens;
-      }
+//       if (!response.ok) {
+//          throw refreshedTokens;
+//       }
 
-      // update prisma adapter and session
-      if (response.ok && refreshedTokens) {
-         const accounts = await prisma.account.findFirst({
-            where: { providerAccountId: account.providerAccountId },
-            select: { expires_at: true, id: true },
-         });
-         const expires = new Date(Date.now() + accounts?.expires_at * 1000);
-         await prisma.account.update({
-            where: { id: accounts?.id },
-            data: {
-               refresh_token: refreshedTokens.refresh_token ?? account.refreshToken,
-               access_token: refreshedTokens.accessToken,
-               expires_at: Number(expires),
-            },
-         });
-      }
-   } catch (error) {
-      console.log(error);
+//       // update prisma adapter and session
+//       if (response.ok && refreshedTokens) {
+//          const accounts = await prisma.account.findFirst({
+//             where: { providerAccountId: account.providerAccountId },
+//             select: { expires_at: true, id: true },
+//          });
+//          const expires = new Date(Date.now() + accounts?.expires_at * 1000);
+//          await prisma.account.update({
+//             where: { id: accounts?.id },
+//             data: {
+//                refresh_token: refreshedTokens.refresh_token ?? account.refreshToken,
+//                access_token: refreshedTokens.accessToken,
+//                expires_at: Number(expires),
+//             },
+//          });
+//       }
+//    } catch (error) {
+//       console.log(error);
 
-      return {
-         ...account,
-         error: 'RefreshAccessTokenError',
-      };
-   }
-}
-
-// Still to do for authentication
-// 1) create refreshToken for google and facebook
-// if signIn they MUST logout to signin to different account
-// so if signed in they cannot sign would call this in signIn
-// callback where if (session) { signIn = false; }
-
-// 2) and in the client side change the signIn page so that when
-// the user is signed in (although NextAuth should take care most
-// of this problem)
-
-// 3) signIn -> .then() so that error will be displayed at the top
-// 3b) fix the sign in design
-
-// 4) understand how time can vary which will invalidate the refreshtoken
-// by whatever the error margin is which wont allow users to verify
-
-// 5) find out how to reset the password
-
-// 6) possibly look more into CRM for having an admin page and if required
-// making a separate admin page and adding ROLES should be implemented
-
-// look this up
+//       return {
+//          ...account,
+//          error: 'RefreshAccessTokenError',
+//       };
+//    }
+// }

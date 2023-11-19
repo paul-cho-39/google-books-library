@@ -29,6 +29,7 @@ const queryKeys = {
    userId: (id: string) => [...queryKeys.books, { id: id }] as const,
    userLibrary: (userId: string) => [...queryKeys.bookLibrary, { userId }] as const,
    userAction: (userId: string) => ['action', { userId }] as const,
+   wiki: (author: string) => ['author', { author }] as const,
 };
 
 export default queryKeys;

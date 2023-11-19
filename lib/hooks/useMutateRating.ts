@@ -1,15 +1,13 @@
-import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import queryKeys from '@/utils/queryKeys';
 import apiRequest from '@/utils/fetchData';
 import API_ROUTES from '@/utils/apiRoutes';
 import {
-   DataWithRatings,
    InitializeDataParams,
    MultipleQueryDataParams,
    MutationBase,
    MutationRatingActionType,
    MutationRatingData,
-   RatingsWithoutData,
 } from '../types/models/books';
 import { MultipleRatingData, RatingData, RatingInfo, SingleRatingData } from '../types/serverTypes';
 import { Method } from '../types/fetchbody';

@@ -8,3 +8,5 @@
 //    const { worker } = await import('./worker');
 //    return worker.start();
 // };
+
+export {};
