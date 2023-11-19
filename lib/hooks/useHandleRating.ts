@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 import { getBodyFromFilteredGoogleFields } from '../helper/books/getBookBody';
 import { Items } from '../types/googleBookTypes';
-import { DataWithRatings, RatingsWithoutData } from '../types/models/books';
+import { DataWithRatings, MutationBase, RatingsWithoutData } from '../types/models/books';
 import { MultipleRatingData } from '../types/serverTypes';
-import useMutateRatings, { MutationBase } from './useMutateRating';
+import useMutateRatings from './useMutateRating';
 
 function useHandleRating(
    params: MutationBase,

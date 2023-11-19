@@ -13,9 +13,7 @@ const SideBarPortal = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => 
    if (!root) return null;
 
    return ReactDOM.createPortal(
-      <SideNavigation sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
-         {/* Modal content */}
-      </SideNavigation>,
+      <SideNavigation sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />,
       root
    );
 };

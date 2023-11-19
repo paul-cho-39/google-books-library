@@ -18,9 +18,9 @@ export default function useGetRatings(data: CategoriesQueries, isSuccess: boolea
    const bookIds = extractIdsToArray(data as CategoriesQueries, initialData);
 
    // debugging
-   console.log('-------------------------');
-   console.log('the INITIAL DATA IS : ', initialData);
-   console.log('-------------------------');
+   // console.log('-------------------------');
+   // console.log('the INITIAL DATA IS : ', initialData);
+   // console.log('-------------------------');
 
    // require dynamic?
    return useQuery(
@@ -54,15 +54,19 @@ export function useGetRating({ bookId, userId, initialData }: SingleRatingParams
       MultipleRatingData | null
    >(
       queryKeys.ratingsByBook(bookId),
-      () =>
-         apiRequest({
+      async () => {
+         const res = (await apiRequest({
             apiUrl: API_ROUTES.RATING.RATE_BOOK.CREATE(userId as string, bookId),
             method: 'GET',
-         }),
+         })) as ResponseRatingData;
+
+         return res.data;
+      },
       {
          enabled: !!bookId && !!userId,
          initialData: () => cache ?? initialData,
          select: (data) => {
+            // response json and success is there
             if ((data && 'success' in data) || !initialData) {
                const rateData = data as ResponseRatingData;
                return rateData.data;
