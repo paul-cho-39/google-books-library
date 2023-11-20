@@ -36,7 +36,7 @@ const TOTAL_COLS = 5;
 const HEIGHT = layoutManager.constants.imageHeight;
 
 export default function BookCategoryPages({
-       data,
+       //  data,
        category,
     }: InferGetStaticPropsType<typeof getStaticProps>) {
    const [currentPage, setCurrentPage] = useState(1);
@@ -79,12 +79,14 @@ export default function BookCategoryPages({
 
    // stores inside the cache so that it can reference back
    const { data: googleData, cleanedData } = useGetCategoryQuery({
-      initialData: data[category] as GoogleUpdatedFields | undefined,
+      // initialData: data[category] as GoogleUpdatedFields | undefined,
       // enabled: !!data,
       category: category as Categories,
       meta: meta,
       keepPreviousData: true,
    });
+
+   console.log('cleaned data is: ', cleanedData);
 
    // requring both so that each will have its own publication date?
    const { data: bestSellers, isSuccess: isNytDataSuccess } = useGetNytBestSeller({
@@ -261,7 +263,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 // would this only hit the api request for every time a page is visited?
 export const getStaticProps: GetStaticProps<{
-   data: CategoryQuery;
+   // data: CategoryQuery;
    category: string;
 }> = async ({ params }) => {
    const category = params?.slug as string;
@@ -270,16 +272,16 @@ export const getStaticProps: GetStaticProps<{
    // const sampleCat = categories.slice(0, 4);
 
    // change this to categories when testing this out
-   const googleData = await batchFetchGoogleCategories([category], {
-      // maxResultNumber: 15,
-      maxResultNumber: MAX_ITEMS,
-      pageIndex: 0,
-      byNewest: true,
-   });
+   // const googleData = await batchFetchGoogleCategories([category], {
+   //    // maxResultNumber: 15,
+   //    maxResultNumber: MAX_ITEMS,
+   //    pageIndex: 0,
+   //    byNewest: true,
+   // });
 
    return {
       props: {
-         data: googleData as CategoryQuery,
+         // data: googleData as CategoryQuery,
          category: category,
       },
       revalidate: 60 * 60 * 6, // wont revalidate for at least the next 6 hours
