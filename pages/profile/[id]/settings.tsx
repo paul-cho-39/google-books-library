@@ -326,6 +326,6 @@
 // //   return user;
 // // };
 
-export default function Settings() {
+export default function Settings(props) {
    return <div>Settings</div>;
 }

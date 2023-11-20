@@ -7,7 +7,6 @@ import prisma from '@/lib/prisma';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
-      console.log('req headers for cookie: ', req.headers.cookie);
       const secret = process.env.NEXTAUTH_SECRET;
       const { token } = req.body;
       const payload = verify(token.accessToken, process.env.NEXTAUTH_SECRET as string);

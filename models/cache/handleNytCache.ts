@@ -27,18 +27,8 @@ export default async function handleNytCache(
 
    let data = lruCache.get(cacheKey, { status: status });
 
-   console.log('-----------------------STARTING HERE---------------------------');
-   console.log('THE AMOUNT OF SPACE REMAINING IN IS:', remainingSpace);
-   console.log('---------------------------------------');
-   console.log('THE AMOUNT OF MAX IS:', lruCache.size);
-   console.log('---------------------------------------');
-   console.log('THE DATA CONTAINS THE KEY', cacheKey, '?', lruCache.has(cacheKey));
-   console.log('---------------------------------------');
-   console.log('---------------------------------------');
-
    if (lruCache.has(cacheKey)) {
       try {
-         console.log('HANDLING NEW YORK TIMES DATA VIA API');
          // TODO: if date is provided have to change the date here
          const url = nytApi.getUrlByCategory({
             format: 'combined-print-and-e-book',
@@ -49,7 +39,6 @@ export default async function handleNytCache(
 
          if (data) {
             lruCache.set(cacheKey, data, { status: status });
-            console.log('SET THE LRU CACHE');
          }
       } catch (err) {
          return res.status(404).json({
@@ -59,8 +48,7 @@ export default async function handleNytCache(
    }
 
    const result = !data ? 'FAILED' : 'SUCCESSFUL';
-   console.log('NYT', cacheKey, result);
-   console.log('the status is: ', status);
+
    return res.status(200).json({
       data,
       lastUpdated: status.start ? new Date(status.start).toISOString() : undefined,

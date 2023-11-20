@@ -18,29 +18,11 @@ export default async function handleGoogleCache(
       ? handleCacheKeys.recent.key(category.toLocaleLowerCase().replaceAll(' ', ''))
       : handleCacheKeys.relevance.key(category.toLocaleLowerCase().replaceAll(' ', ''));
 
-   console.log(cacheKey);
-
    const status: StatusLRUType = {};
    let data = lruCache.get(cacheKey, { status: status });
    const remainingSpace = lruCache.max - lruCache.size;
 
-   console.log('-----------------------STARTING HERE---------------------------');
-   console.log('---------------------------------------');
-   console.log('---------------------------------------');
-   console.log('---------------------------------------');
-
-   console.log('THE AMOUNT OF SPACE REMAINING IN IS:', remainingSpace);
-   console.log('---------------------------------------');
-   console.log('THE CACHEKEY IS: ', cacheKey);
-   console.log('---------------------------------------');
-   console.log('THE AMOUNT OF MAX IS:', lruCache.size);
-   console.log('---------------------------------------');
-   console.log('THE DATA CONTAINS THE KEY', cacheKey, '?', lruCache.has(cacheKey));
-   console.log('---------------------------------------');
-   console.log('---------------------------------------');
-
    if (!data) {
-      console.log('HANDLING GOOGLE CACHE VIA API');
       try {
          // passing meta here to whether save pageIndex but likely wont
          const url = googleApi.getUrlBySubject(category as Categories, meta);
@@ -51,7 +33,6 @@ export default async function handleGoogleCache(
 
          if (data) {
             lruCache.set(cacheKey, data, { status: status });
-            console.log('SET THE LRU CACHE');
          }
          //  }
       } catch (err) {
@@ -62,7 +43,6 @@ export default async function handleGoogleCache(
    }
 
    const result = lruCache.has(cacheKey) ? 'FAILED' : 'SUCCESSFUL';
-   console.log('the status is: ', status);
 
    return res.status(200).json({
       data,

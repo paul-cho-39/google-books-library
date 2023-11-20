@@ -77,7 +77,7 @@ export default function BookCategoryPages({
       byNewest: true,
    };
 
-   // stores inside the cache so that it can reference back 
+   // stores inside the cache so that it can reference back
    const { data: googleData, cleanedData } = useGetCategoryQuery({
       initialData: data[category] as GoogleUpdatedFields | undefined,
       category: category as Categories,
@@ -110,9 +110,11 @@ export default function BookCategoryPages({
       `${capitalizeWords(category as string)} Best Sellers (${bestSellers.published_date})`;
 
    if (router.isFallback || googleData.isFetching || googleData.isLoading) {
-      return (<CategoryPageLayout category={category}>
-         <div>Loading...</div>;
-      </CategoryPageLayout>)
+      return (
+         <CategoryPageLayout category={category}>
+            <div>Loading...</div>;
+         </CategoryPageLayout>
+      );
    }
 
    return (
@@ -237,7 +239,7 @@ export default function BookCategoryPages({
                </>
             )}
          </APIErrorBoundary>
-         </CategoryPageLayout>
+      </CategoryPageLayout>
    );
 }
 
@@ -245,8 +247,10 @@ export default function BookCategoryPages({
 // can it retrieve new released?
 // is inside the cateogry that is being clicked
 
+const sampleCat = categories.slice(0, 4);
+
 export const getStaticPaths: GetStaticPaths = async () => {
-   const paths = categories.map((category) => ({
+   const paths = sampleCat.map((category) => ({
       params: { slug: category.toLowerCase() },
    }));
 
@@ -264,7 +268,7 @@ export const getStaticProps: GetStaticProps<{
    const category = params?.slug as string;
 
    // change this after production where it will generate all categories in build time
-   const sampleCat = categories.slice(0, 4);
+   // const sampleCat = categories.slice(0, 4);
 
    // change this to categories when testing this out
    const googleData = await batchFetchGoogleCategories(sampleCat, {
