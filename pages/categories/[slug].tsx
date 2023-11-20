@@ -36,8 +36,8 @@ const TOTAL_COLS = 5;
 const HEIGHT = layoutManager.constants.imageHeight;
 
 export default function BookCategoryPages({
-       category,
        data,
+       category,
     }: InferGetStaticPropsType<typeof getStaticProps>) {
    const [currentPage, setCurrentPage] = useState(1);
    const [pageIndex, setPageIndex] = useState(0);
@@ -80,8 +80,8 @@ export default function BookCategoryPages({
    // stores inside the cache so that it can reference back
    const { data: googleData, cleanedData } = useGetCategoryQuery({
       initialData: data[category] as GoogleUpdatedFields | undefined,
+      // enabled: !!data,
       category: category as Categories,
-      enabled: !!data,
       meta: meta,
       keepPreviousData: true,
    });
@@ -247,10 +247,9 @@ export default function BookCategoryPages({
 // can it retrieve new released?
 // is inside the cateogry that is being clicked
 
-const sampleCat = categories.slice(0, 4);
-
 export const getStaticPaths: GetStaticPaths = async () => {
-   const paths = sampleCat.map((category) => ({
+   // const sampleCat = categories.slice(0, 4);
+   const paths = categories.map((category) => ({
       params: { slug: category.toLowerCase() },
    }));
 
@@ -271,9 +270,9 @@ export const getStaticProps: GetStaticProps<{
    // const sampleCat = categories.slice(0, 4);
 
    // change this to categories when testing this out
-   const googleData = await batchFetchGoogleCategories(sampleCat, {
-      // maxResultNumber: MAX_ITEMS,
-      maxResultNumber: 15,
+   const googleData = await batchFetchGoogleCategories([category], {
+      // maxResultNumber: 15,
+      maxResultNumber: MAX_ITEMS,
       pageIndex: 0,
       byNewest: true,
    });

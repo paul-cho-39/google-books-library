@@ -38,6 +38,13 @@ export default function useGetCategoryQuery({
    const queryClient = new QueryClient();
 
    const lowercaseCategory = (category as string).toLocaleLowerCase();
+
+   console.log('DEBUGGING HERE!!');
+   console.log('-----------------------------------');
+   console.log('-----------------------------------');
+   console.log('-----------------------------------');
+   console.log('-----------------------------------');
+   console.log('LOWERC CASE CATEGORY IS: ', lowercaseCategory);
    const cache = queryClient.getQueryData(
       queryKeys.categories(lowercaseCategory, meta)
    ) as GoogleUpdatedFields;
