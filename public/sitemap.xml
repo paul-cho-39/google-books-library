@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<url><loc>http://localhost:3000</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/auth/error</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/auth/signin</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/auth/signup</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/search</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/sentry-example-page</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/verify/reset/sendverification</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/architecture</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/art</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/bibles</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/biography &amp; autobiography</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/business &amp; economics</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/cooking</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/computers</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/crafts &amp; hobbies</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/design</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/drama</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/education</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/family &amp; relationships</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/fiction</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/gardening</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/health &amp; fitness</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/history</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/humor</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/language arts &amp; disciplines</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/law</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/mathematics</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/medical</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/music</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/nature</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/philosophy</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/poetry</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/political science</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/psychology</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/religion</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/science</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/self-help</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/social science</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/sports &amp; recreation</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/technology &amp; engineering</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/true crime</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/categories/young adult fiction</loc><lastmod>2023-11-20T23:00:34.694Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+</urlset>

@@ -37,7 +37,7 @@ export default function useGetCategoryQuery({
 }: SingleQuery) {
    const queryClient = new QueryClient();
 
-   const lowercaseCategory = (category as string).toLocaleLowerCase();
+   const lowercaseCategory = (category as string)?.toLocaleLowerCase();
 
    console.log('DEBUGGING HERE!!');
    console.log('-----------------------------------');
