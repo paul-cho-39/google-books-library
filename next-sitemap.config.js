@@ -4,7 +4,7 @@
 /** @type {import('next-sitemap').IConfig} */
 
 const config = {
-   siteUrl: process.env.NEXT_PUBLIC_BASE_URL,
+   siteUrl: process.env.NEXTAUTH_URL,
    generateRobotsTxt: true,
    generateIndexSitemap: false,
    sitemapSize: 1000,
