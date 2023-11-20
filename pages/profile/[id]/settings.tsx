@@ -326,4 +326,4 @@
 // //   return user;
 // // };
 
-export default Settings;
+export {};
