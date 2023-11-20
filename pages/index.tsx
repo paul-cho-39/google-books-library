@@ -1,7 +1,7 @@
-import { GetServerSideProps, GetStaticProps, InferGetStaticPropsType } from 'next';
-import { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { useRef, useState, lazy, Suspense } from 'react';
 import { CategoryDisplay } from '@/components/contents/home/categories';
-import { GoogleUpdatedFields, ImageLinks, Items, Pages } from '@/lib/types/googleBookTypes';
+import { ImageLinks } from '@/lib/types/googleBookTypes';
 import classNames from 'classnames';
 
 import { useGetCategoriesQueries } from '@/lib/hooks/useGetCategoryQuery';
@@ -72,7 +72,11 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
    // TODO: Create an error boundary for this
    if (!nytDataSuccess && !googleDataSuccess) {
-      return( <HomeLayout><div>Is Loading...</div></HomeLayout>)
+      return (
+         <HomeLayout>
+            <div>Is Loading...</div>
+         </HomeLayout>
+      );
    }
 
    return (

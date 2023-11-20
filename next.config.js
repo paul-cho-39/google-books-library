@@ -3,7 +3,7 @@
 const nextConfig = {
    reactStrictMode: true,
    swcMinify: true,
-   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
+   // pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
    // redirects can be powerful if there are name changes
    // faster way to implement whenever name changes
    // redirect home page when user is logged in?
