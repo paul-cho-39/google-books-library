@@ -21,10 +21,18 @@ const logger = createLogger({
    ),
    defaultMeta: { service: 'user-service' },
    transports: [
-      new transports.File({ filename: ERRORS_LOG, level: 'error' }),
-      new transports.File({ filename: COMBINED_LOG }),
+      // new transports.File({ filename: ERRORS_LOG, level: 'error' }),
+      // new transports.File({ filename: COMBINED_LOG }),
+      new transports.Console({
+         format: format.combine(
+            format.colorize(),
+            format.printf(({ level, message, timestamp, stack }) => {
+               return `${timestamp} ${level}: ${stack || message}`;
+            })
+         ),
+      }),
    ],
-   rejectionHandlers: [new transports.File({ filename: REJECTIONS_LOG })],
+   // rejectionHandlers: [new transports.File({ filename: REJECTIONS_LOG })],
 });
 
 if (process.env.NODE_ENV !== 'production') {

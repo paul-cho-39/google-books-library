@@ -1,7 +1,5 @@
-import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import logger from './utils/winston';
 
 export async function middleware(req: NextRequest) {
    // return early if url isn't supposed to be protected
