@@ -31,12 +31,11 @@ export const authOptions: NextAuthOptions = {
    pages: {
       signIn: '/auth/signin',
       // signOut: "/auth/signout",
-      newUser: `${process.env.NEXTAUTH_URL}`,
+      // newUser: `${process.env.NEXTAUTH_URL}`,
       error: '/auth/signin',
    },
    session: {
       strategy: 'database' && 'jwt',
-      // should be 60 secs
       maxAge: 1000 * 60 * 60,
    },
    // set this in the environment
@@ -64,7 +63,8 @@ export const authOptions: NextAuthOptions = {
          authorize: async (credentials, req) => {
             try {
                const res = await fetch(
-                  `${process.env.NEXTAUTH_URL}/api/user/authenticatecredential`,
+                  // `${process.env.NEXTAUTH_URL}/api/user/authenticatecredential`,
+                  `/api/user/authenticatecredential`,
                   {
                      method: 'POST',
                      headers: {
@@ -94,6 +94,8 @@ export const authOptions: NextAuthOptions = {
          if (user && account) {
             token.user = user;
 
+            // if the account does not have a token then assign the newly access token
+            // and refresh token which is to be passed to to session
             if (!account.id_token) {
                const extendedUser = user as ExtendedUser | ExtendedAdapterUser;
                token.accessToken = extendedUser.accessToken;
@@ -127,7 +129,8 @@ export default authHandler;
 
 // refreshing token
 async function refreshToken(token: JWT) {
-   let url = `${process.env.NEXTAUTH_URL}/api/auth/refreshtoken`;
+   // let url = `${process.env.NEXTAUTH_URL}/api/user/refreshtoken`;
+   let url = `/api/user/refreshtoken`;
    const body = { token };
    // 2 mins
    const exp = Math.floor(Date.now() / 1000) + 60 * 60;

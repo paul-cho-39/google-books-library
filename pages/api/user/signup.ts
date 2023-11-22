@@ -22,6 +22,8 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       // for updated date
       const dateVerified = new Date().toISOString();
       const { username, email, password } = req.body;
+
+      //** Cannot change next-auth data. Not able to write to database with predefined schema for next-auth */
       // if (providers?.google || providers?.facebook) {
       //   const unverfiedUser = await prisma.user.findFirst({
       //     where: {
