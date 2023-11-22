@@ -13,9 +13,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
          username: true,
       },
    });
-   const emailInData = users.map((user) => user.email);
-   const usernameInData = users.map((user) => user.username);
-
    // this does not work
    if (req.method === 'POST') {
       // const providers = await getProviders();
