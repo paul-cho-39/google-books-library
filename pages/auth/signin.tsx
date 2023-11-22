@@ -17,7 +17,8 @@ import useRedirectIfAuthenticated from '@/lib/hooks/useRedirectAfterAuthenticate
 import AuthProviders from '@/components/Login/providers';
 import metaHeaders from '@/constants/headers';
 
-export function Account({ authProviders }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export function Account({}) {
+   // export function Account({ authProviders }: InferGetServerSidePropsType<typeof getServerSideProps>) {
    const [error, setError] = useState(false);
    const resolver = yupResolver(validateSignUp());
 
@@ -95,9 +96,9 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
                      <LabelDivider label='Or continue with' />
                   </div>
                </div>
-               {authProviders?.map((provider) => (
+               {/* {authProviders?.map((provider) => (
                   <AuthProviders key={provider?.id} providers={provider} callbackUrl={nextPath} />
-               ))}
+               ))} */}
             </div>
             <div className='flex flex-col justify-center items-center'>
                <p className='text-slate-800 dark:text-slate-100'>Not a member?</p>
@@ -112,13 +113,13 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
    );
 }
 
-export async function getServerSideProps() {
-   const providers = await getProviders();
-   return {
-      props: {
-         authProviders: [providers?.google, providers?.facebook],
-      },
-   };
-}
+// export async function getServerSideProps() {
+//    const providers = await getProviders();
+//    return {
+//       props: {
+//          authProviders: [providers?.google, providers?.facebook],
+//       },
+//    };
+// }
 
 export default Account;
