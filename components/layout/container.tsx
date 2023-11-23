@@ -6,8 +6,10 @@ export const ContainerOuter = forwardRef<
    React.ComponentPropsWithoutRef<'div'>
 >(function OuterContainer({ className, children, ...props }, ref) {
    return (
-      <div ref={ref} className={clsx('py-10 dark:bg-slate-800', className)} {...props}>
-         <div className='mx-auto sm:px-8 lg:px-8'>{children}</div>
+      <div ref={ref} className={clsx('dark:bg-slate-800', className)} {...props}>
+         {/* <div className='mx-auto sm:px-8 lg:px-8'> */}
+         {children}
+         {/* </div> */}
       </div>
    );
 });

@@ -1,16 +1,20 @@
 import NextHead from '@/components/headers/header';
 import metaHeaders from '@/constants/headers';
 
-const CategoryPageLayout = ({ 
+const CategoryPageLayout = ({
    category,
-   children 
-}: { 
+   children,
+}: {
    category: string;
-   children: React.ReactNode }) => {
+   children: React.ReactNode;
+}) => {
    return (
       <div className='w-full min-h-screen dark:bg-slate-800'>
-         <NextHead title={metaHeaders.categories.title(category)} metaTags={metaHeaders.categories.meta()} />
-         {children}
+         <NextHead
+            title={metaHeaders.categories.title(category)}
+            metaTags={metaHeaders.categories.meta()}
+         />
+         <main>{children}</main>
       </div>
    );
 };

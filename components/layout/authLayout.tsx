@@ -8,9 +8,10 @@ interface AuthLayoutProps {
 
 const AuthLayout = ({ title, metaTags, children }: AuthLayoutProps) => {
    return (
-      <section className='min-h-full mx-auto p-4 lg:px-16 xl:px-20 md:max-w-xl overflow-hidden'>
+      <section className='min-h-screen mx-auto p-4 lg:px-16 xl:px-20 md:max-w-xl overflow-hidden'>
+         {/* <section className='flex flex-col min-h-full'> */}
          <NextHead title={title} metaTags={metaTags} />
-         {children}
+         <main className='flex-grow'>{children}</main>
       </section>
    );
 };

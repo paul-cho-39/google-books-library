@@ -39,12 +39,12 @@ export default function useGetCategoryQuery({
 
    const lowercaseCategory = (category as string)?.toLocaleLowerCase();
 
-   console.log('DEBUGGING HERE!!');
-   console.log('-----------------------------------');
-   console.log('-----------------------------------');
-   console.log('-----------------------------------');
-   console.log('-----------------------------------');
-   console.log('LOWERC CASE CATEGORY IS: ', lowercaseCategory);
+   // console.log('DEBUGGING HERE!!');
+   // console.log('-----------------------------------');
+   // console.log('-----------------------------------');
+   // console.log('-----------------------------------');
+   // console.log('-----------------------------------');
+   // console.log('LOWERC CASE CATEGORY IS: ', lowercaseCategory);
    const cache = queryClient.getQueryData(
       queryKeys.categories(lowercaseCategory, meta)
    ) as GoogleUpdatedFields;
@@ -73,12 +73,12 @@ export default function useGetCategoryQuery({
    // this function returns cleaned data
    const cleanedData = createUniqueData(data?.data?.items);
 
-   console.log('DEBUGGING HERE!!');
-   console.log('-----------------------------------');
-   console.log('-----------------------------------');
-   console.log('-----------------------------------');
-   console.log('-----------------------------------');
-   console.log('CLEANED DATA IS: ', cleanedData);
+   // console.log('DEBUGGING HERE!!');
+   // console.log('-----------------------------------');
+   // console.log('-----------------------------------');
+   // console.log('-----------------------------------');
+   // console.log('-----------------------------------');
+   // console.log('CLEANED DATA IS: ', cleanedData);
 
    return {
       cleanedData,

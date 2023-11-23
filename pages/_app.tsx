@@ -1,7 +1,6 @@
 import Router from 'next/router';
 import React, { useEffect, useState } from 'react';
 import type { AppProps } from 'next/app';
-import { Session } from 'next-auth';
 import { SessionProvider, SessionProviderProps } from 'next-auth/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -39,21 +38,9 @@ export const queryClient = new QueryClient({
    },
 });
 
-type MyAppProps = AppProps & SessionProviderProps;
-
 function MyApp({ Component, pageProps }: AppProps<SessionProviderProps>) {
-   // the default is to have the sidebar open when application starts
+   // defaults to the sidebar open when application starts
    const [isSidebarOpen, setSidebarOpen] = useState(true);
-
-   // mocking servers
-   // useEffect(() => {
-   //    if (process.env.NODE_ENV === 'development') {
-   //       import('mocks').then(({ deferMock }) => deferMock());
-   //    } else
-   //       import('mocks/server').then(({ server }) => {
-   //          server.listen();
-   //       });
-   // }, []);
 
    return (
       <QueryClientProvider client={queryClient}>

@@ -73,7 +73,7 @@ export default function Signup({
       <AuthLayout title={metaHeaders.signup.title} metaTags={metaHeaders.signup.meta()}>
          <div className='flex flex-col'>
             <form
-               className='flex flex-col'
+               className='flex flex-col items-center justify-center'
                onSubmit={handleSubmit(onSubmit)}
                method='POST'
                action='/signup'
