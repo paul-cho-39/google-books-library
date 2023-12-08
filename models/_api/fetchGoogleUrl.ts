@@ -23,6 +23,12 @@ export interface MetaProps {
 // otherwise it returns "FIELDS" data
 // 'URL_BY_ID' does not contain google keys because it will return http status 503
 // only returns data without google keys
+
+/**
+ * @param null
+ * @returns string
+ */
+
 class GoogleBookApi {
    private static URL_BASE = 'https://www.googleapis.com/books/v1/volumes?q=';
    private static URL_BY_ID = 'https://www.googleapis.com/books/v1/volumes/';

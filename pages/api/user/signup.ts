@@ -56,7 +56,11 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
          });
          res.status(201).json({ success: true });
       } catch (e) {
-         res.status(401).json({ success: false, message: 'Failed to create a new account' });
+         res.status(401).json({
+            success: false,
+            message: 'Failed to create a new account',
+            error: e,
+         });
       }
    } else {
       res.status(500).end();

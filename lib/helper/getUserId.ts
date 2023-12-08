@@ -13,9 +13,8 @@ export default function getUserId<T extends object>(userObject: T, keyToFind: st
    return getUser(user);
 }
 
-// helper function
 function getUser(user: string[]) {
-   return user && user[0].toString();
+   return user && user[0]?.toString();
 }
 
 export const getUserIdAvoidTs = (userInfo: any) => {

@@ -25,18 +25,22 @@ interface TokenUser {
    image?: string | null | undefined;
 }
 
+interface CredentialUser {
+   user: User | AdapterUser;
+}
+
 export const authOptions: NextAuthOptions = {
    adapter: PrismaAdapter(prisma),
    secret: process.env.NEXTAUTH_SECRET,
    pages: {
       signIn: '/auth/signin',
-      // signOut: "/auth/signout",
+      // signOut: '/auth/signout',
       // newUser: `${process.env.NEXTAUTH_URL}`,
       error: '/auth/signin',
    },
    session: {
-      // strategy: 'database' && 'jwt',
-      strategy: 'database',
+      strategy: 'database' && 'jwt',
+      // strategy: 'database',
       maxAge: 1000 * 60 * 60,
    },
    // set this in the environment
@@ -64,8 +68,8 @@ export const authOptions: NextAuthOptions = {
          authorize: async (credentials, req) => {
             try {
                const res = await fetch(
-                  // `${process.env.NEXTAUTH_URL}/api/user/authenticatecredential`,
-                  `/api/user/authenticatecredential`,
+                  `${process.env.NEXTAUTH_URL}/api/user/authenticate-credential`,
+                  // `/api/user/authenticate-credential`,
                   {
                      method: 'POST',
                      headers: {
@@ -91,35 +95,43 @@ export const authOptions: NextAuthOptions = {
    // for session callback where the credentials are part of session?
    callbacks: {
       // refresh token once session maxAge expires
-      // async jwt({ token, user, account }) {
-      //    if (user && account) {
-      //       token.user = user;
-      //       // if the account does not have a token then assign the newly access token
-      //       // and refresh token which is to be passed to to session
-      //       if (!account.id_token) {
-      //          const extendedUser = user as ExtendedUser | ExtendedAdapterUser;
-      //          token.accessToken = extendedUser.accessToken;
-      //          token.refreshToken = extendedUser.refreshToken;
-      //          // when the token should be refreshed
-      //          const shouldRefreshTime = Math.round(
-      //             (token.exp as number) - 60 * 60 * 1000 - Date.now()
-      //          );
-      //          if (shouldRefreshTime > 0) {
-      //             Promise.resolve(token);
-      //             return token;
-      //          }
-      //          const refreshedToken = (await refreshToken(token)) as JWT;
-      //          return refreshedToken;
-      //       }
-      //    }
-      //    Promise.resolve(token);
-      //    return token;
-      // },
-      // async session({ session, user, token }) {
-      //    session.user = token.user as TokenUser;
-      //    // session.error = token?.error;
-      //    return Promise.resolve(session);
-      // },
+      async jwt({ token, user, account }) {
+         if (user && account) {
+            if (account.type === 'oauth') {
+               token.user = user;
+            } else {
+               // if it is credential it is an object inside of an object
+               const credentialUser = user as unknown as CredentialUser;
+               token.user = credentialUser.user;
+            }
+            // if the account does not have a token then assign the newly access token
+            // and refresh token which is to be passed to to session
+            if (!account.id_token) {
+               const extendedUser = user as ExtendedUser | ExtendedAdapterUser;
+               token.accessToken = extendedUser.accessToken;
+               token.refreshToken = extendedUser.refreshToken;
+               // when the token should be refreshed
+               const shouldRefreshTime = Math.round(
+                  (token.exp as number) - 60 * 60 * 1000 - Date.now()
+               );
+               if (shouldRefreshTime > 0) {
+                  Promise.resolve(token);
+                  return token;
+               }
+               const refreshedToken = (await refreshToken(token)) as JWT;
+               return refreshedToken;
+            }
+         }
+         Promise.resolve(token);
+         return token;
+      },
+      async session({ session, user, token }) {
+         session.user = token.user as TokenUser;
+         // session.error = token?.error;
+         // return Promise.resolve(session);
+
+         return session;
+      },
    },
 };
 

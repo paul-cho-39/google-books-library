@@ -1,12 +1,16 @@
 import { Dispatch, useState, SetStateAction } from 'react';
 import Star, { Size } from '../icons/starIcon';
 import DeleteRatingButton, { DeleteRatingButtonProps } from '../buttons/deleteRatingButton';
+import { NextRouter } from 'next/router';
+import ROUTES from '@/utils/routes';
 
 export type ActiveRatingProps = {
    ratingTitle: string;
    selectedRating: number | null;
    setSelectedRating: Dispatch<SetStateAction<number | null>>;
    handleMutation: (rating: number) => void;
+   userId: string | null;
+   router: NextRouter;
    size?: Size;
 } & DeleteRatingButtonProps;
 
@@ -17,6 +21,8 @@ export const ActiveRating = ({
    selectedRating,
    setSelectedRating,
    handleMutation,
+   userId,
+   router,
    size = 'small',
 }: ActiveRatingProps) => {
    const [hoveredStar, setHoveredStar] = useState<number | null>(null);
@@ -35,9 +41,13 @@ export const ActiveRating = ({
 
    //   may have to change this logic here
    const handleClick = (rating: number) => {
-      const adjustedRating = adjustRating(rating);
-      setSelectedRating(adjustedRating);
-      handleMutation(rating);
+      if (!userId) {
+         router.push(ROUTES.AUTH.SIGNIN_NEXT(router.asPath));
+      } else {
+         const adjustedRating = adjustRating(rating);
+         setSelectedRating(adjustedRating);
+         handleMutation(rating);
+      }
    };
 
    const getFillPercentage = (index: number) => {

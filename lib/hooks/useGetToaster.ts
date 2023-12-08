@@ -4,9 +4,15 @@ import { Library } from '../types/models/books';
 import queryKeys from '@/utils/queryKeys';
 import { ToasterMessageType } from '@/components/bookcards/toaster';
 
-// the hook returns whether the book is added to the library or removed from the library
-// by initiating the current library and comparing the previous library and whether the
-// length of the two differs
+/**
+ * the hook returns whether the book is added to the library or removed from the library
+ * by initiating the current library and comparing the previous library and whether the
+ * length of the two differs
+ * @param userId
+ * @param isInitialSuccess
+ * @returns 'added' | 'removed' | null
+ */
+
 function useLibraryChangeToaster(userId: string | null, isInitialSuccess: boolean) {
    const queryClient = useQueryClient();
    const [previousLibrary, setPreviousLibrary] = useState<Library | undefined | null>(null);

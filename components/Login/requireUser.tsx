@@ -33,13 +33,14 @@ const SignInRequiredButton = ({
       isReady.current = true;
    }, [router.isReady]);
 
+   // if user is logged in then the active button is returned
    return userId ? (
       signedInActiveButton
    ) : (
       <button
          aria-label={'Sign in required'}
          onClick={handlePress}
-         className={classNames(className)} // the styling should be same as signedInActiveButton
+         className={classNames(className)} // the styling should be same as signedInActiveButton componen
       >
          {title || children}
       </button>

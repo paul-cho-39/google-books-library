@@ -20,6 +20,8 @@ import useHandleRating from '@/lib/hooks/useHandleRating';
 import BookActionButton from '@/components/buttons/bookActionButton';
 import PageLayout from '@/components/layout/page/bookPageLayout';
 import useSearchFilter from '@/lib/hooks/useSearchFilter';
+import Spinner from '@/components/loaders/spinner';
+import SignInRequiredButton from '@/components/Login/requireUser';
 
 const HEIGHT = 225;
 
@@ -70,7 +72,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    if (isLoading) {
       return (
          <PageLayout title={data?.volumeInfo.title}>
-            <div className='dark:text-slate-200 font-medium text-2xl'>Loading...</div>
+            <Spinner />
          </PageLayout>
       );
    }
@@ -78,7 +80,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
    return (
       <APIErrorBoundary>
          <PageLayout title={data?.volumeInfo.title}>
-            <div className='w-full flex flex-col max-w-2xl items-center justify-center py-2 md:grid md:grid-cols-3 lg:max-w-4xl'>
+            <div className='w-full flex flex-col max-w-2xl items-center justify-center p-6 lg:p-10 md:grid md:grid-cols-3 lg:max-w-4xl'>
                <div className='flex flex-col items-center justify-center md:col-span-1 md:gap-x-0'>
                   <BookImage
                      id={data?.id}
@@ -109,6 +111,8 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
                      setSelectedRating={setSelectedRating}
                      // display remove rating
                      shouldDisplay={!!userRatingData}
+                     userId={userId}
+                     router={router}
                      size='large'
                   />
                </div>

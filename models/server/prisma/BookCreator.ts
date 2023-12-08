@@ -16,48 +16,6 @@ export default class BookCreator extends Books {
          data: this.createDataObj(data),
       });
    }
-   async createOrUpdateBookAndState(data: Data, stateData: UserBookWithoutId) {
-      this.checkIds();
-
-      // TODO: how to work with this one(?)
-      await prisma.book.upsert({
-         where: this.getBookId,
-         create: {
-            id: this.bookId,
-            title: data.title,
-            subtitle: data.subtitle,
-            categories: data.categories ?? [],
-            authors: data.authors ?? [],
-            language: data.language,
-            publishedDate: new Date(data.publishedDate),
-            pageCount: data.pageCount,
-            industryIdentifiers: (data.industryIdentifiers as Prisma.JsonArray) ?? Prisma.JsonNull,
-            users: {
-               connectOrCreate: {
-                  where: { userId_bookId: this.getBothIds },
-                  create: {
-                     userId: this.userId,
-                     ...stateData,
-                  },
-               },
-            },
-         },
-         update: {
-            users: {
-               upsert: {
-                  where: { userId_bookId: this.getBothIds },
-                  update: {
-                     ...stateData,
-                  },
-                  create: {
-                     userId: this.userId,
-                     ...stateData,
-                  },
-               },
-            },
-         },
-      });
-   }
    async upsertBookAndRating(data: Data, rating: number | string) {
       this.checkIds();
       const ratingNum = this.toNumber(rating);
