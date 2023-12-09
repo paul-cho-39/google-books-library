@@ -15,7 +15,7 @@ export const MobileNavigation = ({
    userId,
    icons,
    darkTheme,
-   url,
+   // url,
    signOut,
 }: NavigationProps) => {
    return (
@@ -55,7 +55,7 @@ export const MobileNavigation = ({
                               className='mb-4 mt-12 py-4 w-full h-full'
                            >
                               <div className='space-y-4 pr-3 overflow-y-auto'>
-                                 <Section icons={icons} url={url} />
+                                 <Section icons={icons} userId={userId} />
                                  <span className='mb-2 block border-b-2 border-slate-200'></span>
                                  {/* most likely move the logic to pass to a component */}
                                  <div className='flex flex-col items-center justify-center gap-y-6 overflow-hidden md:gap-y-5'>
@@ -97,24 +97,25 @@ interface SessionProps {
    subsections: Navigation[];
 }
 
-const Section = ({ url, icons }: { url: string; icons: IconProps }) => (
+const Section = ({ icons, userId }: { icons: IconProps; userId: string | null }) => (
    <>
       {Object.values(icons).map((icon) => {
          const isCategory = icon.name.toLowerCase() === 'categories';
          return isCategory ? (
             <DisclosureItem
+               userId={userId as string}
                key={icon.name}
                icon={icon}
-               url={url}
                subsections={icons['categories'].subsection || []}
             />
          ) : (
-            <MenuItemButton key={icon.name} icon={icon} url={url} />
+            <MenuItemButton key={icon.name} icon={icon} userId={userId} />
          );
       })}
    </>
 );
 
+// section for 'categories' that can be expanded
 const Subsection = ({ subsections }: SessionProps) => {
    return (
       <>
@@ -139,20 +140,21 @@ const Subsection = ({ subsections }: SessionProps) => {
    );
 };
 
+// section for categories
 const DisclosureItem = ({
    icon,
-   url,
+   userId,
    subsections,
 }: {
    icon: Icons;
-   url: string;
+   userId: string;
    subsections: any;
 }) => (
    <Disclosure>
       {({ open }) => (
          <>
             <Disclosure.Button className='group flex w-full items-center rounded-md px-8 py-6 text-lg dark:text-slate-100'>
-               <IconLink url={url} iconsProp={icon} />
+               <IconLink userId={userId} iconsProp={icon} />
                <ChevronUpIcon
                   className={`${
                      open ? 'rotate-180 transform' : ''
@@ -167,13 +169,15 @@ const DisclosureItem = ({
    </Disclosure>
 );
 
-const MenuItemButton = ({ icon, url }: { icon: Icons; url: string }) => (
+// section for 'profile' and 'home'
+// any additional navigations should be added here
+const MenuItemButton = ({ icon, userId }: { icon: Icons; userId: string | null }) => (
    <Menu.Item>
       <button
          role='link'
          className='group flex w-full items-center rounded-md px-8 py-6 text-lg text-slate-700 dark:text-slate-100'
       >
-         <IconLink url={url} iconsProp={icon} />
+         <IconLink userId={userId} iconsProp={icon} />
       </button>
    </Menu.Item>
 );

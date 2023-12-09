@@ -5,13 +5,14 @@ import { NavigationProps } from '@/lib/types/theme';
 import SearchInput from '../inputs/search';
 import HomeIcon from '../icons/homeIcon';
 import ROUTES from '@/utils/routes';
+import UserProfile from '../Login/userProfile';
 
 export const LargeNavigation = ({
    user,
    userId,
    icons,
    darkTheme,
-   url,
+   // url,
    signOut,
 }: NavigationProps) => {
    return (
@@ -32,11 +33,12 @@ export const LargeNavigation = ({
                      className='text-lg text-dark-brown dark:text-soft-white'
                   />
                ) : (
-                  <IsSession
-                     name='Sign Out'
-                     signOut={signOut}
-                     className='text-lg text-dark-brown dark:text-soft-white'
-                  />
+                  // <IsSession
+                  //    name='Sign Out'
+                  //    signOut={signOut}
+                  //    className='text-lg text-dark-brown dark:text-soft-white'
+                  // />
+                  <UserProfile name={user.user?.name} userId={userId as string} signOut={signOut} />
                )}
                <ThemeToggler
                   className='h-10 w-10'

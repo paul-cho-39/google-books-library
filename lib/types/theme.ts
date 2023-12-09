@@ -23,6 +23,6 @@ export interface NavigationProps {
    userId: string | null;
    icons: IconProps;
    darkTheme: ThemeContextParams;
-   url: string;
+   // url: string;
    signOut: () => void;
 }

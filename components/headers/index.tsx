@@ -15,14 +15,12 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
    const userId = user && getUserId(user as object, 'id');
    const url = '/profile/' + userId;
 
-   // const [isSidebarOpen, setSidebarOpen] = useState(false);
-
    const navProps = {
       darkTheme,
       signOut,
       icons,
-      userId,
       url,
+      userId,
       user,
    };
 

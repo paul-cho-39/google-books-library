@@ -1,4 +1,5 @@
 import { categories } from '@/constants/categories';
+import ROUTES from '@/utils/routes';
 
 export interface ReactIconProps extends React.SVGProps<SVGSVGElement> {
    className?: string;
@@ -93,7 +94,7 @@ export type IconProps = Record<NavigationParams, Icons>;
 
 export type Icons = {
    icon: () => JSX.Element;
-   href: string;
+   href: string | ((id: string) => string);
    name: string;
    subsection?: Navigation[];
 };
@@ -106,7 +107,7 @@ const IconProviders: IconProps = {
    },
    profile: {
       icon: Profile,
-      href: '/settings',
+      href: (id: string) => ROUTES.PROFILE.SETTINGS(id),
       name: 'Profile',
    },
    categories: {

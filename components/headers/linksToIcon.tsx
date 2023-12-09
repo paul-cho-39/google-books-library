@@ -1,19 +1,27 @@
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Icons } from '../icons/headerIcons';
+import { Icons, NavigationParams } from '../icons/headerIcons';
 
+type ProfileIcon = (id: string) => string;
+type MobileNavigationSection = Record<NavigationParams, React.ReactNode>;
 interface LinkProps {
    iconsProp: Icons;
-   url: string;
+   // url: string;
+   userId: string | null;
    children?: React.ReactNode;
 }
 
-const IconLink = ({ iconsProp, url, children }: LinkProps) => {
+const IconLink = ({ iconsProp, userId, children }: LinkProps) => {
    const { name, href, icon: Icon } = iconsProp;
+   const profileHref = href as ProfileIcon;
+   const nameLowerCase = name.toLocaleLowerCase() as NavigationParams;
 
-   const getHomeRef = (name: string, href: string) => {
-      return name.toLocaleLowerCase() === 'home' ? href : url + href;
+   // when adding navigation that requires users add it here
+   const getProfileHref = () => {
+      return name.toLocaleLowerCase() === 'profile'
+         ? profileHref(userId as string)
+         : (href as string);
    };
 
    const CategorySection = (
@@ -25,8 +33,8 @@ const IconLink = ({ iconsProp, url, children }: LinkProps) => {
       </div>
    );
 
-   const OtherSection = (
-      <Link href={`${getHomeRef(name, href)}`} passHref>
+   const HomeSection = (
+      <Link href={`${getProfileHref()}`} passHref>
          <a className='flex items-center'>
             <Icon />
             {name}
@@ -34,7 +42,23 @@ const IconLink = ({ iconsProp, url, children }: LinkProps) => {
       </Link>
    );
 
-   return <div>{name === 'Categories' ? CategorySection : OtherSection}</div>;
+   const UserRequiredSection = !userId ? null : (
+      <Link href={`${getProfileHref()}`} passHref>
+         <a className='flex items-center'>
+            <Icon />
+            {name}
+         </a>
+      </Link>
+   );
+
+   const navigationMapper: MobileNavigationSection = {
+      categories: CategorySection,
+      home: HomeSection,
+      profile: UserRequiredSection,
+   };
+
+   // return <div>{name === 'Categories' ? CategorySection : OtherSection}</div>;
+   return <div>{navigationMapper[nameLowerCase]}</div>;
 };
 
 export default IconLink;
