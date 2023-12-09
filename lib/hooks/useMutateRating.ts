@@ -48,10 +48,10 @@ export default function useMutateRatings<ActionType extends MutationRatingAction
             // returns the current rating
             rating = getRatingFromMutation(data, action, prevRatingData);
 
-            console.log('----------TESTING--------------');
-            console.log('----------TESTING--------------');
-            console.log('----------TESTING--------------');
-            console.log('TESTING THE RATING HERE: ', rating);
+            // console.log('----------TESTING--------------');
+            // console.log('----------TESTING--------------');
+            // console.log('----------TESTING--------------');
+            // console.log('TESTING THE RATING HERE: ', rating);
 
             const optimisticData = setOptimisticData(
                {
@@ -131,10 +131,10 @@ function setOptimisticData(
 
    const oldRating = params.initialData?.ratingInfo?.ratingValue;
 
-   console.log('----------TESTING--------------');
-   console.log('----------TESTING--------------');
-   console.log('----------TESTING--------------');
-   console.log('HERE IS THE OLD RATING: ', oldRating);
+   // console.log('----------TESTING--------------');
+   // console.log('----------TESTING--------------');
+   // console.log('----------TESTING--------------');
+   // console.log('HERE IS THE OLD RATING: ', oldRating);
 
    const newAvg = calculateNewAverage(
       action,
