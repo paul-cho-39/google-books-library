@@ -33,7 +33,7 @@ const BookActionButton = ({ book, userId, className }: UserActionProps) => (
             </Suspense>
          }
       >
-         <ChevronDownIcon className='h-5 w-5 text-violet-200 hover:text-violet-100 dark:text-slate-200' />
+         <ChevronDownIcon className='h-5 w-5 text-white hover:text-violet-100 dark:text-slate-200' />
       </SignInRequiredButton>
    </div>
 );

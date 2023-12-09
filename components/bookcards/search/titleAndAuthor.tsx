@@ -14,7 +14,7 @@ const BookTitleAndAuthor = ({ book, query }: BookTitleAndAuthorProps) => (
             hasLink
             title={book?.volumeInfo.title}
             subtitle={book?.volumeInfo.subtitle}
-            className='text-lg lg:text-xl hover:underline hover:underline-offset-1 hover:decoration-slate-200 dark:hover:decoration-slate-300'
+            className='text-lg lg:text-xl hover:underline hover:underline-offset-1 hover:decoration-black dark:hover:decoration-slate-300'
          />
       </div>
       <p className='row-start-2 w-full text-sm text-clip space-x-0.5'>

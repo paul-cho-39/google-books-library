@@ -21,7 +21,6 @@ import BookActionButton from '@/components/buttons/bookActionButton';
 import PageLayout from '@/components/layout/page/bookPageLayout';
 import useSearchFilter from '@/lib/hooks/useSearchFilter';
 import Spinner from '@/components/loaders/spinner';
-import SignInRequiredButton from '@/components/Login/requireUser';
 
 const HEIGHT = 225;
 
@@ -52,9 +51,16 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
       [allRatingData]
    );
 
+   // const userRatingData = findId(allRatingData, userId as string);
+
    const [selectedRating, setSelectedRating] = useState<null | number>(
       userRatingData?.ratingInfo?.ratingValue || 0
    );
+
+   console.log('---------INSIDE THE MAIN PAGE-----------');
+   console.log('---------INSIDE THE MAIN PAGE-----------');
+   console.log('---------INSIDE THE MAIN PAGE-----------');
+   console.log('SELECTED RATING IS: ', selectedRating);
 
    const { handleMutation, handleRemoveMutation, currentRatingData } = useHandleRating(
       {

@@ -24,20 +24,31 @@ function useHandleRating(
    } = useMutateRatings<'remove'>(params, 'remove');
 
    // whenever current data or all rating data changes it should update the function
-   const handleMutation = useCallback(
-      (rating: number) => {
-         // create a book based on all ratings not user book rating
-         rating += 1;
-         const notCreated = currentAllRatingData && !currentAllRatingData.inLibrary;
-         const bookData = getBodyFromFilteredGoogleFields(data);
-         const createBody = { bookData, rating };
-         const updateBody = { rating };
+   // const handleMutation = useCallback(
+   //    (rating: number) => {
+   //       // create a book based on all ratings not user book rating
+   //       rating += 1;
+   //       const notCreated = currentAllRatingData && !currentAllRatingData.inLibrary;
+   //       const bookData = getBodyFromFilteredGoogleFields(data);
+   //       const createBody = { bookData, rating };
+   //       const updateBody = { rating };
 
-         notCreated ? createMutation(createBody) : updateMutation(updateBody);
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [currentAllRatingData, currentRatingData]
-   );
+   //       notCreated ? createMutation(createBody) : updateMutation(updateBody);
+   //    },
+   //    // eslint-disable-next-line react-hooks/exhaustive-deps
+   //    [currentAllRatingData, currentRatingData]
+   // );
+
+   const handleMutation = (rating: number) => {
+      // create a book based on all ratings not user book rating
+      rating += 1;
+      const notCreated = currentAllRatingData && !currentAllRatingData.inLibrary;
+      const bookData = getBodyFromFilteredGoogleFields(data);
+      const createBody = { bookData, rating };
+      const updateBody = { rating };
+
+      notCreated ? createMutation(createBody) : updateMutation(updateBody);
+   };
 
    // use it without callback and see
    const handleRemoveMutation = useCallback(() => {

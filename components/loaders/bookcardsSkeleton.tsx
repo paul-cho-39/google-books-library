@@ -17,7 +17,7 @@ const BookSearchSkeleton: React.FunctionComponent<{
       <div role='listbox' aria-label='loading data' className='mx-auto w-full lg:max-w-2xl'>
          {totalItemsRendered.map((book, index) => (
             <div
-               key={book.index}
+               key={index}
                role='status'
                className='mt-14 space-y-8 animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center'
             >

@@ -1,5 +1,6 @@
 import { Book } from '@prisma/client';
 import { IndustryIdentifiers } from '../googleBookTypes';
+import { SingleRatingData } from '@/lib/types/serverTypes';
 
 export type BaseNullIdParams = {
    userId: string | null;

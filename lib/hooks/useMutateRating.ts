@@ -44,7 +44,14 @@ export default function useMutateRatings<ActionType extends MutationRatingAction
             if (!currentRatingData) {
                rating = 0;
             }
+
+            // returns the current rating
             rating = getRatingFromMutation(data, action, prevRatingData);
+
+            console.log('----------TESTING--------------');
+            console.log('----------TESTING--------------');
+            console.log('----------TESTING--------------');
+            console.log('TESTING THE RATING HERE: ', rating);
 
             const optimisticData = setOptimisticData(
                {
@@ -104,9 +111,15 @@ function getApiUrl(action: MutationRatingActionType, userId: string, bookId: str
    return routeMap[action] || {};
 }
 
-// it wont update properly because create is not ACTUALLY create
-// when the rating is deleted it is still 'UPDATE' not 'CREATE'
-
+/**
+ * sets the data unless there is an error
+ * it calculates the new average and sets the count, avg, and ratingInfo
+ *
+ * @param params
+ * @param action
+ * @param rating
+ * @returns {object}
+ */
 function setOptimisticData(
    params: MutationBase,
    action: MutationRatingActionType,
@@ -115,7 +128,21 @@ function setOptimisticData(
    const { initialData } = params;
 
    const newCount = setNewCount(initialData, action);
-   const newAvg = calculateNewAverage(action, initialData?.avg, initialData?.count, rating);
+
+   const oldRating = params.initialData?.ratingInfo?.ratingValue;
+
+   console.log('----------TESTING--------------');
+   console.log('----------TESTING--------------');
+   console.log('----------TESTING--------------');
+   console.log('HERE IS THE OLD RATING: ', oldRating);
+
+   const newAvg = calculateNewAverage(
+      action,
+      initialData?.avg,
+      initialData?.count,
+      rating,
+      oldRating
+   );
 
    return {
       ...initialData,
@@ -151,17 +178,21 @@ function calculateNewAverage(
    type: MutationRatingActionType,
    oldAvg: number = 0,
    oldCount: number = 0,
-   rating: number = 0
+   newRating: number = 0,
+   oldRating: number = 0
 ): number {
    switch (type) {
       case 'create':
-         return (oldAvg * oldCount + rating) / (oldCount + 1);
+         return (oldAvg * oldCount + newRating) / (oldCount + 1);
       case 'update':
-         const currentCount = oldCount <= 0 ? oldCount + 1 : oldCount;
-         return (oldAvg * (oldCount - 1) + rating) / currentCount;
+         // if the user has not rated returns the new rating
+         if (oldCount === 0) return newRating;
+         // const currentCount = oldCount <= 0 ? oldCount + 1 : oldCount;
+         // return (oldAvg * (oldCount - 1) + rating) / currentCount;
+         return (oldAvg * oldCount - oldRating + newRating) / oldCount;
       case 'remove':
          // should equal to 0 when removing
-         return oldCount <= 1 ? 0 : (oldAvg * oldCount - rating) / (oldCount - 1);
+         return oldCount <= 1 ? 0 : (oldAvg * oldCount - oldRating) / (oldCount - 1);
       default:
          return oldAvg;
    }
@@ -190,10 +221,12 @@ function getRatingFromMutation<ActionType extends MutationRatingActionType>(
    action: ActionType,
    prevData: SingleRatingData | undefined
 ) {
+   // when the rating is being removed it should equal to 0
    if (action === 'remove') {
       return prevData?.ratingInfo?.ratingValue || 0;
    }
 
+   // in case there is a failure otherwise returns the rating
    return data?.rating || 0;
 }
 
@@ -207,11 +240,14 @@ function setMultipleQueryData(params: MultipleQueryDataParams) {
 
    const { prevRatingData, action } = context;
 
+   const oldRating = prevRatingData.ratingInfo?.ratingValue;
+
    const newAvg = calculateNewAverage(
       action,
       ratingData?.avg,
       ratingData?.count,
-      restParams.newRating
+      restParams.newRating,
+      oldRating
    );
 
    const count = setNewCount(prevRatingData, action);
@@ -232,6 +268,7 @@ interface RatingInfoParams {
    newRating: number | undefined;
 }
 
+// retrieves the new rating info depending on athe action
 function getRatingInfo(
    ratingData: MultipleRatingData,
    prevData: SingleRatingData,
