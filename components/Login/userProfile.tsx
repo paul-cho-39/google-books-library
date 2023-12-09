@@ -32,21 +32,19 @@ const UserProfile = ({ userId, signOut, username, name, href }: UserProfileProps
             <Image src={imageHref} alt='Avatar' height={30} width={30} />
          </Menu.Button>
 
-         <Menu.Items className='absolute z-50 right-8 mt-2 w-52 origin-top-right divide-y divide-gray-100 rounded-md dark:bg-slate-600 shadow-lg ring-1 ring-black/5 focus:outline-none cursor-pointer'>
+         <Menu.Items className='absolute z-[9999] right-8 mt-2 w-52 origin-top-right divide-y divide-gray-100 rounded-md dark:bg-slate-600 shadow-lg ring-1 ring-black/5 focus:outline-none cursor-pointer'>
             <div className='px-1 py-1 relative'>
                <Menu.Item>
                   {({ active }) => (
-                     <Link href={ROUTES.PROFILE.SETTINGS(userId)}>
-                        <span
-                           className={`${
-                              active
-                                 ? 'bg-indigo-300 dark:bg-slate-600 text-white dark:text-gray-700'
-                                 : 'text-gray-900 dark:text-white'
-                           } group flex w-full items-center px-2 py-2 text-sm`}
-                        >
-                           Profile
-                        </span>
-                     </Link>
+                     <button
+                        className={`${
+                           active
+                              ? 'bg-indigo-300 dark:bg-slate-600 text-white dark:text-gray-700'
+                              : 'text-gray-900 dark:text-white'
+                        } group flex w-full items-center px-2 py-2 text-sm`}
+                     >
+                        <Link href={ROUTES.PROFILE.SETTINGS(userId)}>Profile</Link>
+                     </button>
                   )}
                </Menu.Item>
                <Menu.Item>
