@@ -111,7 +111,7 @@ export function useGetNytBestSellers({ initialData, date }: NytBookMultiQueries)
    });
 
    const dataIsSuccess = queriesData.every((queryData) => queryData.status === 'success');
-   const dataIsLoading = queriesData.every((queryData) => queryData.status === 'loading');
+   const dataIsLoading = queriesData.some((queryData) => queryData.status === 'loading');
 
    let transformedData;
    if (dataIsSuccess) {
@@ -130,10 +130,11 @@ export function useGetNytBestSellers({ initialData, date }: NytBookMultiQueries)
    return { queriesData, dataIsSuccess, dataIsLoading, transformedData };
 }
 
-function transformData(data: CategoriesNytQueries) {
+function transformData(data: CategoriesNytQueries, numberOfBooks: number = 6) {
    const sanitized: CategoriesQueries = {};
    for (const [key, value] of Object.entries(data)) {
-      sanitized[key] = value.results.books.map((book) => ({
+      // returns six of the result
+      sanitized[key] = value.results.books.slice(0, numberOfBooks).map((book) => ({
          id: handleNytId.appendSuffix(book.primary_isbn13),
          volumeInfo: {
             authors: transformStrToArray(book.author),

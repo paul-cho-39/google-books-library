@@ -21,6 +21,7 @@ interface BookImageProps<T extends GoogleImages | string> extends OmittedImagePr
    forwardedRef?: (el: HTMLDivElement) => void;
    onMouseEnter?: () => void;
    onMouseLeave?: (e: React.MouseEvent) => void;
+   onLoadComplete?: (id: string) => void;
    className?: string;
 }
 
@@ -36,6 +37,7 @@ const BookImage = <T extends GoogleImages | string>({
    forwardedRef,
    onMouseEnter,
    onMouseLeave,
+   onLoadComplete,
    className,
    ...restProps
 }: BookImageProps<T>) => {
@@ -61,6 +63,7 @@ const BookImage = <T extends GoogleImages | string>({
                priority={priority}
                width={width}
                height={height}
+               onLoadingComplete={() => onLoadComplete && onLoadComplete(id)}
                {...restProps}
             />
          </Link>

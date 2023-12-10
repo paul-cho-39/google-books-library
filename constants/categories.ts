@@ -36,17 +36,26 @@ export const categories = [
    'YOUNG ADULT FICTION',
 ] as const;
 
-export const serverSideCategories = ['FICTION', 'NONFICTION', 'HISTORY', 'SELF-HELP'] as const;
+export const serverSideCategories = [
+   // 'FICTION',
+   // 'NONFICTION',
+   'BIOGRAPHY & AUTOBIOGRAPHY',
+   'BUSINESS & ECONOMICS',
+   'PSYCHOLOGY',
+   'HISTORY',
+   'SELF-HELP',
+] as const;
 
 // testing here with top categories:
 export const topCategories = [
-   'BIOGRAPHY & AUTOBIOGRAPHY',
-   'BUSINESS & ECONOMICS',
+   'EDUCATION',
    'PHILOSOPHY',
    'COMPUTERS',
    'POETRY',
    'RELIGION',
    'SCIENCE',
+   'SOCIAL SCIENCE',
+   'YOUNG ADULT FICTION',
    'TECHNOLOGY & ENGINEERING',
 ];
 

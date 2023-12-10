@@ -27,6 +27,8 @@ import { Divider } from '@/components/layout/dividers';
 import BookTitle from '@/components/bookcover/title';
 import APIErrorBoundary from '@/components/error/errorBoundary';
 import CategoryPageLayout from '@/components/layout/page/categoryPageLayout';
+import useImageLoadTracker from '@/lib/hooks/useImageLoadTracker';
+import Spinner from '@/components/loaders/spinner';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
@@ -39,6 +41,7 @@ export default function BookCategoryPages({
    //  data,
    category,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+   // setting the page
    const [currentPage, setCurrentPage] = useState(1);
    const [pageIndex, setPageIndex] = useState(0);
 
@@ -71,6 +74,9 @@ export default function BookCategoryPages({
       }
    };
 
+   const { handleImageLoad, areAllImagesLoaded } = useImageLoadTracker();
+   const areImagesLoadComplete = areAllImagesLoaded(MAX_ITEMS);
+
    const meta = {
       maxResultNumber: MAX_ITEMS,
       pageIndex: pageIndex,
@@ -93,7 +99,7 @@ export default function BookCategoryPages({
       enabled: enableNytData,
    });
 
-   // displays another container when mouse is hovered
+   // displays an 'absolute' styled container when mouse is hovered
    const {
       isHovered,
       setImageRef,
@@ -104,7 +110,6 @@ export default function BookCategoryPages({
       largeEnabled,
    } = useFloatingPosition(TOTAL_COLS, true);
 
-   // create a function for this too
    const CATEGORY_NYT_HEADER =
       bestSellers &&
       `${capitalizeWords(category as string)} Best Sellers (${bestSellers.published_date})`;
@@ -112,7 +117,9 @@ export default function BookCategoryPages({
    if (router.isFallback || googleData.isFetching || googleData.isLoading) {
       return (
          <CategoryPageLayout category={category}>
-            <div>Loading...</div>;
+            <div>
+               <Spinner />
+            </div>
          </CategoryPageLayout>
       );
    }
@@ -133,6 +140,7 @@ export default function BookCategoryPages({
                         (isHovered.hovered || isHovered.isFloatHovered) && (
                            <div
                               ref={floatingRef}
+                              key={book.id}
                               onMouseLeave={onMouseLeaveDescription}
                               style={{
                                  height: HEIGHT,
@@ -144,19 +152,22 @@ export default function BookCategoryPages({
                               }}
                               className='absolute z-50 rounded-lg'
                            >
-                              <Suspense fallback={<DescriptionSkeleton />}>
-                                 <CategoryDescription
-                                    id={book.id}
-                                    title={book.volumeInfo.title}
-                                    subtitle={book.volumeInfo.subtitle}
-                                    authors={book.volumeInfo.authors}
-                                    description={book.volumeInfo.description}
-                                    // TODO: with rating write a helper function for total reviews
-                                    averageRating={book.volumeInfo?.averageRating}
-                                    totalReviews={book.volumeInfo?.ratingsCount}
-                                    routeQuery={encodeRoutes.category(category, meta)}
-                                 />
-                              </Suspense>
+                              {/* only load the description when ALL images are loaded */}
+                              {areImagesLoadComplete && (
+                                 <Suspense fallback={<DescriptionSkeleton />}>
+                                    <CategoryDescription
+                                       id={book.id}
+                                       title={book.volumeInfo.title}
+                                       subtitle={book.volumeInfo.subtitle}
+                                       authors={book.volumeInfo.authors}
+                                       description={book.volumeInfo.description}
+                                       // TODO: with rating write a helper function for total reviews
+                                       averageRating={book.volumeInfo?.averageRating}
+                                       totalReviews={book.volumeInfo?.ratingsCount}
+                                       routeQuery={encodeRoutes.category(category, meta)}
+                                    />
+                                 </Suspense>
+                              )}
                            </div>
                         );
                      return (
@@ -179,6 +190,7 @@ export default function BookCategoryPages({
                                  onMouseLeave={(e: React.MouseEvent) =>
                                     onMouseLeave(e, floatingRef)
                                  }
+                                 onLoadComplete={() => handleImageLoad(book.id)}
                                  routeQuery={encodeRoutes.category(category, meta)}
                                  className={classNames(
                                     'lg:col-span-1 px-1 inline-flex items-center justify-center lg:px-0 cursor-pointer'

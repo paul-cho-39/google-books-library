@@ -126,10 +126,12 @@ export function useGetCategoriesQueries({
       queries: categoryKeys,
    });
 
-   const dataIsSuccess = queriesData.every((queryData) => queryData.status === 'success');
+   const isGoogleDataSuccess = queriesData.every((queryData) => queryData.status === 'success');
+   const isGoogleDataLoading = queriesData.some((queryData) => queryData.status === 'loading');
 
+   // should refactor; this did not work inside 'onSuccess' callback?
    let dataWithKeys;
-   if (dataIsSuccess) {
+   if (isGoogleDataSuccess) {
       dataWithKeys = updatedCategories.reduce((acc, category, index) => {
          const queryData = queriesData[index];
 
@@ -154,7 +156,8 @@ export function useGetCategoriesQueries({
    return {
       dataWithKeys,
       // transformedData,
+      isGoogleDataSuccess,
+      isGoogleDataLoading,
       queriesData,
-      dataIsSuccess,
    };
 }

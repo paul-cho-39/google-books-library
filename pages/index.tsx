@@ -18,6 +18,8 @@ import { CategoriesQueries } from '@/lib/types/serverTypes';
 import { encodeRoutes } from '@/utils/routes';
 import useFloatingPosition from '@/lib/hooks/useFloatingPosition';
 import HomeLayout from '@/components/layout/page/homeLayout';
+import useImageLoadTracker from '@/lib/hooks/useImageLoadTracker';
+import getTotalItemsLength from '@/lib/helper/getObjLength';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
@@ -29,15 +31,22 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
    const { data } = props;
    const [categoriesToLoad, setCategoriesToLoad] = useState(0);
 
+   const categoryRefs = useRef<HTMLDivElement>(null);
+
    const meta = {
       maxResultNumber: MAX_RESULT,
       pageIndex: 0,
       byNewest: false,
    };
 
-   const { dataWithKeys: googleData, dataIsSuccess: googleDataSuccess } = useGetCategoriesQueries({
+   const {
+      dataWithKeys: googleData,
+      isGoogleDataSuccess,
+      isGoogleDataLoading,
+      queriesData,
+   } = useGetCategoriesQueries({
       initialData: data,
-      loadItems: categoriesToLoad,
+      loadItems: categoriesToLoad, // load more items here
       enabled: !!data,
       meta,
       returnNumberOfItems: MAX_RESULT,
@@ -47,8 +56,10 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
    const combinedData = { ...nytData, ...googleData };
 
-   // use cateogry refs to find the dimension?
-   const categoryRefs = useRef<HTMLDivElement>(null);
+   const { handleImageLoad, areAllImagesLoaded } = useImageLoadTracker();
+   const areImagesLoadComplete = areAllImagesLoaded(
+      getTotalItemsLength(combinedData as Record<string, unknown[]>)
+   );
 
    const handleProcessData = () => {
       setCategoriesToLoad((prev) => prev + 4);
@@ -71,7 +82,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
    const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
 
    // TODO: Create an error boundary for this
-   if (!nytDataSuccess && !googleDataSuccess) {
+   if (!nytDataSuccess && !isGoogleDataLoading) {
       return (
          <HomeLayout>
             <div>Is Loading...</div>
@@ -100,19 +111,21 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                               }}
                               className='absolute z-50 rounded-lg'
                            >
-                              <Suspense fallback={<DescriptionSkeleton />}>
-                                 <CategoryDescription
-                                    id={book.id}
-                                    title={book.volumeInfo.title}
-                                    subtitle={book.volumeInfo.subtitle}
-                                    authors={book.volumeInfo.authors}
-                                    description={book.volumeInfo.description}
-                                    // TODO: with rating write a helper function for total reviews
-                                    averageRating={book.volumeInfo?.averageRating}
-                                    totalReviews={book.volumeInfo?.ratingsCount}
-                                    routeQuery={encodeRoutes.home(key, meta)}
-                                 />
-                              </Suspense>
+                              {areImagesLoadComplete && (
+                                 <Suspense fallback={<DescriptionSkeleton />}>
+                                    <CategoryDescription
+                                       id={book.id}
+                                       title={book.volumeInfo.title}
+                                       subtitle={book.volumeInfo.subtitle}
+                                       authors={book.volumeInfo.authors}
+                                       description={book.volumeInfo.description}
+                                       // TODO: with rating write a helper function for total reviews
+                                       averageRating={book.volumeInfo?.averageRating}
+                                       totalReviews={book.volumeInfo?.ratingsCount}
+                                       routeQuery={encodeRoutes.home(key, meta)}
+                                    />
+                                 </Suspense>
+                              )}
                            </div>
                         );
                      return (
@@ -135,6 +148,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                                  onMouseLeave={(e: React.MouseEvent) =>
                                     onMouseLeave(e, floatingRef)
                                  }
+                                 onLoadComplete={() => handleImageLoad(book.id)}
                                  routeQuery={encodeRoutes.home(key, meta)}
                                  className={classNames(
                                     isHovered.hovered && isHovered.id === book.id
@@ -163,7 +177,7 @@ export const getStaticProps: GetStaticProps<{
    data: CategoriesQueries;
 }> = async () => {
    const googleData = (await batchFetchGoogleCategories(serverSideCategories, {
-      maxResultNumber: 15,
+      maxResultNumber: MAX_RESULT + 4, // there are duplicate data and to ensure there are at least six
       pageIndex: 0,
       byNewest: false,
    })) as CategoriesQueries;
