@@ -51,23 +51,25 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
       [allRatingData]
    );
 
+   // console.log('---------INSIDE THE MAIN PAGE-----------');
+   // console.log('INSIDE THE MAIN, the data will be: ', allRatingData);
+
    // const userRatingData = findId(allRatingData, userId as string);
 
    const [selectedRating, setSelectedRating] = useState<null | number>(
       userRatingData?.ratingInfo?.ratingValue || 0
    );
 
-   console.log('---------INSIDE THE MAIN PAGE-----------');
-   console.log('---------INSIDE THE MAIN PAGE-----------');
-   console.log('---------INSIDE THE MAIN PAGE-----------');
-   console.log('SELECTED RATING IS: ', selectedRating);
+   // console.log('---------INSIDE THE MAIN PAGE-----------');
+   // console.log('For the book', id, 'THE SELECTED RATING IS: ', selectedRating);
+   // console.log('USER RATING DATA', id, '(not useState but the value for) IS: ', selectedRating);
 
    const { handleMutation, handleRemoveMutation, currentRatingData } = useHandleRating(
       {
          bookId: id,
          userId: userId as string,
          inLibrary: allRatingData?.inLibrary!,
-         initialData: userRatingData,
+         prevRatingData: userRatingData,
       },
       data,
       allRatingData

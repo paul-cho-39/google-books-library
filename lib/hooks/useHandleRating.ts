@@ -39,21 +39,31 @@ function useHandleRating(
    //    [currentAllRatingData, currentRatingData]
    // );
 
+   console.log('--------------INSIDE useHanldeRating----------');
+   console.log('THE CURRENT RATING DATA IS :', currentAllRatingData);
+
    const handleMutation = (rating: number) => {
       // create a book based on all ratings not user book rating
       rating += 1;
       const notCreated = currentAllRatingData && !currentAllRatingData.inLibrary;
       const bookData = getBodyFromFilteredGoogleFields(data);
+
       const createBody = { bookData, rating };
       const updateBody = { rating };
+
+      const apiRoute = notCreated ? 'index.ts' : 'update.ts';
 
       notCreated ? createMutation(createBody) : updateMutation(updateBody);
    };
 
-   // use it without callback and see
-   const handleRemoveMutation = useCallback(() => {
+   const handleRemoveMutation = () => {
       removeMutation(null);
-   }, [removeMutation]);
+   };
+
+   // use it without callback and see
+   // const handleRemoveMutation = useCallback(() => {
+   //    removeMutation(null);
+   // }, [removeMutation]);
 
    return { handleMutation, handleRemoveMutation, currentRatingData };
 }

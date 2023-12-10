@@ -1,4 +1,4 @@
-import { Dispatch, useState, SetStateAction } from 'react';
+import { Dispatch, useState, SetStateAction, useEffect } from 'react';
 import Star, { Size } from '../icons/starIcon';
 import DeleteRatingButton, { DeleteRatingButtonProps } from '../buttons/deleteRatingButton';
 import { NextRouter } from 'next/router';
@@ -26,6 +26,7 @@ export const ActiveRating = ({
    size = 'small',
 }: ActiveRatingProps) => {
    const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+   const [isReady, setIsReady] = useState(false);
 
    const adjustRating = (num: number) => {
       return num + 1;
@@ -41,11 +42,13 @@ export const ActiveRating = ({
 
    //   may have to change this logic here
    const handleClick = (rating: number) => {
-      if (!userId) {
+      if (isReady && !userId) {
          router.push(ROUTES.AUTH.SIGNIN_NEXT(router.asPath));
       } else {
          const adjustedRating = adjustRating(rating);
          setSelectedRating(adjustedRating);
+
+         console.log('-------INSIDE ACTIVE RATING COMPONENT-----------, handling mutation', rating);
          handleMutation(rating);
       }
    };
@@ -61,6 +64,12 @@ export const ActiveRating = ({
       }
       return 0;
    };
+
+   useEffect(() => {
+      if (!router.isReady) return;
+
+      setIsReady(true);
+   }, [router]);
 
    return (
       <div className='flex flex-col items-center'>

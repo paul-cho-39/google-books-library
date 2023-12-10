@@ -109,16 +109,21 @@ export interface MutationBase {
    userId: string;
    bookId: string;
    inLibrary: boolean;
-   initialData?: SingleRatingData;
+   prevRatingData: SingleRatingData | undefined;
 }
 
-export interface MultipleQueryDataParams extends Omit<MutationBase, 'initialData'> {
-   queryClient: QueryClient;
-   context:
-      | {
-           prevRatingData: SingleRatingData | undefined;
-           action: MutationRatingActionType;
-        }
-      | undefined;
+// export interface MultipleQueryDataParams extends Omit<MutationBase, 'initialData'> {
+//    queryClient: QueryClient;
+//    context:
+//       | {
+//            prevRatingData: SingleRatingData | undefined;
+//            action: MutationRatingActionType;
+//         }
+//       | undefined;
+//    newRating: number | undefined;
+// }
+
+export interface MultipleQueryDataParams extends MutationBase {
+   action: MutationRatingActionType;
    newRating: number | undefined;
 }
