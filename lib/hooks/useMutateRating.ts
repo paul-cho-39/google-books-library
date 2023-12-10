@@ -118,21 +118,23 @@ export default function useMutateRatings<ActionType extends MutationRatingAction
             if (error) {
                console.error(error);
             }
-            console.log(
-               'INSIDE USEMUTATERATINGS------------>>>>>>>>>>>>>>>>>>>>>>>, THE DATA IS: ',
-               _data
-            );
-            console.log(
-               'INSIDE USEMUTATERATINGS------------>>>>>>>>>>>>>>>>>>>>>>>, THE CONTEXT IS: ',
-               context
-            );
+            // console.log(
+            //    'INSIDE USEMUTATERATINGS------------>>>>>>>>>>>>>>>>>>>>>>>, THE DATA IS: ',
+            //    _data
+            // );
+            // console.log(
+            //    'INSIDE USEMUTATERATINGS------------>>>>>>>>>>>>>>>>>>>>>>>, THE CONTEXT IS: ',
+            //    context
+            // );
 
             queryClient.invalidateQueries(queryKeys.ratingsByBookAndUser(bookId, userId));
-            queryClient.invalidateQueries(queryKeys.ratingsByBook(bookId));
 
             // adding invalidation here
             // queryClient.invalidateQueries(queryKeys.ratingsByBook(bookId));
          },
+         // onSuccess: () => {
+         //    queryClient.invalidateQueries(queryKeys.ratingsByBook(bookId));
+         // },
       }
    );
 
@@ -312,8 +314,8 @@ function setMultipleQueryData(queryClient: QueryClient, params: MultipleQueryDat
       queryKeys.ratingsByBook(restParams.bookId)
    ) as MultipleRatingData;
 
-   console.log('--RIGHT BEFORE RETURNING BECAUSE THERE IS NO DATA?');
-   console.log('--HERE IS THE RATING DATA: ', ratingData);
+   // console.log('--RIGHT BEFORE RETURNING BECAUSE THERE IS NO DATA?');
+   // console.log('--HERE IS THE RATING DATA: ', ratingData);
    // console.log('--HERE IS THE RATING DATA: ', );
 
    if (!ratingData) {
@@ -335,8 +337,8 @@ function setMultipleQueryData(queryClient: QueryClient, params: MultipleQueryDat
    const count = setNewCount(prevRatingData, action);
    const ratingInfo = getRatingInfo(ratingData, action, restParams);
 
-   console.log('*********INSIDE THE USEMUTATE**************, THE RATING DATA IS: ', ratingData);
-   console.log('*********INSIDE THE USEMUTATE**************', ratingInfo);
+   // console.log('*********INSIDE THE USEMUTATE**************, THE RATING DATA IS: ', ratingData);
+   // console.log('*********INSIDE THE USEMUTATE**************', ratingInfo);
 
    queryClient.setQueryData<MultipleRatingData>(queryKeys.ratingsByBook(restParams.bookId), {
       ...ratingData,
@@ -371,8 +373,6 @@ function getRatingInfo(
    switch (action) {
       case 'remove':
          const newData = ratingData.ratingInfo?.filter((data) => data.userId !== userId);
-
-         console.log('----PERFORMING DELETE-----', newData);
          return newData;
       // return ratingData.ratingInfo?.filter((data) => data.userId !== userId);
       case 'update':

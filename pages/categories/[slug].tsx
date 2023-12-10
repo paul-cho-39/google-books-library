@@ -36,9 +36,9 @@ const TOTAL_COLS = 5;
 const HEIGHT = layoutManager.constants.imageHeight;
 
 export default function BookCategoryPages({
-       //  data,
-       category,
-    }: InferGetStaticPropsType<typeof getStaticProps>) {
+   //  data,
+   category,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
    const [currentPage, setCurrentPage] = useState(1);
    const [pageIndex, setPageIndex] = useState(0);
 
@@ -85,8 +85,6 @@ export default function BookCategoryPages({
       meta: meta,
       keepPreviousData: true,
    });
-
-   console.log('cleaned data is: ', cleanedData);
 
    // requring both so that each will have its own publication date?
    const { data: bestSellers, isSuccess: isNytDataSuccess } = useGetNytBestSeller({

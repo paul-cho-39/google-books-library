@@ -77,8 +77,8 @@ export function useGetRating({ bookId, userId, initialData }: SingleRatingParams
          refetchOnMount: true,
          onSuccess: (data) => {
             const findBook = findId(data, userId);
+
             if (findBook) {
-               console.log('FOUND THE BOOK!');
                queryClient.setQueryData<SingleRatingData>(
                   queryKeys.ratingsByBookAndUser(bookId, userId),
                   findBook

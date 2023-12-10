@@ -4,23 +4,34 @@ import { Items } from '../types/googleBookTypes';
 import { DataWithRatings, MutationBase, RatingsWithoutData } from '../types/models/books';
 import { MultipleRatingData } from '../types/serverTypes';
 import useMutateRatings from './useMutateRating';
+import { useQueryClient } from '@tanstack/react-query';
+import queryKeys from '@/utils/queryKeys';
 
 function useHandleRating(
    params: MutationBase,
    data: Items<any>,
    currentAllRatingData: MultipleRatingData | null | undefined
 ) {
+   // ----------------TESTING-------------------
+   const queryClient = useQueryClient();
+   // const allRatingData = queryClient.getQueryData(queryKeys.optimisticRatingsByBookAndUser(params.bookId, params.userId));
+
+   const allRatingData = queryClient.getQueryData(queryKeys.ratingsByBook(params.bookId));
+   console.log('all rating data is: ', allRatingData);
+
+   // ----------------TESTING-------------------
+
    const {
-      mutation: { mutate: createMutation },
+      mutation: { mutate: createMutation, isLoading: isCreateLoading, isError: isCreateError },
       currentRatingData,
    } = useMutateRatings<'create'>(params, 'create');
 
    const {
-      mutation: { mutate: updateMutation },
+      mutation: { mutate: updateMutation, isLoading: isUpdateLoading, isError: isUpdateError },
    } = useMutateRatings<'update'>(params, 'update');
 
    const {
-      mutation: { mutate: removeMutation },
+      mutation: { mutate: removeMutation, isLoading: isRemoveLoading, isError: isRemoveError },
    } = useMutateRatings<'remove'>(params, 'remove');
 
    // whenever current data or all rating data changes it should update the function
@@ -59,6 +70,8 @@ function useHandleRating(
    const handleRemoveMutation = () => {
       removeMutation(null);
    };
+
+   console.log('IS LOADING', isRemoveLoading || isUpdateLoading || isCreateLoading);
 
    // use it without callback and see
    // const handleRemoveMutation = useCallback(() => {
