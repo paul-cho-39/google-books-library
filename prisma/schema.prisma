@@ -164,9 +164,6 @@ model VerificationToken {
 // A one-to-one relationship exists between a user-book pairing and a rating. A user can rate a specific book only once.
 // User and Log:
 
-// A one-to-many relationship exists between a user-book pairing and logs. A user can have multiple log entries for a single book.
-// User and Bookmark:
-
 // A one-to-many relationship exists between a user and bookmarks. A user can have multiple bookmarks.
 // User and Account:
 
@@ -179,4 +176,3 @@ model VerificationToken {
 // Users can rate books and update their ratings.
 // Users can log their reading progress for a book.
 // Users can track their reading state for a book: whether they want to read it, are currently reading it, or have finished it.
-// Users can create bookmarks.
