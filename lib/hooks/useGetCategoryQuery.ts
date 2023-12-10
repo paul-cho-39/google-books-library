@@ -119,6 +119,7 @@ export function useGetCategoriesQueries({
          },
          // select: (data: GoogleUpdatedFields) => data.items,
          enabled: enabled,
+         keepPreviousData: true,
       };
    });
 

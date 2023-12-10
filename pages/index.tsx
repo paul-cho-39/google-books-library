@@ -1,6 +1,5 @@
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { useRef, useState, lazy, Suspense } from 'react';
-import { CategoryDisplay } from '@/components/contents/home/categories';
 import { ImageLinks } from '@/lib/types/googleBookTypes';
 import classNames from 'classnames';
 
@@ -10,14 +9,16 @@ import { Categories, serverSideCategories, topCategories } from '@/constants/cat
 import { getBookWidth, getContainerWidth } from '@/lib/helper/books/getBookWidth';
 
 import { BookImageSkeleton, DescriptionSkeleton } from '@/components/loaders/bookcardsSkeleton';
+import { CategoryDisplay } from '@/components/contents/home/categories';
 import { DividerButtons } from '@/components/layout/dividers';
-import layoutManager from '@/constants/layouts';
-import { batchFetchGoogleCategories } from '@/utils/fetchData';
-import { useGetNytBestSellers } from '@/lib/hooks/useGetNytBestSeller';
-import { CategoriesQueries } from '@/lib/types/serverTypes';
-import { encodeRoutes } from '@/utils/routes';
-import useFloatingPosition from '@/lib/hooks/useFloatingPosition';
 import HomeLayout from '@/components/layout/page/homeLayout';
+
+import layoutManager from '@/constants/layouts';
+import { encodeRoutes } from '@/utils/routes';
+import { batchFetchGoogleCategories } from '@/utils/fetchData';
+import { CategoriesQueries } from '@/lib/types/serverTypes';
+import { useGetNytBestSellers } from '@/lib/hooks/useGetNytBestSeller';
+import useFloatingPosition from '@/lib/hooks/useFloatingPosition';
 import useImageLoadTracker from '@/lib/hooks/useImageLoadTracker';
 import getTotalItemsLength from '@/lib/helper/getObjLength';
 
@@ -43,7 +44,6 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       dataWithKeys: googleData,
       isGoogleDataSuccess,
       isGoogleDataLoading,
-      queriesData,
    } = useGetCategoriesQueries({
       initialData: data,
       loadItems: categoriesToLoad, // load more items here
@@ -52,14 +52,20 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       returnNumberOfItems: MAX_RESULT,
    });
 
-   const { transformedData: nytData, dataIsSuccess: nytDataSuccess } = useGetNytBestSellers({});
+   const {
+      transformedData: nytData,
+      isNytDataSuccess,
+      isNytDataLoading,
+   } = useGetNytBestSellers({});
+
+   console.log('NEW YORK TIMES DATA IS: ', nytData);
 
    const combinedData = { ...nytData, ...googleData };
 
-   const { handleImageLoad, areAllImagesLoaded } = useImageLoadTracker();
-   const areImagesLoadComplete = areAllImagesLoaded(
+   const { handleImageLoad, areAllImagesLoaded } = useImageLoadTracker(
       getTotalItemsLength(combinedData as Record<string, unknown[]>)
    );
+   const areImagesLoadComplete = areAllImagesLoaded();
 
    const handleProcessData = () => {
       setCategoriesToLoad((prev) => prev + 4);
@@ -80,18 +86,10 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
    const priorityCategories = ['FICTION', 'NONFICTION', ...serverSideCategories];
    const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
-
-   // TODO: Create an error boundary for this
-   if (!nytDataSuccess && !isGoogleDataLoading) {
-      return (
-         <HomeLayout>
-            <div>Is Loading...</div>
-         </HomeLayout>
-      );
-   }
+   const isLoading = isNytDataLoading || isGoogleDataLoading;
 
    return (
-      <HomeLayout>
+      <HomeLayout isLoading={isLoading}>
          {Object.entries(combinedData).map(([key, value], index) => (
             <CategoryDisplay key={key} forwardRef={categoryRefs} category={key as Categories}>
                {value &&
@@ -148,7 +146,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                                  onMouseLeave={(e: React.MouseEvent) =>
                                     onMouseLeave(e, floatingRef)
                                  }
-                                 onLoadComplete={() => handleImageLoad(book.id)}
+                                 onLoadComplete={() => handleImageLoad(book.id, key)}
                                  routeQuery={encodeRoutes.home(key, meta)}
                                  className={classNames(
                                     isHovered.hovered && isHovered.id === book.id
@@ -164,7 +162,12 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                   })}
             </CategoryDisplay>
          ))}
-         <DividerButtons onClick={handleProcessData} condition={false} title='Load More' />
+         <DividerButtons
+            onClick={handleProcessData}
+            numberToLoad={categoriesToLoad}
+            isLoading={isLoading}
+            title='Load More'
+         />
       </HomeLayout>
    );
 };

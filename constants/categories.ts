@@ -51,12 +51,12 @@ export const topCategories = [
    'EDUCATION',
    'PHILOSOPHY',
    'COMPUTERS',
-   'POETRY',
-   'RELIGION',
    'SCIENCE',
    'SOCIAL SCIENCE',
    'YOUNG ADULT FICTION',
    'TECHNOLOGY & ENGINEERING',
+   'POETRY',
+   'RELIGION',
 ];
 
 type BookSection = 'Best Seller' | 'Recommended';

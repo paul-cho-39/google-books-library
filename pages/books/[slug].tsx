@@ -14,7 +14,6 @@ import BookService from '@/models/server/service/BookService';
 
 import BookImage from '@/components/bookcover/bookImages';
 import BookDescription from '@/components/bookcover/description';
-import APIErrorBoundary from '@/components/error/errorBoundary';
 import { ActiveRating } from '@/components/rating/activeRating';
 import useHandleRating from '@/lib/hooks/useHandleRating';
 import BookActionButton from '@/components/buttons/bookActionButton';
@@ -75,81 +74,69 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
       allRatingData
    );
 
+   console.log('the following book is: ', data);
+
    const ratingTitle = !userRatingData ? 'Rate Book' : 'Rating Saved';
 
-   if (isLoading) {
-      return (
-         <PageLayout title={data?.volumeInfo.title}>
-            <Spinner />
-         </PageLayout>
-      );
-   }
-
    return (
-      <APIErrorBoundary>
-         <PageLayout title={data?.volumeInfo.title}>
-            <div className='w-full flex flex-col max-w-2xl items-center justify-center p-6 lg:p-10 md:grid md:grid-cols-3 lg:max-w-4xl'>
-               <div className='flex flex-col items-center justify-center md:col-span-1 md:gap-x-0'>
-                  <BookImage
-                     id={data?.id}
-                     hidden={true}
-                     bookImage={data?.volumeInfo?.imageLinks}
-                     title={data?.volumeInfo.title as string}
-                     height={HEIGHT}
-                     width={getBookWidth(HEIGHT)}
-                     priority
-                     className='justify-center items-center'
-                  />
-                  <div className='flex flex-row w-full py-4 items-center justify-center'>
-                     {isSuccess && data && (
-                        <>
-                           <BookActionButton
-                              className='justify-center px-2'
-                              book={data}
-                              userId={userId as string}
-                           />
-                        </>
-                     )}
-                  </div>
-                  <ActiveRating
-                     ratingTitle={ratingTitle}
-                     selectedRating={selectedRating}
-                     handleMutation={handleMutation}
-                     handleRemoveMutation={handleRemoveMutation}
-                     setSelectedRating={setSelectedRating}
-                     // display remove rating
-                     shouldDisplay={!!userRatingData}
-                     userId={userId}
-                     router={router}
-                     size='large'
-                  />
+      <PageLayout isLoading={isLoading} title={data?.volumeInfo?.title}>
+         <div className='w-full flex flex-col max-w-2xl items-center justify-center p-6 lg:p-10 md:grid md:grid-cols-3 lg:max-w-4xl'>
+            <div className='flex flex-col items-center justify-center md:col-span-1 md:gap-x-0'>
+               <BookImage
+                  id={data?.id}
+                  hidden={true}
+                  bookImage={data?.volumeInfo?.imageLinks}
+                  title={data?.volumeInfo.title as string}
+                  height={HEIGHT}
+                  width={getBookWidth(HEIGHT)}
+                  priority
+                  className='justify-center items-center'
+               />
+               <div className='flex flex-row w-full py-4 items-center justify-center'>
+                  {isSuccess && data && (
+                     <>
+                        <BookActionButton
+                           className='justify-center px-2'
+                           book={data}
+                           userId={userId as string}
+                        />
+                     </>
+                  )}
                </div>
-               <Suspense fallback={<div></div>}>
-                  <BookDescriptionSection
-                     allRatingData={allRatingData}
-                     data={data}
-                     userId={userId}
-                  />
-               </Suspense>
-            </div>
-            <div
-               role='contentinfo'
-               id='book-info'
-               className='my-4 w-full max-w-2xl py-2 px-2 lg:max-w-5xl lg:px-6 xl:px-12 lg:my-12'
-            >
-               <h3 className='text-xl lg:text-2xl underline underline-offset-1 text-slate-700 dark:text-slate-200 lg:mb-4'>
-                  Descriptions
-               </h3>
-               <BookDescription
-                  description={data?.volumeInfo.description}
-                  descriptionLimit={250}
-                  textSize='text-lg'
-                  isLink={false}
-                  href={''}
+               <ActiveRating
+                  ratingTitle={ratingTitle}
+                  selectedRating={selectedRating}
+                  handleMutation={handleMutation}
+                  handleRemoveMutation={handleRemoveMutation}
+                  setSelectedRating={setSelectedRating}
+                  // display remove rating
+                  shouldDisplay={!!userRatingData}
+                  userId={userId}
+                  router={router}
+                  size='large'
                />
             </div>
-         </PageLayout>
-      </APIErrorBoundary>
+            <Suspense fallback={<div></div>}>
+               <BookDescriptionSection allRatingData={allRatingData} data={data} userId={userId} />
+            </Suspense>
+         </div>
+         <div
+            role='contentinfo'
+            id='book-info'
+            className='my-4 w-full max-w-2xl py-2 px-2 lg:max-w-5xl lg:px-6 xl:px-12 lg:my-12'
+         >
+            <h3 className='text-xl lg:text-2xl underline underline-offset-1 text-slate-700 dark:text-slate-200 lg:mb-4'>
+               Descriptions
+            </h3>
+            <BookDescription
+               description={data?.volumeInfo.description}
+               descriptionLimit={250}
+               textSize='text-lg'
+               isLink={false}
+               href={''}
+            />
+         </div>
+      </PageLayout>
    );
 }
 

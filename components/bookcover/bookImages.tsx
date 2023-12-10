@@ -41,6 +41,7 @@ const BookImage = <T extends GoogleImages | string>({
    className,
    ...restProps
 }: BookImageProps<T>) => {
+   // when book src is not available
    const imageSrc = typeof bookImage === 'string' ? bookImage : getAvailableThumbnail(bookImage);
    const defaultStyle = 'inline-flex items-start justify-start mb-8';
 
@@ -63,7 +64,8 @@ const BookImage = <T extends GoogleImages | string>({
                priority={priority}
                width={width}
                height={height}
-               onLoadingComplete={() => onLoadComplete && onLoadComplete(id)}
+               // onLoadingComplete={() => onLoadComplete && onLoadComplete(id)}
+               onLoad={() => onLoadComplete && onLoadComplete(id)}
                {...restProps}
             />
          </Link>

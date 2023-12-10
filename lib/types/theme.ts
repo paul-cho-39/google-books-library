@@ -26,3 +26,8 @@ export interface NavigationProps {
    // url: string;
    signOut: () => void;
 }
+
+export interface LayoutBase {
+   children: React.ReactNode;
+   isLoading: boolean;
+}

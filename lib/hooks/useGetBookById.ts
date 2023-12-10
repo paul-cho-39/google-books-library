@@ -47,6 +47,11 @@ export default function useGetBookById<
 
          const data = await throttledFetcher(url);
 
+         // if the book is from new york then return new data
+         if (!isGoogle) {
+            return data.items[0];
+         }
+
          return data;
       },
       {

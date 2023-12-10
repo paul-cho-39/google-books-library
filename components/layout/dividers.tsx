@@ -1,11 +1,14 @@
 import { PlusIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
 import { ButtonHTMLAttributes, ReactNode } from 'react';
+import Spinner from '../loaders/spinner';
+import { topCategories } from '@/constants/categories';
 
 type DividerButtonsProps = {
    title: string;
-   condition?: boolean;
-   renderIcon?: ReactNode;
+   numberToLoad: number;
+   isLoading?: boolean;
+   renderIcon?: JSX.Element;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Divider = () => {
@@ -16,21 +19,22 @@ export const Divider = () => {
    );
 };
 
-export const DividerButtons = ({ title, condition, renderIcon, ...props }: DividerButtonsProps) => {
-   const displayIcon = () => {
-      if (condition) {
-         return renderIcon;
-      }
-      return (
-         <PlusIcon
-            className='-ml-1 -mr-0.5 h-5 w-5 text-slate-800 dark:text-slate-400'
-            aria-hidden='true'
-         />
-      );
-   };
+export const DividerButtons = ({
+   title,
+   numberToLoad,
+   isLoading,
+   renderIcon,
+   ...props
+}: DividerButtonsProps) => {
+   const totalLoad = topCategories.length;
+
+   // if the number to load surpasses then it should not be displayed
+   if (numberToLoad >= totalLoad) {
+      return null;
+   }
 
    return (
-      <div className='relative w-full md:max-w-2xl lg:max-w-4xl'>
+      <div className='relative w-full md:max-w-2xl lg:max-w-4xl my-6 lg:my-10'>
          <div className='absolute inset-0 flex items-center' aria-hidden='true'>
             <div className='w-full border-t border-gray-600 dark:border-gray-200' />
          </div>
@@ -42,7 +46,14 @@ export const DividerButtons = ({ title, condition, renderIcon, ...props }: Divid
                className='inline-flex items-center gap-x-1 rounded-full bg-beige dark:bg-gray-200 px-3 py-1.5 text-sm font-semibold text-slate-900 dark:text-slate-400 shadow-sm hover:bg-gray-50 focus:ring-1 focus:ring-black'
             >
                {title}
-               {displayIcon()}
+               {isLoading ? (
+                  <Spinner />
+               ) : (
+                  <PlusIcon
+                     className='-ml-1 -mr-0.5 h-5 w-5 text-slate-800 dark:text-slate-400'
+                     aria-hidden='true'
+                  />
+               )}
             </button>
          </div>
       </div>

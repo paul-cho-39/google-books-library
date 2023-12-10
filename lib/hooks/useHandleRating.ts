@@ -34,25 +34,6 @@ function useHandleRating(
       mutation: { mutate: removeMutation, isLoading: isRemoveLoading, isError: isRemoveError },
    } = useMutateRatings<'remove'>(params, 'remove');
 
-   // whenever current data or all rating data changes it should update the function
-   // const handleMutation = useCallback(
-   //    (rating: number) => {
-   //       // create a book based on all ratings not user book rating
-   //       rating += 1;
-   //       const notCreated = currentAllRatingData && !currentAllRatingData.inLibrary;
-   //       const bookData = getBodyFromFilteredGoogleFields(data);
-   //       const createBody = { bookData, rating };
-   //       const updateBody = { rating };
-
-   //       notCreated ? createMutation(createBody) : updateMutation(updateBody);
-   //    },
-   //    // eslint-disable-next-line react-hooks/exhaustive-deps
-   //    [currentAllRatingData, currentRatingData]
-   // );
-
-   console.log('--------------INSIDE useHanldeRating----------');
-   console.log('THE CURRENT RATING DATA IS :', currentAllRatingData);
-
    const handleMutation = (rating: number) => {
       // create a book based on all ratings not user book rating
       rating += 1;
@@ -62,21 +43,12 @@ function useHandleRating(
       const createBody = { bookData, rating };
       const updateBody = { rating };
 
-      const apiRoute = notCreated ? 'index.ts' : 'update.ts';
-
       notCreated ? createMutation(createBody) : updateMutation(updateBody);
    };
 
    const handleRemoveMutation = () => {
       removeMutation(null);
    };
-
-   console.log('IS LOADING', isRemoveLoading || isUpdateLoading || isCreateLoading);
-
-   // use it without callback and see
-   // const handleRemoveMutation = useCallback(() => {
-   //    removeMutation(null);
-   // }, [removeMutation]);
 
    return { handleMutation, handleRemoveMutation, currentRatingData };
 }
