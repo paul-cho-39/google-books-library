@@ -53,7 +53,7 @@ export const queryClient = new QueryClient({
    },
 });
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: AppPropsWithLayout) {
    // defaults to the sidebar open when application starts
    const [isSidebarOpen, setSidebarOpen] = useState(true);
    const { session, ...otherProps } = pageProps;

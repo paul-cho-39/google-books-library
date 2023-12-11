@@ -15,7 +15,7 @@ import { encodeRoutes } from '@/utils/routes';
 import { batchFetchGoogleCategories } from '@/utils/fetchData';
 import { handleNytId } from '@/utils/handleIds';
 import layoutManager from '@/constants/layouts';
-import { Categories, categories } from '@/constants/categories';
+import { Categories, categories, serverSideCategories } from '@/constants/categories';
 
 import { CategoryQualifiers } from '@/models/_api/fetchNytUrl';
 import { capitalizeWords } from '@/lib/helper/transformChar';
@@ -41,7 +41,7 @@ const HEIGHT = layoutManager.constants.imageHeight;
 const BookCategoryPages: NextPageWithLayout<
    InferGetStaticPropsType<typeof getStaticProps> & { isLoading: boolean; category: string }
 > = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
-   const { category } = props;
+   const { data, category } = props;
 
    // setting the page
    const [currentPage, setCurrentPage] = useState(1);
@@ -256,25 +256,26 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 // would this only hit the api request for every time a page is visited?
 export const getStaticProps: GetStaticProps<{
-   // data: CategoryQuery;
+   data: CategoryQuery;
    category: string;
 }> = async ({ params }) => {
    const category = params?.slug as string;
 
    // change this after production where it will generate all categories in build time
-   // const sampleCat = categories.slice(0, 4);
+   // have the first home page categories be served using static generation
+   // google rate limit is 100 p/min p/user
 
    // change this to categories when testing this out
-   // const googleData = await batchFetchGoogleCategories([category], {
-   //    // maxResultNumber: 15,
-   //    maxResultNumber: MAX_ITEMS,
-   //    pageIndex: 0,
-   //    byNewest: true,
-   // });
+   const googleData = await batchFetchGoogleCategories([category], {
+      // maxResultNumber: 15,
+      maxResultNumber: MAX_ITEMS,
+      pageIndex: 0,
+      byNewest: true,
+   });
 
    return {
       props: {
-         // data: googleData as CategoryQuery,
+         data: googleData as CategoryQuery,
          category: category,
       },
       revalidate: 60 * 60 * 6, // wont revalidate for at least the next 6 hours
