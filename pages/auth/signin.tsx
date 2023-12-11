@@ -117,7 +117,7 @@ export async function getServerSideProps() {
    const providers = await getProviders();
    return {
       props: {
-         authProviders: [providers?.google, providers?.facebook],
+         authProviders: [providers?.google],
       },
    };
 }

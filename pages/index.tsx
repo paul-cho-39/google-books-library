@@ -1,5 +1,5 @@
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
-import { useRef, useState, lazy, Suspense } from 'react';
+import { useRef, useState, lazy, Suspense, ReactElement } from 'react';
 import { ImageLinks } from '@/lib/types/googleBookTypes';
 import classNames from 'classnames';
 
@@ -21,6 +21,7 @@ import { useGetNytBestSellers } from '@/lib/hooks/useGetNytBestSeller';
 import useFloatingPosition from '@/lib/hooks/useFloatingPosition';
 import useImageLoadTracker from '@/lib/hooks/useImageLoadTracker';
 import getTotalItemsLength from '@/lib/helper/getObjLength';
+import type { NextPageWithLayout } from './_app';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
@@ -28,7 +29,9 @@ const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
 const MAX_RESULT = 6;
 const TOTAL_COLS = 6;
 
-const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+const Home: NextPageWithLayout<
+   InferGetStaticPropsType<typeof getStaticProps> & { isLoading: boolean }
+> = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
    const { data } = props;
    const [categoriesToLoad, setCategoriesToLoad] = useState(0);
 
@@ -88,7 +91,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
    const isLoading = isNytDataLoading || isGoogleDataLoading;
 
    return (
-      <HomeLayout isLoading={isLoading}>
+      <>
          {Object.entries(combinedData).map(([key, value], index) => (
             <CategoryDisplay key={key} forwardRef={categoryRefs} category={key as Categories}>
                {value &&
@@ -166,12 +169,11 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
             numberToLoad={categoriesToLoad}
             isLoading={isLoading}
             title='Load More'
+            aria-busy={isLoading}
          />
-      </HomeLayout>
+      </>
    );
 };
-
-export default Home;
 
 // change the categories later
 // getSession() -> use userId right?
@@ -191,3 +193,11 @@ export const getStaticProps: GetStaticProps<{
       revalidate: 60 * 60 * 12,
    };
 };
+
+Home.getLayout = function getLayout(page: ReactElement) {
+   const { isLoading } = page.props as { isLoading: boolean };
+
+   return <HomeLayout isLoading={isLoading}>{page}</HomeLayout>;
+};
+
+export default Home;

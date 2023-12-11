@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, useState } from 'react';
+import { ReactElement, Suspense, lazy, useMemo, useState } from 'react';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
@@ -19,7 +19,8 @@ import useHandleRating from '@/lib/hooks/useHandleRating';
 import BookActionButton from '@/components/buttons/bookActionButton';
 import PageLayout from '@/components/layout/page/bookPageLayout';
 import useSearchFilter from '@/lib/hooks/useSearchFilter';
-import Spinner from '@/components/loaders/spinner';
+
+import type { NextPageWithLayout } from './../_app';
 
 const HEIGHT = 225;
 
@@ -27,7 +28,9 @@ const BookDescriptionSection = lazy(() => import('@/components/section/bookDescr
 
 // when refreshed the serversideProps will fetch the data
 // when navigating between pages and coming back useQuery to check
-export default function BookPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+const BookPage: NextPageWithLayout<
+   InferGetServerSidePropsType<typeof getServerSideProps> & { isLoading: boolean; title: string }
+> = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
    const { id, userId, placerData } = props;
 
    const router = useRouter();
@@ -74,9 +77,8 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
       allRatingData
    );
 
-   console.log('the following book is: ', data);
-
    const ratingTitle = !userRatingData ? 'Rate Book' : 'Rating Saved';
+   const title = data?.volumeInfo?.title;
 
    return (
       <PageLayout isLoading={isLoading} title={data?.volumeInfo?.title}>
@@ -138,7 +140,7 @@ export default function BookPage(props: InferGetServerSidePropsType<typeof getSe
          </div>
       </PageLayout>
    );
-}
+};
 
 export const getServerSideProps: GetServerSideProps<RateServerTypes> = async (context) => {
    const { slug: bookId } = context.query as { slug: string };
@@ -163,3 +165,15 @@ export const getServerSideProps: GetServerSideProps<RateServerTypes> = async (co
       },
    };
 };
+
+BookPage.getLayout = function getLayout(page: ReactElement) {
+   const { isLoading, title } = page.props as { isLoading: boolean; title: string };
+
+   return (
+      <PageLayout isLoading={isLoading} title={title}>
+         {page}
+      </PageLayout>
+   );
+};
+
+export default BookPage;

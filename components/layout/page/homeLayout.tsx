@@ -5,11 +5,9 @@ import metaHeaders from '@/constants/headers';
 import { LayoutBase } from '@/lib/types/theme';
 
 const HomeLayout = ({ children, isLoading }: LayoutBase) => {
-   console.log('is it being loaded? :', isLoading);
-
    if (isLoading) {
       return (
-         <div aria-busy={true} className='w-full min-h-screen dark:bg-slate-800'>
+         <div aria-busy={true} className='w-full h-full dark:bg-slate-800'>
             <div className='lg:mt-20 mt-12'>
                <Spinner />
             </div>
@@ -19,7 +17,7 @@ const HomeLayout = ({ children, isLoading }: LayoutBase) => {
 
    return (
       <APIErrorBoundary>
-         <div className='w-full min-h-screen dark:bg-slate-800'>
+         <div className='w-full h-full py-10 dark:bg-slate-800'>
             <NextHead title={metaHeaders.home.title} metaTags={metaHeaders.home.meta()} />
             {children}
          </div>

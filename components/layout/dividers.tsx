@@ -34,7 +34,7 @@ export const DividerButtons = ({
    }
 
    return (
-      <div className='relative w-full md:max-w-2xl lg:max-w-4xl my-6 lg:my-10'>
+      <div className='relative w-full md:max-w-2xl lg:max-w-4xl mt-6 lg:mt-10'>
          <div className='absolute inset-0 flex items-center' aria-hidden='true'>
             <div className='w-full border-t border-gray-600 dark:border-gray-200' />
          </div>
@@ -47,7 +47,7 @@ export const DividerButtons = ({
             >
                {title}
                {isLoading ? (
-                  <Spinner />
+                  <Spinner size='sm' color='indigo' />
                ) : (
                   <PlusIcon
                      className='-ml-1 -mr-0.5 h-5 w-5 text-slate-800 dark:text-slate-400'

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import classNames from 'classnames';
@@ -28,7 +28,8 @@ import BookTitle from '@/components/bookcover/title';
 import APIErrorBoundary from '@/components/error/errorBoundary';
 import CategoryPageLayout from '@/components/layout/page/categoryPageLayout';
 import useImageLoadTracker from '@/lib/hooks/useImageLoadTracker';
-import Spinner from '@/components/loaders/spinner';
+
+import type { NextPageWithLayout } from './../_app';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
 const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
@@ -37,10 +38,11 @@ const MAX_ITEMS = 20;
 const TOTAL_COLS = 5;
 const HEIGHT = layoutManager.constants.imageHeight;
 
-export default function BookCategoryPages({
-   //  data,
-   category,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+const BookCategoryPages: NextPageWithLayout<
+   InferGetStaticPropsType<typeof getStaticProps> & { isLoading: boolean; category: string }
+> = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+   const { category } = props;
+
    // setting the page
    const [currentPage, setCurrentPage] = useState(1);
    const [pageIndex, setPageIndex] = useState(0);
@@ -117,7 +119,7 @@ export default function BookCategoryPages({
       `${capitalizeWords(category as string)} Best Sellers (${bestSellers.published_date})`;
 
    return (
-      <CategoryPageLayout isLoading={isLoading} category={category}>
+      <>
          {googleData.isSuccess && googleData && (
             <CategoryGridLarge
                currentPage={currentPage}
@@ -232,9 +234,9 @@ export default function BookCategoryPages({
                </CategoryGridSmall>
             </>
          )}
-      </CategoryPageLayout>
+      </>
    );
-}
+};
 
 // retrieve categories in their library and see whether the library
 // can it retrieve new released?
@@ -278,3 +280,15 @@ export const getStaticProps: GetStaticProps<{
       revalidate: 60 * 60 * 6, // wont revalidate for at least the next 6 hours
    };
 };
+
+BookCategoryPages.getLayout = function getLayout(page: ReactElement) {
+   const { isLoading, category } = page.props as { isLoading: boolean; category: string };
+
+   return (
+      <CategoryPageLayout isLoading={isLoading} category={category}>
+         {page}
+      </CategoryPageLayout>
+   );
+};
+
+export default BookCategoryPages;

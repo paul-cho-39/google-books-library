@@ -1,5 +1,5 @@
 import Router from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, ReactNode, useState } from 'react';
 import type { AppProps } from 'next/app';
 import { SessionProvider, SessionProviderProps } from 'next-auth/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -14,6 +14,21 @@ import ThemeProvider from '@/lib/context/ThemeContext';
 import Navigation from '@/components/headers';
 import MainLayout from '@/components/layout/page/main';
 import SearchFilterProvider from '@/lib/context/SearchFilterContext';
+import { NextPage } from 'next';
+import { Session } from 'next-auth';
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+   getLayout?: (page: ReactElement) => ReactNode;
+};
+
+// stating unknown inside the generic because it automatically deletes
+// and have no idea what the problem is
+type AppPropsWithLayout = AppProps<unknown> & {
+   Component: NextPageWithLayout;
+   pageProps: {
+      session?: Session;
+   };
+};
 
 // progress loader at the top of the page
 NProgress.configure({
@@ -38,9 +53,14 @@ export const queryClient = new QueryClient({
    },
 });
 
-function MyApp({ Component, pageProps }: AppProps<SessionProviderProps>) {
+function MyApp({ Component, pageProps }) {
    // defaults to the sidebar open when application starts
    const [isSidebarOpen, setSidebarOpen] = useState(true);
+   const { session, ...otherProps } = pageProps;
+
+   const getLayout = Component.getLayout ?? ((page) => page);
+
+   getLayout(<Component {...otherProps} />);
 
    return (
       <QueryClientProvider client={queryClient}>
@@ -48,9 +68,8 @@ function MyApp({ Component, pageProps }: AppProps<SessionProviderProps>) {
             <SessionProvider session={pageProps.session}>
                <SearchFilterProvider>
                   <Navigation sidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
-                  {/* <SideBarPortal sidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} /> */}
                   <MainLayout isOpen={isSidebarOpen}>
-                     <Component {...pageProps} />
+                     {getLayout(<Component {...otherProps} />)}
                   </MainLayout>
                </SearchFilterProvider>
                <ReactQueryDevtools initialIsOpen={true} />

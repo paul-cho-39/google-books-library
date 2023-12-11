@@ -5,8 +5,13 @@ import prisma from '@/lib/prisma';
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'DELETE') {
       const id = req.body;
+
+      if (!id) {
+         return res.status(400).json({ message: 'Invalid userId' });
+      }
+
       try {
-         const deletedUser = await prisma.user.delete({
+         await prisma.user.delete({
             where: { id: id },
          });
          res.status(204).end();

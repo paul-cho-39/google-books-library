@@ -15,8 +15,3 @@ export const getDataApiUrl = (data: SignInForm) => {
 
    return url;
 };
-
-// 1) get the user id and select date
-// 2) if the select is null
-// 3) then call an api route where if clicked then send verification email
-// 4) and the end route should be the same route as api calls
