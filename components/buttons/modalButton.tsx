@@ -28,5 +28,9 @@ export const ModalInnerButton = ({
    const onSubmit = async () => {
       apiRequest(params).then(() => (shouldSignOut ? signOut({ callbackUrl: '/' }) : null));
    };
-   return <button onClick={onSubmit}>{name}</button>;
+   return (
+      <button className='text-red-600 text-lg p-2 my-2 lg:my-4' onClick={onSubmit}>
+         {name}
+      </button>
+   );
 };

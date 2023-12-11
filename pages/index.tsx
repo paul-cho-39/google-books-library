@@ -40,6 +40,7 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       byNewest: false,
    };
 
+   // TODO: combine the data instead
    const {
       dataWithKeys: googleData,
       isGoogleDataSuccess,
@@ -57,8 +58,6 @@ const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       isNytDataSuccess,
       isNytDataLoading,
    } = useGetNytBestSellers({});
-
-   console.log('NEW YORK TIMES DATA IS: ', nytData);
 
    const combinedData = { ...nytData, ...googleData };
 

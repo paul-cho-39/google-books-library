@@ -5,6 +5,7 @@ import { Fragment } from 'react';
 import { Divider } from '../layout/dividers';
 import classNames from 'classnames';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 interface UserProfileProps {
    userId: string;
@@ -15,6 +16,7 @@ interface UserProfileProps {
 }
 
 const UserProfile = ({ userId, signOut, username, name, href }: UserProfileProps) => {
+   const router = useRouter();
    const imageHref = !href ? '/avatar.png' : href;
    const getName = () => {
       if (name) {
@@ -37,13 +39,15 @@ const UserProfile = ({ userId, signOut, username, name, href }: UserProfileProps
                <Menu.Item>
                   {({ active }) => (
                      <button
+                        onClick={() => router.push(ROUTES.PROFILE.SETTINGS(userId))}
                         className={`${
                            active
                               ? 'bg-indigo-300 dark:bg-slate-600 text-white dark:text-gray-700'
                               : 'text-gray-900 dark:text-white'
                         } group flex w-full items-center px-2 py-2 text-sm`}
                      >
-                        <Link href={ROUTES.PROFILE.SETTINGS(userId)}>Profile</Link>
+                        Profile
+                        {/* <Link href={ROUTES.PROFILE.SETTINGS(userId)}>Profile</Link> */}
                      </button>
                   )}
                </Menu.Item>

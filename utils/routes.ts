@@ -18,7 +18,7 @@ const ROUTES = {
    },
    CATEGORIES: (slug: string) => `/categories/${slug}`,
    PROFILE: {
-      SETTINGS: (id: number | string) => `/profile/${id}`,
+      SETTINGS: (id: number | string) => `/profile/${id}/settings`,
    },
    SEARCH: (search: string, filters: FilterProps) => {
       return getSearchUrl(search, filters);
