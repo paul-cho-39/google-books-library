@@ -16,7 +16,7 @@ const Accordian = ({ disclosureName, children }: DisclosureProps) => {
       <Disclosure>
          {({ open }) => (
             <>
-               <Disclosure.Button className='flex w-full justify-between rounded-lg bg-gray-100 px-4 py-3 text-left text-sm font-medium text-black hover:bg-gray-400/20 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75'>
+               <Disclosure.Button className='flex w-full justify-between rounded-lg bg-gray-100 px-4 py-3 text-left text-sm font-medium text-black hover:bg-gray-400/20 dark:hover:bg-gray-300 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75'>
                   <span>{disclosureName}</span>
                   <ChevronUpIcon
                      className={`${open ? 'rotate-180 transform duration-200' : 'duration-200'}
