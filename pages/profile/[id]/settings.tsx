@@ -13,17 +13,10 @@ import { ModalInnerButton } from '@/components/buttons/modalButton';
 import Accordian from '@/components/disclosures/disclosure';
 import { useState } from 'react';
 
-// USING TAILWIND COMPONENTS HERE
-
-// the setting page may be broken into multiple components?
 export default function Settings({}) {
    // const { data: session, status } = useSession();
    const [isModalOpen, setModalOpen] = useState(true);
 
-   // console.log('the status is :', status);
-
-   // what happens when router query changes? does router also require
-   // changes?
    const router = useRouter();
    const { id: userId } = router?.query;
 
@@ -147,13 +140,7 @@ export default function Settings({}) {
                      >
                         <DeleteModalContent />
                         <div className='flex justify-center items-center'>
-                           <ModalInnerButton
-                              name='Delete Button'
-                              id={userId as string}
-                              url='/user/deleteAccount'
-                              method='DELETE'
-                              shouldSignOut={true}
-                           />
+                           <ModalInnerButton id={userId as string} shouldSignOut={true} />
                         </div>
                      </ModalOpener>
                   </div>

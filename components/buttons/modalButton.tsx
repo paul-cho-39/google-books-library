@@ -1,25 +1,17 @@
 import { signOut } from 'next-auth/react';
 import apiRequest from '@/utils/fetchData';
 import { ApiRequestOptions, Method } from '@/lib/types/fetchbody';
+import API_ROUTES from '@/utils/apiRoutes';
 
 interface ModalButtonProps {
-   name: string;
    id: string;
-   url: string;
-   method: Method;
    shouldSignOut: boolean;
 }
 // should this be a component or a hook? function makes sense too?
-export const ModalInnerButton = ({
-   name,
-   id,
-   url,
-   method,
-   shouldSignOut = false,
-}: ModalButtonProps) => {
+export const ModalInnerButton = ({ id, shouldSignOut = false }: ModalButtonProps) => {
    const params: ApiRequestOptions<string> = {
-      apiUrl: url,
-      method: method,
+      apiUrl: API_ROUTES.USERS.DELETE,
+      method: 'DELETE',
       data: id,
       shouldRoute: false,
       delay: 250,
@@ -30,7 +22,7 @@ export const ModalInnerButton = ({
    };
    return (
       <button className='text-red-600 text-lg p-2 my-2 lg:my-4' onClick={onSubmit}>
-         {name}
+         Delete Account
       </button>
    );
 };

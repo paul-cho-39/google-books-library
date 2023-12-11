@@ -9,11 +9,11 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
          const deletedUser = await prisma.user.delete({
             where: { id: id },
          });
-         res.status(201).json(deletedUser);
+         res.status(204).end();
       } catch (e) {
          res.status(401).json({ message: 'Failed to delete this account' });
       }
    } else {
-      res.status(400);
+      return res.status(501).json({ message: 'Method Not Allowed' });
    }
 }
