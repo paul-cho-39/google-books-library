@@ -1,8 +1,12 @@
+import { lazy, Suspense } from 'react';
+
 import { RouteParams } from '@/lib/types/routes';
 import SingleOrMultipleAuthors from '../../bookcover/authors';
 import BookDescription from '../../bookcover/description';
 import DisplayRating, { RatingProps } from '../../bookcover/ratings';
 import BookTitle from '../../bookcover/title';
+
+const LazyBookDescription = lazy(() => import('../../bookcover/description'));
 
 interface CategoryDescriptionParams extends RatingProps {
    id: string;
@@ -49,16 +53,18 @@ const CategoryDescription = ({
                </div>
             </div>
             <div className='w-full h-full overflow-hidden'>
-               <BookDescription
-                  isLink
-                  passHref
-                  as={`/books/${id}`}
-                  href={{ pathname: '/books/[slug]/', query: routeQuery }}
-                  description={description}
-                  descriptionLimit={250}
-                  lineClamp='line-clamp-4'
-                  className='text-xs'
-               />
+               <Suspense fallback={null}>
+                  <LazyBookDescription
+                     isLink
+                     passHref
+                     as={`/books/${id}`}
+                     href={{ pathname: '/books/[slug]/', query: routeQuery }}
+                     description={description}
+                     descriptionLimit={250}
+                     lineClamp='line-clamp-4'
+                     className='text-xs'
+                  />
+               </Suspense>
             </div>
          </div>
       </div>

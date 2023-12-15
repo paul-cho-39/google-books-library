@@ -1,6 +1,5 @@
 import { Disclosure } from '@headlessui/react';
 import { CalendarIcon, ChevronUpIcon } from '@heroicons/react/20/solid';
-import { forwardRef, LegacyRef, useEffect, useRef, useState } from 'react';
 
 interface DisclosureProps<T extends string | number = string> {
    disclosureName: T;

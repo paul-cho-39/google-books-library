@@ -6,10 +6,9 @@ export interface CategoryLayoutProps {
    category: CategoryHeaderParams;
    children: React.ReactNode;
    className?: string;
-   forwardRef?: React.RefObject<HTMLDivElement>;
 }
 
-const CategoryLayout = ({ category, children, className, forwardRef }: CategoryLayoutProps) => {
+const CategoryLayout = ({ category, children, className }: CategoryLayoutProps) => {
    return (
       <article
          id={category as string}

@@ -25,14 +25,14 @@ import { BookImageSkeleton, DescriptionSkeleton } from '@/components/loaders/boo
 import SingleOrMultipleAuthors from '@/components/bookcover/authors';
 import { Divider } from '@/components/layout/dividers';
 import BookTitle from '@/components/bookcover/title';
-import APIErrorBoundary from '@/components/error/errorBoundary';
 import CategoryPageLayout from '@/components/layout/page/categoryPageLayout';
 import useImageLoadTracker from '@/lib/hooks/useImageLoadTracker';
+
+import BookImage from '@/components/bookcover/bookImages';
 
 import type { NextPageWithLayout } from './../_app';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
-const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
 
 const MAX_ITEMS = 20;
 const TOTAL_COLS = 5;
@@ -154,7 +154,6 @@ const BookCategoryPages: NextPageWithLayout<
                                     subtitle={book.volumeInfo.subtitle}
                                     authors={book.volumeInfo.authors}
                                     description={book.volumeInfo.description}
-                                    // TODO: with rating write a helper function for total reviews
                                     averageRating={book.volumeInfo?.averageRating}
                                     totalReviews={book.volumeInfo?.ratingsCount}
                                     routeQuery={encodeRoutes.category(category, meta)}
@@ -165,27 +164,23 @@ const BookCategoryPages: NextPageWithLayout<
                      );
                   return (
                      <>
-                        <Suspense
-                           fallback={<BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />}
-                        >
-                           <BookImage
-                              key={book.id}
-                              id={book.id}
-                              title={book.volumeInfo.title}
-                              width={getBookWidth(HEIGHT)}
-                              height={HEIGHT}
-                              forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
-                              bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                              priority={false}
-                              onMouseEnter={() => onMouseEnter(book.id, index)}
-                              onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
-                              onLoadComplete={() => handleImageLoad(book.id, index)}
-                              routeQuery={encodeRoutes.category(category, meta)}
-                              className={classNames(
-                                 'lg:col-span-1 px-1 inline-flex items-center justify-center lg:px-0 cursor-pointer'
-                              )}
-                           />
-                        </Suspense>
+                        <BookImage
+                           key={book.id}
+                           id={book.id}
+                           title={book.volumeInfo.title}
+                           width={getBookWidth(HEIGHT)}
+                           height={HEIGHT}
+                           ref={(el: HTMLDivElement) => setImageRef(book.id, el)}
+                           bookImage={book.volumeInfo.imageLinks as ImageLinks}
+                           priority={false}
+                           onMouseEnter={() => onMouseEnter(book.id, index)}
+                           onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
+                           onLoadComplete={() => handleImageLoad(book.id, index)}
+                           routeQuery={encodeRoutes.category(category, meta)}
+                           className={classNames(
+                              'lg:col-span-1 px-1 inline-flex items-center justify-center lg:px-0 cursor-pointer'
+                           )}
+                        />
                         {hoveredEl}
                      </>
                   );
@@ -199,20 +194,16 @@ const BookCategoryPages: NextPageWithLayout<
                <CategoryGridSmall category={CATEGORY_NYT_HEADER}>
                   {bestSellers.books.map((book, index) => (
                      <div className='flex flex-row items-start space-x-2' key={book.primary_isbn13}>
-                        <Suspense
-                           fallback={<BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />}
-                        >
-                           <BookImage
-                              id={handleNytId.appendSuffix(book.primary_isbn13)}
-                              title={book.title}
-                              width={getBookWidth(HEIGHT)}
-                              height={HEIGHT}
-                              bookImage={book.book_image}
-                              priority={false}
-                              className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
-                              routeQuery={encodeRoutes.category(category, meta)}
-                           />
-                        </Suspense>
+                        <BookImage
+                           id={handleNytId.appendSuffix(book.primary_isbn13)}
+                           title={book.title}
+                           width={getBookWidth(HEIGHT)}
+                           height={HEIGHT}
+                           bookImage={book.book_image}
+                           priority={false}
+                           className={classNames('lg:col-span-1 px-1 lg:px-0 cursor-pointer')}
+                           routeQuery={encodeRoutes.category(category, meta)}
+                        />
                         <div className='flex flex-col items-start justify-start w-full'>
                            <h4 className='text-lg dark:text-slate-200'>Rank: {book.rank}</h4>
                            <BookTitle
@@ -238,10 +229,6 @@ const BookCategoryPages: NextPageWithLayout<
    );
 };
 
-// retrieve categories in their library and see whether the library
-// can it retrieve new released?
-// is inside the cateogry that is being clicked
-
 export const getStaticPaths: GetStaticPaths = async () => {
    // const sampleCat = categories.slice(0, 4);
    const paths = categories.map((category) => ({
@@ -254,18 +241,18 @@ export const getStaticPaths: GetStaticPaths = async () => {
    };
 };
 
-// would this only hit the api request for every time a page is visited?
 export const getStaticProps: GetStaticProps<{
    data: CategoryQuery;
    category: string;
 }> = async ({ params }) => {
    const category = params?.slug as string;
 
-   // change this after production where it will generate all categories in build time
-   // have the first home page categories be served using static generation
-   // google rate limit is 100 p/min p/user
+   /**
+    * NOTE:
+    * Cannot batch fetch categories here since it will hit the api rate limit in build time.
+    * Unfortunately, it will have to fetch the api at the client side.
+    */
 
-   // change this to categories when testing this out
    const googleData = await batchFetchGoogleCategories([category], {
       // maxResultNumber: 15,
       maxResultNumber: MAX_ITEMS,

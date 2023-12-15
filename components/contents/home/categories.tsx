@@ -4,27 +4,30 @@ import CategoryLayout, { CategoryLayoutProps } from '../../layout/page/categoryL
 import { CategoryHeaderParams } from '@/constants/categories';
 import classNames from 'classnames';
 import ROUTES from '@/utils/routes';
+import { forwardRef } from 'react';
 
-export const CategoryDisplay = ({ category, children, forwardRef }: CategoryLayoutProps) => {
-   return (
-      <CategoryLayout
-         className='scrollbarX w-[175vw] lg:w-full lg:overflow-hidden'
-         category={category}
-      >
-         <CategoryHeader className='mb-4' category={category} />
-         <div
-            ref={forwardRef}
-            className='relative lg:grid lg:grid-cols-6'
-            // className='relative scrollbarX grid grid-cols-3 lg:grid lg:grid-cols-6'
+export const CategoryDisplay = forwardRef<React.ElementRef<'div'>, CategoryLayoutProps>(
+   function CategoryDisplay({ category, children, ...props }, ref) {
+      return (
+         <CategoryLayout
+            className='scrollbarX w-[175vw] lg:w-full lg:overflow-hidden'
+            category={category}
          >
-            {children}
-         </div>
-         <div className='text-left bg-fixed lg:px-4 lg:text-right'>
-            <ShowMoreCategory category={category} />
-         </div>
-      </CategoryLayout>
-   );
-};
+            <CategoryHeader className='mb-4' category={category} />
+            <div
+               ref={ref}
+               className='relative lg:grid lg:grid-cols-6'
+               // className='relative scrollbarX grid grid-cols-3 lg:grid lg:grid-cols-6'
+            >
+               {children}
+            </div>
+            <div className='text-left bg-fixed lg:px-4 lg:text-right'>
+               <ShowMoreCategory category={category} />
+            </div>
+         </CategoryLayout>
+      );
+   }
+);
 
 export const CategoryHeader = ({
    category,

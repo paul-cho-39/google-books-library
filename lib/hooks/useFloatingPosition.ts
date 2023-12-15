@@ -4,7 +4,12 @@ import { useDisableBreakPoints } from './useDisableBreakPoints';
 import layoutManager from '@/constants/layouts';
 import { changeDirection } from '../helper/getContainerPos';
 
-// is there a way to create a sliding component instead(?)
+/**
+ * A hook for displaying a container when mouse hovers around a target.
+ * @param {number} totalCols
+ * @param {boolean} multiCols
+ * @returns
+ */
 function useFloatingPosition(totalCols: number, multiCols: boolean) {
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -50,6 +55,7 @@ function useFloatingPosition(totalCols: number, multiCols: boolean) {
                top = 0;
             }
 
+            // TODO: make it customizeable here with offset for offseting the number from the target
             const position = changeDirection(
                el.width,
                isHovered.index,

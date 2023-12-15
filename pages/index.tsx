@@ -15,7 +15,7 @@ import { getBookWidth, getContainerWidth } from '@/lib/helper/books/getBookWidth
 
 import { BookImageSkeleton, DescriptionSkeleton } from '@/components/loaders/bookcardsSkeleton';
 import { CategoryDisplay } from '@/components/contents/home/categories';
-import { DividerButtons } from '@/components/layout/dividers';
+// import { DividerButtons } from '@/components/layout/dividers';
 import HomeLayout from '@/components/layout/page/homeLayout';
 
 import layoutManager from '@/constants/layouts';
@@ -28,8 +28,14 @@ import useImageLoadTracker from '@/lib/hooks/useImageLoadTracker';
 import getTotalItemsLength from '@/lib/helper/getObjLength';
 import type { NextPageWithLayout } from './_app';
 
+import BookImage from '@/components/bookcover/bookImages';
+import Spinner from '@/components/loaders/spinner';
+
+const LazyDividerButtons = lazy(() =>
+   import('@/components/layout/dividers').then((module) => ({ default: module.DividerButtons }))
+);
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
-const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
+// const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
 
 const MAX_RESULT = 6;
 const TOTAL_COLS = 6;
@@ -48,13 +54,20 @@ const Home: NextPageWithLayout<
       byNewest: false,
    };
 
-   const { cache: googleData, isGoogleDataLoading } = useGetCategoriesQueries({
+   const {
+      dataWithKeys: currentData,
+      cache,
+      isGoogleDataSuccess,
+      isGoogleDataLoading,
+   } = useGetCategoriesQueries({
       initialData: data,
       loadItems: categoriesToLoad, // load more items here
       enabled: !!data,
       meta,
       returnNumberOfItems: MAX_RESULT,
    });
+
+   const googleData = !cache ? currentData : cache;
 
    const {
       transformedData: nytData,
@@ -94,7 +107,7 @@ const Home: NextPageWithLayout<
    return (
       <>
          {Object.entries(combinedData).map(([key, value], index) => (
-            <CategoryDisplay key={key} forwardRef={categoryRefs} category={key as Categories}>
+            <CategoryDisplay key={key} ref={categoryRefs} category={key as Categories}>
                {value &&
                   value?.map((book, index) => {
                      const hoveredEl = isHovered.id == book.id &&
@@ -131,47 +144,49 @@ const Home: NextPageWithLayout<
                         );
                      return (
                         <>
-                           <Suspense
+                           {/* <Suspense
                               fallback={
                                  <BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />
                               }
-                           >
-                              <BookImage
-                                 key={book.id}
-                                 id={book.id}
-                                 title={book.volumeInfo.title}
-                                 width={getBookWidth(HEIGHT)}
-                                 height={HEIGHT}
-                                 forwardedRef={(el: HTMLDivElement) => setImageRef(book.id, el)}
-                                 bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                                 priority={isPriority(key)}
-                                 onMouseEnter={() => onMouseEnter(book.id, index)}
-                                 onMouseLeave={(e: React.MouseEvent) =>
-                                    onMouseLeave(e, floatingRef)
-                                 }
-                                 onLoadComplete={() => handleImageLoad(book.id, key)}
-                                 routeQuery={encodeRoutes.home(key, meta)}
-                                 className={classNames(
-                                    isHovered.hovered && isHovered.id === book.id
-                                       ? 'opacity-70'
-                                       : 'opacity-100',
-                                    'lg:col-span-1 px-4 lg:px-2 inline-flex items-center justify-center cursor-pointer'
-                                 )}
-                              />
-                           </Suspense>
+                           > */}
+                           <BookImage
+                              key={book.id}
+                              id={book.id}
+                              title={book.volumeInfo.title}
+                              width={getBookWidth(HEIGHT)}
+                              height={HEIGHT}
+                              ref={(el: HTMLDivElement) => setImageRef(book.id, el)}
+                              bookImage={book.volumeInfo.imageLinks as ImageLinks}
+                              priority={isPriority(key)}
+                              onMouseEnter={() => onMouseEnter(book.id, index)}
+                              onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
+                              onLoadComplete={() => handleImageLoad(book.id, key)}
+                              routeQuery={encodeRoutes.home(key, meta)}
+                              className={classNames(
+                                 isHovered.hovered && isHovered.id === book.id
+                                    ? 'opacity-70'
+                                    : 'opacity-100',
+                                 'lg:col-span-1 px-4 lg:px-2 inline-flex items-center justify-center cursor-pointer'
+                              )}
+                           />
+                           {/* </Suspense> */}
                            {hoveredEl}
                         </>
                      );
                   })}
             </CategoryDisplay>
          ))}
-         <DividerButtons
-            onClick={handleProcessData}
-            numberToLoad={categoriesToLoad}
-            isLoading={isLoading}
-            title='Load More'
-            aria-busy={isLoading}
-         />
+         {isGoogleDataSuccess && (
+            <Suspense fallback={<Spinner size='sm' color='indigo' />}>
+               <LazyDividerButtons
+                  onClick={handleProcessData}
+                  numberToLoad={categoriesToLoad}
+                  isLoading={isLoading}
+                  title='Load More'
+                  aria-busy={isLoading}
+               />
+            </Suspense>
+         )}
       </>
    );
 };

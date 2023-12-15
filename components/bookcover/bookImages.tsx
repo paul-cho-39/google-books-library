@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import ROUTES from '@/utils/routes';
 import { RouteParams } from '@/lib/types/routes';
+import { forwardRef } from 'react';
 
 type OmittedImageProps = Omit<ImageProps, 'src' | 'width' | 'height' | 'priority'>;
 type GoogleImages = ImageLinksPairs | ImageLinks;
@@ -25,52 +26,104 @@ interface BookImageProps<T extends GoogleImages | string> extends OmittedImagePr
    className?: string;
 }
 
-const BookImage = <T extends GoogleImages | string>({
-   bookImage,
-   title,
-   width = 135,
-   height = 185,
-   priority,
-   id,
-   routeQuery,
-   isLinkHidden,
-   forwardedRef,
-   onMouseEnter,
-   onMouseLeave,
-   onLoadComplete,
-   className,
-   ...restProps
-}: BookImageProps<T>) => {
-   // when book src is not available
-   const imageSrc = typeof bookImage === 'string' ? bookImage : getAvailableThumbnail(bookImage);
-   const defaultStyle = 'inline-flex items-start justify-start mb-8';
+const BookImage = forwardRef<React.ElementRef<'div'>, BookImageProps<GoogleImages | string>>(
+   function BookImage(
+      {
+         bookImage,
+         title,
+         width = 135,
+         height = 185,
+         priority,
+         id,
+         routeQuery,
+         isLinkHidden,
+         forwardedRef,
+         onMouseEnter,
+         onMouseLeave,
+         onLoadComplete,
+         className,
+         ...restProps
+      },
+      ref
+   ) {
+      const imageSrc = typeof bookImage === 'string' ? bookImage : getAvailableThumbnail(bookImage);
+      const defaultStyle = 'inline-flex items-start justify-start mb-8';
 
-   return (
-      <div
-         ref={forwardedRef}
-         onMouseEnter={onMouseEnter}
-         onMouseLeave={onMouseLeave}
-         className={className ? clsx(defaultStyle, className) : defaultStyle}
-      >
-         <Link
-            hidden={isLinkHidden}
-            href={{ pathname: `/books/[slug]`, query: routeQuery }}
-            as={ROUTES.BOOKS.GOOGLE(id)}
-            aria-label={`Link to book: ${title}`}
+      return (
+         <div
+            ref={ref}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            className={className ? clsx(defaultStyle, className) : defaultStyle}
          >
-            <Image
-               src={imageSrc}
-               alt={`Picture of ${title} cover`}
-               priority={priority}
-               width={width}
-               height={height}
-               // onLoadingComplete={() => onLoadComplete && onLoadComplete(id)}
-               onLoad={() => onLoadComplete && onLoadComplete(id)}
-               {...restProps}
-            />
-         </Link>
-      </div>
-   );
-};
+            <Link
+               hidden={isLinkHidden}
+               href={{ pathname: `/books/[slug]`, query: routeQuery }}
+               as={ROUTES.BOOKS.GOOGLE(id)}
+               aria-label={`Link to book: ${title}`}
+            >
+               <Image
+                  src={imageSrc}
+                  alt={`Picture of ${title} cover`}
+                  priority={priority}
+                  width={width}
+                  height={height}
+                  // onLoadingComplete={() => onLoadComplete && onLoadComplete(id)}
+                  onLoad={() => onLoadComplete && onLoadComplete(id)}
+                  {...restProps}
+               />
+            </Link>
+         </div>
+      );
+   }
+);
 
 export default BookImage;
+
+// const BookImage = <T extends GoogleImages | string>({
+//    bookImage,
+//    title,
+//    width = 135,
+//    height = 185,
+//    priority,
+//    id,
+//    routeQuery,
+//    isLinkHidden,
+//    forwardedRef,
+//    onMouseEnter,
+//    onMouseLeave,
+//    onLoadComplete,
+//    className,
+//    ...restProps
+// }: BookImageProps<T>) => {
+//    // when book src is not available
+//    const imageSrc = typeof bookImage === 'string' ? bookImage : getAvailableThumbnail(bookImage);
+//    const defaultStyle = 'inline-flex items-start justify-start mb-8';
+
+//    return (
+//       <div
+//          ref={forwardedRef}
+//          onMouseEnter={onMouseEnter}
+//          onMouseLeave={onMouseLeave}
+//          className={className ? clsx(defaultStyle, className) : defaultStyle}
+//       >
+//          <Link
+//             hidden={isLinkHidden}
+//             href={{ pathname: `/books/[slug]`, query: routeQuery }}
+//             as={ROUTES.BOOKS.GOOGLE(id)}
+//             aria-label={`Link to book: ${title}`}
+//          >
+//             <Image
+//                src={imageSrc}
+//                alt={`Picture of ${title} cover`}
+//                priority={priority}
+//                width={width}
+//                height={height}
+//                // onLoadingComplete={() => onLoadComplete && onLoadComplete(id)}
+//                onLoad={() => onLoadComplete && onLoadComplete(id)}
+//                {...restProps}
+//             />
+//          </Link>
+//       </div>
+//    );
+// };
