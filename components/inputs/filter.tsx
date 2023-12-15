@@ -34,7 +34,7 @@ const FilterInput = () => {
    return (
       <div
          aria-label='Filter book search'
-         className='text-slate-800 dark:text-white max-w-md my-4 lg:mb-5 lg:max-w-xl'
+         className='text-slate-800 dark:text-white max-w-md py-4 lg:py-6 lg:max-w-xl'
       >
          <button
             role='button'
