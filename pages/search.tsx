@@ -93,22 +93,20 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    }
 
    return (
-      <APIErrorBoundary>
-         <SearchLayoutPage isSuccess={true}>
-            <main>
-               <FilterInput />
-               <div>
-                  {/* this also works with interaction observer */}
-                  {isFetching && isLoading ? (
-                     <BookSearchSkeleton books={5} />
-                  ) : (
-                     isSuccess && renderSuccessState()
-                  )}
-               </div>
-            </main>
-            <div ref={pageLoader}></div>
-         </SearchLayoutPage>
-      </APIErrorBoundary>
+      <SearchLayoutPage isSuccess={true}>
+         <main>
+            <FilterInput />
+            <div>
+               {/* this also works with interaction observer */}
+               {isFetching && isLoading ? (
+                  <BookSearchSkeleton books={5} />
+               ) : (
+                  isSuccess && renderSuccessState()
+               )}
+            </div>
+         </main>
+         <div ref={pageLoader}></div>
+      </SearchLayoutPage>
    );
 }
 

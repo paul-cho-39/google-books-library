@@ -89,7 +89,7 @@ export interface Navigation {
    current?: boolean;
 }
 
-export type NavigationParams = 'home' | 'profile' | 'categories';
+export type NavigationParams = 'home' | 'categories' | 'profile';
 export type IconProps = Record<NavigationParams, Icons>;
 
 export type Icons = {

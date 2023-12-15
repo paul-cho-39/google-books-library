@@ -9,10 +9,11 @@ interface LinkProps {
    iconsProp: Icons;
    // url: string;
    userId: string | null;
+   close: () => void;
    children?: React.ReactNode;
 }
 
-const IconLink = ({ iconsProp, userId, children }: LinkProps) => {
+const IconLink = ({ iconsProp, userId, close, children }: LinkProps) => {
    const { name, href, icon: Icon } = iconsProp;
    const profileHref = href as ProfileIcon;
    const nameLowerCase = name.toLocaleLowerCase() as NavigationParams;
@@ -22,6 +23,12 @@ const IconLink = ({ iconsProp, userId, children }: LinkProps) => {
       return name.toLocaleLowerCase() === 'profile'
          ? profileHref(userId as string)
          : (href as string);
+   };
+
+   const handleClose = () => {
+      setTimeout(() => {
+         close();
+      }, 300);
    };
 
    const CategorySection = (
@@ -35,7 +42,7 @@ const IconLink = ({ iconsProp, userId, children }: LinkProps) => {
 
    const HomeSection = (
       <Link href={`${getProfileHref()}`} passHref>
-         <a className='flex items-center'>
+         <a onClick={handleClose} className='flex items-center '>
             <Icon />
             {name}
          </a>
@@ -44,7 +51,7 @@ const IconLink = ({ iconsProp, userId, children }: LinkProps) => {
 
    const UserRequiredSection = !userId ? null : (
       <Link href={`${getProfileHref()}`} passHref>
-         <a className='flex items-center'>
+         <a onClick={handleClose} className='flex items-center'>
             <Icon />
             {name}
          </a>

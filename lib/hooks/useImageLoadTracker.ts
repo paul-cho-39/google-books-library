@@ -20,8 +20,5 @@ export default function useImageLoadTracker(totalImagesToLoad: number) {
       return loadedCount >= totalImagesToLoad;
    }, [loadedImages, totalImagesToLoad]);
 
-   console.log('total images ', Object.values(loadedImages).length);
-   console.log('total images ', loadedImages);
-
    return { handleImageLoad, areAllImagesLoaded };
 }

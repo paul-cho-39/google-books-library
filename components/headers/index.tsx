@@ -7,12 +7,17 @@ import { LargeNavigation } from './largeNavbar';
 import { MobileNavigation } from './mobile/mobileHeader';
 import SideNavigation, { SideNavigationProps } from './sidebar';
 import SideBarPortal from '../modal/portal';
+import filterIcons from '@/lib/helper/filterIcons';
 
 const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
    const { data: user } = useSession();
    const darkTheme = useDarkMode();
-   const [icons] = useState(IconProviders);
    const userId = user && getUserId(user as object, 'id');
+   const [icons, setIcons] = useState(() => filterIcons(IconProviders, userId));
+
+   useEffect(() => {
+      setIcons(filterIcons(IconProviders, userId));
+   }, [userId]);
 
    const navProps = {
       darkTheme,

@@ -6,17 +6,13 @@ import ROUTES from '@/utils/routes';
 const ErrorFallback = ({ error }: { error: Error }) => {
    return (
       <SearchLayoutPage className='flex flex-col' isSuccess={false}>
-         
          <main>
             <p className='mt-16 text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-200'>
                Something went wrong:
             </p>
-            <pre
-               role='alert'
-               className='mt-6 text-base leading-7 text-slate-800 dark:text-slate-200'
-            >
+            <p role='alert' className='mt-6 text-base leading-7 text-slate-800 dark:text-slate-200'>
                {error.message}
-            </pre>
+            </p>
             <div className='mt-10'>
                <Link passHref href={ROUTES.HOME}>
                   <a className='text-sm font-semibold leading-7 text-indigo-600 hover:underline hover:decoration-indigo-300'>

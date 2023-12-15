@@ -21,7 +21,7 @@ export type ThemeContextStyleParams = {
 export interface NavigationProps {
    user: Session | null;
    userId: string | null;
-   icons: IconProps;
+   icons: Partial<IconProps>;
    darkTheme: ThemeContextParams;
    // url: string;
    signOut: () => void;
