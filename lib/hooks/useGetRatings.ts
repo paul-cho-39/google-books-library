@@ -17,11 +17,6 @@ export default function useGetRatings(data: CategoriesQueries, isSuccess: boolea
    const initialData = queryClient.getQueryData<CategoriesQueries>(queryKeys.allGoogleCategories);
    const bookIds = extractIdsToArray(data as CategoriesQueries, initialData);
 
-   // debugging
-   // console.log('-------------------------');
-   // console.log('the INITIAL DATA IS : ', initialData);
-   // console.log('-------------------------');
-
    // require dynamic?
    return useQuery(
       queryKeys.ratings,

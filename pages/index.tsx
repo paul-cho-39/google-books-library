@@ -5,7 +5,12 @@ import classNames from 'classnames';
 
 import { useGetCategoriesQueries } from '@/lib/hooks/useGetCategoryQuery';
 
-import { Categories, serverSideCategories, topCategories } from '@/constants/categories';
+import {
+   Categories,
+   NUM_CATEGORIES_LOAD,
+   serverSideCategories,
+   topCategories,
+} from '@/constants/categories';
 import { getBookWidth, getContainerWidth } from '@/lib/helper/books/getBookWidth';
 
 import { BookImageSkeleton, DescriptionSkeleton } from '@/components/loaders/bookcardsSkeleton';
@@ -43,12 +48,7 @@ const Home: NextPageWithLayout<
       byNewest: false,
    };
 
-   // TODO: combine the data instead
-   const {
-      dataWithKeys: googleData,
-      isGoogleDataSuccess,
-      isGoogleDataLoading,
-   } = useGetCategoriesQueries({
+   const { cache: googleData, isGoogleDataLoading } = useGetCategoriesQueries({
       initialData: data,
       loadItems: categoriesToLoad, // load more items here
       enabled: !!data,
@@ -64,13 +64,14 @@ const Home: NextPageWithLayout<
 
    const combinedData = { ...nytData, ...googleData };
 
+   // get the entire bookIds and check the total number of items rendered
    const { handleImageLoad, areAllImagesLoaded } = useImageLoadTracker(
       getTotalItemsLength(combinedData as Record<string, unknown[]>)
    );
    const areImagesLoadComplete = areAllImagesLoaded();
 
    const handleProcessData = () => {
-      setCategoriesToLoad((prev) => prev + 4);
+      setCategoriesToLoad((prev) => prev + NUM_CATEGORIES_LOAD);
    };
 
    const {

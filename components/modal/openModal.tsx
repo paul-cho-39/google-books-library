@@ -16,7 +16,7 @@ export default function ModalOpener({ isOpen, setIsOpen, DialogTitle, children }
    return (
       <Transition appear show={isOpen} as={Fragment}>
          {/* maybe set z-highest z-higher z-high */}
-         <Dialog as='div' className='relative z-50 dark:bg-slate-400' onClose={closeModal}>
+         <Dialog as='div' className='relative z-50 dark:bg-slate-700' onClose={closeModal}>
             <Transition.Child
                as={Fragment}
                enter='ease-out duration-300'

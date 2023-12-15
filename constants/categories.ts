@@ -59,6 +59,8 @@ export const topCategories = [
    'RELIGION',
 ];
 
+export const NUM_CATEGORIES_LOAD = 4;
+
 type BookSection = 'Best Seller' | 'Recommended';
 
 export type CategoryHeaderParams = BookSection | Categories | string;

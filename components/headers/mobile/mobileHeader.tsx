@@ -22,13 +22,13 @@ export const MobileNavigation = ({
    signOut,
 }: NavigationProps) => {
    return (
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between md:justify-start'>
          {/* off canvas menu for mobile */}
          {/* menu opener */}
          <Menu
             as={'div'}
             role='dialog'
-            className='relative inline-flex items-center justify-center z-40 dark:bg-charcoal'
+            className='relative inline-flex items-center justify-center md:flex-shrink z-40 dark:bg-charcoal'
             aria-modal='true'
          >
             {({ close }) => (
@@ -97,7 +97,7 @@ export const MobileNavigation = ({
             )}
          </Menu>
          {/* <div className='relative top-0 left-[10%] p-1 max-w-xs w-full md:max-w-sm'> */}
-         <div className=''>
+         <div className='md:px-14 md:justify-end'>
             <SearchInput />
          </div>
       </div>

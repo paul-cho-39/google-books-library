@@ -21,7 +21,10 @@ export const ModalInnerButton = ({ id, shouldSignOut = false }: ModalButtonProps
       apiRequest(params).then(() => (shouldSignOut ? signOut({ callbackUrl: '/' }) : null));
    };
    return (
-      <button className='text-red-600 text-lg p-2 my-2 lg:my-4' onClick={onSubmit}>
+      <button
+         className='text-red-400 border-2 border-spacing-4 border-gray-400 text-lg p-2 my-2 lg:my-4'
+         onClick={onSubmit}
+      >
          Delete Account
       </button>
    );

@@ -1,9 +1,16 @@
-import { QueryClient, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+   QueryClient,
+   UseQueryResult,
+   useQueries,
+   useQuery,
+   useQueryClient,
+} from '@tanstack/react-query';
 import {
    Categories,
    TopCateogry,
    serverSideCategories,
    topCategories,
+   NUM_CATEGORIES_LOAD,
 } from '@/constants/categories';
 import queryKeys from '@/utils/queryKeys';
 import googleApi, { MetaProps } from '@/models/_api/fetchGoogleUrl';
@@ -11,6 +18,7 @@ import { Pages, Items, GoogleUpdatedFields } from '../types/googleBookTypes';
 import { createUniqueData } from '../helper/books/filterUniqueData';
 import { fetcher, throttledFetcher } from '@/utils/fetchData';
 import { CategoriesQueries, CategoryQuery } from '../types/serverTypes';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface CategoryQueryParams<TData extends CategoriesQueries | GoogleUpdatedFields> {
    initialData?: TData;
@@ -28,6 +36,11 @@ interface MultipleQueries extends CategoryQueryParams<CategoriesQueries> {
    returnNumberOfItems?: number;
 }
 
+/**
+ * A hook for fetching and managing for a specific category of data
+ * @param {Object} SingleQuery {initialData, category, enabled, meta, keepPreviousData}
+ * @returns
+ */
 export default function useGetCategoryQuery({
    initialData,
    category,
@@ -38,13 +51,6 @@ export default function useGetCategoryQuery({
    const queryClient = new QueryClient();
 
    const lowercaseCategory = (category as string)?.toLocaleLowerCase();
-
-   // console.log('DEBUGGING HERE!!');
-   // console.log('-----------------------------------');
-   // console.log('-----------------------------------');
-   // console.log('-----------------------------------');
-   // console.log('-----------------------------------');
-   // console.log('LOWERC CASE CATEGORY IS: ', lowercaseCategory);
    const cache = queryClient.getQueryData(
       queryKeys.categories(lowercaseCategory, meta)
    ) as GoogleUpdatedFields;
@@ -73,21 +79,17 @@ export default function useGetCategoryQuery({
    // this function returns cleaned data
    const cleanedData = createUniqueData(data?.data?.items);
 
-   // console.log('DEBUGGING HERE!!');
-   // console.log('-----------------------------------');
-   // console.log('-----------------------------------');
-   // console.log('-----------------------------------');
-   // console.log('-----------------------------------');
-   // console.log('CLEANED DATA IS: ', cleanedData);
-
    return {
       cleanedData,
       data,
    };
 }
 
-// change the cache here
-const LOAD_ITEMS = 4;
+/**
+ * Fetches batch categories and manages cache. The default caching time is Infinity.
+ * @param {Object} MultipleQueries {initialData, loadItems, enabled, meta, returnNumberOfItems = 6 }
+ * @returns
+ */
 export function useGetCategoriesQueries({
    initialData,
    loadItems,
@@ -97,9 +99,13 @@ export function useGetCategoriesQueries({
 }: MultipleQueries) {
    const allCategories = [...serverSideCategories, ...topCategories];
 
-   const itemsToSlice = Math.min(returnNumberOfItems, meta?.maxResultNumber ?? 15);
-   const updatedCategories = allCategories.slice(0, loadItems + LOAD_ITEMS);
+   // updates the index to slice when 'Load More' button is pressed
+   const nextIndex = loadItems + NUM_CATEGORIES_LOAD;
+   const indexTo = nextIndex >= allCategories.length ? allCategories.length : nextIndex;
+   const updatedCategories = useMemo(() => allCategories.slice(loadItems, indexTo), [loadItems]);
 
+   // the cache here is the data that is being passed.
+   // When user comes back to home page and all data is cached inside and do not require re-fetching data.
    const queryClient = useQueryClient();
    const cache = queryClient.getQueryData<CategoriesQueries>(queryKeys.allGoogleCategories);
 
@@ -112,6 +118,7 @@ export function useGetCategoriesQueries({
             const data = await fetcher(url);
             return data;
          },
+         // if initial data is already been cached
          initialData: () => {
             if (initialData) {
                return initialData[lowercaseCategory];
@@ -120,17 +127,17 @@ export function useGetCategoriesQueries({
          // select: (data: GoogleUpdatedFields) => data.items,
          enabled: enabled,
          keepPreviousData: true,
+         cacheTime: Infinity,
       };
    });
 
-   const queriesData = useQueries<unknown[]>({
+   const queriesData = useQueries<(typeof categoryKeys)[]>({
       queries: categoryKeys,
    });
 
    const isGoogleDataSuccess = queriesData.every((queryData) => queryData.status === 'success');
    const isGoogleDataLoading = queriesData.some((queryData) => queryData.status === 'loading');
 
-   // should refactor; this did not work inside 'onSuccess' callback?
    let dataWithKeys;
    if (isGoogleDataSuccess) {
       dataWithKeys = updatedCategories.reduce((acc, category, index) => {
@@ -142,6 +149,7 @@ export function useGetCategoriesQueries({
          }
 
          const data = queryData.data as GoogleUpdatedFields;
+         const itemsToSlice = Math.min(returnNumberOfItems, meta?.maxResultNumber ?? 15);
          const cleanedData = createUniqueData(data.items)?.slice(0, itemsToSlice);
 
          acc[category.toLowerCase()] = cleanedData;
@@ -150,15 +158,96 @@ export function useGetCategoriesQueries({
       }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
    }
 
-   if (!cache && dataWithKeys) {
-      queryClient.setQueryData(queryKeys.allGoogleCategories, dataWithKeys);
+   // set up new cache if theres no cache
+   if (!cache || isGoogleDataSuccess) {
+      queryClient.setQueryData(queryKeys.allGoogleCategories, {
+         ...cache,
+         ...dataWithKeys,
+      });
    }
 
    return {
       dataWithKeys,
-      // transformedData,
+      cache,
       isGoogleDataSuccess,
       isGoogleDataLoading,
       queriesData,
    };
 }
+
+// deprecated version:
+// export function useGetCategoriesQueries({
+//    initialData,
+//    loadItems,
+//    enabled,
+//    meta,
+//    returnNumberOfItems = 6,
+// }: MultipleQueries) {
+//    const allCategories = [...serverSideCategories, ...topCategories];
+
+//    const itemsToSlice = Math.min(returnNumberOfItems, meta?.maxResultNumber ?? 15);
+//    const updatedCategories = allCategories.slice(0, loadItems + LOAD_ITEMS);
+
+//    const queryClient = useQueryClient();
+//    const cache = queryClient.getQueryData<CategoriesQueries>(queryKeys.allGoogleCategories);
+
+//    const categoryKeys = updatedCategories.map((category, index) => {
+//       const lowercaseCategory = category.toLocaleLowerCase();
+//       return {
+//          queryKey: queryKeys.categories(lowercaseCategory, meta),
+//          queryFn: async () => {
+//             const url = googleApi.getUrlBySubject(lowercaseCategory, meta);
+//             const data = await fetcher(url);
+//             return data;
+//          },
+//          initialData: () => {
+//             if (initialData) {
+//                return initialData[lowercaseCategory];
+//             }
+//          },
+//          // select: (data: GoogleUpdatedFields) => data.items,
+//          enabled: enabled,
+//          keepPreviousData: true,
+//          cacheTime: Infinity,
+//       };
+//    });
+
+//    const queriesData = useQueries<unknown[]>({
+//       queries: categoryKeys,
+//    });
+
+//    const isGoogleDataSuccess = queriesData.every((queryData) => queryData.status === 'success');
+//    const isGoogleDataLoading = queriesData.some((queryData) => queryData.status === 'loading');
+
+//    // should refactor; this did not work inside 'onSuccess' callback?
+//    let dataWithKeys;
+//    if (isGoogleDataSuccess) {
+//       dataWithKeys = updatedCategories.reduce((acc, category, index) => {
+//          const queryData = queriesData[index];
+
+//          // DEBUGGING
+//          if (queryData.isError) {
+//             throw new Error(`${category} data failed to fetch.`);
+//          }
+
+//          const data = queryData.data as GoogleUpdatedFields;
+//          const cleanedData = createUniqueData(data.items)?.slice(0, itemsToSlice);
+
+//          acc[category.toLowerCase()] = cleanedData;
+
+//          return acc;
+//       }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
+//    }
+
+//    if (!cache && dataWithKeys) {
+//       queryClient.setQueryData(queryKeys.allGoogleCategories, dataWithKeys);
+//    }
+
+//    return {
+//       dataWithKeys,
+//       // transformedData,
+//       isGoogleDataSuccess,
+//       isGoogleDataLoading,
+//       queriesData,
+//    };
+// }

@@ -13,6 +13,9 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
    const { data: user } = useSession();
    const darkTheme = useDarkMode();
    const userId = user && getUserId(user as object, 'id');
+
+   // the icons depend on whether userId is not null
+   // specifically, the 'profile' requires userId.
    const [icons, setIcons] = useState(() => filterIcons(IconProviders, userId));
 
    useEffect(() => {
