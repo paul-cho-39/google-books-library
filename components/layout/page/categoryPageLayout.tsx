@@ -9,15 +9,6 @@ interface CategoryPageLayoutProps extends LayoutBase {
 }
 
 const CategoryPageLayout = ({ category, isLoading, children }: CategoryPageLayoutProps) => {
-   if (isLoading) {
-      return (
-         <div aria-busy={true} className='w-full min-h-screen dark:bg-slate-800'>
-            <div className='lg:mt-20 mt-12'>
-               <Spinner />
-            </div>
-         </div>
-      );
-   }
    return (
       <div className='w-full min-h-screen dark:bg-slate-800'>
          <NextHead

@@ -31,6 +31,7 @@ import useImageLoadTracker from '@/lib/hooks/useImageLoadTracker';
 import BookImage from '@/components/bookcover/bookImages';
 
 import type { NextPageWithLayout } from './../_app';
+import Spinner from '@/components/loaders/spinner';
 
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
 
@@ -117,6 +118,16 @@ const BookCategoryPages: NextPageWithLayout<
    const CATEGORY_NYT_HEADER =
       bestSellers &&
       `${capitalizeWords(category as string)} Best Sellers (${bestSellers.published_date})`;
+
+   if (isLoading) {
+      return (
+         <div aria-busy={true} className='w-full min-h-screen dark:bg-slate-800'>
+            <div className='lg:mt-20 mt-12'>
+               <Spinner size='lg' color='blue' />
+            </div>
+         </div>
+      );
+   }
 
    return (
       <>

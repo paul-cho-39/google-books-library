@@ -9,7 +9,7 @@ const HomeLayout = ({ children, isLoading }: LayoutBase) => {
       return (
          <div aria-busy={true} className='w-full h-full dark:bg-slate-800'>
             <div className='lg:mt-20 mt-12'>
-               <Spinner />
+               <Spinner size='lg' color='blue' />
             </div>
          </div>
       );

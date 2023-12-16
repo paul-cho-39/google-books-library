@@ -1,5 +1,5 @@
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
-import { useRef, useState, lazy, Suspense, ReactElement } from 'react';
+import { useRef, useState, lazy, Suspense, ReactElement, useMemo } from 'react';
 import { ImageLinks } from '@/lib/types/googleBookTypes';
 import classNames from 'classnames';
 
@@ -67,15 +67,21 @@ const Home: NextPageWithLayout<
       returnNumberOfItems: MAX_RESULT,
    });
 
-   const googleData = !cache ? currentData : cache;
-
    const {
       transformedData: nytData,
       isNytDataSuccess,
       isNytDataLoading,
    } = useGetNytBestSellers({});
 
-   const combinedData = { ...nytData, ...googleData };
+   const combinedData = useMemo(() => {
+      if (!cache) {
+         return { ...nytData, ...currentData };
+      } else {
+         return { ...nytData, ...cache };
+      }
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [cache, currentData]);
 
    // get the entire bookIds and check the total number of items rendered
    const { handleImageLoad, areAllImagesLoaded } = useImageLoadTracker(
@@ -103,6 +109,16 @@ const Home: NextPageWithLayout<
    const priorityCategories = ['FICTION', 'NONFICTION', ...serverSideCategories];
    const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
    const isLoading = isNytDataLoading || isGoogleDataLoading;
+
+   if (isLoading) {
+      return (
+         <div aria-busy={true} className='w-full h-full dark:bg-slate-800'>
+            <div className='lg:mt-20 mt-12'>
+               <Spinner size='lg' color='blue' />
+            </div>
+         </div>
+      );
+   }
 
    return (
       <>
@@ -212,6 +228,8 @@ export const getStaticProps: GetStaticProps<{
 
 Home.getLayout = function getLayout(page: ReactElement) {
    const { isLoading } = page.props as { isLoading: boolean };
+
+   console.log('is it loading?: ', isLoading);
 
    return <HomeLayout isLoading={isLoading}>{page}</HomeLayout>;
 };

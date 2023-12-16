@@ -2,6 +2,12 @@ import { useCallback, useState } from 'react';
 
 type ImageLoadParams = Record<string, boolean>;
 
+/**
+ * Checks whether images are loaded. Ensures all images are loaded and the images loaded have to be more than
+ * 'totalImagesToLoad'
+ * @param {number} totalImagesToLoad
+ * @returns
+ */
 export default function useImageLoadTracker(totalImagesToLoad: number) {
    const [loadedImages, setLoadedImages] = useState<ImageLoadParams>({});
 

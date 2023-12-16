@@ -29,5 +29,5 @@ export interface NavigationProps {
 
 export interface LayoutBase {
    children: React.ReactNode;
-   isLoading: boolean;
+   isLoading?: boolean;
 }
