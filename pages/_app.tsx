@@ -1,6 +1,6 @@
 import Router from 'next/router';
 import React, { ReactElement, ReactNode, useState } from 'react';
-import type { AppProps } from 'next/app';
+import type { AppProps, NextWebVitalsMetric } from 'next/app';
 import { SessionProvider, SessionProviderProps } from 'next-auth/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -42,6 +42,10 @@ Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
+export function reportWebVitals(metric: NextWebVitalsMetric): void {
+   console.log(metric);
+}
+
 export const queryClient = new QueryClient({
    defaultOptions: {
       queries: {
@@ -53,7 +57,7 @@ export const queryClient = new QueryClient({
    },
 });
 
-function MyApp({ Component, pageProps }: AppPropsWithLayout) {
+function MyApp({ Component, pageProps }) {
    // defaults to the sidebar open when application starts
    const [isSidebarOpen, setSidebarOpen] = useState(true);
    const { session, ...otherProps } = pageProps;
