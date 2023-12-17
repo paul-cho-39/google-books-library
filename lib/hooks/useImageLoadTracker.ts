@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 type ImageLoadParams = Record<string, boolean>;
 
 /**
- * Checks whether images are loaded. Ensures all images are loaded and the images loaded have to be more than
+ * Checks whether images are loaded. Ensures all images are loaded and the images loaded to be more than
  * 'totalImagesToLoad'
  * @param {number} totalImagesToLoad
  * @returns
@@ -19,6 +19,8 @@ export default function useImageLoadTracker(totalImagesToLoad: number) {
       }));
    }, []);
 
+   // console.log('ALL THE LOADED IMAGES: ', loadedImages.length);
+
    // if images equal to or more than the number of images to be loaded
    // then all images have completed loading and return 'true'
    const areAllImagesLoaded = useCallback(() => {
@@ -26,5 +28,5 @@ export default function useImageLoadTracker(totalImagesToLoad: number) {
       return loadedCount >= totalImagesToLoad;
    }, [loadedImages, totalImagesToLoad]);
 
-   return { handleImageLoad, areAllImagesLoaded };
+   return { handleImageLoad, areAllImagesLoaded, loadedImages };
 }

@@ -13,29 +13,24 @@ import {
 } from '@/constants/categories';
 import { getBookWidth, getContainerWidth } from '@/lib/helper/books/getBookWidth';
 
-import { BookImageSkeleton, DescriptionSkeleton } from '@/components/loaders/bookcardsSkeleton';
+import { DescriptionSkeleton } from '@/components/loaders/bookcardsSkeleton';
 import { CategoryDisplay } from '@/components/contents/home/categories';
-// import { DividerButtons } from '@/components/layout/dividers';
 import HomeLayout from '@/components/layout/page/homeLayout';
 
 import layoutManager from '@/constants/layouts';
 import { encodeRoutes } from '@/utils/routes';
 import { batchFetchGoogleCategories } from '@/utils/fetchData';
-import { CategoriesQueries } from '@/lib/types/serverTypes';
+import { CategoriesQueries, TestingCategoriesQueries } from '@/lib/types/serverTypes';
 import { useGetNytBestSellers } from '@/lib/hooks/useGetNytBestSeller';
 import useFloatingPosition from '@/lib/hooks/useFloatingPosition';
 import useImageLoadTracker from '@/lib/hooks/useImageLoadTracker';
-import getTotalItemsLength from '@/lib/helper/getObjLength';
+import getTotalItemsLength, { getBooksDataLength } from '@/lib/helper/getObjLength';
 import type { NextPageWithLayout } from './_app';
 
 import BookImage from '@/components/bookcover/bookImages';
-import Spinner from '@/components/loaders/spinner';
+import { DividerButtons } from '@/components/layout/dividers';
 
-const LazyDividerButtons = lazy(() =>
-   import('@/components/layout/dividers').then((module) => ({ default: module.DividerButtons }))
-);
 const CategoryDescription = lazy(() => import('@/components/contents/home/categoryDescription'));
-// const BookImage = lazy(() => import('@/components/bookcover/bookImages'));
 
 const MAX_RESULT = 6;
 const TOTAL_COLS = 6;
@@ -55,10 +50,10 @@ const Home: NextPageWithLayout<
    };
 
    const {
-      dataWithKeys: currentData,
       cache,
       isGoogleDataSuccess,
       isGoogleDataLoading,
+      categoriesWithResults: googleQueriesData,
    } = useGetCategoriesQueries({
       initialData: data,
       loadItems: categoriesToLoad, // load more items here
@@ -67,25 +62,22 @@ const Home: NextPageWithLayout<
       returnNumberOfItems: MAX_RESULT,
    });
 
-   const {
-      transformedData: nytData,
-      isNytDataSuccess,
-      isNytDataLoading,
-   } = useGetNytBestSellers({});
+   const { isNytDataLoading, categoriesWithResults: nytQueriesData } = useGetNytBestSellers({});
 
+   // there is a slight delay so until the cache is registered it will use googleQueriesData
    const combinedData = useMemo(() => {
       if (!cache) {
-         return { ...nytData, ...currentData };
+         return [...nytQueriesData, ...googleQueriesData];
       } else {
-         return { ...nytData, ...cache };
+         return [...nytQueriesData, ...cache];
       }
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [cache, currentData]);
+   }, [cache, googleQueriesData]);
 
    // get the entire bookIds and check the total number of items rendered
-   const { handleImageLoad, areAllImagesLoaded } = useImageLoadTracker(
-      getTotalItemsLength(combinedData as Record<string, unknown[]>)
+   const { handleImageLoad, areAllImagesLoaded, loadedImages } = useImageLoadTracker(
+      getBooksDataLength(combinedData)
    );
    const areImagesLoadComplete = areAllImagesLoaded();
 
@@ -110,25 +102,26 @@ const Home: NextPageWithLayout<
    const isPriority = (category: string) => priorityCategories.includes(category.toUpperCase());
    const isLoading = isNytDataLoading || isGoogleDataLoading;
 
-   if (isLoading) {
-      return (
-         <div aria-busy={true} className='w-full h-full dark:bg-slate-800'>
-            <div className='lg:mt-20 mt-12'>
-               <Spinner size='lg' color='blue' />
-            </div>
-         </div>
-      );
-   }
+   const getUniqueId = (id: string, cat: string) => {
+      return id + cat;
+   };
 
    return (
       <>
-         {Object.entries(combinedData).map(([key, value], index) => (
-            <CategoryDisplay key={key} ref={categoryRefs} category={key as Categories}>
-               {value &&
-                  value?.map((book, index) => {
-                     const hoveredEl = isHovered.id == book.id &&
+         {combinedData.map(({ category, data, isLoading, isError }, index) => (
+            <CategoryDisplay
+               key={category}
+               ref={categoryRefs}
+               category={category as Categories}
+               isError={isError}
+               isLoading={isLoading}
+            >
+               {data &&
+                  data?.map((book, index) => {
+                     const hoveredEl = isHovered.id == getUniqueId(book.id, category) &&
                         (isHovered.hovered || isHovered.isFloatHovered) && (
                            <div
+                              key={book.id}
                               ref={floatingRef}
                               onMouseLeave={onMouseLeaveDescription}
                               style={{
@@ -152,7 +145,7 @@ const Home: NextPageWithLayout<
                                        // TODO: with rating write a helper function for total reviews
                                        averageRating={book.volumeInfo?.averageRating}
                                        totalReviews={book.volumeInfo?.ratingsCount}
-                                       routeQuery={encodeRoutes.home(key, meta)}
+                                       routeQuery={encodeRoutes.home(category, meta)}
                                     />
                                  </Suspense>
                               )}
@@ -160,32 +153,34 @@ const Home: NextPageWithLayout<
                         );
                      return (
                         <>
-                           {/* <Suspense
-                              fallback={
-                                 <BookImageSkeleton height={HEIGHT} getWidth={getBookWidth} />
-                              }
-                           > */}
                            <BookImage
                               key={book.id}
                               id={book.id}
                               title={book.volumeInfo.title}
                               width={getBookWidth(HEIGHT)}
                               height={HEIGHT}
-                              ref={(el: HTMLDivElement) => setImageRef(book.id, el)}
+                              ref={(el: HTMLDivElement) =>
+                                 setImageRef(getUniqueId(book.id, category), el)
+                              }
                               bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                              priority={isPriority(key)}
-                              onMouseEnter={() => onMouseEnter(book.id, index)}
+                              priority={isPriority(category)}
+                              onMouseEnter={() =>
+                                 onMouseEnter(getUniqueId(book.id, category), index)
+                              }
                               onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
-                              onLoadComplete={() => handleImageLoad(book.id, key)}
-                              routeQuery={encodeRoutes.home(key, meta)}
+                              onLoadComplete={() => {
+                                 console.log('load is completed');
+                                 handleImageLoad(book.id, category);
+                              }}
+                              routeQuery={encodeRoutes.home(category, meta)}
                               className={classNames(
-                                 isHovered.hovered && isHovered.id === book.id
+                                 isHovered.hovered &&
+                                    isHovered.id === getUniqueId(book.id, category)
                                     ? 'opacity-70'
                                     : 'opacity-100',
                                  'lg:col-span-1 px-4 lg:px-2 inline-flex items-center justify-center cursor-pointer'
                               )}
                            />
-                           {/* </Suspense> */}
                            {hoveredEl}
                         </>
                      );
@@ -193,15 +188,13 @@ const Home: NextPageWithLayout<
             </CategoryDisplay>
          ))}
          {isGoogleDataSuccess && (
-            <Suspense fallback={<Spinner size='sm' color='indigo' />}>
-               <LazyDividerButtons
-                  onClick={handleProcessData}
-                  numberToLoad={categoriesToLoad}
-                  isLoading={isLoading}
-                  title='Load More'
-                  aria-busy={isLoading}
-               />
-            </Suspense>
+            <DividerButtons
+               onClick={handleProcessData}
+               numberToLoad={categoriesToLoad}
+               isLoading={isLoading}
+               title='Load More'
+               aria-busy={isLoading}
+            />
          )}
       </>
    );

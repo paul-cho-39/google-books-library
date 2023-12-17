@@ -69,7 +69,7 @@ const BookImage = forwardRef<React.ElementRef<'div'>, BookImageProps<GoogleImage
                   width={width}
                   height={height}
                   // onLoadingComplete={() => onLoadComplete && onLoadComplete(id)}
-                  onLoad={() => onLoadComplete && onLoadComplete(id)}
+                  onLoadingComplete={() => onLoadComplete && onLoadComplete(id)}
                   {...restProps}
                />
             </Link>

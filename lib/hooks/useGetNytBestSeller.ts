@@ -8,7 +8,11 @@ import nytApi, {
 import { fetcher, throttledFetcher } from '@/utils/fetchData';
 import queryKeys from '@/utils/queryKeys';
 import { BestSellerData, BookReview, Books, ReviewData } from '../types/nytBookTypes';
-import { CategoriesNytQueries, CategoriesQueries } from '../types/serverTypes';
+import {
+   CategoriesNytQueries,
+   CategoriesQueries,
+   TestingCategoriesQueries,
+} from '../types/serverTypes';
 import { transformStrToArray } from '../helper/transformChar';
 import { handleNytId } from '@/utils/handleIds';
 
@@ -113,31 +117,31 @@ export function useGetNytBestSellers({ initialData, date }: NytBookMultiQueries)
    const isNytDataSuccess = queriesData.every((queryData) => queryData.status === 'success');
    const isNytDataLoading = queriesData.some((queryData) => queryData.status === 'loading');
 
-   let transformedData;
-   if (isNytDataSuccess) {
-      const dataWithKeys = categories.reduce((acc, cat, index) => {
-         const queryData = queriesData[index];
+   const categoriesWithResults = queriesData.map((queryResult, index) => {
+      const { data, ...rest } = queryResult;
+      const sanitizedData = sanitizeData(data as ReviewData<BestSellerData>);
+      return {
+         category: categories[index],
+         data: sanitizedData,
+         isLoading: rest.isLoading,
+         isError: rest.isError,
+      };
+   }) as TestingCategoriesQueries[];
 
-         if (queryData.isError) throw new Error(`${cat} data failed to fetch.`);
-         acc[cat.toLocaleLowerCase()] = queryData.data as ReviewData<BestSellerData>;
-         return acc;
-      }, {} as CategoriesNytQueries);
-
-      const newData = transformData(dataWithKeys);
-      transformedData = newData;
-   }
-
-   return { queriesData, isNytDataSuccess, isNytDataLoading, transformedData };
+   return { categoriesWithResults, isNytDataSuccess, isNytDataLoading };
 }
 
-function transformData(data: CategoriesNytQueries, numberOfBooks: number = 6) {
-   const sanitized: CategoriesQueries = {};
-   for (const [key, value] of Object.entries(data)) {
-      // returns six of the result
-      sanitized[key] = value.results.books.slice(0, numberOfBooks).map((book) => ({
+/**
+ * Transforms data so that it is compatible with Google books API data
+ * @param data - The response data
+ * @param numberOfBooks - The end number of items to slice
+ */
+function sanitizeData(data: ReviewData<BestSellerData>, numberOfBooks: number = 6) {
+   return data?.results.books.slice(0, numberOfBooks).map((book) => {
+      return {
          id: handleNytId.appendSuffix(book.primary_isbn13),
          volumeInfo: {
-            authors: transformStrToArray(book.author),
+            authors: transformStrToArray(book?.author),
             title: book.title,
             description: book.description,
             publisher: book.publisher,
@@ -146,10 +150,9 @@ function transformData(data: CategoriesNytQueries, numberOfBooks: number = 6) {
                smallThumbnail: '',
             },
          },
-         bestsellers_date: value.results.bestsellers_date,
+         bestsellers_date: data.results.bestsellers_date,
          weeks_on_list: book.weeks_on_list,
-         displayName: value.results.display_name,
-      }));
-   }
-   return sanitized;
+         displayName: data.results.display_name,
+      };
+   });
 }

@@ -10,10 +10,11 @@ import { changeDirection } from '../helper/getContainerPos';
  * @param {boolean} multiCols
  * @returns
  */
-function useFloatingPosition(totalCols: number, multiCols: boolean) {
+function useFloatingPosition(totalCols: number, multiCols: boolean, deps?: readonly []) {
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+   // event listener for when mouse enters for setting the id and removing the id
    const { isHovered, onMouseEnter, onMouseLeave, onMouseLeaveDescription } =
       useHoverDisplayDescription();
 

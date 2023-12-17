@@ -7,6 +7,10 @@ type HoveredProps = {
    index: number | null;
 };
 
+/**
+ * A hook that listens to mouse hovered events and sets and removes id based on the hovered container.
+ * @returns
+ */
 function useHoverDisplayDescription() {
    const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout>(null!);
    const [isHovered, setIsHovered] = useState<HoveredProps>({

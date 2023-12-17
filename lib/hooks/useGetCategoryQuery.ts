@@ -17,7 +17,12 @@ import googleApi, { MetaProps } from '@/models/_api/fetchGoogleUrl';
 import { Pages, Items, GoogleUpdatedFields } from '../types/googleBookTypes';
 import { createUniqueData } from '../helper/books/filterUniqueData';
 import { fetcher, throttledFetcher } from '@/utils/fetchData';
-import { CategoriesQueries, CategoryQuery } from '../types/serverTypes';
+import {
+   CategoriesQueries,
+   CategoryQuery,
+   CombinedData,
+   TestingCategoriesQueries,
+} from '../types/serverTypes';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface CategoryQueryParams<TData extends CategoriesQueries | GoogleUpdatedFields> {
@@ -107,7 +112,9 @@ export function useGetCategoriesQueries({
    // the cache here is the data that is being passed.
    // When user comes back to home page and all data is cached inside and do not require re-fetching data.
    const queryClient = useQueryClient();
-   const cache = queryClient.getQueryData<CategoriesQueries>(queryKeys.allGoogleCategories);
+   const cache = queryClient.getQueryData<TestingCategoriesQueries[]>(
+      queryKeys.allGoogleCategories
+   );
 
    const categoryKeys = updatedCategories.map((category, index) => {
       const lowercaseCategory = category.toLocaleLowerCase();
@@ -138,39 +145,75 @@ export function useGetCategoriesQueries({
    const isGoogleDataSuccess = queriesData.every((queryData) => queryData.status === 'success');
    const isGoogleDataLoading = queriesData.some((queryData) => queryData.status === 'loading');
 
-   let dataWithKeys;
-   if (isGoogleDataSuccess) {
-      dataWithKeys = updatedCategories.reduce((acc, category, index) => {
-         const queryData = queriesData[index];
-
-         // DEBUGGING
-         if (queryData.isError) {
-            throw new Error(`${category} data failed to fetch.`);
-         }
-
-         const data = queryData.data as GoogleUpdatedFields;
-         const itemsToSlice = Math.min(returnNumberOfItems, meta?.maxResultNumber ?? 15);
-         const cleanedData = createUniqueData(data.items)?.slice(0, itemsToSlice);
-
-         acc[category.toLowerCase()] = cleanedData;
-
-         return acc;
-      }, {} as { [key: TopCateogry]: unknown }) as CategoriesQueries;
-   }
+   const categoriesWithResults = queriesData.map((queryResult, index) => {
+      const { data, ...rest } = queryResult;
+      const googleData = data as GoogleUpdatedFields;
+      const itemsToSlice = Math.min(returnNumberOfItems, meta?.maxResultNumber || 15);
+      const cleanedData = createUniqueData(googleData.items)?.slice(0, itemsToSlice);
+      return {
+         category: updatedCategories[index],
+         data: cleanedData,
+         isLoading: rest.isLoading,
+         isError: rest.isError,
+      };
+   }) as TestingCategoriesQueries[];
 
    // set up new cache if theres no cache
    if (!cache || isGoogleDataSuccess) {
-      queryClient.setQueryData(queryKeys.allGoogleCategories, {
-         ...cache,
-         ...dataWithKeys,
-      });
+      const mergedData = mergeDataWithoutDuplicates(cache, categoriesWithResults, 6);
+      queryClient.setQueryData<TestingCategoriesQueries[]>(
+         queryKeys.allGoogleCategories,
+         mergedData
+      );
    }
 
    return {
-      dataWithKeys,
       cache,
       isGoogleDataSuccess,
       isGoogleDataLoading,
-      queriesData,
+      categoriesWithResults,
    };
+}
+
+/**
+ * Helper function for setting new incoming data. It removes any duplicates from the current cache.
+ * @param cache
+ * @param newData
+ * @param itemsToSlice
+ * @returns
+ */
+function mergeDataWithoutDuplicates(
+   cache: TestingCategoriesQueries[] | undefined,
+   newData: TestingCategoriesQueries[],
+   itemsToSlice: number
+): TestingCategoriesQueries[] {
+   if (!cache) return newData;
+
+   const existingCategories = new Map<string, TestingCategoriesQueries>(
+      cache?.map((item) => [item.category, item])
+   );
+
+   newData.forEach((newItem) => {
+      const existingCat = existingCategories.get(newItem.category);
+
+      if (existingCat) {
+         // Merge new items with existing items, avoiding duplicates
+         const mergedItems = [
+            ...(existingCat.data as CombinedData[]),
+            ...(newItem.data as CombinedData[]),
+         ];
+         const uniqueItemIds = new Set(mergedItems.map((item) => item.id));
+         const uniqueItems = Array.from(uniqueItemIds)
+            .map((id) => mergedItems.find((item) => item.id === id)!)
+            .slice(0, itemsToSlice);
+
+         existingCategories.set(newItem.category, { ...existingCat, data: uniqueItems });
+      } else {
+         // If the category is new, just add it
+         const slicedData = newItem?.data?.slice(0, itemsToSlice);
+         existingCategories.set(newItem.category, { ...newItem, data: slicedData });
+      }
+   });
+
+   return Array.from(existingCategories.values());
 }

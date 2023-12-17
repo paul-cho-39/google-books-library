@@ -48,8 +48,15 @@ type CombinedData = {
 // home/index.ts - front page
 export type CategoriesDataParams = Record<string, Pages<any> | null>;
 export type CategoryQuery = Record<string, GoogleUpdatedFields | null>;
-export type CategoriesQueries = Record<string, CombinedData[] | null>;
 export type CategoriesNytQueries = Record<string, ReviewData<BestSellerData>>;
+export type CategoriesQueries = Record<string, CombinedData[] | null>;
+
+export type TestingCategoriesQueries = {
+   category: string;
+   data: CombinedData[] | undefined | null;
+   isLoading: boolean;
+   isError: boolean;
+};
 
 export interface CustomSession extends DefaultSession {
    id: string | null | undefined;

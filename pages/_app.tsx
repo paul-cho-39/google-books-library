@@ -43,7 +43,9 @@ Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 export function reportWebVitals(metric: NextWebVitalsMetric): void {
-   console.log(metric);
+   if (metric.label === 'web-vital') {
+      console.log(metric);
+   }
 }
 
 export const queryClient = new QueryClient({
@@ -57,7 +59,7 @@ export const queryClient = new QueryClient({
    },
 });
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: AppPropsWithLayout) {
    // defaults to the sidebar open when application starts
    const [isSidebarOpen, setSidebarOpen] = useState(true);
    const { session, ...otherProps } = pageProps;

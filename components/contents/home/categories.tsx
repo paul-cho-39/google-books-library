@@ -5,12 +5,45 @@ import { CategoryHeaderParams } from '@/constants/categories';
 import classNames from 'classnames';
 import ROUTES from '@/utils/routes';
 import { forwardRef } from 'react';
+import Spinner from '@/components/loaders/spinner';
 
-export const CategoryDisplay = forwardRef<React.ElementRef<'div'>, CategoryLayoutProps>(
-   function CategoryDisplay({ category, children, ...props }, ref) {
+interface CategoryDisplayProps extends CategoryLayoutProps {
+   isLoading: boolean;
+   isError: boolean;
+}
+
+export const CategoryDisplay = forwardRef<React.ElementRef<'div'>, CategoryDisplayProps>(
+   function CategoryDisplay({ category, children, isLoading, isError, ...props }, ref) {
+      if (isError) {
+         return (
+            <CategoryLayout
+               category={category}
+               className='scrollbarX w-auto lg:w-full lg:overflow-hidden'
+            >
+               <div className='text-xl lg:text-2x text-black dark:text-slate-300'>
+                  Sorry, there is an error fetching the data.
+               </div>
+            </CategoryLayout>
+         );
+      }
+
+      if (isLoading) {
+         return (
+            <CategoryLayout
+               category={category}
+               className='scrollbarX w-auto lg:w-full lg:overflow-hidden'
+            >
+               <CategoryHeader className='mb-4' category={category} />
+               <div className='flex items-center justify-center'>
+                  <Spinner size='md' color='indigo' />
+               </div>
+            </CategoryLayout>
+         );
+      }
+
       return (
          <CategoryLayout
-            className='scrollbarX w-[175vw] lg:w-full lg:overflow-hidden'
+            className='scrollbarX w-auto lg:w-full lg:overflow-hidden'
             category={category}
          >
             <CategoryHeader className='mb-4' category={category} />

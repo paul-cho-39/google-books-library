@@ -13,14 +13,7 @@ import { IconProps, Icons, Navigation } from '../../icons/headerIcons';
 import SearchInput from '../../inputs/search';
 import ROUTES from '@/utils/routes';
 
-export const MobileNavigation = ({
-   user,
-   userId,
-   icons,
-   darkTheme,
-   // url,
-   signOut,
-}: NavigationProps) => {
+export const MobileNavigation = ({ user, userId, icons, darkTheme, signOut }: NavigationProps) => {
    return (
       <div className='flex items-center justify-between md:justify-start'>
          {/* off canvas menu for mobile */}
