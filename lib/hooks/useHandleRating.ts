@@ -17,7 +17,6 @@ function useHandleRating(
    // const allRatingData = queryClient.getQueryData(queryKeys.optimisticRatingsByBookAndUser(params.bookId, params.userId));
 
    const allRatingData = queryClient.getQueryData(queryKeys.ratingsByBook(params.bookId));
-   console.log('all rating data is: ', allRatingData);
 
    // ----------------TESTING-------------------
 

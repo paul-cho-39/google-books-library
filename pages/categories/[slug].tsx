@@ -122,7 +122,7 @@ const BookCategoryPages: NextPageWithLayout<
    if (isLoading) {
       return (
          <div aria-busy={true} className='w-full min-h-screen dark:bg-slate-800'>
-            <div className='lg:mt-20 mt-12'>
+            <div className='lg:py-16 py-20 dark:bg-slate-800'>
                <Spinner size='lg' color='blue' />
             </div>
          </div>

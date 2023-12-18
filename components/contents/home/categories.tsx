@@ -14,49 +14,32 @@ interface CategoryDisplayProps extends CategoryLayoutProps {
 
 export const CategoryDisplay = forwardRef<React.ElementRef<'div'>, CategoryDisplayProps>(
    function CategoryDisplay({ category, children, isLoading, isError, ...props }, ref) {
-      if (isError) {
-         return (
-            <CategoryLayout
-               category={category}
-               className='scrollbarX w-auto lg:w-full lg:overflow-hidden'
-            >
+      return (
+         <CategoryLayout
+            category={category}
+            className='scrollbarX w-auto lg:w-full lg:overflow-hidden'
+         >
+            <CategoryHeader className='mb-4' category={category} />
+            {/* if there is an error inside the section it will be specific to the section */}
+            {isError ? (
                <div className='text-xl lg:text-2x text-black dark:text-slate-300'>
                   Sorry, there is an error fetching the data.
                </div>
-            </CategoryLayout>
-         );
-      }
-
-      if (isLoading) {
-         return (
-            <CategoryLayout
-               category={category}
-               className='scrollbarX w-auto lg:w-full lg:overflow-hidden'
-            >
-               <CategoryHeader className='mb-4' category={category} />
+            ) : // same with loading here
+            isLoading ? (
                <div className='flex items-center justify-center'>
                   <Spinner size='md' color='indigo' />
                </div>
-            </CategoryLayout>
-         );
-      }
-
-      return (
-         <CategoryLayout
-            className='scrollbarX w-auto lg:w-full lg:overflow-hidden'
-            category={category}
-         >
-            <CategoryHeader className='mb-4' category={category} />
-            <div
-               ref={ref}
-               className='relative lg:grid lg:grid-cols-6'
-               // className='relative scrollbarX grid grid-cols-3 lg:grid lg:grid-cols-6'
-            >
-               {children}
-            </div>
-            <div className='text-left bg-fixed lg:px-4 lg:text-right'>
-               <ShowMoreCategory category={category} />
-            </div>
+            ) : (
+               <>
+                  <div ref={ref} className='relative lg:grid lg:grid-cols-6'>
+                     {children}
+                  </div>
+                  <div className='text-left bg-fixed lg:px-4 lg:text-right'>
+                     <ShowMoreCategory category={category} />
+                  </div>
+               </>
+            )}
          </CategoryLayout>
       );
    }

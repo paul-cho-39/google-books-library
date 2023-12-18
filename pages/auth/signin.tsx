@@ -103,7 +103,7 @@ export function Account({ authProviders }: InferGetServerSidePropsType<typeof ge
             <div className='flex flex-col justify-center items-center'>
                <p className='text-slate-800 dark:text-slate-100'>Not a member?</p>
                <Link href={ROUTES.AUTH.SIGNUP}>
-                  <a className='text-slate-800 dark:text-slate-100 hover:underline hover:underline-offset-1 hover:decoration-slate-800 dark:hover:decoration-slate-200'>
+                  <a className='text-slate-800 dark:text-slate-100 underline dark:decoration-slate-200 decoration-black hover:text-opacity-75'>
                      Sign up
                   </a>
                </Link>

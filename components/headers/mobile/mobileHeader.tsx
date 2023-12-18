@@ -15,7 +15,7 @@ import ROUTES from '@/utils/routes';
 
 export const MobileNavigation = ({ user, userId, icons, darkTheme, signOut }: NavigationProps) => {
    return (
-      <div className='flex items-center justify-between md:justify-start'>
+      <div className='flex items-center justify-between md:justify-start bg-beige dark:bg-charcoal'>
          {/* off canvas menu for mobile */}
          {/* menu opener */}
          <Menu
@@ -26,7 +26,8 @@ export const MobileNavigation = ({ user, userId, icons, darkTheme, signOut }: Na
          >
             {({ close }) => (
                <>
-                  <Menu.Button className='z-40 relative p-3 ml-2 focus:outline-none focus:ring-1 focus-visible:ring-slate-200 focus-visible:ring-opacity-75 rounded-full'>
+                  {/* <Menu.Button className='z-40 relative p-3 ml-2 focus:outline-none focus:ring-1 focus-visible:ring-slate-200 focus-visible:ring-opacity-75 rounded-full'> */}
+                  <Menu.Button className='z-40 p-3 relative focus:outline-none focus:ring-1 focus-visible:ring-slate-200 focus-visible:ring-opacity-75 rounded-full'>
                      {({ open }) => (
                         <>
                            <span className='sr-only'>{!open ? 'Close menu' : 'Open menu'}</span>
