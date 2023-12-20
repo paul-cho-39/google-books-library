@@ -2,6 +2,11 @@ import { Data, Pages, Items, VolumeInfo, GoogleUpdatedFields } from '../../types
 
 // should it throw an error if new data returns undefined?
 
+/**
+ * Google Book API returns duplicated lists of data. This function parses out duplicated lists.
+ * @param {Data} data - response from Google Books API
+ * @returns {Array}
+ */
 export default function createUniqueDataSets(data: Data<any>) {
    // : Array<Items<Record<string, string>>>
    if (!data) return;

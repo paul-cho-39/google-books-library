@@ -86,6 +86,7 @@ const Home: NextPageWithLayout<
    };
 
    const {
+      isEnabled,
       isHovered,
       floatingRef,
       largeEnabled,
@@ -93,7 +94,11 @@ const Home: NextPageWithLayout<
       onMouseEnter,
       onMouseLeave,
       onMouseLeaveDescription,
-   } = useFloatingPosition(TOTAL_COLS, false);
+   } = useFloatingPosition({
+      totalCols: TOTAL_COLS,
+      multiCols: false,
+      enableOnMedScreen: false,
+   });
 
    // images that are not server rendered are rendered later
    const HEIGHT = layoutManager.constants.imageHeight;
@@ -118,7 +123,9 @@ const Home: NextPageWithLayout<
             >
                {data &&
                   data?.map((book, index) => {
-                     const hoveredEl = isHovered.id == getUniqueId(book.id, category) &&
+                     // disabled for smaller screens
+                     const hoveredEl = isEnabled &&
+                        isHovered.id == getUniqueId(book.id, category) &&
                         (isHovered.hovered || isHovered.isFloatHovered) && (
                            <div
                               key={book.id}
@@ -134,6 +141,7 @@ const Home: NextPageWithLayout<
                               }}
                               className='absolute z-50 rounded-lg'
                            >
+                              {/* the description wont be ready until images are fully loaded */}
                               {areImagesLoadComplete && (
                                  <Suspense fallback={<DescriptionSkeleton />}>
                                     <CategoryDescription
@@ -162,16 +170,13 @@ const Home: NextPageWithLayout<
                               ref={(el: HTMLDivElement) =>
                                  setImageRef(getUniqueId(book.id, category), el)
                               }
-                              bookImage={book.volumeInfo.imageLinks as ImageLinks}
-                              priority={isPriority(category)}
                               onMouseEnter={() =>
                                  onMouseEnter(getUniqueId(book.id, category), index)
                               }
+                              bookImage={book.volumeInfo.imageLinks as ImageLinks}
+                              priority={isPriority(category)}
                               onMouseLeave={(e: React.MouseEvent) => onMouseLeave(e, floatingRef)}
-                              onLoadComplete={() => {
-                                 console.log('load is completed');
-                                 handleImageLoad(book.id, category);
-                              }}
+                              onLoadComplete={() => handleImageLoad(book.id, category)}
                               routeQuery={encodeRoutes.home(category, meta)}
                               className={classNames(
                                  isHovered.hovered &&

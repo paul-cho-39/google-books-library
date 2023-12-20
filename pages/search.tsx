@@ -15,7 +15,6 @@ import FilterInput from '@/components/inputs/filter';
 import { Divider } from '@/components/layout/dividers';
 import SearchLayoutPage from '@/components/layout/searchLayout';
 import Spinner from '@/components/loaders/spinner';
-import APIErrorBoundary from '@/components/error/errorBoundary';
 import useDecodeSearchRoute from '@/lib/hooks/useDecodeSearchRoute';
 
 const Cards = lazy(() => import('@/components/bookcards/cards'));
@@ -54,9 +53,6 @@ export default function Search(props: InferGetServerSidePropsType<typeof getServ
    );
 
    const totalItems: number = data?.pages?.[0]?.totalItems || 0;
-
-   // debugging
-   // console.log('data is ', data);
 
    const renderLoadingState = () => (
       <SearchLayoutPage isSuccess={false}>

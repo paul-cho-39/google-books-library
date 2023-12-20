@@ -104,6 +104,7 @@ const BookCategoryPages: NextPageWithLayout<
 
    // displays an 'absolute' styled container when mouse is hovered
    const {
+      isEnabled,
       isHovered,
       setImageRef,
       floatingRef,
@@ -111,7 +112,11 @@ const BookCategoryPages: NextPageWithLayout<
       onMouseLeave,
       onMouseLeaveDescription,
       largeEnabled,
-   } = useFloatingPosition(TOTAL_COLS, true);
+   } = useFloatingPosition({
+      totalCols: TOTAL_COLS,
+      multiCols: true,
+      enableOnMedScreen: false,
+   });
 
    const isLoading = router.isFallback || googleData.isFetching || googleData.isLoading;
 
@@ -140,7 +145,8 @@ const BookCategoryPages: NextPageWithLayout<
                category={`New ${capitalizeWords(category as string)} Releases`}
             >
                {cleanedData?.map((book, index) => {
-                  const hoveredEl = isHovered.id == book.id &&
+                  const hoveredEl = isEnabled &&
+                     isHovered.id == book.id &&
                      (isHovered.hovered || isHovered.isFloatHovered) && (
                         <div
                            ref={floatingRef}

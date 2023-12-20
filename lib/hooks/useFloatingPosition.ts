@@ -4,13 +4,16 @@ import { useDisableBreakPoints } from './useDisableBreakPoints';
 import layoutManager from '@/constants/layouts';
 import { changeDirection } from '../helper/getContainerPos';
 
+interface FloatingPositionParams {
+   totalCols: number;
+   multiCols: boolean;
+   enableOnMedScreen?: boolean;
+}
+
 /**
  * A hook for displaying a container when mouse hovers around a target.
- * @param {number} totalCols
- * @param {boolean} multiCols
- * @returns
  */
-function useFloatingPosition(totalCols: number, multiCols: boolean, deps?: readonly []) {
+function useFloatingPosition({ totalCols, multiCols, enableOnMedScreen }: FloatingPositionParams) {
    const floatingRef = useRef<HTMLDivElement>(null);
    const imageRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -32,8 +35,12 @@ function useFloatingPosition(totalCols: number, multiCols: boolean, deps?: reado
       ? smallScreenCols + 1
       : smallScreenCols;
 
+   // if not enabled for screens > md, the hovered effect is turned off
+   const isEnabled = !enableOnMedScreen ? largeEnabled : true;
+
    useEffect(() => {
       if (
+         isEnabled &&
          isHovered.id &&
          isHovered.index &&
          isHovered.hovered &&
@@ -81,6 +88,7 @@ function useFloatingPosition(totalCols: number, multiCols: boolean, deps?: reado
    }, [NUMBER_OF_COLS, isHovered, largeEnabled]);
 
    return {
+      isEnabled,
       isHovered,
       setImageRef,
       floatingRef,

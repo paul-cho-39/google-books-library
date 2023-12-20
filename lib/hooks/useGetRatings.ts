@@ -68,8 +68,8 @@ export function useGetRating({ bookId, userId, initialData }: SingleRatingParams
             }
             return data as MultipleRatingData | null;
          },
-         refetchOnWindowFocus: true,
-         refetchOnMount: true,
+         refetchOnWindowFocus: false,
+         refetchOnMount: false,
          onSuccess: (data) => {
             const findBook = findId(data, userId);
 

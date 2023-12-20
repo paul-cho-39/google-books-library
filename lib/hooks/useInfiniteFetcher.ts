@@ -4,16 +4,25 @@ import queryKeys from '@/utils/queryKeys';
 import { throttledFetcher } from '@/utils/fetchData';
 import { FilterProps } from '../types/googleBookTypes';
 
-interface FetcherProps {
+interface FetcherParams {
    search: string;
    filter: FilterProps;
    meta: (page: number) => MetaProps;
 }
 
-export default function useInfiniteFetcher({ search, filter, meta }: FetcherProps) {
+/**
+ * Custom-built infinite fetcher to implement infinite scrolling and fetching pages
+ * @param {Object} params
+ * @param {string} params.search - the query that is to be searched
+ * @param {Object} params.filter - filters the result from {FilterProps}
+ * @param {Function} params.meta - a function to return {MetaProps}
+ * @returns
+ */
+export default function useInfiniteFetcher({ search, filter, meta }: FetcherParams) {
    const getUrlFromFilter = (pageParam: number) => {
       const metaProps = meta(pageParam);
 
+      // filtering the book by its search
       const urlGenerators = {
          all: () => googleApi.getUrlByQuery(search, metaProps),
          author: () =>

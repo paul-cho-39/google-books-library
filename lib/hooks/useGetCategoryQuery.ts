@@ -197,7 +197,7 @@ function mergeDataWithoutDuplicates(
       const existingCat = existingCategories.get(newItem.category);
 
       if (existingCat) {
-         // Merge new items with existing items, avoiding duplicates
+         // mrege new items with existing items, avoiding duplicates
          const mergedItems = [
             ...(existingCat.data as CombinedData[]),
             ...(newItem.data as CombinedData[]),
@@ -209,7 +209,7 @@ function mergeDataWithoutDuplicates(
 
          existingCategories.set(newItem.category, { ...existingCat, data: uniqueItems });
       } else {
-         // If the category is new, just add it
+         // if category is new then add it
          const slicedData = newItem?.data?.slice(0, itemsToSlice);
          existingCategories.set(newItem.category, { ...newItem, data: slicedData });
       }
