@@ -52,14 +52,15 @@ export const queryClient = new QueryClient({
    defaultOptions: {
       queries: {
          // if in production mode may have to turn this on?
-         refetchOnWindowFocus: false,
+         refetchOnWindowFocus: process.env.NODE_ENV === 'production',
+         retry: process.env.NODE_ENV === 'production',
          refetchOnReconnect: true,
          refetchOnMount: false,
       },
    },
 });
 
-function MyApp({ Component, pageProps }: AppPropsWithLayout) {
+function MyApp({ Component, pageProps }) {
    // defaults to the sidebar open when application starts
    const [isSidebarOpen, setSidebarOpen] = useState(true);
    const { session, ...otherProps } = pageProps;

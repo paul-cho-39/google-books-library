@@ -8,10 +8,15 @@ export default class BookDelete extends Books {
    }
 
    async deleteRating() {
-      await prisma.rating.delete({
-         where: {
-            userId_bookId: this.getBothIds,
-         },
+      await prisma.$transaction(async (tx) => {
+         tx.session.findFirstOrThrow({
+            where: { userId: this.userId },
+         });
+         await tx.rating.delete({
+            where: {
+               userId_bookId: this.getBothIds,
+            },
+         });
       });
    }
    // when retrieving the book
@@ -33,6 +38,10 @@ export default class BookDelete extends Books {
    // 2) if it is then update the book and also update
    async deleteBook() {
       return await prisma.$transaction(async (tx) => {
+         // find user first
+         tx.session.findFirstOrThrow({
+            where: { userId: this.userId },
+         });
          // find if there is rating data
          try {
             const associatedRatings = await tx.rating.count({

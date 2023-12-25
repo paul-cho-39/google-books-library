@@ -141,6 +141,7 @@ export default class BookService {
       await deleter.deleteRating();
    }
 
+   // checking if userId has been received
    private ensureUserId(userId?: string) {
       if (userId) {
          this.setUserId(userId);

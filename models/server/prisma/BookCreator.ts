@@ -74,6 +74,9 @@ export default class BookCreator extends Books {
    async createOrRecoverDeletedBook(data: Data, stateData: UserBookWithoutId) {
       await prisma.$transaction(async (tx) => {
          try {
+            await tx.session.findFirstOrThrow({
+               where: { id: this.userId },
+            });
             await tx.book.upsert({
                where: this.getBookId,
                update: {
