@@ -12,11 +12,31 @@ export default class BookDelete extends Books {
          tx.session.findFirstOrThrow({
             where: { userId: this.userId },
          });
+
+         // since unique id is both bookId and userId no need to verify userId === userId
          await tx.rating.delete({
             where: {
                userId_bookId: this.getBothIds,
             },
          });
+      });
+   }
+
+   async deleteComment(commentId: number) {
+      const comment = await prisma.comment.findUnique({
+         where: { id: commentId },
+      });
+
+      if (!comment) {
+         throw new Error('Error finding the comment');
+      }
+
+      if (comment?.userId !== this.userId) {
+         throw new Error('The user is not authorized to delete this comment');
+      }
+
+      await prisma.comment.delete({
+         where: { id: commentId },
       });
    }
    // when retrieving the book
@@ -48,8 +68,12 @@ export default class BookDelete extends Books {
                where: { bookId: this.bookId },
             });
 
-            //  if there is no association with rating then delete the book
-            if (associatedRatings <= 0) {
+            const associatedComments = await tx.comment.count({
+               where: { bookId: this.bookId },
+            });
+
+            //  if there is no association with rating or comments then delete the book
+            if (associatedRatings <= 0 || associatedComments <= 0) {
                await tx.book.delete({
                   where: this.getBookId,
                });

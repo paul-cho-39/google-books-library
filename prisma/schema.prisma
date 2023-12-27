@@ -14,20 +14,33 @@ datasource db {
 // *Their reading logs are not yet updated on the UI, as of yet.
 // Another feature is rating the system from lists of books without adding to their library
 
-// can add logs for later 
-// model Log {
-//     id           Int        @id @default(autoincrement())
-//     start        DateTime[]
-//     end          DateTime[]
-//     dayOfTheWeek String[]
-//     pagesRead   Int?
-//     userId        String 
-//     bookId       String
-//     userBook      UserBook    @relation(fields: [userId, bookId], references: [bookId, userId])
+model Comment {
+  id          Int       @id @default(autoincrement())
+  userId      String
+  bookId      String
+  content     String    @db.VarChar(500)
+  dateAdded   DateTime  @default(now())
+  dateUpdated DateTime  @updatedAt
+  likes       Int       @default(0)
+  parentId    Int?
+  upvote      Upvotes[]
+  user        User      @relation(fields: [userId], references: [id])
+  book        Book      @relation(fields: [bookId], references: [id])
+  replies     Comment[] @relation("CommentToComment")
+  parent      Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: SetNull)
 
-//     @@map("reading_logs")
-//     @@unique([userId, bookId, id])
-// }
+  @@map("comments")
+}
+
+model Upvotes {
+  id       Int     @id @default(autoincrement())
+  userId   String
+  upvoteId Int
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment  Comment @relation(fields: [upvoteId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, upvoteId])
+}
 
 // Represents a user's rating for a specific book.
 // Each user can rate a book only once but can update their rating.
@@ -38,8 +51,8 @@ model Rating {
   ratingValue Int
   dateAdded   DateTime @default(now())
   dateUpdated DateTime @updatedAt
-  reviewTitle String?  @db.VarChar(150)
-  comment     String?  @db.VarChar(500)
+  // reviewTitle String?  @db.VarChar(150)
+  // comment     String?  @db.VarChar(500)
   user        User     @relation(fields: [userId], references: [id])
   book        Book     @relation(fields: [bookId], references: [id])
 
@@ -62,6 +75,7 @@ model Book {
   dateDeleted         DateTime?
   users               UserBook[]
   ratings             Rating[]
+  comments            Comment[]
 
   @@index([id], type: Hash)
   @@map("books")
@@ -115,6 +129,8 @@ model User {
   sessions      Session[]
   books         UserBook[]
   ratings       Rating[]
+  comments      Comment[]
+  upvotes       Upvotes[]
 
   @@unique([id, email])
   @@index([id], type: Hash)
