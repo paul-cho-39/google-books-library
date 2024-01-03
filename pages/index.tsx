@@ -227,8 +227,6 @@ export const getStaticProps: GetStaticProps<{
 Home.getLayout = function getLayout(page: ReactElement) {
    const { isLoading } = page.props as { isLoading: boolean };
 
-   console.log('is it loading?: ', isLoading);
-
    return <HomeLayout isLoading={isLoading}>{page}</HomeLayout>;
 };
 

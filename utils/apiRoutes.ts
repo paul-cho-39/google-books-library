@@ -1,4 +1,4 @@
-import { UrlProps, ServerCacheType } from '@/lib/types/fetchbody';
+import { UrlProps, ServerCacheType, ServerSearchParamType } from '@/lib/types/fetchbody';
 
 const BASE_PATH = '/api';
 const DOMAIN_BOOKS = 'books';
@@ -15,11 +15,18 @@ const API_ROUTES = {
             ? `${BASE_PATH}/${DOMAIN_BOOKS}/${userId}`
             : `${BASE_PATH}/${DOMAIN_BOOKS}/${userId}/${subdomain}`,
    },
-   // DEPRECATED
    THIRD_PARTY: {
       path: (pathTypes: ServerCacheType) => {
          const { source, endpoint, category } = pathTypes;
          return `${BASE_PATH}/${DOMAIN_THIRD_PARTY}/${source}/${category}/${endpoint}`;
+      },
+      search: (pathTypes: ServerSearchParamType) => {
+         const { endpoint, query, filters } = pathTypes;
+         const base = `${BASE_PATH}/${DOMAIN_THIRD_PARTY}/google/${query}/${filters}`;
+         return !endpoint ? base : `${base}/${endpoint}`;
+      },
+      book: (id: string) => {
+         return `${BASE_PATH}/${DOMAIN_THIRD_PARTY}/google/${id}`;
       },
    },
    USERS: {

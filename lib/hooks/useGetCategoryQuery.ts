@@ -24,6 +24,7 @@ import {
    TestingCategoriesQueries,
 } from '../types/serverTypes';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import API_ROUTES from '@/utils/apiRoutes';
 
 interface CategoryQueryParams<TData extends CategoriesQueries | GoogleUpdatedFields> {
    initialData?: TData;
@@ -63,16 +64,31 @@ export default function useGetCategoryQuery({
    const data = useQuery<GoogleUpdatedFields, unknown, GoogleUpdatedFields>(
       queryKeys.categories(lowercaseCategory, meta),
       async () => {
-         const url = googleApi.getUrlBySubject(lowercaseCategory, meta);
-         const data = await throttledFetcher(url);
-         return data;
+         // const url = googleApi.getUrlBySubject(lowercaseCategory, meta);
+         // const data = await throttledFetcher(url);
+         // return data;
+         const res = await fetcher(
+            API_ROUTES.THIRD_PARTY.path({
+               source: 'google',
+               endpoint: 'recent',
+               category: lowercaseCategory,
+            }),
+            {
+               method: 'POST',
+               body: JSON.stringify(meta),
+            }
+         );
+
+         console.log('the RESPONSE DATA IS RETURNED--------', res.data);
+
+         return res.data;
       },
       {
          enabled: !!category && enabled,
          select: (data) => data,
          initialData: cache ?? initialData,
          keepPreviousData: keepPreviousData,
-         cacheTime: Infinity,
+         cacheTime: Infinity, // should be kept at infinity?
       }
    );
 
@@ -121,9 +137,22 @@ export function useGetCategoriesQueries({
       return {
          queryKey: queryKeys.categories(lowercaseCategory, meta),
          queryFn: async () => {
-            const url = googleApi.getUrlBySubject(lowercaseCategory, meta);
-            const data = await fetcher(url);
-            return data;
+            // const url = googleApi.getUrlBySubject(lowercaseCategory, meta);
+            // const data = await fetcher(url);
+            // return data;
+            const res = await fetcher(
+               API_ROUTES.THIRD_PARTY.path({
+                  source: 'google',
+                  endpoint: 'relevant',
+                  category: lowercaseCategory,
+               }),
+               {
+                  method: 'POST',
+                  body: JSON.stringify(meta),
+               }
+            );
+
+            return res.data;
          },
          // if initial data is already been cached
          initialData: () => {

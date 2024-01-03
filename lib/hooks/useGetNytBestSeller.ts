@@ -15,6 +15,7 @@ import {
 } from '../types/serverTypes';
 import { transformStrToArray } from '../helper/transformChar';
 import { handleNytId } from '@/utils/handleIds';
+import API_ROUTES from '@/utils/apiRoutes';
 
 interface NytBookQueryParams {
    date: DateQualifiers | 'current';
@@ -99,14 +100,35 @@ export function useGetNytBestSellers({ initialData, date }: NytBookMultiQueries)
       return {
          queryKey: queryKeys.nytBestSellers(cat as CategoryQualifiers['type'], date as string),
          queryFn: async () => {
-            const res = nytApi.getUrlByCategory(
-               { type: cat, format: 'combined-print-and-e-book' },
-               date
+            // const res = nytApi.getUrlByCategory(
+            //    { type: cat, format: 'combined-print-and-e-book' },
+            //    date
+            // );
+            // return await fetcher(res, {
+            //    headers: {
+            //       'Access-Control-Allow-Origin': '*',
+            //       Vary: 'Origin',
+            //    },
+            // });
+            const res = await fetcher(
+               API_ROUTES.THIRD_PARTY.path({
+                  source: 'nyt',
+                  endpoint: 'best-seller',
+                  category: cat,
+               }),
+               {
+                  headers: {
+                     'Content-Type': 'application/json',
+                     'Access-Control-Allow-Origin': '*',
+                     Vary: 'Origin',
+                  },
+                  method: 'GET',
+               }
             );
-            return await throttledFetcher(res);
+
+            return res.data;
          },
          initialData: cache || checkInitialData[cat],
-         // suspense: true,
       };
    });
 

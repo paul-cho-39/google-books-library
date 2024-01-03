@@ -1,3 +1,5 @@
+import { FilterParams } from '@/models/_api/fetchGoogleUrl';
+
 export type DeleteBody = { id: string; userId: string };
 export type FinishedPostBody = ReadPostBody & {
    month: number;
@@ -20,6 +22,22 @@ export type ServerCacheType = {
    endpoint: 'relevant' | 'recent' | 'best-seller';
    category: string;
 };
+
+export type ServerSearchParams = 'isbn' | 'title' | 'author';
+
+export type ServerSearchParamType = {
+   query: string;
+   filters: FilterParams;
+   endpoint?: ServerSearchParams;
+};
+
+export type CategoryRequestQuery = {
+   slug: string;
+};
+
+export type SearchRequestQuery = {
+   filters: FilterParams;
+} & CategoryRequestQuery;
 
 export type Body = ReadPostBody | DeleteBody | FinishedPostBody;
 export type Method = 'POST' | 'DELETE' | 'PUT' | 'GET' | 'PATCH';

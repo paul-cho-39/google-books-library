@@ -4,8 +4,9 @@ import queryKeys from '@/utils/queryKeys';
 import googleApi, { MetaProps } from '@/models/_api/fetchGoogleUrl';
 import { APISource, getBookIdAndSource } from '@/utils/handleIds';
 import { Data, FilterProps, GoogleUpdatedFields, Items } from '../types/googleBookTypes';
-import { throttledFetcher } from '@/utils/fetchData';
+import { fetcher, throttledFetcher } from '@/utils/fetchData';
 import { decodeRoutes } from '@/utils/routes';
+import API_ROUTES from '@/utils/apiRoutes';
 
 // this fetches from cache or from google book data
 // NOT FROM API
@@ -24,11 +25,11 @@ export default function useGetBookById<
    // to fetching the data instead of the queryKey;
 
    let book: Items<Record<string, string>> | GoogleUpdatedFields | undefined;
+   const queryClient = useQueryClient();
    const { id, source } = getBookIdAndSource(routeParams.slug as string);
    const isGoogle = isSource(source, 'google');
 
    // it first looks for singeBook cache which is the most relevant cache
-   const queryClient = useQueryClient();
    const initialData = queryClient.getQueryData<CacheData>(queryKeys.singleBook(id));
 
    // if it is not in the first cache proceed to look inside the second cache
@@ -39,20 +40,25 @@ export default function useGetBookById<
    }
 
    // the third option is to refetch the entire book id
-   // note that the data is different from fetching using 'id'
+   // NOE: the data is different from fetching using 'id'
    const queryResult = useQuery(
       queryKeys.singleBook(routeParams?.slug as string),
       async () => {
-         const url = isGoogle ? googleApi.getUrlByBookId(id) : googleApi.getUrlByIsbn(id);
+         // const url = isGoogle ? googleApi.getUrlByBookId(id) : googleApi.getUrlByIsbn(id);
 
-         const data = await throttledFetcher(url);
+         // const data = await throttledFetcher(url);
+         const body = isGoogle ? { type: 'google' } : { type: 'nyt' };
+         const res = await fetcher(API_ROUTES.THIRD_PARTY.book(id), {
+            method: 'POST',
+            body: JSON.stringify(body),
+         });
 
          // if the book is from new york then return new data
          if (!isGoogle) {
-            return data.items[0];
+            return res.data.items[0];
          }
 
-         return data;
+         return res.data;
       },
       {
          initialData: () => initialData || book,

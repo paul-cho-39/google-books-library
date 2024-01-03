@@ -67,7 +67,9 @@ export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
       const headers = {
          ...init?.headers,
          'Accept-Encoding': 'gzip',
-         'User-Agent': 'YourAppName/1.0 (gzip)',
+         'Access-Control-Allow-Origin': process.env.NEXTAUTH_URL as string,
+         'Content-Type': 'application/json',
+         // 'User-Agent': 'YourAppName/1.0 (gzip)',
       };
 
       const res = await fetch(input, {
@@ -90,6 +92,7 @@ export const fetcher = async (input: RequestInfo, init?: RequestInit) => {
    }
 };
 
+// designed to take care of rate limit and response whenever the rate limit is exceeded
 export const throttledFetcher = (input: RequestInfo, init?: RequestInit) => {
    const isNYT = input.toString().includes('api.nytimes.com');
    const fetcherFunction = async () => fetcher(input, init);
