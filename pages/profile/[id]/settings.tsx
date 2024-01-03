@@ -33,7 +33,7 @@ export default function Settings({}) {
             });
             return res.json();
          } catch (e) {
-            console.log(e);
+            console.error(e);
          }
       }
    };

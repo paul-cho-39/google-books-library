@@ -5,7 +5,6 @@ import { getSession } from 'next-auth/react';
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
       const session = getSession(req.body);
-      console.log(session);
       try {
          // will already know the data right?
          const { userId, firstName, lastName } = req.body;

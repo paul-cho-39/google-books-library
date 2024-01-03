@@ -135,8 +135,6 @@ const Section = ({
 // section for 'categories' that can be expanded
 const Subsection = ({ subsections, close }: SessionProps) => {
    const handleClose = () => {
-      console.log('closing');
-
       setTimeout(() => {
          close();
       }, 300);

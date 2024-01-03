@@ -12,7 +12,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
          const url = type === 'google' ? googleApi.getUrlByBookId(id) : googleApi.getUrlByIsbn(id);
          const data = await throttledFetcher(url);
 
-         console.log('the current data is: ', data);
          return res.status(200).json({ success: true, data: data });
       } catch (error) {
          return errorLogger(error, req);

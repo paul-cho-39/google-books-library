@@ -48,7 +48,6 @@ export const ActiveRating = ({
          const adjustedRating = adjustRating(rating);
          setSelectedRating(adjustedRating);
 
-         console.log('-------INSIDE ACTIVE RATING COMPONENT-----------, handling mutation', rating);
          handleMutation(rating);
       }
    };
