@@ -79,8 +79,6 @@ export default function useGetCategoryQuery({
             }
          );
 
-         console.log('the RESPONSE DATA IS RETURNED--------', res.data);
-
          return res.data;
       },
       {

@@ -2,6 +2,7 @@ import { SignOutParams } from 'next-auth/react';
 import Link from 'next/link';
 import clsx from 'clsx';
 import ROUTES from '@/utils/routes';
+import { useRouter } from 'next/router';
 
 type SessionProps = {
    name: string;
@@ -12,10 +13,12 @@ type SessionProps = {
 };
 
 const IsSession = ({ name, href, signOut, close, className }: SessionProps) => {
+   const route = useRouter();
    const handleClick = () => {
       signOut && signOut();
 
       setTimeout(() => {
+         route.push('/');
          close && close();
       }, 200);
    };

@@ -54,7 +54,13 @@ const UserProfile = ({ userId, signOut, username, name, href }: UserProfileProps
                <Menu.Item>
                   {({ active }) => (
                      <button
-                        onClick={signOut}
+                        onClick={() => {
+                           signOut && signOut();
+
+                           setTimeout(() => {
+                              router.push('/');
+                           }, 200);
+                        }}
                         className={classNames(
                            active
                               ? 'bg-indigo-200 dark:bg-slate-600 text-white dark:text-gray-700'

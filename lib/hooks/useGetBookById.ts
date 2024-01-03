@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CategoryRouteParams, RouteNames, RouteParams } from '../types/routes';
 import queryKeys from '@/utils/queryKeys';
 import googleApi, { MetaProps } from '@/models/_api/fetchGoogleUrl';
@@ -44,9 +44,6 @@ export default function useGetBookById<
    const queryResult = useQuery(
       queryKeys.singleBook(routeParams?.slug as string),
       async () => {
-         // const url = isGoogle ? googleApi.getUrlByBookId(id) : googleApi.getUrlByIsbn(id);
-
-         // const data = await throttledFetcher(url);
          const body = isGoogle ? { type: 'google' } : { type: 'nyt' };
          const res = await fetcher(API_ROUTES.THIRD_PARTY.book(id), {
             method: 'POST',
