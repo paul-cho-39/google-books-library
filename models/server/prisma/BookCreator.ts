@@ -197,7 +197,7 @@ export default class BookCreator extends Books {
       await prisma.$transaction(async (tx) => {
          try {
             await tx.session.findFirstOrThrow({
-               where: { id: this.userId },
+               where: { userId: this.userId },
             });
             await tx.book.upsert({
                where: this.getBookId,

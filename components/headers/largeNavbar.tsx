@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { ThemeToggler } from '../buttons/themeToggler';
-import IsSession from '../Login/isSession';
+import IsSession from '../login/isSession';
 import { NavigationProps } from '@/lib/types/theme';
 import SearchInput from '../inputs/search';
 import HomeIcon from '../icons/homeIcon';
 import ROUTES from '@/utils/routes';
-import UserProfile from '../Login/userProfile';
+import UserProfile from '../login/userProfile';
 
 export const LargeNavigation = ({
    user,
@@ -30,7 +30,7 @@ export const LargeNavigation = ({
                   <IsSession
                      name='Sign In'
                      href={ROUTES.AUTH.SIGNIN}
-                     className='text-lg text-dark-brown dark:text-soft-white'
+                     className='text-lg text-dark-brown dark:text-white'
                   />
                ) : (
                   // <IsSession

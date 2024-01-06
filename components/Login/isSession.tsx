@@ -23,17 +23,25 @@ const IsSession = ({ name, href, signOut, close, className }: SessionProps) => {
       }, 200);
    };
    return (
-      <button
-         role='button'
-         aria-label={name.charAt(0).toUpperCase()}
-         onClick={handleClick}
-         className={clsx(
-            'text-blue-700 text-lg dark:text-blue-300 focus:outline-none focus:ring-1 focus-visible:ring-slate-200 focus-visible:ring-opacity-75',
-            className
+      <>
+         {signOut ? (
+            <button
+               role='button'
+               aria-label={name.charAt(0).toUpperCase()}
+               onClick={handleClick}
+               className={clsx(
+                  'text-blue-700 text-lg dark:text-blue-300 focus:outline-none focus:ring-1 focus-visible:ring-slate-200 focus-visible:ring-opacity-75',
+                  className
+               )}
+            >
+               {name}
+            </button>
+         ) : (
+            <Link href={href ?? ROUTES.AUTH.SIGNIN}>
+               <span className='text-blue-400 dark:text-blue-300 cursor-pointer'>{name}</span>
+            </Link>
          )}
-      >
-         <Link href={href ?? ROUTES.AUTH.SIGNIN}>{name}</Link>
-      </button>
+      </>
    );
 };
 
