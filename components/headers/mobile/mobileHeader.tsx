@@ -13,7 +13,19 @@ import { IconProps, Icons, Navigation } from '../../icons/headerIcons';
 import SearchInput from '../../inputs/search';
 import ROUTES from '@/utils/routes';
 
-export const MobileNavigation = ({ user, userId, icons, darkTheme, signOut }: NavigationProps) => {
+export const MobileNavigation = ({
+   userInfo,
+   userId,
+   icons,
+   darkTheme,
+   handleSignOut,
+   linkToSettings,
+}: NavigationProps) => {
+   const signOut = (close: () => void) => {
+      handleSignOut(userInfo.isCredential);
+
+      close();
+   };
    return (
       <div className='flex items-center justify-between md:justify-start bg-beige dark:bg-charcoal'>
          {/* off canvas menu for mobile */}
@@ -59,7 +71,7 @@ export const MobileNavigation = ({ user, userId, icons, darkTheme, signOut }: Na
                                        <span className='mb-2 block border-b-2 border-slate-200'></span>
                                        {/* below the section */}
                                        <div className='flex flex-col items-center justify-center gap-y-6 overflow-hidden md:gap-y-5'>
-                                          {!user ? (
+                                          {!userInfo.userInSession ? (
                                              <IsSession
                                                 className='py-2'
                                                 name='Sign In'
@@ -70,7 +82,7 @@ export const MobileNavigation = ({ user, userId, icons, darkTheme, signOut }: Na
                                              <IsSession
                                                 className='py-2'
                                                 name='Sign out'
-                                                signOut={signOut}
+                                                signOut={() => signOut(close)}
                                                 close={close}
                                              />
                                           )}

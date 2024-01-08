@@ -2,17 +2,22 @@ import { signOut, useSession } from 'next-auth/react';
 import useDarkMode from '@/lib/hooks/useDarkMode';
 import { useEffect, useRef, useState } from 'react';
 import IconProviders from '../icons/headerIcons';
-import getUserId from '@/lib/helper/getUserId';
+import getUserInfo from '@/lib/helper/getUserId';
 import { LargeNavigation } from './largeNavbar';
 import { MobileNavigation } from './mobile/mobileHeader';
 import SideNavigation, { SideNavigationProps } from './sidebar';
 import SideBarPortal from '../modal/portal';
 import filterIcons from '@/lib/helper/filterIcons';
+import useAuthHandlers from '@/lib/hooks/useAuthHandlers';
 
 const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
    const { data: user } = useSession();
+
+   const userInfo = getUserInfo(user);
    const darkTheme = useDarkMode();
-   const userId = user && getUserId(user as object, 'id');
+   const { handleSignOut, linkToSettings } = useAuthHandlers();
+
+   const { userId, ...info } = userInfo;
 
    // the icons depend on whether userId is not null
    // specifically, the 'profile' requires userId.
@@ -24,10 +29,11 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
 
    const navProps = {
       darkTheme,
-      signOut,
       icons,
       userId,
-      user,
+      userInfo: info,
+      handleSignOut,
+      linkToSettings,
    };
 
    return (

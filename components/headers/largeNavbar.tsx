@@ -8,13 +8,20 @@ import ROUTES from '@/utils/routes';
 import UserProfile from '../login/userProfile';
 
 export const LargeNavigation = ({
-   user,
+   userInfo,
    userId,
    icons,
    darkTheme,
-   // url,
-   signOut,
+   handleSignOut,
+   linkToSettings,
 }: NavigationProps) => {
+   const signOut = () => {
+      handleSignOut(userInfo.isCredential);
+   };
+
+   const toSettings = () => {
+      linkToSettings(userId);
+   };
    return (
       <>
          <div className='flex items-center w-full h-full px-8'>
@@ -26,19 +33,19 @@ export const LargeNavigation = ({
 
             {/* maybe here it will be the profile so clickable with profile related (?) */}
             <div className='flex items-center ml-auto space-x-6'>
-               {!user ? (
+               {!userInfo.userInSession ? (
                   <IsSession
                      name='Sign In'
                      href={ROUTES.AUTH.SIGNIN}
                      className='text-lg text-dark-brown dark:text-white'
                   />
                ) : (
-                  // <IsSession
-                  //    name='Sign Out'
-                  //    signOut={signOut}
-                  //    className='text-lg text-dark-brown dark:text-soft-white'
-                  // />
-                  <UserProfile name={user.user?.name} userId={userId as string} signOut={signOut} />
+                  <UserProfile
+                     name={userInfo.name}
+                     toSettings={toSettings}
+                     // userId={userId as string}
+                     signOut={signOut}
+                  />
                )}
                <ThemeToggler
                   className='h-10 w-10'

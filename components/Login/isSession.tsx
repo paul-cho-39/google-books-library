@@ -3,32 +3,35 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import ROUTES from '@/utils/routes';
 import { useRouter } from 'next/router';
+import useAuthHandlers from '@/lib/hooks/useAuthHandlers';
 
 type SessionProps = {
    name: string;
-   close?: () => void;
    href?: string;
+   close?: () => void;
    signOut?: () => void;
+   // handleSignOut?: (isCredential: boolean) => Promise<void>
    className?: string;
 };
 
 const IsSession = ({ name, href, signOut, close, className }: SessionProps) => {
-   const route = useRouter();
-   const handleClick = () => {
-      signOut && signOut();
+   // const route = useRouter();
+   // const handleClick = () => {
+   //    signOut && signOut();
 
-      setTimeout(() => {
-         route.push('/');
-         close && close();
-      }, 200);
-   };
+   //    setTimeout(() => {
+   //       route.push('/');
+   //       close && close();
+   //    }, 200);
+   // };
+
    return (
       <>
          {signOut ? (
             <button
                role='button'
                aria-label={name.charAt(0).toUpperCase()}
-               onClick={handleClick}
+               onClick={signOut}
                className={clsx(
                   'text-blue-700 text-lg dark:text-blue-300 focus:outline-none focus:ring-1 focus-visible:ring-slate-200 focus-visible:ring-opacity-75',
                   className

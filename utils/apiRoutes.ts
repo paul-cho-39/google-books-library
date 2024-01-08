@@ -9,6 +9,9 @@ const DOMAIN_VERIFY = 'verify';
 const DOMAIN_RATING = 'rating';
 
 const API_ROUTES = {
+   AUTH: {
+      SIGNOUT: `${BASE_PATH}/auth/credentials-signout`,
+   },
    BOOKS: {
       path: (userId: string, subdomain: UrlProps) =>
          subdomain === 'main'

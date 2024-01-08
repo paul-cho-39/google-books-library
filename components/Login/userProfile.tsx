@@ -6,18 +6,20 @@ import { Divider } from '../layout/dividers';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import useAuthHandlers from '@/lib/hooks/useAuthHandlers';
 
 interface UserProfileProps {
-   userId: string;
-   signOut?: () => void;
+   signOut: () => void;
+   toSettings: () => void;
    username?: string | undefined | null;
    name?: string | undefined | null;
    href?: string;
 }
 
-const UserProfile = ({ userId, signOut, username, name, href }: UserProfileProps) => {
+const UserProfile = ({ toSettings, signOut, username, name, href }: UserProfileProps) => {
    const router = useRouter();
    const imageHref = !href ? '/avatar.png' : href;
+
    const getName = () => {
       if (name) {
          return name;
@@ -27,6 +29,7 @@ const UserProfile = ({ userId, signOut, username, name, href }: UserProfileProps
          return false;
       }
    };
+
    // name is first then username
    return (
       <Menu as='div'>
@@ -39,7 +42,7 @@ const UserProfile = ({ userId, signOut, username, name, href }: UserProfileProps
                <Menu.Item>
                   {({ active }) => (
                      <button
-                        onClick={() => router.push(ROUTES.PROFILE.SETTINGS(userId))}
+                        onClick={toSettings}
                         className={`${
                            active
                               ? 'bg-indigo-300 dark:bg-slate-600 text-white dark:text-gray-700'
@@ -54,13 +57,15 @@ const UserProfile = ({ userId, signOut, username, name, href }: UserProfileProps
                <Menu.Item>
                   {({ active }) => (
                      <button
-                        onClick={() => {
-                           signOut && signOut();
+                        onClick={signOut}
+                        // onClick={() => {
+                        //    signOut && signOut();
 
-                           setTimeout(() => {
-                              router.push('/');
-                           }, 200);
-                        }}
+                        //    // TODO: should show loading sign instead
+                        //    setTimeout(() => {
+                        //       router.push('/');
+                        //    }, 200);
+                        // }}
                         className={classNames(
                            active
                               ? 'bg-indigo-200 dark:bg-slate-600 text-white dark:text-gray-700'
