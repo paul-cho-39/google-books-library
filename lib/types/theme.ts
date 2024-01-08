@@ -1,6 +1,7 @@
 import { Session } from 'next-auth';
 import { IconProps } from '@/components/icons/headerIcons';
 import { FilterProps } from './googleBookTypes';
+import { UserInfo } from './providers';
 
 export type ColorTheme = 'light' | 'dark';
 
@@ -19,12 +20,16 @@ export type ThemeContextStyleParams = {
 } & ThemeContextParams;
 
 export interface NavigationProps {
-   user: Session | null;
+   userInfo: UserInfo;
    userId: string | null;
    icons: Partial<IconProps>;
    darkTheme: ThemeContextParams;
+   handleSignOut: (isCredential: boolean) => Promise<void>;
+   linkToSettings: (userId: string | null) => void;
+
+   // isCredentials: string | undefined;
    // url: string;
-   signOut: () => void;
+   // signOut: () => void;
 }
 
 export interface LayoutBase {
