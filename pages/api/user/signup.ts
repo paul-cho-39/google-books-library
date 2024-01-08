@@ -20,40 +20,35 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       const dateVerified = new Date().toISOString();
       const { username, email, password } = req.body;
 
-      //** Cannot change next-auth data. Not able to write to database with predefined schema for next-auth */
-      // if (providers?.google || providers?.facebook) {
-      //   const unverfiedUser = await prisma.user.findFirst({
-      //     where: {
-      //       email: email,
-      //       emailVerified: null,
-      //     },
-      //     select: { email: true },
-      //   });
-      //   // require other error boundaries?
-      //   if (unverfiedUser && unverfiedUser !== null) {
-      //     const verifiedUser = await prisma.user.upsert({
-      //       where: { email: unverfiedUser.email as string },
-      //       create: { emailVerified: dateVerified },
-      //       update: { emailVerified: dateVerified },
-      //     });
-      //     res.status(201).json(verifiedUser);
-      //   } else {
-      //     return
-      //   }
-      // }
+      const userExists = await prisma.user.findMany({
+         where: {
+            OR: [{ username: username }, { email: email }],
+         },
+      });
 
-      // are there more conditions before creating the user?
-      // if email and username is not duplicated
-      // if (!emailInData?.includes(email) && !usernameInData?.includes(username)) {
+      if (userExists && userExists.length > 1) {
+         return res.status(403).json({ message: 'Duplicate username or email' });
+      }
+
       const hasehdPassword = SHA256(password).toString();
       try {
-         await prisma.user.create({
+         const user = await prisma.user.create({
             data: {
                username,
                email,
                password: hasehdPassword,
             },
          });
+
+         await prisma.account.create({
+            data: {
+               userId: user.id,
+               type: 'credentials',
+               provider: 'credentials',
+               providerAccountId: user.id,
+            },
+         });
+
          res.status(201).json({ success: true });
       } catch (e) {
          res.status(401).json({

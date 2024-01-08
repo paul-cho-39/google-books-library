@@ -24,3 +24,9 @@ export type Users = {
    username: string | null;
    email: string | null;
 };
+
+export type UserInfo = {
+   userInSession: boolean;
+   name: string | null;
+   isCredential: boolean;
+};
