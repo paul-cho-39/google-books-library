@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import { ChevronUpIcon } from '@heroicons/react/20/solid';
 
-import IsSession from '../../login/isSession';
+import IsSession from '../../Login/isSession';
 import IconLink from '../linksToIcon';
 import { ThemeToggler } from '../../buttons/themeToggler';
 import { NavigationProps } from '@/lib/types/theme';

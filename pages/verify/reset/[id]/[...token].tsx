@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
-import FormSignIn, { Inputs } from '@/components/login/credentials';
+import FormSignIn, { Inputs } from '@/components/Login/credentials';
 import { SignInForm } from '@/lib/types/forms';
 import { validatePassword } from '@/lib/resolvers/validation';
 import { toast, Toaster } from 'react-hot-toast';

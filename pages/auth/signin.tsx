@@ -11,10 +11,10 @@ import { validateSignUp } from '@/lib/resolvers/validation';
 import ROUTES from '@/utils/routes';
 
 import AuthLayout from '@/components/layout/authLayout';
-import FormSignIn, { Inputs } from '@/components/login/credentials';
+import FormSignIn, { Inputs } from '@/components/Login/credentials';
 import { Divider, LabelDivider } from '@/components/layout/dividers';
 import useRedirectIfAuthenticated from '@/lib/hooks/useRedirectAfterAuthenticated';
-import AuthProviders from '@/components/login/providers';
+import AuthProviders from '@/components/Login/providers';
 import metaHeaders from '@/constants/headers';
 
 // export function Account({}) {
