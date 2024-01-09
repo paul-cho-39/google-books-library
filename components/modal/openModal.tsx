@@ -29,7 +29,7 @@ export default function ModalOpener({ isOpen, setIsOpen, DialogTitle, children }
                <div className='fixed inset-0 bg-black bg-opacity-25' />
             </Transition.Child>
             <div className='fixed inset-0 overflow-y-auto'>
-               <div className='flex min-h-full items-center justify-center p-4 text-center'>
+               <div className='mx-auto flex min-h-full items-center justify-center p-4 text-center'>
                   <Transition.Child
                      as={Fragment}
                      enter='ease-out duration-300'
@@ -42,11 +42,11 @@ export default function ModalOpener({ isOpen, setIsOpen, DialogTitle, children }
                      <Dialog.Panel className='overflow-y-hidden w-full h-auto max-w-md transform rounded-2xl bg-white dark:bg-slate-500 p-6 text-left align-middle shadow-xl transition-all'>
                         <Dialog.Title
                            as='h3'
-                           className='text-lg font-medium leading-6 text-gray-900 dark:text-gray-200'
+                           className='mb-4 text-lg font-medium leading-6 text-gray-900 dark:text-gray-200'
                         >
                            {DialogTitle}
                         </Dialog.Title>
-                        <div className='mt-14 dark:text-gray-300'>{children}</div>
+                        <div className='mt-2 dark:text-gray-300'>{children}</div>
                      </Dialog.Panel>
                   </Transition.Child>
                </div>

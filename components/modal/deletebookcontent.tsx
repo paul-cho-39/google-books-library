@@ -27,7 +27,10 @@ export const DeleteBookContent = ({
                </p>
                <div className='flex flex-row justify-evenly items-center'>
                   <button
-                     className={classNames('btn-secondary text-center mb-2', buttonClassName)}
+                     className={classNames(
+                        'btn-secondary inline-flex justify-center items-center mb-2 w-36',
+                        buttonClassName
+                     )}
                      onClick={toggleHide}
                   >
                      Cancel

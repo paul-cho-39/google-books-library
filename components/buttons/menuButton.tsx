@@ -86,7 +86,7 @@ const MenuButtons = ({ userId, book }: UserActionButtonProps) => {
             <DeleteBookContent
                toggleHide={() => setOpenModal(false)}
                isHidden={openDeleteModal}
-               buttonClassName='w-32 text-center items-center'
+               buttonClassName='w-32 inline-flex items-center justify-center'
             >
                <DeleteButton
                   book={book}

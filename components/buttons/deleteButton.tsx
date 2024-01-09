@@ -38,7 +38,7 @@ const DeleteButton = ({ userId, book, close, closeModal }: DeleteButtonProps) =>
          onClick={handleClick}
          isLoading={isLoading}
          isDeleteButton={true}
-         className='mb-2'
+         className='mb-2 w-36'
          name={'Delete Book'}
       />
    );
