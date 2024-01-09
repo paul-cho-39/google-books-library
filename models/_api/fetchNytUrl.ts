@@ -38,7 +38,7 @@ class NewYorkTimesApi {
       // Return false if the date is before 2008
       //   The api date returns to 2008
       if (year && year < 2008) {
-         console.warn(
+         throw new Error(
             'The New York Times best-seller list data is available for years after 2008.'
          );
       }

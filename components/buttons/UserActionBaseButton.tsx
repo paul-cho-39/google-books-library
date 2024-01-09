@@ -14,6 +14,12 @@ interface UserActionBasicButtonProps {
    className?: string;
 }
 
+/**
+ * Button component primarily used for providing user action to Add, Update, or Delete the book.
+ *
+ * @param {Object} UserActionBasicButtonProps
+ * @returns JSX.Element
+ */
 const Button = ({
    isDisplayed,
    onClick,
