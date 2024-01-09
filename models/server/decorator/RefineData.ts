@@ -1,5 +1,7 @@
+import prisma from '@/lib/prisma';
 import { Book, UserBook } from '@prisma/client';
 import { RefinedBookState, Library } from '@/lib/types/models/books';
+import { Comments } from '../prisma/BookRetrieve';
 
 type AllUserBooks = (UserBook & {
    book: Book;
@@ -44,6 +46,26 @@ export class RefineData {
       }
 
       return data;
+   }
+   /**
+    * @description Refines the currnet Comment data and adds 'upvoteCount' for each comment.
+    * @param comments
+    * @returns
+    */
+   async countUpvotes(comments: Comments) {
+      // since wrapping inside Promise.all, running 'async' inside map is ok
+      return await Promise.all(
+         comments.map(async (comment) => {
+            const upvoteCount = await prisma.upvotes.count({
+               where: { upvoteId: comment.id },
+            });
+
+            return {
+               ...comment,
+               upvoteCount: upvoteCount,
+            };
+         })
+      );
    }
 }
 

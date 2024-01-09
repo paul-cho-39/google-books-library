@@ -7,8 +7,9 @@ import { BookRetriever } from '../prisma/BookRetrieve';
 import BookStateHandler from '../prisma/BookState';
 import Books from '../prisma/Books';
 
-// maybe add another layer to the bookService that can be inherited some base?
-// for now this is set as a singleton and service layer that serves all endpont
+/**
+ *
+ */
 export default class BookService {
    private retriever: BookRetriever;
    private refiner: RefineData;
@@ -90,6 +91,32 @@ export default class BookService {
       const creator = this.getCreator;
       await creator.updateRatings(rating);
    }
+   async handleCreateCommentAndBook(data: Data, comment: string) {
+      const creator = this.getCreator;
+      await creator.createBookAndComment(data, comment);
+   }
+   async handleReplyToComment(parentId: number, comment: string) {
+      const creator = this.getCreator;
+      await creator.replyToComment(parentId, comment);
+   }
+   /**
+    * Handles both 'deleting' and 'updating' and 'creating' the upvote for the book.
+    */
+   async handleUpvoteComment(upvoteId: number) {
+      const creator = this.getCreator;
+      await creator.upvoteComment(upvoteId);
+   }
+
+   async getCommentsAndUpvotesOfSingleBook(bookId: string, page: number) {
+      try {
+         const unrefinedComments = await this.retriever.getCommentsByBookId(bookId, page);
+         const comments = this.refiner.countUpvotes(unrefinedComments);
+         return comments;
+      } catch (err) {
+         console.error('Error retrieving comments and upvotes: ', err);
+      }
+   }
+
    async getAllRatingOfSingleBook(bookId?: string) {
       this.ensureBookIdIsSet(bookId);
 
@@ -129,16 +156,11 @@ export default class BookService {
    }
    async deleteSingleRating() {
       const deleter = this.getDeleter;
-
-      // maybe implement deleting the book as well
-      // if so, have to reroute API endpoint and change https verb from 'delete' to 'post' and
-      // with new returned values including 'inLibrary'.
-      // Also, change the logic of useMutateRating, change getRatingInfo method of case, 'removed'
-      // which will toggle inLibrary to false from the response it gets
-
-      // await deleter.deleteRatingAndBook();
-
       await deleter.deleteRating();
+   }
+   async deleteCommentById(commentId: number) {
+      const deleter = this.getDeleter;
+      await deleter.deleteComment(commentId);
    }
 
    // checking if userId has been received
