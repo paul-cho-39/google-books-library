@@ -43,7 +43,7 @@ export const LargeNavigation = ({
                   <UserProfile
                      name={userInfo.name}
                      toSettings={toSettings}
-                     // userId={userId as string}
+                     href={userInfo.photoUrl}
                      signOut={signOut}
                   />
                )}
