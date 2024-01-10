@@ -73,31 +73,6 @@ export class BookRetriever {
          },
       });
    }
-   /**
-    * The current function does not fully retrieve the upvotes count that reference to each comments.
-    * Use one of the method 'countUpvotes' from RefineData to return the upvote counts.
-    * @param bookId
-    * @param page
-    * @param limit
-    * @returns {Comments}
-    */
-   async getCommentsByBookId(bookId: string, page: number, limit: number = 10) {
-      const skip = (page - 1) * limit;
-      return await prisma.comment.findMany({
-         where: {
-            bookId: bookId,
-         },
-         take: limit,
-         skip: skip,
-         orderBy: {
-            dateAdded: 'desc',
-         },
-         include: {
-            _count: true,
-            replies: true,
-         },
-      });
-   }
    async isBookInLibrary(bookId: string) {
       return await prisma.book.findUnique({
          where: { id: bookId },
@@ -105,9 +80,5 @@ export class BookRetriever {
    }
 }
 
-type Comments = Awaited<ReturnType<BookRetriever['getCommentsByBookId']>>;
-
 const retriever = new BookRetriever();
-
-export type { Comments };
 export default retriever;

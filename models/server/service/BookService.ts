@@ -106,17 +106,6 @@ export default class BookService {
       const creator = this.getCreator;
       await creator.upvoteComment(upvoteId);
    }
-
-   async getCommentsAndUpvotesOfSingleBook(bookId: string, page: number) {
-      try {
-         const unrefinedComments = await this.retriever.getCommentsByBookId(bookId, page);
-         const comments = this.refiner.countUpvotes(unrefinedComments);
-         return comments;
-      } catch (err) {
-         console.error('Error retrieving comments and upvotes: ', err);
-      }
-   }
-
    async getAllRatingOfSingleBook(bookId?: string) {
       this.ensureBookIdIsSet(bookId);
 

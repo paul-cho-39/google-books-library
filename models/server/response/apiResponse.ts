@@ -1,19 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { MetaDataParams, ResponseError, ResponseMeta } from '@/lib/types/response';
+import { MetaDataParams, ResponseErrorParams } from '@/lib/types/response';
 import winston from 'winston/lib/winston/config';
 import { errorLogger, internalServerErrorLogger } from '../winston';
 
 export default function createApiResponse<T>(
-   data: T | null,
+   data: T extends T ? T : null,
    meta?: MetaDataParams,
-   error?: ResponseError,
+   error?: ResponseErrorParams,
    req?: NextApiRequest
 ) {
    if (error && req) {
       logError(error, req);
    }
 
-   let finalError: ResponseError | undefined;
+   let finalError: ResponseErrorParams | undefined;
 
    if (error) {
       if (error.code === 500) {
@@ -37,6 +37,6 @@ export default function createApiResponse<T>(
    };
 }
 
-function logError(error: ResponseError, req: NextApiRequest) {
+function logError(error: ResponseErrorParams, req: NextApiRequest) {
    error.code === 500 ? internalServerErrorLogger(req) : errorLogger(error, req);
 }
