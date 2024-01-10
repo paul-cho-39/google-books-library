@@ -13,7 +13,7 @@ import refiner, { RefineData } from '@/models/server/decorator/RefineData';
 import BookService from '@/models/server/service/BookService';
 
 import BookImage from '@/components/bookcover/bookImages';
-import BookDescription from '@/components/bookcover/description';
+// import BookDescription from '@/components/bookcover/description';
 import { ActiveRating } from '@/components/rating/activeRating';
 import useHandleRating from '@/lib/hooks/useHandleRating';
 import BookActionButton from '@/components/buttons/bookActionButton';
@@ -25,6 +25,7 @@ import type { NextPageWithLayout } from './../_app';
 const HEIGHT = 225;
 
 const BookDescriptionSection = lazy(() => import('@/components/section/bookDescriptionSection'));
+const BookDescription = lazy(() => import('@/components/bookcover/description'));
 
 // when refreshed the serversideProps will fetch the data
 // when navigating between pages and coming back useQuery to check
@@ -130,13 +131,15 @@ const BookPage: NextPageWithLayout<
             <h3 className='text-xl lg:text-2xl underline underline-offset-1 text-slate-700 dark:text-slate-200 lg:mb-4'>
                Descriptions
             </h3>
-            <BookDescription
-               description={data?.volumeInfo.description}
-               descriptionLimit={250}
-               textSize='text-lg'
-               isLink={false}
-               href={''}
-            />
+            <Suspense fallback={null}>
+               <BookDescription
+                  description={data?.volumeInfo.description}
+                  descriptionLimit={250}
+                  textSize='text-lg'
+                  isLink={false}
+                  href={''}
+               />
+            </Suspense>
          </div>
       </PageLayout>
    );

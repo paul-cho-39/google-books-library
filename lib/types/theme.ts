@@ -20,7 +20,7 @@ export type ThemeContextStyleParams = {
 } & ThemeContextParams;
 
 export interface NavigationProps {
-   userInfo: UserInfo;
+   userInfo: Omit<UserInfo, 'userId'>;
    userId: string | null;
    icons: Partial<IconProps>;
    darkTheme: ThemeContextParams;

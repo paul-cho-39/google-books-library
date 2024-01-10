@@ -4,9 +4,9 @@ import refiner from '@/models/server/decorator/RefineData';
 
 export default async function getComments(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'GET') {
-      const { id: bookId, page } = req.query as unknown as { id: string; page: string };
+      const { id: bookId, slug } = req.query as unknown as { id: string; slug: string };
       try {
-         const pageIndex = parseInt(page);
+         const pageIndex = parseInt(slug);
          const comments = await refiner.getCommentsByBookId(bookId, pageIndex);
          const response = createApiResponse<typeof comments>(comments, {});
          return res.status(200).json(response);

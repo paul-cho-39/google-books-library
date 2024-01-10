@@ -26,7 +26,9 @@ export type Users = {
 };
 
 export type UserInfo = {
+   userId: string | null;
    userInSession: boolean;
    name: string | null;
    isCredential: boolean;
+   photoUrl?: string | null;
 };

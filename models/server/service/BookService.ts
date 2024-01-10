@@ -93,10 +93,12 @@ export default class BookService {
    }
    async handleCreateCommentAndBook(data: Data, comment: string) {
       const creator = this.getCreator;
+      this.validateComment(comment);
       await creator.createBookAndComment(data, comment);
    }
    async handleReplyToComment(parentId: number, comment: string) {
       const creator = this.getCreator;
+      this.validateComment(comment);
       await creator.replyToComment(parentId, comment);
    }
    /**
@@ -169,6 +171,11 @@ export default class BookService {
 
       if (!this.bookId) {
          throw new Error('Book ID is not set.');
+      }
+   }
+   private validateComment(comment: string) {
+      if (!comment || typeof comment !== 'string' || comment.length > 500) {
+         throw new TypeError('Invalid input for comment');
       }
    }
 }

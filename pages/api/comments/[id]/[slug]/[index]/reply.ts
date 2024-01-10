@@ -16,8 +16,13 @@ export default async function handleComments(req: NextApiRequest, res: NextApiRe
          });
          return res.status(200).json(response);
       } catch (err: any) {
-         const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
-         return res.status(404).json(errorResponse);
+         if (err instanceof TypeError) {
+            const errorResponse = createApiResponse(null, {}, { code: 400, message: err.message });
+            return res.status(400).json(errorResponse);
+         } else {
+            const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
+            return res.status(404).json(errorResponse);
+         }
       }
    }
    if (req.method === 'DELETE') {

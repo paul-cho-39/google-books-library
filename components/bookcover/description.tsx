@@ -71,7 +71,7 @@ const BookDescription = ({
    );
 
    return (
-      <>
+      <section id='Description'>
          {isDescriptionEmpty ? (
             <NoDescription />
          ) : (
@@ -104,7 +104,7 @@ const BookDescription = ({
          >
             <span>See Less</span> <ArrowUpIcon aria-hidden height='25' width='20' />
          </button>
-      </>
+      </section>
    );
 };
 

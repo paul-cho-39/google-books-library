@@ -16,16 +16,19 @@ export default async function addComment(req: NextApiRequest, res: NextApiRespon
       const service = new BookService(userId as string, bookId as string);
 
       try {
-         console.log('------TESTING------');
-         console.log('IT IS INSIDE OF /COMMENTS/[ID]/[SLUG]/INDEX');
          service.handleCreateCommentAndBook(data, comment);
          const response = createApiResponse(null, {
             message: 'Successfully added comment',
          });
          return res.status(201).json(response);
       } catch (err: any) {
-         const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
-         return res.status(404).json(errorResponse);
+         if (err instanceof TypeError) {
+            const errorResponse = createApiResponse(null, {}, { code: 400, message: err.message });
+            return res.status(400).json(errorResponse);
+         } else {
+            const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
+            return res.status(404).json(errorResponse);
+         }
       }
    }
 
