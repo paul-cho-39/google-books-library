@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import BookService from '@/models/server/service/BookService';
 import createApiResponse from '@/models/server/response/apiResponse';
 
-export default async function handle(req: NextApiRequest, res: NextApiResponse) {
+export default async function reading(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
       const { id: userId } = req.query as { id: string };
       const { data } = req.body;

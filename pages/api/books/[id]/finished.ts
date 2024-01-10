@@ -3,7 +3,7 @@ import BookService from '@/models/server/service/BookService';
 import createApiResponse from '@/models/server/response/apiResponse';
 
 // this means also updating finishedBooks DATES if date is NULL
-export default async function handle(req: NextApiRequest, res: NextApiResponse) {
+export default async function finished(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
       const { id: userId } = req.query as { id: string };
       const { year, month, day, data } = req.body;
