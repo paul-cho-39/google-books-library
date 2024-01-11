@@ -51,13 +51,7 @@ export default function useMutateRatings<ActionType extends MutationRatingAction
             // returns the current rating
             rating = getRatingFromMutation(data, action, prevRatingData);
 
-            // console.log('----------TESTING--------------');
-            // console.log('----------TESTING--------------');
-            // console.log('----------TESTING--------------');
-            // console.log('TESTING THE RATING HERE: ', rating);
-
-            // ---------- SETTING OPTIMISITC DATA -----------------------
-            // TODO: change the params for 'setOptimisticData'
+            // ---------- SETTING OPTIMISITC DATA----------
             const optimisticData = setOptimisticData({
                action,
                newRating: rating,
@@ -66,8 +60,6 @@ export default function useMutateRatings<ActionType extends MutationRatingAction
                userId,
                inLibrary,
             });
-
-            // ------------------------------------------------------------
 
             queryClient.setQueryData<SingleRatingData>(
                queryKeys.ratingsByBookAndUser(bookId, userId),
@@ -105,36 +97,13 @@ export default function useMutateRatings<ActionType extends MutationRatingAction
             }
          },
          onSettled: (_data, error, variables, context) => {
-            // setMultipleQueryData({
-            //    queryClient,
-            //    bookId,
-            //    userId,
-            //    context,
-            //    inLibrary,
-            //    newRating: variables?.rating,
-            // });
-
             // the previous currentRatingData is invalidated and currentRatingData is fresh
             if (error) {
                console.error(error);
             }
-            // console.log(
-            //    'INSIDE USEMUTATERATINGS------------>>>>>>>>>>>>>>>>>>>>>>>, THE DATA IS: ',
-            //    _data
-            // );
-            // console.log(
-            //    'INSIDE USEMUTATERATINGS------------>>>>>>>>>>>>>>>>>>>>>>>, THE CONTEXT IS: ',
-            //    context
-            // );
 
             queryClient.invalidateQueries(queryKeys.ratingsByBookAndUser(bookId, userId));
-
-            // adding invalidation here
-            // queryClient.invalidateQueries(queryKeys.ratingsByBook(bookId));
          },
-         // onSuccess: () => {
-         //    queryClient.invalidateQueries(queryKeys.ratingsByBook(bookId));
-         // },
       }
    );
 
@@ -164,12 +133,6 @@ function setOptimisticData(params: MultipleQueryDataParams): SingleRatingData {
    const newCount = setNewCount(prevRatingData, action);
 
    const oldRating = params.prevRatingData?.ratingInfo?.ratingValue;
-
-   // console.log('----------TESTING--------------');
-   // console.log('----------TESTING--------------');
-   // console.log('----------TESTING--------------');
-   // console.log('HERE IS THE OLD RATING: ', oldRating);
-
    const newAvg = calculateNewAverage(
       action,
       prevRatingData?.avg,
@@ -240,6 +203,7 @@ function initializeData(params: InitializeDataParams) {
       queryKeys.ratingsByBookAndUser(bookId, userId)
    );
 
+   // if there is previous data, initiate the current one to the previous data
    if (!currentRatingData && prevRatingData) {
       queryClient.setQueryData<SingleRatingData>(
          queryKeys.ratingsByBookAndUser(bookId, userId),
@@ -264,59 +228,12 @@ function getRatingFromMutation<ActionType extends MutationRatingActionType>(
    return data?.rating || 0;
 }
 
-// queryClient
-// context
-// newRating
-// function setMultipleQueryData(params: MultipleQueryDataParams) {
-//    // const { context, queryClient, ...restParams } = params;
-//    const { context, queryClient, ...restParams } = params;
-//    const ratingData = queryClient.getQueryData<MultipleRatingData>(
-//       queryKeys.ratingsByBook(restParams.bookId)
-//    ) as MultipleRatingData;
-
-//    // console.log('--RIGHT BEFORE RETURNING BECAUSE THERE IS NO DATA?');
-//    // console.log('--HERE IS THE RATING DATA: ', ratingData);
-//    // console.log('--HERE IS THE CONTEXT: ', context);
-//    // console.log('--HERE IS THE RATING DATA: ', context?.prevRatingData);
-
-//    if (!ratingData || !context) return;
-
-//    const { prevRatingData, action } = context;
-
-//    const oldRating = prevRatingData?.ratingInfo?.ratingValue || 0;
-
-//    const newAvg = calculateNewAverage(
-//       action,
-//       ratingData?.avg,
-//       ratingData?.count,
-//       restParams.newRating,
-//       oldRating
-//    );
-
-//    const count = setNewCount(prevRatingData, action);
-//    const ratingInfo = getRatingInfo(ratingData, action, restParams);
-
-//    console.log('*********INSIDE THE USEMUTATE**************, THE RATING DATA IS: ', ratingData);
-//    console.log('*********INSIDE THE USEMUTATE**************', ratingInfo);
-
-//    queryClient.setQueryData<MultipleRatingData>(queryKeys.ratingsByBook(restParams.bookId), {
-//       ...ratingData,
-//       avg: newAvg,
-//       count: count,
-//       ratingInfo: ratingInfo,
-//    });
-// }
-
 function setMultipleQueryData(queryClient: QueryClient, params: MultipleQueryDataParams) {
    // const { context, queryClient, ...restParams } = params;
    const { prevRatingData, action, ...restParams } = params;
    const ratingData = queryClient.getQueryData<MultipleRatingData>(
       queryKeys.ratingsByBook(restParams.bookId)
    ) as MultipleRatingData;
-
-   // console.log('--RIGHT BEFORE RETURNING BECAUSE THERE IS NO DATA?');
-   // console.log('--HERE IS THE RATING DATA: ', ratingData);
-   // console.log('--HERE IS THE RATING DATA: ', );
 
    if (!ratingData) {
       throw new Error(

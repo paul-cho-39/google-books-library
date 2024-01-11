@@ -70,6 +70,7 @@ export function useGetRating({ bookId, userId, initialData }: SingleRatingParams
          },
          refetchOnWindowFocus: false,
          refetchOnMount: false,
+         notifyOnChangeProps: ['data'],
          onSuccess: (data) => {
             const findBook = findId(data, userId);
 

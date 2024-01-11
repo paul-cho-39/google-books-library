@@ -7,7 +7,8 @@ import { Library } from './models/books';
 
 // types for serverside props
 export type BasicServerProps = {
-   userId: string | null;
+   // userId: string | null;
+   user: Session | null;
    id: string;
 };
 

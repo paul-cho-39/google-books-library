@@ -5,12 +5,7 @@ import classNames from 'classnames';
 
 import { useGetCategoriesQueries } from '@/lib/hooks/useGetCategoryQuery';
 
-import {
-   Categories,
-   NUM_CATEGORIES_LOAD,
-   serverSideCategories,
-   topCategories,
-} from '@/constants/categories';
+import { Categories, NUM_CATEGORIES_LOAD, serverSideCategories } from '@/constants/categories';
 import { getBookWidth, getContainerWidth } from '@/lib/helper/books/getBookWidth';
 
 import { DescriptionSkeleton } from '@/components/loaders/bookcardsSkeleton';
@@ -112,7 +107,7 @@ const Home: NextPageWithLayout<
    };
 
    return (
-      <>
+      <main>
          {combinedData.map(({ category, data, isLoading, isError }, index) => (
             <CategoryDisplay
                key={category}
@@ -201,7 +196,7 @@ const Home: NextPageWithLayout<
                aria-busy={isLoading}
             />
          )}
-      </>
+      </main>
    );
 };
 

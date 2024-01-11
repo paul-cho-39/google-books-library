@@ -30,6 +30,7 @@ export default function useGetBookById<
    const isGoogle = isSource(source, 'google');
 
    // it first looks for singeBook cache which is the most relevant cache
+   // even for nyt book it will retrieve the book object using this cache key
    const initialData = queryClient.getQueryData<CacheData>(queryKeys.singleBook(id));
 
    // if it is not in the first cache proceed to look inside the second cache
@@ -40,7 +41,7 @@ export default function useGetBookById<
    }
 
    // the third option is to refetch the entire book id
-   // NOE: the data is different from fetching using 'id'
+   // NOTE: the data is different from fetching using 'id'
    const queryResult = useQuery(
       queryKeys.singleBook(routeParams?.slug as string),
       async () => {
@@ -60,6 +61,8 @@ export default function useGetBookById<
       {
          initialData: () => initialData || book,
          enabled: !!id && !initialData && !book,
+
+         //** @TODO - test whether this works */
          onSuccess: (data) => queryClient.setQueryData(queryKeys.singleBook(id), data),
       }
    );

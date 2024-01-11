@@ -6,6 +6,7 @@ import BookDelete from '../prisma/BookDelete';
 import { BookRetriever } from '../prisma/BookRetrieve';
 import BookStateHandler from '../prisma/BookState';
 import Books from '../prisma/Books';
+import { MAXIMUM_CONTENT_LENGTH } from '@/constants/inputs';
 
 /**
  *
@@ -174,7 +175,7 @@ export default class BookService {
       }
    }
    private validateComment(comment: string) {
-      if (!comment || typeof comment !== 'string' || comment.length > 500) {
+      if (!comment || typeof comment !== 'string' || comment.length > MAXIMUM_CONTENT_LENGTH) {
          throw new TypeError('Invalid input for comment');
       }
    }
