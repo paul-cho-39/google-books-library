@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import Image from 'next/image';
 
-type UserAvatarProps = {
+export type UserAvatarProps = {
    avatarUrl: string | null | undefined;
    size: {
       height: number;
@@ -18,6 +18,7 @@ const UserAvatar = ({ avatarUrl, size, className }: UserAvatarProps) => {
          alt='User Avatar'
          height={size.height}
          width={size.width}
+         objectFit='contain'
          className={classNames(className)}
          src={imageHref}
       />

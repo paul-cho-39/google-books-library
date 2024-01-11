@@ -14,7 +14,6 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }: SideNavigationProps) => {
    const { data: user } = useSession();
 
    const userInfo = getUserInfo(user);
-   console.log('The user url is: ', userInfo);
    const darkTheme = useDarkMode();
    const { handleSignOut, linkToSettings } = useAuthHandlers();
 

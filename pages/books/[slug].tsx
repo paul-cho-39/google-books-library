@@ -13,7 +13,6 @@ import refiner, { RefineData } from '@/models/server/decorator/RefineData';
 import BookService from '@/models/server/service/BookService';
 
 import BookImage from '@/components/bookcover/bookImages';
-// import BookDescription from '@/components/bookcover/description';
 import { ActiveRating } from '@/components/rating/activeRating';
 import useHandleRating from '@/lib/hooks/useHandleRating';
 import BookActionButton from '@/components/buttons/bookActionButton';
@@ -21,18 +20,26 @@ import PageLayout from '@/components/layout/page/bookPageLayout';
 import useSearchFilter from '@/lib/hooks/useSearchFilter';
 
 import type { NextPageWithLayout } from './../_app';
+import DescriptionSection from '@/components/contents/books/description';
+import ReviewSection from '@/components/contents/books/review';
+import getUserInfo from '@/lib/helper/getUserId';
+import { BookTopLayout, BookBottomLayout } from '@/components/layout/bookLayout';
+import { string } from 'prop-types';
 
 const HEIGHT = 225;
 
-const BookDescriptionSection = lazy(() => import('@/components/section/bookDescriptionSection'));
-const BookDescription = lazy(() => import('@/components/bookcover/description'));
+const BookMetaDescriptionSection = lazy(
+   () => import('@/components/section/bookDescriptionSection')
+);
 
 // when refreshed the serversideProps will fetch the data
 // when navigating between pages and coming back useQuery to check
 const BookPage: NextPageWithLayout<
    InferGetServerSidePropsType<typeof getServerSideProps> & { isLoading: boolean; title: string }
 > = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-   const { id, userId, placerData } = props;
+   const { id, user, placerData } = props;
+
+   const { userId, photoUrl } = getUserInfo(user);
 
    const router = useRouter();
    const { filter } = useSearchFilter(); // returns the current filter
@@ -63,27 +70,36 @@ const BookPage: NextPageWithLayout<
       userRatingData?.ratingInfo?.ratingValue || 0
    );
 
-   // console.log('---------INSIDE THE MAIN PAGE-----------');
+   console.log('---------INSIDE THE MAIN PAGE-----------');
    // console.log('For the book', id, 'THE SELECTED RATING IS: ', selectedRating);
    // console.log('USER RATING DATA', id, '(not useState but the value for) IS: ', selectedRating);
+   console.log('IS THE BOOK IN LIBRARY AFTER THE COMMENT?: ', allRatingData);
+   console.log('THE DATA SHOULD BE DEFINED: ', data);
+
+   // ALTER THIS IF THE LIBRARY DOES NOT CHANGE
+   const params = {
+      bookId: id,
+      userId: userId as string,
+      inLibrary: allRatingData?.inLibrary!,
+   };
 
    const { handleMutation, handleRemoveMutation, currentRatingData } = useHandleRating(
       {
-         bookId: id,
-         userId: userId as string,
-         inLibrary: allRatingData?.inLibrary!,
+         // bookId: id,
+         // userId: userId as string,
+         // inLibrary: allRatingData?.inLibrary!,
+         ...params,
          prevRatingData: userRatingData,
       },
       data,
       allRatingData
    );
 
-   const ratingTitle = !userRatingData ? 'Rate Book' : 'Rating Saved';
-   const title = data?.volumeInfo?.title;
+   const ratingTitle = !userRatingData ? 'Rate this book' : 'Rating saved';
 
    return (
       <PageLayout isLoading={isLoading} title={data?.volumeInfo?.title}>
-         <div className='w-full flex flex-col max-w-2xl items-center justify-center p-6 lg:p-10 md:grid md:grid-cols-3 lg:max-w-4xl'>
+         <BookTopLayout>
             <div className='flex flex-col items-center justify-center md:col-span-1 md:gap-x-0'>
                <BookImage
                   id={data?.id}
@@ -97,13 +113,11 @@ const BookPage: NextPageWithLayout<
                />
                <div className='flex flex-row w-full py-4 items-center justify-center'>
                   {isSuccess && data && (
-                     <>
-                        <BookActionButton
-                           className='justify-center px-2'
-                           book={data}
-                           userId={userId as string}
-                        />
-                     </>
+                     <BookActionButton
+                        className='justify-center px-2'
+                        book={data}
+                        userId={userId as string}
+                     />
                   )}
                </div>
                <ActiveRating
@@ -120,27 +134,17 @@ const BookPage: NextPageWithLayout<
                />
             </div>
             <Suspense fallback={<div></div>}>
-               <BookDescriptionSection allRatingData={allRatingData} data={data} userId={userId} />
-            </Suspense>
-         </div>
-         <div
-            role='contentinfo'
-            id='book-info'
-            className='my-4 w-full max-w-2xl py-2 px-2 lg:max-w-5xl lg:px-6 xl:px-12 lg:my-12'
-         >
-            <h3 className='text-xl lg:text-2xl underline underline-offset-1 text-slate-700 dark:text-slate-200 lg:mb-4'>
-               Descriptions
-            </h3>
-            <Suspense fallback={null}>
-               <BookDescription
-                  description={data?.volumeInfo.description}
-                  descriptionLimit={250}
-                  textSize='text-lg'
-                  isLink={false}
-                  href={''}
+               <BookMetaDescriptionSection
+                  allRatingData={allRatingData}
+                  data={data}
+                  userId={userId}
                />
             </Suspense>
-         </div>
+         </BookTopLayout>
+         <BookBottomLayout>
+            <DescriptionSection description={data?.volumeInfo?.description} />
+            <ReviewSection avatarUrl={photoUrl} params={params} bookData={data} />
+         </BookBottomLayout>
       </PageLayout>
    );
 };
@@ -149,8 +153,8 @@ export const getServerSideProps: GetServerSideProps<RateServerTypes> = async (co
    const { slug: bookId } = context.query as { slug: string };
 
    const session = await getSession(context);
-   const user = session?.user as CustomSession;
-   const userId = user?.id || null;
+   // const user = session?.user as CustomSession;
+   // const userId = user?.id || null;
 
    const service = new BookService();
    const data = (await service.getAllRatingOfSingleBook(
@@ -162,7 +166,7 @@ export const getServerSideProps: GetServerSideProps<RateServerTypes> = async (co
 
    return {
       props: {
-         userId: userId,
+         user: session,
          id: bookId,
          placerData: refinedData,
       },
