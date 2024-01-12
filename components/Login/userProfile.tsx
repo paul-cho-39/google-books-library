@@ -13,7 +13,7 @@ const UserProfile = ({ toSettings, signOut, name, href }: UserProfileProps) => {
    return (
       <Menu as='div'>
          <Menu.Button className='rounded-full inline-flex items-center justify-center focus:outline-none focus:ring p-2'>
-            <UserAvatar avatarUrl={href} size={{ height: 30, width: 30 }} />
+            <UserAvatar avatarUrl={href} size={{ height: 40, width: 40 }} />
          </Menu.Button>
 
          <Menu.Items className='absolute z-[9999] right-8 mt-2 w-52 origin-top-right divide-y divide-gray-100 rounded-md dark:bg-slate-600 shadow-lg ring-1 ring-black/5 focus:outline-none cursor-pointer'>

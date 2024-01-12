@@ -25,6 +25,7 @@ import ReviewSection from '@/components/contents/books/review';
 import getUserInfo from '@/lib/helper/getUserId';
 import { BookTopLayout, BookBottomLayout } from '@/components/layout/bookLayout';
 import { string } from 'prop-types';
+import useGetReviews from '@/lib/hooks/useGetReviews';
 
 const HEIGHT = 225;
 
@@ -73,8 +74,8 @@ const BookPage: NextPageWithLayout<
    console.log('---------INSIDE THE MAIN PAGE-----------');
    // console.log('For the book', id, 'THE SELECTED RATING IS: ', selectedRating);
    // console.log('USER RATING DATA', id, '(not useState but the value for) IS: ', selectedRating);
-   console.log('IS THE BOOK IN LIBRARY AFTER THE COMMENT?: ', allRatingData);
-   console.log('THE DATA SHOULD BE DEFINED: ', data);
+   // console.log('IS THE BOOK IN LIBRARY AFTER THE COMMENT?: ', allRatingData);
+   // console.log('THE DATA SHOULD BE DEFINED: ', data);
 
    // ALTER THIS IF THE LIBRARY DOES NOT CHANGE
    const params = {
@@ -94,6 +95,9 @@ const BookPage: NextPageWithLayout<
       data,
       allRatingData
    );
+
+   // const { data: reviews } = useGetReviews(id, 1);
+   // console.log('HERE IS THE DATA: ', reviews.data);
 
    const ratingTitle = !userRatingData ? 'Rate this book' : 'Rating saved';
 
@@ -143,7 +147,7 @@ const BookPage: NextPageWithLayout<
          </BookTopLayout>
          <BookBottomLayout>
             <DescriptionSection description={data?.volumeInfo?.description} />
-            <ReviewSection avatarUrl={photoUrl} params={params} bookData={data} />
+            <ReviewSection bookId={id} avatarUrl={photoUrl} params={params} bookData={data} />
          </BookBottomLayout>
       </PageLayout>
    );

@@ -65,8 +65,26 @@ export class RefineData {
             dateAdded: 'desc',
          },
          include: {
+            // NOTE: there is no take or limit here as the project is unlikely to exceed this
+            replies: {
+               include: {
+                  replies: true,
+                  user: {
+                     select: {
+                        name: true,
+                        username: true,
+                     },
+                  },
+               },
+            },
+            upvote: true,
             _count: true,
-            replies: true,
+            user: {
+               select: {
+                  name: true,
+                  username: true,
+               },
+            },
          },
       });
       // since wrapping inside Promise.all, running 'async' inside map is ok

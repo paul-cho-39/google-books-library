@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '@/lib/prisma';
 import createApiResponse from '@/models/server/response/apiResponse';
 
+// TODO: have to change logic here
 export default async function replyToComment(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
       const { id, slug: userId } = req.query as unknown as { id: string; slug: string };

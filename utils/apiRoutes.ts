@@ -22,7 +22,7 @@ const API_ROUTES = {
    COMMENTS: {
       ADD: (userId: string, bookId: string) => `${BASE_PATH}/${DOMAIN_COMMENT}/${userId}/${bookId}`,
       GET_COMMENTS: (bookId: string, page: string) =>
-         `${BASE_PATH}/${DOMAIN_COMMENT}/${bookId}/${page}`,
+         `${BASE_PATH}/${DOMAIN_COMMENT}/${bookId}/${page}/retrieve`,
       REPLY: (userId: string, bookId: string, idx: string) =>
          `${BASE_PATH}/${DOMAIN_COMMENT}/${userId}/${bookId}/${idx}`,
       DELETE: (userId: string, bookId: string, idx: string) =>
@@ -30,7 +30,7 @@ const API_ROUTES = {
       UPVOTE: (userId: string, bookId: string, idx: string) =>
          `${BASE_PATH}/${DOMAIN_COMMENT}/${userId}/${bookId}/${idx}`,
       UPDATE_COMMENT: (id: string, userId: string) =>
-         `${BASE_PATH}/${DOMAIN_COMMENT}/${id}/${userId}`,
+         `${BASE_PATH}/${DOMAIN_COMMENT}/${id}/${userId}/update`,
    },
    THIRD_PARTY: {
       path: (pathTypes: ServerCacheType) => {

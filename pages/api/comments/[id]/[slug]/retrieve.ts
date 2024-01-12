@@ -2,10 +2,12 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import createApiResponse from '@/models/server/response/apiResponse';
 import refiner from '@/models/server/decorator/RefineData';
 
-export default async function getComments(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+   console.log('HITTING THE COMMENTS');
    if (req.method === 'GET') {
       const { id: bookId, slug } = req.query as unknown as { id: string; slug: string };
       try {
+         console.log('--------TESTING INSIDE GET_COMMENTS-----------');
          const pageIndex = parseInt(slug);
          const comments = await refiner.getCommentsByBookId(bookId, pageIndex);
          const response = createApiResponse<typeof comments>(comments, {});

@@ -1,8 +1,9 @@
 import { Session } from 'next-auth';
 import { UserInfo } from '../types/providers';
+import { CommentPayload } from '../types/response';
 
 /**
- *
+ * Helper function to return user info from nested object. The object differs from credential and OAuth
  * @param user
  * @returns {Object} UserInfo
  */
@@ -10,7 +11,7 @@ export default function getUserInfo(user: Session | null): UserInfo {
    const userInSession = !!user;
    const userId = user && getUserKey(user as object, 'id');
    const isCredential = user && !user.isCredential ? false : true;
-   const name = getUserName(user);
+   const name = getUserName.bySession(user);
    const photoUrl = user?.user?.image;
 
    const userInfo = {
@@ -49,14 +50,30 @@ function getUser(user: string[]) {
    return user && user[0]?.toString();
 }
 
-function getUserName(user: Session | null) {
-   if (!user) return null;
+export const getUserName = {
+   bySession: (user: Session | null) => {
+      if (!user) return null;
 
-   const name = getUserKey(user as object, 'name');
+      const name = getUserKey(user as object, 'name');
 
-   if (!name) {
-      return getUserKey(user as object, 'username');
-   }
+      if (!name) {
+         return getUserKey(user as object, 'username');
+      }
 
-   return name;
-}
+      return name;
+   },
+   // for credential provider username is always defined
+   // for OAuth the name is defined as well and always be returning a string
+   byComment: (comment: CommentPayload[number]): string => {
+      const name = comment.user.name;
+      const username = comment.user.username;
+
+      return (!name ? username : name) as string;
+   },
+   byReplies: (reply: CommentPayload[number]['replies'][number]): string => {
+      const name = reply?.user.name;
+      const username = reply?.user.username;
+
+      return (!name ? username : name) as string;
+   },
+};
