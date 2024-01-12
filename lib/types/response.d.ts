@@ -1,4 +1,4 @@
-import BookService from '@/models/server/service/BookService';
+import refiner, { RefineData, RefineData } from '@/models/server/decorator/RefineData';
 
 // for creating apiResponseError that will return 'ErrorResponse'
 export interface ResponseErrorParams {
@@ -64,3 +64,31 @@ export interface ReplyCommentRequestQuery extends UserIdAndBookIdQuery {
 export interface CommentsRequestQuery extends UserIdAndBookIdQuery {
    page: string;
 }
+
+export type Upvote = {
+   userId: string;
+   id: number;
+   upvoteId: number;
+};
+
+// export type CommentPayload = GetResponseData<RefineData['getCommentsByBookId']>;
+export type CommentPayload = {
+   count: { upvote: number; replies: number };
+   bookId: string;
+   content: string;
+   dateAdded: Date;
+   dateUpdated: Date;
+   id: number;
+   likes: number;
+   parentId: number | null;
+   replies: CommentPayload[] | undefined;
+   upvote: Upvote[];
+   upvoteCount: number;
+   user: {
+      name: string | null;
+      usernmae: string | null;
+   };
+   userId: string;
+   upvoteCount: number; // Added based on your mapping
+};
+export type CommentResponseData = PostApiResponse<CommentPayload>;

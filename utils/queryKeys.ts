@@ -15,6 +15,8 @@ const queryKeys = {
    finished: ['booklibrary', 'finished'] as const,
    allGoogleCategories: ['google', 'categories'] as const,
    ratings: ['ratings', 'all'] as const,
+   commentsByBook: (bookId: string, page: string) =>
+      ['comments', 'all', { id: bookId }, { page }] as const,
    ratingsByBook: (bookId: string) => ['ratings', { id: bookId }] as const,
    ratingsByBookAndUser: (bookId: string, userId: string) =>
       [...queryKeys.ratingsByBook(bookId), { user: userId }] as const,
