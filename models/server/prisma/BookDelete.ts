@@ -39,23 +39,24 @@ export default class BookDelete extends Books {
          where: { id: commentId },
       });
    }
-   // when retrieving the book
-   // 1) make sure it does not retrieve that contains 'isDeleted' flag
-   // 2)
-   // when just deleting the book it will have to
-   // 1) check if the rating is associated with the book
-   // 2) if rating is not associated then delete
-   // 3) if it is then soft delete and mark 'isDeleted' and 'dateDeleted'
 
-   // when soft deleting the book and after adding the book to retrieve the book, if the book is
-   // added,
-   // 1) see if the book is on the list
-   // 2) see if the book is deleted
-   // 3) if it is deleted then delete the book again
-
-   // when rating the book too batch update
-   // 1) first find if the book is on the list
-   // 2) if it is then update the book and also update
+   /**
+    * when retrieving the book
+    * 1) make sure it does not retrieve that contains 'isDeleted' flag
+    * 2)
+    * when just deleting the book it will have to
+    * 1) check if the rating is associated with the book
+    * 2) if rating is not associated then delete
+    * 3) if it is then soft delete and mark 'isDeleted' and 'dateDeleted'
+    * when soft deleting the book and after adding the book to retrieve the book, if the book is
+    * added,
+    * 1) see if the book is on the list
+    * 2) see if the book is deleted
+    * 3) if it is deleted then delete the book again
+    * when rating the book too batch update
+    * 1) first find if the book is on the list
+    * 2) if it is then update the book and also update
+    */
    async deleteBook() {
       return await prisma.$transaction(async (tx) => {
          // find user first

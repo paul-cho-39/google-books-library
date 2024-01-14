@@ -34,7 +34,7 @@ const BookDescriptionSection = ({ data, allRatingData, userId }: BookDescription
                hasLink={false}
                title={data?.volumeInfo.title as string}
                subtitle={data?.volumeInfo.subtitle}
-               className='text-xl mb-1 lg:text-3xl'
+               className='text-xl mb-1 lg:text-3xl md:font-bold'
             />
             <div className='mb-1'>
                <span className='text-slate-800 dark:text-slate-200'>By: </span>

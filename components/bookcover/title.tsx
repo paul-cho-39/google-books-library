@@ -33,7 +33,7 @@ const BookTitle = ({
    );
 
    return (
-      <h3 className={classNames('font-medium py-1 text-slate-800 dark:text-slate-100', className)}>
+      <h3 className={classNames(className, 'font-medium py-1 text-slate-800 dark:text-slate-100')}>
          {hasLink ? (
             <Link
                as={ROUTES.BOOKS.GOOGLE(id)}

@@ -17,6 +17,14 @@ export interface SingleBookQueryParams<TRoute extends CategoryRouteParams | Rout
    accessFullBookUrl?: boolean;
 }
 
+/**
+ * @description
+ * Client-side cache that initially looks for books that matches against keys cached for a single book.
+ * If it is not available it matches the next available cache by looking for the route previous to the current route.
+ * The last resort is fetching the book from the proxy server.
+ * @param {Object} SingleBookQueryParams
+ * @returns {Object}
+ */
 export default function useGetBookById<
    TRoute extends CategoryRouteParams | RouteParams,
    CacheData extends Data<Record<string, string>> | GoogleUpdatedFields
@@ -30,6 +38,7 @@ export default function useGetBookById<
    const isGoogle = isSource(source, 'google');
 
    // it first looks for singeBook cache which is the most relevant cache
+   // even for nyt book it will retrieve the book object using this cache key
    const initialData = queryClient.getQueryData<CacheData>(queryKeys.singleBook(id));
 
    // if it is not in the first cache proceed to look inside the second cache
@@ -40,8 +49,8 @@ export default function useGetBookById<
    }
 
    // the third option is to refetch the entire book id
-   // NOE: the data is different from fetching using 'id'
-   const queryResult = useQuery(
+   // NOTE: the data is different from fetching using 'id'
+   const { data, isSuccess, isLoading } = useQuery(
       queryKeys.singleBook(routeParams?.slug as string),
       async () => {
          const body = isGoogle ? { type: 'google' } : { type: 'nyt' };
@@ -60,11 +69,14 @@ export default function useGetBookById<
       {
          initialData: () => initialData || book,
          enabled: !!id && !initialData && !book,
+         //** @TODO - test whether this works */
          onSuccess: (data) => queryClient.setQueryData(queryKeys.singleBook(id), data),
       }
    );
 
-   return queryResult;
+   // console.log('THE DATA BEING RETURNED INSIDE USEGETBOOKBYID IS: ', data);
+
+   return { data, isSuccess, isLoading };
 }
 
 function findBookId<CacheData extends Data<Record<string, string>> | GoogleUpdatedFields>(

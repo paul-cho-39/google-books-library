@@ -6,9 +6,11 @@ import BookDelete from '../prisma/BookDelete';
 import { BookRetriever } from '../prisma/BookRetrieve';
 import BookStateHandler from '../prisma/BookState';
 import Books from '../prisma/Books';
+import { MAXIMUM_CONTENT_LENGTH } from '@/constants/inputs';
 
-// maybe add another layer to the bookService that can be inherited some base?
-// for now this is set as a singleton and service layer that serves all endpont
+/**
+ *
+ */
 export default class BookService {
    private retriever: BookRetriever;
    private refiner: RefineData;
@@ -90,6 +92,23 @@ export default class BookService {
       const creator = this.getCreator;
       await creator.updateRatings(rating);
    }
+   async handleCreateCommentAndBook(data: Data, comment: string) {
+      const creator = this.getCreator;
+      this.validateComment(comment);
+      await creator.createBookAndComment(data, comment);
+   }
+   async handleReplyToComment(parentId: number, comment: string) {
+      const creator = this.getCreator;
+      this.validateComment(comment);
+      await creator.replyToComment(parentId, comment);
+   }
+   /**
+    * Handles both 'deleting' and 'updating' and 'creating' the upvote for the book.
+    */
+   async handleUpvoteComment(upvoteId: number) {
+      const creator = this.getCreator;
+      await creator.upvoteComment(upvoteId);
+   }
    async getAllRatingOfSingleBook(bookId?: string) {
       this.ensureBookIdIsSet(bookId);
 
@@ -129,16 +148,11 @@ export default class BookService {
    }
    async deleteSingleRating() {
       const deleter = this.getDeleter;
-
-      // maybe implement deleting the book as well
-      // if so, have to reroute API endpoint and change https verb from 'delete' to 'post' and
-      // with new returned values including 'inLibrary'.
-      // Also, change the logic of useMutateRating, change getRatingInfo method of case, 'removed'
-      // which will toggle inLibrary to false from the response it gets
-
-      // await deleter.deleteRatingAndBook();
-
       await deleter.deleteRating();
+   }
+   async deleteCommentById(commentId: number) {
+      const deleter = this.getDeleter;
+      await deleter.deleteComment(commentId);
    }
 
    // checking if userId has been received
@@ -158,6 +172,11 @@ export default class BookService {
 
       if (!this.bookId) {
          throw new Error('Book ID is not set.');
+      }
+   }
+   private validateComment(comment: string) {
+      if (!comment || typeof comment !== 'string' || comment.length > MAXIMUM_CONTENT_LENGTH) {
+         throw new TypeError('Invalid input for comment');
       }
    }
 }

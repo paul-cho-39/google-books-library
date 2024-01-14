@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import SignInRequiredButton from '@/components/Login/requireUser';
+import SignInRequiredButton from '@/components/login/requireUser';
 import { BookCardProps } from '@/lib/types/components/bookcards';
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 import { ButtonSkeleton } from '../loaders/bookcardsSkeleton';

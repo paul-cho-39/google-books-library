@@ -13,3 +13,5 @@ export const FILTER_PARAMS_OPTIONS = [
    { value: 'paid-ebooks', label: 'Paid eBooks' },
    { value: 'ebooks', label: 'ebooks' },
 ];
+
+export const MAXIMUM_CONTENT_LENGTH = 500;

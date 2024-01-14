@@ -2,7 +2,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import FormSignIn, { Inputs } from '@/components/Login/credentials';
+import FormSignIn, { Inputs } from '@/components/login/credentials';
 import { SignInForm } from '@/lib/types/forms';
 import { ApiRequestOptions } from '@/lib/types/fetchbody';
 import API_ROUTES from '@/utils/apiRoutes';

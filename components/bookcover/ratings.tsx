@@ -2,9 +2,24 @@ import StarRating, { StarRatingProps } from '../icons/starRating';
 
 export interface RatingProps extends StarRatingProps {
    totalReviews?: number;
+   displayText?: boolean;
 }
 
-const DisplayRating = ({ averageRating = 0, totalReviews, size = 'small' }: RatingProps) => {
+/**
+ *
+ * @param {Object} RatingProps
+ * @param {number} props.averageRating total number to display out of 'totalReviews.' If 'totalReviews' undefined it is the number to display out of five.
+ * @param {number} props.totalReviews
+ * @param {RatingProps['size']} props.size
+ * @param {boolean} props.displayText will display 'reviews' text if true.
+ *
+ */
+const DisplayRating = ({
+   averageRating = 0,
+   totalReviews,
+   size = 'small',
+   displayText = true,
+}: RatingProps) => {
    const reviews = totalReviews && totalReviews > 0 ? totalReviews + ' ' + 'ratings' : ' No rating';
 
    return (
@@ -17,7 +32,7 @@ const DisplayRating = ({ averageRating = 0, totalReviews, size = 'small' }: Rati
                   <span className=''> / </span>
                </>
             )}
-            <span className='text-xs font-light'>{reviews}</span>
+            {displayText && <span className='text-xs font-light'>{reviews}</span>}
          </p>
       </div>
    );

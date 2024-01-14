@@ -1,6 +1,6 @@
 import { getSession, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import FormSignIn, { Inputs } from '@/components/Login/credentials';
+import FormSignIn, { Inputs } from '@/components/login/credentials';
 import { SignInForm } from '@/lib/types/forms';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { changeEmail, changeNames, changePassword } from '@/lib/resolvers/accountSettings';

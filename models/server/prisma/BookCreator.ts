@@ -111,13 +111,14 @@ export default class BookCreator extends Books {
    }
 
    /**
-    *
-    * @param upvoteId - the id should be the current 'id' of the comment
+    * @todo Consider database locks or optimistic locking if volume of concurrent requests increase
+    * and watch for race conditions. Have more robust testing for race conditions.
+    * @param upvoteId - the id is the current 'id' of the comment
     */
    async upvoteComment(upvoteId: number) {
       await prisma.$transaction(async (tx) => {
          try {
-            const currentComment = await tx.upvotes.findUnique({
+            const currentUpvote = await tx.upvotes.findUnique({
                where: {
                   userId_upvoteId: {
                      upvoteId,
@@ -127,9 +128,9 @@ export default class BookCreator extends Books {
             });
             // if the user has already upvoted the current comment with the following id
             // then delete and decrement the 'likes'
-            if (currentComment) {
+            if (currentUpvote) {
                await tx.upvotes.delete({
-                  where: { id: currentComment.id },
+                  where: { id: currentUpvote.id },
                });
                await tx.comment.update({
                   where: { id: upvoteId },

@@ -2,6 +2,7 @@ import { UrlProps, ServerCacheType, ServerSearchParamType } from '@/lib/types/fe
 
 const BASE_PATH = '/api';
 const DOMAIN_BOOKS = 'books';
+const DOMAIN_COMMENT = 'comments';
 const DOMAIN_THIRD_PARTY = 'third-party';
 const DOMAIN_USER = 'user';
 const DOMAIN_USER_SETTINGS = 'user-settings';
@@ -17,6 +18,19 @@ const API_ROUTES = {
          subdomain === 'main'
             ? `${BASE_PATH}/${DOMAIN_BOOKS}/${userId}`
             : `${BASE_PATH}/${DOMAIN_BOOKS}/${userId}/${subdomain}`,
+   },
+   COMMENTS: {
+      ADD: (userId: string, bookId: string) => `${BASE_PATH}/${DOMAIN_COMMENT}/${userId}/${bookId}`,
+      GET_COMMENTS: (bookId: string, page: string) =>
+         `${BASE_PATH}/${DOMAIN_COMMENT}/${bookId}/${page}/retrieve`,
+      REPLY: (userId: string, bookId: string, idx: string) =>
+         `${BASE_PATH}/${DOMAIN_COMMENT}/${userId}/${bookId}/${idx}`,
+      DELETE: (userId: string, bookId: string, idx: string) =>
+         `${BASE_PATH}/${DOMAIN_COMMENT}/${userId}/${bookId}/${idx}`,
+      UPVOTE: (userId: string, bookId: string, idx: string) =>
+         `${BASE_PATH}/${DOMAIN_COMMENT}/${userId}/${bookId}/${idx}`,
+      UPDATE_COMMENT: (id: string, userId: string) =>
+         `${BASE_PATH}/${DOMAIN_COMMENT}/${id}/${userId}/update`,
    },
    THIRD_PARTY: {
       path: (pathTypes: ServerCacheType) => {

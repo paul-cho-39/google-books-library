@@ -73,24 +73,6 @@ export class BookRetriever {
          },
       });
    }
-   async getCommentsByBookId(bookId: string, page: number, limit: number = 10) {
-      const skip = (page - 1) * limit;
-      return await prisma.comment.findMany({
-         where: {
-            bookId: bookId,
-         },
-         take: limit,
-         skip: skip,
-         orderBy: {
-            dateAdded: 'desc',
-         },
-         include: {
-            _count: true,
-            upvote: true,
-            replies: true,
-         },
-      });
-   }
    async isBookInLibrary(bookId: string) {
       return await prisma.book.findUnique({
          where: { id: bookId },

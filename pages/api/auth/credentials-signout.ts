@@ -9,7 +9,12 @@ type TokenParams = JWT & {
    sessionToken?: string;
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+/**
+ * @description API endpoint for custom Credentials signout. First, checks the 'sessionToken' and
+ * proceeds to check by decoding the token. If the decoded 'sessionToken' matches the database, it proceeds
+ * to signout the user.
+ */
+export default async function signOut(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
       const cookies = req.headers.cookie;
 

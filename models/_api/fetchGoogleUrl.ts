@@ -53,8 +53,10 @@ class GoogleBookApi {
    }
 
    public getUrlByIsbn(isbn: string) {
-      const url = `${GoogleBookApi.URL_BASE}isbn:${isbn}&fields=${GoogleBookApi.FIELDS}`;
-      return url;
+      // const url = `${GoogleBookApi.URL_BASE}isbn:${isbn}&fields=${GoogleBookApi.FIELDS}`;
+      // return url;
+      const url = `${GoogleBookApi.URL_BASE}isbn:${isbn}&`;
+      return this.appender(url);
    }
 
    public getUrlBySubject(subject: Categories | string, meta?: MetaProps) {

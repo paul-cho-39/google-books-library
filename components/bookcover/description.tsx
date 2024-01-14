@@ -71,11 +71,12 @@ const BookDescription = ({
    );
 
    return (
-      <>
+      <article>
          {isDescriptionEmpty ? (
             <NoDescription />
          ) : (
             <>
+               {/* if this component is not expanded */}
                {!toggleDescription ? (
                   <>
                      <CollapsedDescription
@@ -88,6 +89,7 @@ const BookDescription = ({
                      {SeeMoreElement}
                   </>
                ) : (
+                  // component displaying full description
                   <ExpandedDescription description={filteredDescription.toString()} />
                )}
             </>
@@ -104,7 +106,7 @@ const BookDescription = ({
          >
             <span>See Less</span> <ArrowUpIcon aria-hidden height='25' width='20' />
          </button>
-      </>
+      </article>
    );
 };
 

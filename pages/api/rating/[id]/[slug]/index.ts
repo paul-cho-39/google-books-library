@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import BookService from '@/models/server/service/BookService';
 import createApiResponse from '@/models/server/response/apiResponse';
 
-export default async function handle(req: NextApiRequest, res: NextApiResponse) {
+export default async function rating(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'GET') {
       const { id: userId, slug: bookId } = req.query;
       const service = new BookService(userId as string, bookId as string);

@@ -51,8 +51,8 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                      <Popover.Panel className='fixed left-0 w-full h-[16rem] bottom-[0%] z-50 border-t-2 bg-dilutedbeige dark:bg-slate-400'>
                         <div className='w-full'>
                            <div className='w-full flex flex-row'>
-                              <h2 className='text-xl flex-grow text-center p-2 font-medium dark:text-slate-200 text-slate-800'>
-                                 Choose Library
+                              <h2 className='pl-12 text-xl flex-grow text-center p-2 font-medium dark:text-slate-200 text-slate-800'>
+                                 Delete Book
                               </h2>
                               <button
                                  onClick={() => close()}
@@ -62,9 +62,7 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                                  <XMarkIcon
                                     title='Close'
                                     aria-hidden={true}
-                                    height='25'
-                                    width='25'
-                                    className='mt-3 mb-5 hover:rounded-full hover:ring-2 hover:ring-black'
+                                    className='mt-3 mb-5 w-6 h-6 hover:rounded-full hover:ring-2 hover:ring-black'
                                  />
                               </button>
                            </div>
@@ -86,6 +84,7 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                                              book={book}
                                           />
                                        ) : (
+                                          // other action buttons
                                           <userActionButton.Component
                                              userId={userId}
                                              book={book}

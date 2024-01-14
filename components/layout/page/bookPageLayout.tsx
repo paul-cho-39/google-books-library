@@ -22,7 +22,7 @@ const PageLayout = ({ title, isLoading, children }: PageLayoutProps) => {
    }
 
    return (
-      <div className='mx-auto w-full min-h-screen overflow-y-auto dark:bg-slate-800'>
+      <div className='mx-auto w-full min-h-screen overflow-y-auto px-1 lg:px-6 dark:bg-slate-800'>
          <NextHead
             title={metaHeaders.books.title(title)}
             metaTags={metaHeaders.books.meta(title)}
