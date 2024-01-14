@@ -112,6 +112,14 @@ export interface MutationBase {
    prevRatingData: SingleRatingData | undefined;
 }
 
+export interface MutationCommentParams extends Omit<MutationBase, 'prevRatingData' | 'inLibrary'> {
+   parentId: number;
+   commentId: number;
+   pageIndex: number;
+}
+
+export type MutationUpvoteParams = Omit<MutationCommentParams, 'parentId'>;
+export type MutationAddCommentParams = Omit<MutationUpvoteParams, 'commentId'>;
 // export interface MultipleQueryDataParams extends Omit<MutationBase, 'initialData'> {
 //    queryClient: QueryClient;
 //    context:

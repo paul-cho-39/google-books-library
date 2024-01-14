@@ -1,36 +1,30 @@
-import {
-   FormEvent,
-   ForwardRefRenderFunction,
-   KeyboardEventHandler,
-   forwardRef,
-   useEffect,
-   useState,
-} from 'react';
+import { FormEvent, ForwardRefRenderFunction, forwardRef, useState } from 'react';
 import debounce from 'lodash.debounce';
 import useMutateComment from '@/lib/hooks/useMutateComment';
-import { Data, MutationBase } from '@/lib/types/models/books';
+import { BaseIdParams, MutationAddCommentParams } from '@/lib/types/models/books';
 import { getBodyFromFilteredGoogleFields } from '@/lib/helper/books/getBookBody';
 import { Items } from '@/lib/types/googleBookTypes';
 import { MAXIMUM_CONTENT_LENGTH } from '@/constants/inputs';
 import DisplayWordCount from '@/components/comments/wordCount';
 import Spinner from '@/components/loaders/spinner';
 
-export interface PostReviewSectionProps {
-   params: Omit<MutationBase, 'prevRatingData'>;
+export interface PostReviewSectionProps<TParam extends MutationAddCommentParams | BaseIdParams> {
+   params: TParam;
    bookData: Items<Record<string, string>>;
 }
 
-const CUSTOM_LOADING_TIME = 1500;
+const CUSTOM_LOADING_TIME = 1200;
 
-const PostReviewSection: ForwardRefRenderFunction<HTMLElement, PostReviewSectionProps> = (
-   props,
-   ref
-) => {
+const PostReviewSection: ForwardRefRenderFunction<
+   HTMLElement,
+   PostReviewSectionProps<MutationAddCommentParams>
+> = (props, ref) => {
    // TODO: consider using react-hook-form for re-rendering effect
    const [comment, setComment] = useState('');
    const [customLoading, setCustomLoading] = useState(false);
    const { mutate, isLoading: mutateLoading } = useMutateComment(props.params);
 
+   // write a hook so that it can be used for 1) replying 2) updating
    const handleSubmit = (e: FormEvent) => {
       e.preventDefault();
       if (comment.length < 1 || comment.length > MAXIMUM_CONTENT_LENGTH) return;
@@ -53,6 +47,10 @@ const PostReviewSection: ForwardRefRenderFunction<HTMLElement, PostReviewSection
 
    const isLoading = customLoading || mutateLoading;
 
+   if (!props.bookData) {
+      return <div></div>;
+   }
+
    // TODO: an option to leave the review here too
    return (
       <section id='reviews' ref={ref}>
@@ -60,6 +58,8 @@ const PostReviewSection: ForwardRefRenderFunction<HTMLElement, PostReviewSection
             <div className='absolute px-2 top-0 bg-white dark:bg-slate-800 rounded-tl-lg rounded-br-lg'>
                <h4 className='text-md font-semibold text-gray-800 dark:text-white'>Review</h4>
             </div>
+
+            {/* break this into another component so that it can be used again here */}
             <form onSubmit={handleSubmit}>
                <div className='w-full px-3 mb-2 mt-6'>
                   <textarea

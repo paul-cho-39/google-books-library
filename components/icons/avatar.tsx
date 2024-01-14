@@ -19,7 +19,7 @@ const UserAvatar = ({ avatarUrl, size, className }: UserAvatarProps) => {
          height={size.height}
          width={size.width}
          objectFit='contain'
-         className={classNames(className)}
+         className={classNames(className, 'rounded-full')}
          src={imageHref}
       />
    );

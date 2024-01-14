@@ -10,13 +10,14 @@ import { CommentResponseData, CommentPayload, ErrorResponse } from '../types/res
  */
 export default function useGetReviews(bookId: string, page: number) {
    if (page <= 0) {
-      page;
+      throw new Error('The pageIndex has to be over 0.');
    }
    const idx = page.toString();
 
    return useQuery<CommentResponseData, ErrorResponse, CommentPayload[]>(
-      queryKeys.commentsByBook(bookId, idx),
+      queryKeys.commentsByBook(bookId, page),
       async () => {
+         console.log('FETCHING AGAIN');
          return await fetcher(API_ROUTES.COMMENTS.GET_COMMENTS(bookId, idx), {
             method: 'GET',
          });

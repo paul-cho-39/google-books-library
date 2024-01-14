@@ -84,6 +84,8 @@ const BookPage: NextPageWithLayout<
       inLibrary: allRatingData?.inLibrary!,
    };
 
+   console.log('the data currently is: ', data);
+
    const { handleMutation, handleRemoveMutation, currentRatingData } = useHandleRating(
       {
          // bookId: id,
@@ -147,7 +149,12 @@ const BookPage: NextPageWithLayout<
          </BookTopLayout>
          <BookBottomLayout>
             <DescriptionSection description={data?.volumeInfo?.description} />
-            <ReviewSection bookId={id} avatarUrl={photoUrl} params={params} bookData={data} />
+            <ReviewSection
+               rating={currentRatingData?.ratingInfo?.ratingValue || 0}
+               avatarUrl={photoUrl}
+               params={params}
+               bookData={data}
+            />
          </BookBottomLayout>
       </PageLayout>
    );

@@ -3,22 +3,22 @@ import apiRequest from '@/utils/fetchData';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CommentPayload, UpvotePayload } from '../types/response';
 import queryKeys from '@/utils/queryKeys';
+import { MutationUpvoteParams } from '../types/models/books';
 
-interface MutationUpvoteParams {
-   userId: string;
-   bookId: string;
-   commentId: number;
-   pageIndex: string;
-   idx: number;
-}
-
-function useMutateUpvote({ userId, bookId, commentId, pageIndex, idx }: MutationUpvoteParams) {
+// CONSIDER: it may be better to flatten out the upvote data only and only refetch that data
+// so that it does not have to re-fetch data with deep nested object especially when data gets larger
+export default function useMutateUpvote({
+   userId,
+   bookId,
+   commentId,
+   pageIndex,
+}: MutationUpvoteParams) {
    const queryClient = useQueryClient();
 
    return useMutation(
       () =>
          apiRequest({
-            apiUrl: API_ROUTES.COMMENTS.UPVOTE(userId, bookId, idx.toString()),
+            apiUrl: API_ROUTES.COMMENTS.UPVOTE(userId, bookId, commentId.toString()),
             method: 'PATCH',
             shouldRoute: false,
          }),
@@ -48,9 +48,12 @@ function useMutateUpvote({ userId, bookId, commentId, pageIndex, idx }: Mutation
                   context?.prevComments
                );
             }
+
+            console.error('Failed to upvote: ', err);
             // return toast if an error happens
          },
          onSettled: () => {
+            // invaldiate the current comments and refetch again
             queryClient.invalidateQueries(queryKeys.commentsByBook(bookId, pageIndex));
          },
       }

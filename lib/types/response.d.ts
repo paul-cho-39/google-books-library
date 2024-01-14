@@ -91,4 +91,6 @@ export type CommentPayload = {
    userId: string;
    upvoteCount: number; // Added based on your mapping
 };
-export type CommentResponseData = PostApiResponse<CommentPayload>;
+
+type UpvotePayload = CommentPayload['upvote'];
+export type CommentResponseData = PostApiResponse<CommentPayload[]>;

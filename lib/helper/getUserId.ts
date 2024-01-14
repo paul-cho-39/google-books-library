@@ -64,15 +64,15 @@ export const getUserName = {
    },
    // for credential provider username is always defined
    // for OAuth the name is defined as well and always be returning a string
-   byComment: (comment: CommentPayload[number]): string => {
+   byComment: (comment: CommentPayload): string => {
       const name = comment.user.name;
-      const username = comment.user.username;
+      const username = comment.user.usernmae;
 
       return (!name ? username : name) as string;
    },
-   byReplies: (reply: CommentPayload[number]['replies'][number]): string => {
+   byReplies: (reply: CommentPayload): string => {
       const name = reply?.user.name;
-      const username = reply?.user.username;
+      const username = reply?.user.usernmae;
 
       return (!name ? username : name) as string;
    },

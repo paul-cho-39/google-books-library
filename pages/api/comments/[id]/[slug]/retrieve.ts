@@ -10,6 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
          console.log('--------TESTING INSIDE GET_COMMENTS-----------');
          const pageIndex = parseInt(slug);
          const comments = await refiner.getCommentsByBookId(bookId, pageIndex);
+         console.log('HERE ARE THE COMMENTS: ', comments);
          const response = createApiResponse<typeof comments>(comments, {});
          return res.status(200).json(response);
       } catch (err: any) {

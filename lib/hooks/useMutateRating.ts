@@ -1,4 +1,4 @@
-import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Mutation, QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
 import queryKeys from '@/utils/queryKeys';
 import apiRequest from '@/utils/fetchData';
 import API_ROUTES from '@/utils/apiRoutes';
@@ -12,6 +12,18 @@ import {
 import { MultipleRatingData, RatingData, RatingInfo, SingleRatingData } from '../types/serverTypes';
 import { Method } from '../types/fetchbody';
 
+/**
+ * @example
+ * const { mutation } = useMutateRatings<'create'>(params, 'create')
+ *
+ * Custom hook for mutating ratings and setting optimistic rating updates depending on the ActionType.
+ * If the book is not in the library, it will 'create' the book, otherwise it will 'update' the rating.
+ *
+ * @param {Object} config Configuration object for this hook
+ * @param {Object} config.params { userId, bookId, inLibrary, prevRatingData }
+ * @param {"create" | "update" | "remove"} config.action
+ * @returns {Object} { mutation, SingleRatingData }
+ */
 export default function useMutateRatings<ActionType extends MutationRatingActionType>(
    params: MutationBase,
    action: ActionType
@@ -197,7 +209,7 @@ function calculateNewAverage(
 
 // have to manually update the cache
 // for it to be updated and persist over in useMutation
-function initializeData(params: InitializeDataParams) {
+function initializeData(params: InitializeDataParams): SingleRatingData {
    const { queryClient, bookId, userId, prevRatingData } = params;
    const currentRatingData = queryClient.getQueryData<SingleRatingData>(
       queryKeys.ratingsByBookAndUser(bookId, userId)
