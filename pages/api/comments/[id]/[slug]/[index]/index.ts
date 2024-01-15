@@ -34,18 +34,7 @@ export default async function handleComments(req: NextApiRequest, res: NextApiRe
          return res.status(404).json(errorResponse);
       }
    }
-   if (req.method === 'PATCH') {
-      try {
-         await service.handleUpvoteComment(parsedIdx);
-         const response = createApiResponse(null, {
-            message: 'Successfully upvoted',
-         });
-         return res.status(200).json(response);
-      } catch (err: any) {
-         const errorResponse = createApiResponse(null, {}, { code: 404, message: err.message });
-         return res.status(404).json(errorResponse);
-      }
-   }
+
    const errorResponse = createApiResponse(null, {}, { code: 500 });
    res.status(500).json(errorResponse);
 }

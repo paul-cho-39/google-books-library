@@ -74,7 +74,7 @@ export type Upvote = {
 
 // export type CommentPayload = GetResponseData<RefineData['getCommentsByBookId']>;
 export type CommentPayload = {
-   count: { upvote: number; replies: number };
+   _count: { upvote: number; replies: number };
    bookId: string;
    content: string;
    dateAdded: Date;

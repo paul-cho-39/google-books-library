@@ -37,7 +37,6 @@ const poll = {
       const commentId = data.id;
       setState('loading');
       const intervalId = setInterval(async () => {
-         console.log('Upping the attempts: ', attempts);
          attempts++;
          // if it fetches the server too many times return false
          // if it reconnects it will post the comment on the next hit
@@ -48,17 +47,17 @@ const poll = {
          }
 
          //  queryClient.invalidateQueries(queryKeys.commentsByBook(bookId, pageIndex));
-         const reviewData = queryClient.getQueryData<CommentResponseData>(
+         const reviewData = queryClient.getQueryData<CommentPayload[]>(
             queryKeys.commentsByBook(bookId, pageIndex)
          );
 
-         if (!reviewData?.data) {
+         if (!reviewData) {
             clearInterval(intervalId);
             setState('error');
          }
 
          console.log('THE REVIEW DATA HERE IS: ', reviewData);
-         const reviewValidated = reviewData?.data?.some((comment) => comment.id === commentId);
+         const reviewValidated = reviewData?.some((comment) => comment.id === commentId);
          if (reviewData && reviewValidated) {
             clearInterval(intervalId);
             setState('success');

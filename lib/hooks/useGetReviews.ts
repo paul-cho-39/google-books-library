@@ -18,14 +18,16 @@ export default function useGetReviews(bookId: string, page: number) {
       queryKeys.commentsByBook(bookId, page),
       async () => {
          console.log('FETCHING AGAIN');
-         return await fetcher(API_ROUTES.COMMENTS.GET_COMMENTS(bookId, idx), {
+         const res = await fetcher(API_ROUTES.COMMENTS.GET_COMMENTS(bookId, idx), {
             method: 'GET',
          });
+
+         return res.data;
       },
       {
          enabled: !!bookId,
          keepPreviousData: true,
-         select: (data) => data.data,
+         // select: (data) => data.data,
          refetchIntervalInBackground: true,
          refetchOnReconnect: true,
       }

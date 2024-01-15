@@ -1,7 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
 import useMutateReply from '@/lib/hooks/useMutateReply';
 import useMutateUpvote from '@/lib/hooks/useMutateUpvote';
-import { ChatBubbleBottomCenterIcon, HandThumbUpIcon, TrashIcon } from '@heroicons/react/20/solid';
+import {
+   ChatBubbleBottomCenterIcon,
+   HandThumbUpIcon,
+   TrashIcon,
+} from '@heroicons/react/24/outline';
 
 type CommmentActionDisplayProps = {
    replyCount: number;
@@ -20,7 +24,7 @@ type CommentWrapperProps = CommmentActionDisplayProps & CommmentActionProps;
 
 const CommentActionWrapper = ({ replyCount, upvoteCount, ...props }: CommentWrapperProps) => {
    return (
-      <div className='flex gap-y-1'>
+      <div className='flex flex-col gap-y-3'>
          <CommentActionDisplay replyCount={replyCount} upvoteCount={upvoteCount} />
          <CommentAction {...props} />
       </div>
@@ -45,18 +49,22 @@ const CommentAction = ({
    showDelete,
 }: CommmentActionProps) => {
    return (
-      <div className='flex flex-row gap-x-2 font-semibold'>
-         <button onClick={upvote}>
+      <div className='flex flex-row gap-x-2 font-semibold text-opacity-80 dark:text-gray-400'>
+         <button className='flex flex-row items-center px-1 gap-x-1' onClick={upvote}>
             <HandThumbUpIcon className='w-4 h-4' />
             <span>Like</span>
          </button>
-         <button onClick={displayReplyComment}>
+         <button className='flex flex-row items-center px-1 gap-x-1' onClick={displayReplyComment}>
             <ChatBubbleBottomCenterIcon className='w-4 h-4' />
             <span>Comment</span>
          </button>
          {/* delete component if userId === comment.userId */}
          {showDelete && (
-            <button onClick={deleteComment} aria-label='Delete comment'>
+            <button
+               className='flex flex-row items-center px-1 gap-x-1'
+               onClick={deleteComment}
+               aria-label='Delete comment'
+            >
                <TrashIcon className='w-4 h-4' />
                <span>Delete</span>
             </button>

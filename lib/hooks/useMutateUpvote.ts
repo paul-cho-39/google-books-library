@@ -1,7 +1,7 @@
 import API_ROUTES from '@/utils/apiRoutes';
 import apiRequest from '@/utils/fetchData';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { CommentPayload, UpvotePayload } from '../types/response';
+import { CommentPayload, CommentResponseData, UpvotePayload } from '../types/response';
 import queryKeys from '@/utils/queryKeys';
 import { MutationUpvoteParams } from '../types/models/books';
 
@@ -19,7 +19,7 @@ export default function useMutateUpvote({
       () =>
          apiRequest({
             apiUrl: API_ROUTES.COMMENTS.UPVOTE(userId, bookId, commentId.toString()),
-            method: 'PATCH',
+            method: 'POST',
             shouldRoute: false,
          }),
       {
@@ -32,9 +32,11 @@ export default function useMutateUpvote({
 
             // if there is no comments, users cannot upvote
             if (prevComments) {
+               const nextData = setOptimisticData(prevComments, commentId, userId);
+               // console.log('THE NEXT DATA IS: ', nextData);
                queryClient.setQueryData<CommentPayload[]>(
                   queryKeys.commentsByBook(bookId, pageIndex),
-                  setOptimisticData(prevComments, commentId, userId)
+                  nextData
                );
             }
 
@@ -51,6 +53,9 @@ export default function useMutateUpvote({
 
             console.error('Failed to upvote: ', err);
             // return toast if an error happens
+         },
+         onSuccess: () => {
+            console.log('Successfully upvoted the book!');
          },
          onSettled: () => {
             // invaldiate the current comments and refetch again
@@ -70,6 +75,7 @@ function setOptimisticData(
    return comments.map((comment) => {
       if (comment.id === commentId) {
          const userUpvoteIndex = comment.upvote.findIndex((upvote) => upvote.userId === userId);
+         let currentUpvote = comment?._count.upvote;
          let updatedUpvotes = [...comment.upvote];
          let updatedUpvoteCount = comment.upvoteCount;
 
@@ -77,6 +83,7 @@ function setOptimisticData(
             // user has already upvoted, so remove their upvote
             updatedUpvotes.splice(userUpvoteIndex, 1);
             updatedUpvoteCount--;
+            currentUpvote--;
          } else {
             // user hasn't upvoted yet, so add their upvote
 
@@ -85,12 +92,17 @@ function setOptimisticData(
             const newUpvote: UpvotePayload[number] = { id: tempId, upvoteId: comment.id, userId };
             updatedUpvotes.push(newUpvote);
             updatedUpvoteCount++;
+            currentUpvote++;
          }
 
          return {
             ...comment,
             upvote: updatedUpvotes,
             upvoteCount: updatedUpvoteCount,
+            _count: {
+               ...comment._count,
+               upvote: currentUpvote,
+            },
          };
       } else if (comment.replies) {
          // recursively update replies
