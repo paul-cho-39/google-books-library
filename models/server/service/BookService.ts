@@ -95,7 +95,8 @@ export default class BookService {
    async handleCreateCommentAndBook(data: Data, comment: string) {
       const creator = this.getCreator;
       this.validateComment(comment);
-      await creator.createBookAndComment(data, comment);
+      const newComment = await creator.createBookAndComment(data, comment);
+      return newComment;
    }
    async handleReplyToComment(parentId: number, comment: string) {
       const creator = this.getCreator;

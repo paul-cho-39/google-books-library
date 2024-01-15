@@ -18,6 +18,7 @@ const Reply = ({ reply, name, ...props }: ReplyProps) => {
             dateAdded={reply.dateAdded}
             dateUpdated={reply.dateUpdated}
             content={reply.content}
+            {...props}
          />
       </div>
    );

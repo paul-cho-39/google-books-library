@@ -1,4 +1,5 @@
 import refiner, { RefineData, RefineData } from '@/models/server/decorator/RefineData';
+import BookService from '@/models/server/service/BookService';
 
 // for creating apiResponseError that will return 'ErrorResponse'
 export interface ResponseErrorParams {
@@ -94,3 +95,6 @@ export type CommentPayload = {
 
 type UpvotePayload = CommentPayload['upvote'];
 export type CommentResponseData = PostApiResponse<CommentPayload[]>;
+export type AddedCommentResponseData = PostApiResponse<
+   GetResponseData<BookService['handleCreateCommentAndBook']>
+>;

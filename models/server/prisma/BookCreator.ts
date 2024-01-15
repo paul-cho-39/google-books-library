@@ -46,7 +46,7 @@ export default class BookCreator extends Books {
    }
 
    async createBookAndComment(data: Data, content: string) {
-      await prisma.$transaction(async (tx) => {
+      const comment = await prisma.$transaction(async (tx) => {
          try {
             // ensure that there is session
             await tx.session.findFirstOrThrow({
@@ -66,7 +66,7 @@ export default class BookCreator extends Books {
             }
 
             // create the comment after book has been created
-            await tx.comment.create({
+            const comment = await tx.comment.create({
                data: {
                   bookId: this.bookId,
                   userId: this.userId,
@@ -74,10 +74,14 @@ export default class BookCreator extends Books {
                   parentId: null, // parentId is set to null because there is no replied comment
                },
             });
+
+            return comment;
          } catch (err) {
             throw new Error('Error while creating a new commnet');
          }
       });
+
+      return comment;
    }
    /**
     *

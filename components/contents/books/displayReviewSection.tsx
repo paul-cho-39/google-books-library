@@ -2,7 +2,7 @@ import { UserAvatarProps } from '@/components/icons/avatar';
 import useGetReviews from '@/lib/hooks/useGetReviews';
 import { CommentPayload, ErrorResponse } from '@/lib/types/response';
 import Comment, { CommentProps } from '@/components/comments/comment';
-import { useState } from 'react';
+import { ForwardRefRenderFunction, forwardRef, useState } from 'react';
 import { UseQueryResult } from '@tanstack/react-query';
 import getMutationParams from '@/lib/helper/getCommentMutationParams';
 import { BaseIdParams } from '@/lib/types/models/books';
@@ -13,27 +13,25 @@ interface DisplayReviewSectionProps extends Omit<CommentProps<BaseIdParams>, 'co
    scrollToComment: () => void;
 }
 
-const DisplayReviewSection = ({
-   scrollToComment,
-   reviewsReuslt,
-   pageIndex,
-   ...props
-}: DisplayReviewSectionProps) => {
+const DisplayReviewSection: ForwardRefRenderFunction<HTMLDivElement, DisplayReviewSectionProps> = (
+   props,
+   ref
+) => {
+   const { scrollToComment, reviewsReuslt, pageIndex, ...rest } = props;
    // TODO: add isLoading & isError for more responsive state
    //    TODO: add total number of comments
    const { data: reviews, isLoading, isError } = reviewsReuslt;
-   console.log('the reviews are: ', reviews);
 
    return (
       <section id='display_review'>
-         <div className='py-6'>
+         <div ref={ref} className='py-6'>
             {!reviews ? (
                <NoCommentToDisplay scrollToComment={scrollToComment} />
             ) : (
                <div className='flex flex-col my-6 gap-y-12'>
                   {reviews.map((review) => (
                      <Comment
-                        {...props}
+                        {...rest}
                         params={getMutationParams(review, props.params, pageIndex)}
                         key={review.id}
                         comment={review}
@@ -65,4 +63,4 @@ const NoCommentToDisplay = (props: Pick<DisplayReviewSectionProps, 'scrollToComm
    );
 };
 
-export default DisplayReviewSection;
+export default forwardRef(DisplayReviewSection);

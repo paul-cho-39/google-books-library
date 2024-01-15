@@ -17,9 +17,8 @@ export default async function addComment(req: NextApiRequest, res: NextApiRespon
       const service = new BookService(userId as string, bookId as string);
 
       try {
-         service.handleCreateCommentAndBook(data, comment);
-
-         const response = createApiResponse(null, {
+         const newComment = await service.handleCreateCommentAndBook(data, comment);
+         const response = createApiResponse(newComment, {
             message: 'Successfully added comment',
          });
          return res.status(201).json(response);

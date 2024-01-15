@@ -1,6 +1,6 @@
-import { FormEvent, ForwardRefRenderFunction, forwardRef, useState } from 'react';
+import { FormEvent, ForwardRefRenderFunction, forwardRef, useEffect, useState } from 'react';
 import debounce from 'lodash.debounce';
-import useMutateComment from '@/lib/hooks/useMutateComment';
+import useMutateComment, { CustomStateType } from '@/lib/hooks/useMutateComment';
 import { BaseIdParams, MutationAddCommentParams } from '@/lib/types/models/books';
 import { getBodyFromFilteredGoogleFields } from '@/lib/helper/books/getBookBody';
 import { Items } from '@/lib/types/googleBookTypes';
@@ -11,6 +11,7 @@ import Spinner from '@/components/loaders/spinner';
 export interface PostReviewSectionProps<TParam extends MutationAddCommentParams | BaseIdParams> {
    params: TParam;
    bookData: Items<Record<string, string>>;
+   scrollToDisplay: () => void;
 }
 
 const CUSTOM_LOADING_TIME = 1200;
@@ -21,15 +22,20 @@ const PostReviewSection: ForwardRefRenderFunction<
 > = (props, ref) => {
    // TODO: consider using react-hook-form for re-rendering effect
    const [comment, setComment] = useState('');
-   const [customLoading, setCustomLoading] = useState(false);
-   const { mutate, isLoading: mutateLoading } = useMutateComment(props.params);
+   const [customState, setCustomState] = useState<CustomStateType>('idle');
+
+   const {
+      mutate,
+      isLoading: isMutateLoading,
+      isError,
+   } = useMutateComment(props.params, customState, setCustomState, props.scrollToDisplay);
 
    // write a hook so that it can be used for 1) replying 2) updating
    const handleSubmit = (e: FormEvent) => {
       e.preventDefault();
       if (comment.length < 1 || comment.length > MAXIMUM_CONTENT_LENGTH) return;
 
-      setCustomLoading(true);
+      setCustomState('loading');
       try {
          const data = getBodyFromFilteredGoogleFields(props.bookData);
          const body = { data, comment: comment };
@@ -38,18 +44,17 @@ const PostReviewSection: ForwardRefRenderFunction<
       } catch (err) {
          console.error('Error trying to post a comment', err);
       } finally {
-         setTimeout(() => {
-            setCustomLoading(false);
-         }, CUSTOM_LOADING_TIME);
          setComment('');
       }
    };
 
-   const isLoading = customLoading || mutateLoading;
+   useEffect(() => {
+      if (customState === 'loading') {
+      }
+   }, [customState]);
 
-   if (!props.bookData) {
-      return <div></div>;
-   }
+   const isLoading = customState === 'loading' || isMutateLoading;
+   // const isLoading = customLoading || mutateLoading;
 
    // TODO: an option to leave the review here too
    return (
