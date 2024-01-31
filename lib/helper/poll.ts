@@ -36,9 +36,11 @@ const poll = {
       let attempts = 0;
       const commentId = data.id;
       setState('loading');
+
+      // increments attempts at every fetch attempts
       const intervalId = setInterval(async () => {
          attempts++;
-         // if it fetches the server too many times return false
+         // if attempts exceed maxAttempts it returns false
          // if it reconnects it will post the comment on the next hit
          if (attempts > maxAttempts) {
             setState('idle');
@@ -46,11 +48,11 @@ const poll = {
             return;
          }
 
-         //  queryClient.invalidateQueries(queryKeys.commentsByBook(bookId, pageIndex));
          const reviewData = queryClient.getQueryData<CommentPayload[]>(
             queryKeys.commentsByBook(bookId, pageIndex)
          );
 
+         // comments data should be available if comments are posted
          if (!reviewData) {
             clearInterval(intervalId);
             setState('error');
@@ -58,11 +60,13 @@ const poll = {
 
          console.log('THE REVIEW DATA HERE IS: ', reviewData);
          const reviewValidated = reviewData?.some((comment) => comment.id === commentId);
+
+         // when found clear intervals
+         // and react-query manages invaldiating the current query
          if (reviewData && reviewValidated) {
             clearInterval(intervalId);
             setState('success');
          } else {
-            // queryClient.invalidateQueries(queryKeys.commentsByBook(bookId, pageIndex));
             queryClient.fetchQuery(queryKeys.commentsByBook(bookId, pageIndex));
          }
       }, interval);

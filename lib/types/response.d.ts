@@ -87,7 +87,8 @@ export type CommentPayload = {
    upvoteCount: number;
    user: {
       name: string | null;
-      usernmae: string | null;
+      username: string | null;
+      image: string | null;
    };
    userId: string;
    upvoteCount: number; // Added based on your mapping

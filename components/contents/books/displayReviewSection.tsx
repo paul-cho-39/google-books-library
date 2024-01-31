@@ -1,5 +1,3 @@
-import { UserAvatarProps } from '@/components/icons/avatar';
-import useGetReviews from '@/lib/hooks/useGetReviews';
 import { CommentPayload, ErrorResponse } from '@/lib/types/response';
 import Comment, { CommentProps } from '@/components/comments/comment';
 import { ForwardRefRenderFunction, forwardRef, useState } from 'react';
@@ -11,7 +9,15 @@ interface DisplayReviewSectionProps extends Omit<CommentProps<BaseIdParams>, 'co
    reviewsReuslt: UseQueryResult<CommentPayload[], ErrorResponse>;
    pageIndex: number;
    scrollToComment: () => void;
+   currentUserName: string;
 }
+
+/**
+ *
+ * @param props
+ * @param ref
+ * @returns
+ */
 
 const DisplayReviewSection: ForwardRefRenderFunction<HTMLDivElement, DisplayReviewSectionProps> = (
    props,
@@ -24,11 +30,11 @@ const DisplayReviewSection: ForwardRefRenderFunction<HTMLDivElement, DisplayRevi
 
    return (
       <section id='display_review'>
-         <div ref={ref} className='py-6'>
+         <div ref={ref} className='py-2'>
             {!reviews ? (
                <NoCommentToDisplay scrollToComment={scrollToComment} />
             ) : (
-               <div className='flex flex-col my-6 gap-y-12'>
+               <ul role='listitem' className='flex flex-col my-6 gap-y-12'>
                   {reviews.map((review) => (
                      <Comment
                         {...rest}
@@ -39,7 +45,7 @@ const DisplayReviewSection: ForwardRefRenderFunction<HTMLDivElement, DisplayRevi
 
                      // if the user replies
                   ))}
-               </div>
+               </ul>
             )}
          </div>
       </section>

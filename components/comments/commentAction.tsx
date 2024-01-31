@@ -17,14 +17,14 @@ type CommmentActionProps = {
    showDelete: boolean;
    deleteComment: () => void;
    upvote: () => void;
-   displayReplyComment: () => void;
+   replyToComment: () => void;
 };
 
 type CommentWrapperProps = CommmentActionDisplayProps & CommmentActionProps;
 
 const CommentActionWrapper = ({ replyCount, upvoteCount, ...props }: CommentWrapperProps) => {
    return (
-      <div className='flex flex-col gap-y-3'>
+      <div className='flex flex-col gap-y-1'>
          <CommentActionDisplay replyCount={replyCount} upvoteCount={upvoteCount} />
          <CommentAction {...props} />
       </div>
@@ -33,7 +33,7 @@ const CommentActionWrapper = ({ replyCount, upvoteCount, ...props }: CommentWrap
 
 const CommentActionDisplay = ({ replyCount, upvoteCount }: CommmentActionDisplayProps) => {
    return (
-      <div className='flex flex-row gap-x-2 text-opacity-80 dark:text-slate-300 text-black'>
+      <div className='flex flex-row gap-x-2 pl-1 text-opacity-80 dark:text-slate-300 text-black'>
          <span>{upvoteCount} likes</span>
          {/* only display when reply is more than 0 */}
          {replyCount > 0 && <span>{replyCount} comment</span>}
@@ -45,7 +45,7 @@ const CommentActionDisplay = ({ replyCount, upvoteCount }: CommmentActionDisplay
 const CommentAction = ({
    upvote,
    deleteComment,
-   displayReplyComment,
+   replyToComment,
    showDelete,
 }: CommmentActionProps) => {
    return (
@@ -54,7 +54,7 @@ const CommentAction = ({
             <HandThumbUpIcon className='w-4 h-4' />
             <span>Like</span>
          </button>
-         <button className='flex flex-row items-center px-1 gap-x-1' onClick={displayReplyComment}>
+         <button className='flex flex-row items-center px-1 gap-x-1' onClick={replyToComment}>
             <ChatBubbleBottomCenterIcon className='w-4 h-4' />
             <span>Comment</span>
          </button>

@@ -9,8 +9,6 @@ export default async function upvote(req: NextApiRequest, res: NextApiResponse) 
       const parsedIdx = parseInt(index);
       const service = new BookService(userId as string, bookId as string);
       if (req.method === 'POST') {
-         console.log('PATCHING TO THE COMMENT!');
-         console.log('THE INDEX COMMENT?', parsedIdx);
          try {
             await service.handleUpvoteComment(parsedIdx);
             const response = createApiResponse(null, {

@@ -1,6 +1,12 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Data, MutationAddCommentParams } from '../types/models/books';
+import {
+   ActionCommentType,
+   CommentDataType,
+   MutationAddCommentParams,
+   MutationCommentParams,
+   NewCommentBody,
+} from '../types/models/books';
 import apiRequest from '@/utils/fetchData';
 import API_ROUTES from '@/utils/apiRoutes';
 import queryKeys from '@/utils/queryKeys';
@@ -9,32 +15,53 @@ import poll from '../helper/poll';
 
 export type CustomStateType = 'idle' | 'error' | 'loading' | 'success';
 
-export default function useMutateComment(
-   params: MutationAddCommentParams,
-   customState: CustomStateType,
-   setCustomState: Dispatch<SetStateAction<CustomStateType>>,
-   scrollToDisplaySection: () => void
+export default function useMutateComment<AType extends ActionCommentType>(
+   params: AType extends 'review' ? MutationCommentParams : MutationAddCommentParams,
+   // customState: CustomStateType,
+   // setCustomState: Dispatch<SetStateAction<CustomStateType>>,
+   scrollToDisplaySection: () => void,
+   action: AType
 ) {
    const queryClient = useQueryClient();
-   // const [customState, setCustomState] = useState<CustomStateType>('idle');
+   const [customState, setCustomState] = useState<CustomStateType>('idle');
    const { bookId, userId, pageIndex } = params;
 
    // TODO: if the user has already left a comment the user is only allowed to leave replies(?)
    //    if the user already left the comment then ask the user if they want to update the comment
 
-   const { mutate, isLoading, isError } = useMutation(
-      async (data: { comment: string; data: Data }) => {
+   console.log('HERE ARE THE PARAMS INSIDE USEMUTATECOMMENT: ', params);
+
+   const getUrl = () => {
+      if (action === 'review') {
+         // type asserting so that it can recognize 'MutationCommentParams'
+         const reviewParams = params as MutationCommentParams;
+         console.log('THE COMMENT ID IS : ', reviewParams.commentId);
+         return API_ROUTES.COMMENTS.REPLY(userId, bookId, reviewParams.commentId.toString());
+      } else {
+         return API_ROUTES.COMMENTS.ADD(userId, bookId);
+      }
+   };
+
+   const {
+      mutate,
+      isLoading: isMutateLoading,
+      isError: isMutateError,
+   } = useMutation(
+      async (data: CommentDataType<AType>) => {
          const res = (await apiRequest({
-            apiUrl: API_ROUTES.COMMENTS.ADD(userId, bookId),
+            // apiUrl: API_ROUTES.COMMENTS.ADD(userId, bookId),
+            apiUrl: getUrl(),
             method: 'POST',
             data: data,
             shouldRoute: false,
-         })) as AddedCommentResponseData;
+         })) as AddedCommentResponseData; // both api will provide the same response
 
          return res;
       },
       {
          onSuccess: ({ data }) => {
+            // ensuring that the new comment has been fetched
+            // because of latency there will be delay and here it manually introduces a delay
             poll.pollNewComment({
                data,
                bookId,
@@ -42,6 +69,8 @@ export default function useMutateComment(
                setState: setCustomState,
                queryClient,
             });
+
+            // once new comment has been posted, it will scroll to the top of the comment
             if (customState === 'idle' || customState === 'success') {
                scrollToDisplaySection();
             }
@@ -51,6 +80,9 @@ export default function useMutateComment(
          },
       }
    );
+
+   const isLoading = customState === 'loading' || isMutateLoading;
+   const isError = customState === 'error' || isMutateError;
 
    return { mutate, isLoading, isError };
 }

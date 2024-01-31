@@ -88,8 +88,8 @@ export default class BookCreator extends Books {
     * @param parentId - the parentId should be the 'id' of the current comment
     * @param content - users content information
     */
-   async replyToComment(parentId: number, content: string) {
-      await prisma.$transaction(async (tx) => {
+   async replyToComment(commentId: number, content: string) {
+      const reply = await prisma.$transaction(async (tx) => {
          // ensure that there is session and top comment in the database
          try {
             await tx.session.findFirstOrThrow({
@@ -97,10 +97,10 @@ export default class BookCreator extends Books {
             });
 
             const parentComment = await tx.comment.findUniqueOrThrow({
-               where: { id: parentId },
+               where: { id: commentId },
             });
 
-            await tx.comment.create({
+            const repliedComment = await tx.comment.create({
                data: {
                   userId: this.userId,
                   bookId: this.bookId,
@@ -108,10 +108,14 @@ export default class BookCreator extends Books {
                   parentId: parentComment?.id,
                },
             });
+
+            return repliedComment;
          } catch (err) {
             throw new Error('Error while creating a reply to a comment');
          }
       });
+
+      return reply;
    }
 
    /**

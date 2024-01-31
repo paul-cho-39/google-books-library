@@ -1,7 +1,7 @@
 import API_ROUTES from '@/utils/apiRoutes';
 import apiRequest from '@/utils/fetchData';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { MutationBase, MutationCommentParams } from '../types/models/books';
+import { AddCommentBody, MutationBase, MutationCommentParams } from '../types/models/books';
 import queryKeys from '@/utils/queryKeys';
 
 export default function useMutateUpdateOrReply(
@@ -16,7 +16,7 @@ export default function useMutateUpdateOrReply(
          : API_ROUTES.COMMENTS.REPLY(userId, bookId, parentId.toString());
 
    return useMutation(
-      (data: { comment: string }) =>
+      (data: AddCommentBody) =>
          apiRequest({
             apiUrl: url,
             method: 'POST',

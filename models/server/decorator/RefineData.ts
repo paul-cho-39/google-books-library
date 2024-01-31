@@ -47,6 +47,8 @@ export class RefineData {
       return data;
    }
    /**
+    * Since the application itself is small, it will be okay to fetch replies altogether. If the application is becomes
+    * it will have to fetch replies separately and load them on event based user action.
     * @description Refines the currnet Comment data and adds 'upvoteCount' for each comment.
     * @param bookId
     * @param page
@@ -73,6 +75,7 @@ export class RefineData {
                      select: {
                         name: true,
                         username: true,
+                        image: true,
                      },
                   },
                },

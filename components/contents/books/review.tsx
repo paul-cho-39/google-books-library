@@ -11,18 +11,24 @@ import useGetReviews from '@/lib/hooks/useGetReviews';
 
 interface ReviewSectionProps extends Omit<PostReviewSectionProps<BaseIdParams>, 'scrollToDisplay'> {
    // bookId: string;
-   rating: number;
+   // rating: number;
    avatarUrl: UserAvatarProps['avatarUrl'];
+   currentUserName: string;
 }
 
-const ReviewSection = ({ rating, avatarUrl, ...props }: ReviewSectionProps) => {
+const ReviewSection = ({
+   // rating,
+   avatarUrl,
+   currentUserName,
+   ...props
+}: ReviewSectionProps) => {
    const [pageIndex, setPageIndex] = useState(1); // pagination for comments
    const postReviewRef = useRef<HTMLElement>(null);
    const displayReviewRef = useRef<HTMLDivElement>(null);
    const isScreenMid = useDisableBreakPoints();
 
    const params = { ...props.params, pageIndex };
-   const AVATAR_SIZE = !isScreenMid ? 25 : 30;
+   const AVATAR_SIZE = !isScreenMid ? 30 : 35;
 
    // notifyOnChanges whenever the pageIndex is changed(?) -- but why?
 
@@ -54,12 +60,13 @@ const ReviewSection = ({ rating, avatarUrl, ...props }: ReviewSectionProps) => {
          <DisplayReviewSection
             ref={displayReviewRef}
             reviewsReuslt={reviewResult}
+            currentUserName={currentUserName}
             avatarUrl={avatarUrl}
             size={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
             scrollToComment={() => scrollToComment('post')}
             params={params}
             pageIndex={pageIndex}
-            rating={rating}
+            // rating={rating}
          />
 
          {/* add comment here */}

@@ -13,8 +13,8 @@ import refiner, { RefineData } from '@/models/server/decorator/RefineData';
 import BookService from '@/models/server/service/BookService';
 
 import BookImage from '@/components/bookcover/bookImages';
-import { ActiveRating } from '@/components/rating/activeRating';
-import useHandleRating from '@/lib/hooks/useHandleRating';
+// import { ActiveRating } from '@/components/rating/activeRating';
+// import useHandleRating from '@/lib/hooks/useHandleRating';
 import BookActionButton from '@/components/buttons/bookActionButton';
 import PageLayout from '@/components/layout/page/bookPageLayout';
 import useSearchFilter from '@/lib/hooks/useSearchFilter';
@@ -22,16 +22,17 @@ import useSearchFilter from '@/lib/hooks/useSearchFilter';
 import type { NextPageWithLayout } from './../_app';
 import DescriptionSection from '@/components/contents/books/description';
 import ReviewSection from '@/components/contents/books/review';
-import getUserInfo from '@/lib/helper/getUserId';
+import getUserInfo, { getUserName } from '@/lib/helper/getUserId';
 import { BookTopLayout, BookBottomLayout } from '@/components/layout/bookLayout';
-import { string } from 'prop-types';
-import useGetReviews from '@/lib/hooks/useGetReviews';
+import Spinner from '@/components/loaders/spinner';
+// import useGetReviews from '@/lib/hooks/useGetReviews';
 
 const HEIGHT = 225;
 
 const BookMetaDescriptionSection = lazy(
    () => import('@/components/section/bookDescriptionSection')
 );
+const ActiveRatingLazy = lazy(() => import('@/components/rating/activeRating'));
 
 // when refreshed the serversideProps will fetch the data
 // when navigating between pages and coming back useQuery to check
@@ -41,6 +42,7 @@ const BookPage: NextPageWithLayout<
    const { id, user, placerData } = props;
 
    const { userId, photoUrl } = getUserInfo(user);
+   const currentUserName = getUserName.bySession(user);
 
    const router = useRouter();
    const { filter } = useSearchFilter(); // returns the current filter
@@ -67,9 +69,9 @@ const BookPage: NextPageWithLayout<
 
    // const userRatingData = findId(allRatingData, userId as string);
 
-   const [selectedRating, setSelectedRating] = useState<null | number>(
-      userRatingData?.ratingInfo?.ratingValue || 0
-   );
+   // const [selectedRating, setSelectedRating] = useState<null | number>(
+   //    userRatingData?.ratingInfo?.ratingValue || 0
+   // );
 
    console.log('---------INSIDE THE MAIN PAGE-----------');
    // console.log('For the book', id, 'THE SELECTED RATING IS: ', selectedRating);
@@ -82,26 +84,27 @@ const BookPage: NextPageWithLayout<
       bookId: id,
       userId: userId as string,
       inLibrary: allRatingData?.inLibrary!,
+      prevRatingData: userRatingData,
    };
 
-   console.log('the data currently is: ', data);
+   // console.log('the data currently is: ', data);
 
-   const { handleMutation, handleRemoveMutation, currentRatingData } = useHandleRating(
-      {
-         // bookId: id,
-         // userId: userId as string,
-         // inLibrary: allRatingData?.inLibrary!,
-         ...params,
-         prevRatingData: userRatingData,
-      },
-      data,
-      allRatingData
-   );
+   // const { handleMutation, handleRemoveMutation, currentRatingData } = useHandleRating(
+   //    {
+   //       // bookId: id,
+   //       // userId: userId as string,
+   //       // inLibrary: allRatingData?.inLibrary!,
+   //       ...params,
+   //       prevRatingData: userRatingData,
+   //    },
+   //    data,
+   //    allRatingData
+   // );
 
    // const { data: reviews } = useGetReviews(id, 1);
    // console.log('HERE IS THE DATA: ', reviews.data);
 
-   const ratingTitle = !userRatingData ? 'Rate this book' : 'Rating saved';
+   // const ratingTitle = !userRatingData ? 'Rate this book' : 'Rating saved';
 
    return (
       <PageLayout isLoading={isLoading} title={data?.volumeInfo?.title}>
@@ -126,18 +129,26 @@ const BookPage: NextPageWithLayout<
                      />
                   )}
                </div>
-               <ActiveRating
-                  ratingTitle={ratingTitle}
-                  selectedRating={selectedRating}
-                  handleMutation={handleMutation}
-                  handleRemoveMutation={handleRemoveMutation}
-                  setSelectedRating={setSelectedRating}
+               {/* <ActiveRating
+                  // ratingTitle={ratingTitle}
+                  // selectedRating={selectedRating}
+                  // handleMutation={handleMutation}
+                  // handleRemoveMutation={handleRemoveMutation}
+                  // setSelectedRating={setSelectedRating}
                   // display remove rating
+                  // userId={userId}
                   shouldDisplay={!!userRatingData}
-                  userId={userId}
                   router={router}
                   size='large'
-               />
+               /> */}
+               <Suspense fallback={<Spinner size='md' />}>
+                  <ActiveRatingLazy
+                     params={params}
+                     data={data}
+                     allRatingData={allRatingData}
+                     shouldDisplay={!!userRatingData}
+                  />
+               </Suspense>
             </div>
             <Suspense fallback={<div></div>}>
                <BookMetaDescriptionSection
@@ -150,8 +161,9 @@ const BookPage: NextPageWithLayout<
          <BookBottomLayout>
             <DescriptionSection description={data?.volumeInfo?.description} />
             <ReviewSection
-               rating={currentRatingData?.ratingInfo?.ratingValue || 0}
+               // rating={currentRatingData?.ratingInfo?.ratingValue || 0}
                avatarUrl={photoUrl}
+               currentUserName={currentUserName as string}
                params={params}
                bookData={data}
             />

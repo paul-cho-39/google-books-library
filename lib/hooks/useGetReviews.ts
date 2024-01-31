@@ -30,6 +30,8 @@ export default function useGetReviews(bookId: string, page: number) {
          // select: (data) => data.data,
          refetchIntervalInBackground: true,
          refetchOnReconnect: true,
+         retry: 7,
+         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // exponential back-off
       }
    );
 }
