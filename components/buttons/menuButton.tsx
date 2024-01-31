@@ -6,7 +6,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
 import DeleteButton from './deleteButton';
 import ModalOpener from '../modal/openModal';
-import { DeleteBookContent } from '../modal/deletebookcontent';
+import { DeleteContent } from '../modal/deleteContent';
 
 const MenuButtons = ({ userId, book }: UserActionButtonProps) => {
    const [openDeleteModal, setOpenModal] = useState(false);
@@ -19,6 +19,7 @@ const MenuButtons = ({ userId, book }: UserActionButtonProps) => {
    return (
       <div className='hidden md:flex md:relative lg:relative'>
          <Menu as='div'>
+            {/* close is passed as props and when clicked it will close the menu */}
             {({ open, close }) => (
                <>
                   <Menu.Button
@@ -83,7 +84,10 @@ const MenuButtons = ({ userId, book }: UserActionButtonProps) => {
             DialogTitle='Delete book from library'
          >
             {/* name is a bit confusing but isHidden = isShow */}
-            <DeleteBookContent
+            <DeleteContent
+               content={
+                  'All data will be lost containing this book. Are you sure you want to delete the book?'
+               }
                toggleHide={() => setOpenModal(false)}
                isHidden={openDeleteModal}
                buttonClassName='w-32 inline-flex items-center justify-center'
@@ -94,7 +98,7 @@ const MenuButtons = ({ userId, book }: UserActionButtonProps) => {
                   closeModal={setOpenModal}
                   className='w-32'
                />
-            </DeleteBookContent>
+            </DeleteContent>
          </ModalOpener>
       </div>
    );

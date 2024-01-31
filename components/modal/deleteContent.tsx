@@ -2,21 +2,21 @@
 
 import classNames from 'classnames';
 
-type DeleteBookContentProps = {
+type DeleteContentProps = {
    isHidden: boolean;
    toggleHide: () => void;
+   content: string;
    buttonClassName?: string;
    children?: React.ReactNode;
 };
 
-type ModalDeleteBookContentProps = Omit<DeleteBookContentProps, 'toggleHide'>;
-
-export const DeleteBookContent = ({
+export const DeleteContent = ({
    isHidden,
    toggleHide,
+   content,
    buttonClassName,
    children,
-}: DeleteBookContentProps) => {
+}: DeleteContentProps) => {
    return (
       <>
          {isHidden && (
@@ -24,6 +24,7 @@ export const DeleteBookContent = ({
                <p role='alert' className='mb-5 px-6'>
                   All data will be lost containing this book. Are you sure you want to delete the
                   data?
+                  {content}
                </p>
                <div className='flex flex-row justify-evenly items-center'>
                   <button
@@ -37,22 +38,6 @@ export const DeleteBookContent = ({
                   </button>
                   {children}
                </div>
-            </div>
-         )}
-      </>
-   );
-};
-
-export const ModalDeleteBookContent = ({ isHidden, children }: ModalDeleteBookContentProps) => {
-   return (
-      <>
-         {isHidden && (
-            <div>
-               <p role='alert' className='mb-5 px-6'>
-                  All data will be lost containing this book. Are you sure you want to delete the
-                  data?
-               </p>
-               <div className='flex flex-row justify-evenly items-center'>{children}</div>
             </div>
          )}
       </>
