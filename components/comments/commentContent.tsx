@@ -28,27 +28,30 @@ const CommentContent = ({ content, className }: CommentContentProps) => {
    }, []);
 
    return (
-      // <div className='flex-1 sm:px-6 leading-relaxed dark:text-gray-300 bg-red-500'>
-      //    <CommentName name={getUserName.byComment(comment)} {...props} />
-      //    {/* stars and date */}
-      //    <CommentInfo rating={rating} dateAdded={formatDate(comment.dateAdded)} />
-      //    {/* post and grid */}
-      //    {/* post will have set height and the full comment w/ differnet component */}
-      <div className={classNames(className, 'py-1')}>
+      <div className={classNames(className, 'py-2 relative')}>
          {showMore && isExpand ? (
-            <div>
-               <span>{content}</span>
+            <div aria-expanded={showMore && isExpand}>
+               <p>{content}</p>
             </div>
          ) : (
-            // maybe set this in grid?
-            <div ref={commentRef} className='relative max-h-44 overflow-hidden '>
-               <p className='max-h-[8.4rem] text-base overflow-hidden '>{content}</p>
+            // if it does not exceed the maximum height
+            <div ref={commentRef} className='relative max-h-44'>
+               {/* <p className='max-h-[8.5rem] text-base overflow-hidden '> */}
+               <p className='max-h-[8.6rem] text-base overflow-hidden '>
+                  {commentRef.current?.clientHeight}
+                  {content}
+                  <br />
+                  showMore: {!showMore ? 'false' : 'true'}
+               </p>
                {showMore && (
-                  <div>
-                     <div className='absolute top-[7.6rem] h-14 w-full bg-gradient-to-b from-slate-100/5 to-[#ffffff] dark:from-slate-800/50 dark:to-slate-800'></div>
+                  <div className='mt-1 mb-2 py-1' aria-expanded={isExpand}>
+                     <div className='absolute top-[6.8rem] h-14 w-full bg-gradient-to-b from-slate-100/5 to-[#ffffff] dark:from-slate-800/50 dark:to-slate-800'></div>
 
-                     <div className='absolute z-30 left-0 w-full flex flex-row items-center'>
-                        <button onClick={() => setExpand(true)} className='bg-blue-400'>
+                     <div className='absolute z-30 left-0 top-[9rem] w-full flex flex-row items-center'>
+                        <button
+                           className='hover:underline hover:underline-offset-1 hover:dark:decoration-gray-200 hover:decoration-black'
+                           onClick={() => setExpand(true)}
+                        >
                            Show more
                         </button>
                         <ArrowRightIcon className='w-4 h-4 text-gray-800 dark:text-slate-300' />{' '}

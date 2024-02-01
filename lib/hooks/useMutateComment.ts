@@ -29,8 +29,6 @@ export default function useMutateComment<AType extends ActionCommentType>(
    // TODO: if the user has already left a comment the user is only allowed to leave replies(?)
    //    if the user already left the comment then ask the user if they want to update the comment
 
-   console.log('HERE ARE THE PARAMS INSIDE USEMUTATECOMMENT: ', params);
-
    const getUrl = () => {
       if (action === 'review') {
          // type asserting so that it can recognize 'MutationCommentParams'
@@ -86,6 +84,3 @@ export default function useMutateComment<AType extends ActionCommentType>(
 
    return { mutate, isLoading, isError };
 }
-
-// probably not reply
-// create, update comment, or reply to comment?
