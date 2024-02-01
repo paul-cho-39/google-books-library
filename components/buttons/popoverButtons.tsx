@@ -103,8 +103,8 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                               content={
                                  'All data will be lost containing this book. Are you sure you want to delete the book?'
                               }
-                              toggleHide={toggleHide}
-                              isHidden={isHidden}
+                              toggleModal={toggleHide}
+                              showModal={isHidden}
                            >
                               <DeleteButton
                                  book={book}

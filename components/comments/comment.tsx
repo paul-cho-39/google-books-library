@@ -15,6 +15,8 @@ import useMutateUpvote from '@/lib/hooks/useMutateUpvote';
 import useHandleComments from '@/lib/hooks/useHandleComments';
 import { formatDate } from '@/lib/helper/books/formatBookDate';
 import { Divider } from '../layout/dividers';
+import ModalOpener from '../modal/openModal';
+import { DeleteContent } from '../modal/deleteContent';
 
 export interface CommentProps<TParams extends BaseIdParams | MutationCommentParams>
    extends UserAvatarProps {
@@ -24,7 +26,6 @@ export interface CommentProps<TParams extends BaseIdParams | MutationCommentPara
    params: TParams;
 }
 
-// wrap this with larger comments[] and if it is undefined then it should return NO COMMNET
 const Comment = ({
    comment,
    params,
@@ -39,7 +40,7 @@ const Comment = ({
    const [displayReply, setDiplayReply] = useState(false);
    const [showDelete, setDelete] = useState({
       displayIcon: comment.userId === params.userId,
-      displayDelete: false,
+      displayModal: false,
    });
 
    const { mutate: upvote } = useMutateUpvote(params);
@@ -55,7 +56,13 @@ const Comment = ({
       upvote();
    };
 
-   const handleDeleteComment = () => {};
+   const handleModal = () => {
+      const newState = !showDelete.displayModal;
+      setDelete({
+         ...showDelete,
+         displayModal: newState,
+      });
+   };
 
    return (
       <article
@@ -87,20 +94,13 @@ const Comment = ({
                   replyCount={comment?._count?.replies || 0}
                   replyToComment={showDisplayReply}
                   upvote={handleUpvote}
-                  showDelete={showDelete.displayIcon}
-                  deleteComment={() => {
-                     setDelete({
-                        ...showDelete,
-                        displayDelete: true, // display modal
-                     });
-                  }}
+                  showDelete={showDelete.displayIcon} // only user authenticated allowed to delete the comment
+                  deleteComment={handleModal}
                />
             </div>
          </div>
 
-         {/* TODOS: */}
-         {/* have 'show replies' here */}
-
+         {/* replies to the current commentId */}
          {displayReply && (
             <div className='my-4'>
                <Divider />
@@ -113,6 +113,17 @@ const Comment = ({
                />
             </div>
          )}
+
+         {/* modal for deleting the book */}
+         <ModalOpener isOpen={showDelete} setIsOpen={setDelete} DialogTitle='Delete Comment'>
+            <DeleteContent
+               content={'Are you sure you want to delete the comment?'}
+               toggleModal={handleModal}
+               showModal={showDelete.displayModal}
+            >
+               {/* DELETE COMMENT BUTTON */}
+            </DeleteContent>
+         </ModalOpener>
       </article>
    );
 };

@@ -1,25 +1,70 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Dispatch, Fragment, SetStateAction, useState } from 'react';
 
-interface ModalProps {
-   isOpen: boolean;
-   setIsOpen: Dispatch<SetStateAction<boolean>>;
+// interface ModalProps {
+//    // isOpen: boolean | {[key: string]: unknown}
+//    // setIsOpen: (Dispatch<SetStateAction<boolean | { [key: string]: unknown }>>);
+//    isOpen: boolean | { [key: string]: any; displayModal: boolean };
+//    setIsOpen:
+//       | Dispatch<SetStateAction<boolean>>
+//       | Dispatch<SetStateAction<{ [key: string]: any; displayModal: boolean }>>;
+//    DialogTitle: string;
+//    children: React.ReactNode;
+// }
+
+type ObjectType = { [key: string]: any; displayModal: boolean };
+
+interface ModalProps<T extends boolean | ObjectType> {
+   // isOpen: boolean | {[key: string]: unknown}
+   // setIsOpen: (Dispatch<SetStateAction<boolean | { [key: string]: unknown }>>);
+   isOpen: T;
+   setIsOpen: Dispatch<SetStateAction<T>>;
    DialogTitle: string;
    children: React.ReactNode;
 }
 
-export default function ModalOpener({ isOpen, setIsOpen, DialogTitle, children }: ModalProps) {
-   function closeModal() {
-      setIsOpen(false);
+/**
+ * @Component
+ * @description Opens the modal. Ensure that when using an object, 'displayModal' is defined, or else it will thrown an error.
+ * @param param0
+ * @returns
+ */
+const ModalOpener = <T extends boolean | ObjectType>({
+   isOpen,
+   setIsOpen,
+   DialogTitle,
+   children,
+}: ModalProps<T>) => {
+   // function closeModal() {
+
+   //    // setIsOpen(false);
+   // }
+
+   function validateModalState(state: boolean | { displayModal?: boolean }) {
+      // throw error if the object key does not contain 'displayModal'
+      if (typeof state === 'object' && !('displayModal' in state)) {
+         throw new Error("The object passed as 'isOpen' must contain a 'displayModal' property");
+      }
+      return typeof state === 'boolean' ? state : state.displayModal;
    }
 
+   function closeModal() {
+      const newState =
+         typeof isOpen === 'boolean' ? false : ({ ...isOpen, displayModal: false } as ObjectType);
+      setIsOpen(newState as T);
+   }
+
+   console.log('THE CURRENT MODAL STATE IS: ', isOpen);
+
+   const shouldShow = validateModalState(isOpen);
+
    return (
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={shouldShow} as={Fragment}>
          {/* maybe set z-highest z-higher z-high */}
          <Dialog as='div' className='relative z-50 dark:bg-slate-700' onClose={closeModal}>
             <Transition.Child
                as={Fragment}
-               enter='ease-out duration-300'
+               enter='ease-out duration-150'
                enterFrom='opacity-0'
                enterTo='opacity-100'
                leave='ease-in duration-200'
@@ -32,7 +77,7 @@ export default function ModalOpener({ isOpen, setIsOpen, DialogTitle, children }
                <div className='mx-auto flex min-h-full items-center justify-center p-4 text-center'>
                   <Transition.Child
                      as={Fragment}
-                     enter='ease-out duration-300'
+                     enter='ease-out duration-150'
                      enterFrom='opacity-0 scale-95'
                      enterTo='opacity-100 scale-100'
                      leave='ease-in duration-200'
@@ -54,4 +99,6 @@ export default function ModalOpener({ isOpen, setIsOpen, DialogTitle, children }
          </Dialog>
       </Transition>
    );
-}
+};
+
+export default ModalOpener;

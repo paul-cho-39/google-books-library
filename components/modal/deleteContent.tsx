@@ -3,27 +3,26 @@
 import classNames from 'classnames';
 
 type DeleteContentProps = {
-   isHidden: boolean;
-   toggleHide: () => void;
+   showModal: boolean;
+   toggleModal: () => void;
    content: string;
+
    buttonClassName?: string;
    children?: React.ReactNode;
 };
 
 export const DeleteContent = ({
-   isHidden,
-   toggleHide,
+   showModal,
+   toggleModal,
    content,
    buttonClassName,
    children,
 }: DeleteContentProps) => {
    return (
       <>
-         {isHidden && (
+         {showModal && (
             <div>
                <p role='alert' className='mb-5 px-6'>
-                  All data will be lost containing this book. Are you sure you want to delete the
-                  data?
                   {content}
                </p>
                <div className='flex flex-row justify-evenly items-center'>
@@ -32,7 +31,7 @@ export const DeleteContent = ({
                         'btn-secondary inline-flex justify-center items-center mb-2 w-36',
                         buttonClassName
                      )}
-                     onClick={toggleHide}
+                     onClick={toggleModal}
                   >
                      Cancel
                   </button>

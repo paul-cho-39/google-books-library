@@ -78,6 +78,8 @@ const MenuButtons = ({ userId, book }: UserActionButtonProps) => {
                </>
             )}
          </Menu>
+
+         {/* modal for deleting the book content */}
          <ModalOpener
             isOpen={openDeleteModal}
             setIsOpen={setOpenModal}
@@ -88,8 +90,8 @@ const MenuButtons = ({ userId, book }: UserActionButtonProps) => {
                content={
                   'All data will be lost containing this book. Are you sure you want to delete the book?'
                }
-               toggleHide={() => setOpenModal(false)}
-               isHidden={openDeleteModal}
+               toggleModal={() => setOpenModal(false)}
+               showModal={openDeleteModal}
                buttonClassName='w-32 inline-flex items-center justify-center'
             >
                <DeleteButton
