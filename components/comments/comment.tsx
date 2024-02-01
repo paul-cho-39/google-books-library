@@ -17,6 +17,7 @@ import { formatDate } from '@/lib/helper/books/formatBookDate';
 import { Divider } from '../layout/dividers';
 import ModalOpener from '../modal/openModal';
 import { DeleteContent } from '../modal/deleteContent';
+import Button from '../buttons/button';
 
 export interface CommentProps<TParams extends BaseIdParams | MutationCommentParams>
    extends UserAvatarProps {
@@ -64,6 +65,14 @@ const Comment = ({
       });
    };
 
+   const handleDelete = () => {
+      mutateDelete();
+
+      // setTimeout(() => {
+      //    // close modal after deleting
+      // }, 100);
+   };
+
    return (
       <article
          className='border-t border-spacing-1 border-gray-500 dark:border-gray-400'
@@ -71,7 +80,7 @@ const Comment = ({
       >
          <div className='px-2 py-2 flex '>
             <div className='flex-1 sm:px-6 leading-relaxed dark:text-gray-300'>
-               {/* avatar and name */}
+               {/* display avatar and name */}
                <CommentName
                   name={userByComment.name}
                   avatarUrl={userByComment.userImage}
@@ -122,6 +131,11 @@ const Comment = ({
                showModal={showDelete.displayModal}
             >
                {/* DELETE COMMENT BUTTON */}
+               <Button
+                  handleSubmit={handleDelete}
+                  name={'Delete'}
+                  className='btn-alert inline-flex justify-center items-center mb-2 w-36'
+               />
             </DeleteContent>
          </ModalOpener>
       </article>
