@@ -36,13 +36,7 @@ const CommentContent = ({ content, className }: CommentContentProps) => {
          ) : (
             // if it does not exceed the maximum height
             <div ref={commentRef} className='relative max-h-44'>
-               {/* <p className='max-h-[8.5rem] text-base overflow-hidden '> */}
-               <p className='max-h-[8.6rem] text-base overflow-hidden '>
-                  {commentRef.current?.clientHeight}
-                  {content}
-                  <br />
-                  showMore: {!showMore ? 'false' : 'true'}
-               </p>
+               <p className='max-h-[8.8rem] text-base overflow-hidden '>{content}</p>
                {showMore && (
                   <div className='mt-1 mb-2 py-1' aria-expanded={isExpand}>
                      <div className='absolute top-[6.8rem] h-14 w-full bg-gradient-to-b from-slate-100/5 to-[#ffffff] dark:from-slate-800/50 dark:to-slate-800'></div>

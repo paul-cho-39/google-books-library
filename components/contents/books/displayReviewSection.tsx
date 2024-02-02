@@ -36,13 +36,17 @@ const DisplayReviewSection: ForwardRefRenderFunction<HTMLDivElement, DisplayRevi
             ) : (
                <ul role='listitem' className='flex flex-col my-6 gap-y-12'>
                   {reviews.map((review) => (
-                     <Comment
-                        {...rest}
-                        params={getMutationParams(review, props.params, pageIndex)}
+                     <article
                         key={review.id}
-                        comment={review}
-                     />
-
+                        aria-roledescription='review'
+                        className='first-of-type:border-none border-t-2 border-spacing-1 border-gray-500 dark:border-gray-400'
+                     >
+                        <Comment
+                           {...rest}
+                           params={getMutationParams(review, props.params, pageIndex)}
+                           comment={review}
+                        />
+                     </article>
                      // if the user replies
                   ))}
                </ul>

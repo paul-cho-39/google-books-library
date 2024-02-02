@@ -6,7 +6,7 @@ type DeleteContentProps = {
    showModal: boolean;
    toggleModal: () => void;
    content: string;
-
+   disabled?: boolean;
    buttonClassName?: string;
    children?: React.ReactNode;
 };
@@ -16,6 +16,7 @@ export const DeleteContent = ({
    toggleModal,
    content,
    buttonClassName,
+   disabled,
    children,
 }: DeleteContentProps) => {
    return (
@@ -27,6 +28,7 @@ export const DeleteContent = ({
                </p>
                <div className='flex flex-row justify-evenly items-center'>
                   <button
+                     disabled={disabled}
                      className={classNames(
                         'btn-secondary inline-flex justify-center items-center mb-2 w-36',
                         buttonClassName

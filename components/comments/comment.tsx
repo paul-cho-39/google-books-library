@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 
 import { CommentPayload } from '@/lib/types/response';
 import { UserAvatarProps } from '../icons/avatar';
@@ -18,6 +18,7 @@ import { Divider } from '../layout/dividers';
 import ModalOpener from '../modal/openModal';
 import { DeleteContent } from '../modal/deleteContent';
 import Button from '../buttons/button';
+import MyToaster from '../bookcards/toaster';
 
 export interface CommentProps<TParams extends BaseIdParams | MutationCommentParams>
    extends UserAvatarProps {
@@ -46,7 +47,7 @@ const Comment = ({
 
    const { mutate: upvote } = useMutateUpvote(params);
    const { updateComment, deleteComment } = useHandleComments(params);
-   const { mutate: mutateDelete } = deleteComment;
+   const { mutate: mutateDelete, isLoading: isDeleteLoading, status } = deleteComment;
 
    // if replies are to be shown by event-based the logic should be included here to display replies
    const showDisplayReply = () => {
@@ -57,27 +58,33 @@ const Comment = ({
       upvote();
    };
 
-   const handleModal = () => {
-      const newState = !showDelete.displayModal;
-      setDelete({
-         ...showDelete,
-         displayModal: newState,
-      });
-   };
-
    const handleDelete = () => {
       mutateDelete();
-
-      // setTimeout(() => {
-      //    // close modal after deleting
-      // }, 100);
    };
 
+   const handleModal = () => {
+      // ensuring that modal cannot be closed while the state is loading
+      if (!isDeleteLoading) {
+         const newState = !showDelete.displayModal;
+         setDelete({
+            ...showDelete,
+            displayModal: newState,
+         });
+      }
+   };
+
+   useEffect(() => {
+      if (status === 'success') {
+         setDelete((prevState) => ({
+            ...prevState,
+            displayModal: false,
+         }));
+      }
+   }, [status]);
+
    return (
-      <article
-         className='border-t border-spacing-1 border-gray-500 dark:border-gray-400'
-         aria-roledescription='review'
-      >
+      <>
+         <MyToaster shouldDisplayIcon={false} />
          <div className='px-2 py-2 flex '>
             <div className='flex-1 sm:px-6 leading-relaxed dark:text-gray-300'>
                {/* display avatar and name */}
@@ -124,8 +131,14 @@ const Comment = ({
          )}
 
          {/* modal for deleting the book */}
-         <ModalOpener isOpen={showDelete} setIsOpen={setDelete} DialogTitle='Delete Comment'>
+         <ModalOpener
+            isOpen={showDelete}
+            setIsOpen={setDelete}
+            DialogTitle='Delete Comment'
+            isLoading={isDeleteLoading}
+         >
             <DeleteContent
+               disabled={isDeleteLoading} // disables cancel button when processing delete
                content={'Are you sure you want to delete the comment?'}
                toggleModal={handleModal}
                showModal={showDelete.displayModal}
@@ -133,12 +146,13 @@ const Comment = ({
                {/* DELETE COMMENT BUTTON */}
                <Button
                   handleSubmit={handleDelete}
+                  isLoading={isDeleteLoading}
                   name={'Delete'}
                   className='btn-alert inline-flex justify-center items-center mb-2 w-36'
                />
             </DeleteContent>
          </ModalOpener>
-      </article>
+      </>
    );
 };
 

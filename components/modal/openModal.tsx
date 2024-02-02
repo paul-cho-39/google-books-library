@@ -21,6 +21,7 @@ interface ModalProps<T extends boolean | ObjectType> {
    setIsOpen: Dispatch<SetStateAction<T>>;
    DialogTitle: string;
    children: React.ReactNode;
+   isLoading?: boolean;
 }
 
 /**
@@ -34,6 +35,7 @@ const ModalOpener = <T extends boolean | ObjectType>({
    setIsOpen,
    DialogTitle,
    children,
+   isLoading = false,
 }: ModalProps<T>) => {
    // function closeModal() {
 
@@ -49,12 +51,15 @@ const ModalOpener = <T extends boolean | ObjectType>({
    }
 
    function closeModal() {
-      const newState =
-         typeof isOpen === 'boolean' ? false : ({ ...isOpen, displayModal: false } as ObjectType);
-      setIsOpen(newState as T);
+      // if loading is passed then ensure modal does not close until loading is false
+      if (!isLoading) {
+         const newState =
+            typeof isOpen === 'boolean'
+               ? false
+               : ({ ...isOpen, displayModal: false } as ObjectType);
+         setIsOpen(newState as T);
+      }
    }
-
-   console.log('THE CURRENT MODAL STATE IS: ', isOpen);
 
    const shouldShow = validateModalState(isOpen);
 

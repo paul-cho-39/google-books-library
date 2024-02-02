@@ -3,6 +3,7 @@ import apiRequest from '@/utils/fetchData';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AddCommentBody, MutationBase, MutationCommentParams } from '../types/models/books';
 import queryKeys from '@/utils/queryKeys';
+import { AddedCommentResponseData } from '../types/response';
 
 export default function useMutateUpdateOrReply(
    params: MutationCommentParams,
@@ -25,7 +26,7 @@ export default function useMutateUpdateOrReply(
       {
          // on settle invalidate and refetch the comments again
          onSettled: () =>
-            queryClient.invalidateQueries(queryKeys.commentsByBook(bookId, pageIndex.toString())),
+            queryClient.invalidateQueries(queryKeys.commentsByBook(bookId, pageIndex)),
       }
    );
 }

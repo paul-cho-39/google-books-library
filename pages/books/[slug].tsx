@@ -158,6 +158,8 @@ const BookPage: NextPageWithLayout<
                />
             </Suspense>
          </BookTopLayout>
+
+         {/* TODO: Suspense this part as well */}
          <BookBottomLayout>
             <DescriptionSection description={data?.volumeInfo?.description} />
             <ReviewSection
