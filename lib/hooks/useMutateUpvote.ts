@@ -54,9 +54,9 @@ export default function useMutateUpvote({
             console.error('Failed to upvote: ', err);
             // return toast if an error happens
          },
-         onSuccess: () => {
-            console.log('Successfully upvoted the book!');
-         },
+         // onSuccess: () => {
+         //    console.log('Successfully upvoted the book!');
+         // },
          onSettled: () => {
             // invaldiate the current comments and refetch again
             queryClient.invalidateQueries(queryKeys.commentsByBook(bookId, pageIndex));

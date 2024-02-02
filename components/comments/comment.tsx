@@ -74,7 +74,7 @@ const Comment = ({
    };
 
    useEffect(() => {
-      if (status === 'success') {
+      if (status === 'success' || status === 'error') {
          setDelete((prevState) => ({
             ...prevState,
             displayModal: false,

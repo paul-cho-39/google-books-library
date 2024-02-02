@@ -1,7 +1,7 @@
 import { MutationCommentParams } from '../types/models/books';
 import useMutateComment from './useMutateComment';
 import useMutateDelete from './useMutateDelete';
-import useMutateUpdateOrReply from './useMutateReply';
+import useMutateUpdateOrReply from './useMutateUpdateComment';
 
 type CommentActionType = 'update' | 'reply' | 'delete';
 
@@ -16,7 +16,7 @@ type CommentActionType = 'update' | 'reply' | 'delete';
 
 export default function useHandleComments(params: MutationCommentParams) {
    const deleteComment = useMutateDelete(params);
-   const updateComment = useMutateUpdateOrReply(params, 'update');
+   const updateComment = useMutateUpdateOrReply(params);
 
    return { deleteComment, updateComment };
 }

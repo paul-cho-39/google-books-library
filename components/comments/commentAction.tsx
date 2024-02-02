@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import useMutateReply from '@/lib/hooks/useMutateReply';
+import useMutateReply from '@/lib/hooks/useMutateUpdateComment';
 import useMutateUpvote from '@/lib/hooks/useMutateUpvote';
 import {
    ChatBubbleBottomCenterIcon,
