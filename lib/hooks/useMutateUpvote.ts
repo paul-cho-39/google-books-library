@@ -1,7 +1,7 @@
 import API_ROUTES from '@/utils/apiRoutes';
 import apiRequest from '@/utils/fetchData';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { CommentPayload, CommentResponseData, UpvotePayload } from '../types/response';
+import { CommentData, CommentPayload, CommentResponseData, UpvotePayload } from '../types/response';
 import queryKeys from '@/utils/queryKeys';
 import { MutationUpvoteParams } from '../types/models/books';
 
@@ -26,17 +26,21 @@ export default function useMutateUpvote({
          onMutate: async () => {
             await queryClient.cancelQueries(queryKeys.commentsByBook(bookId, pageIndex));
 
-            const prevComments = queryClient.getQueryData<CommentPayload[]>(
+            const prevComments = queryClient.getQueryData<CommentPayload>(
                queryKeys.commentsByBook(bookId, pageIndex)
             );
 
             // if there is no comments, users cannot upvote
             if (prevComments) {
-               const nextData = setOptimisticData(prevComments, commentId, userId);
+               const commentsData = setOptimisticData(prevComments.comments, commentId, userId);
+               const prevCommentsData: CommentPayload = {
+                  total: prevComments.total,
+                  comments: [...commentsData],
+               };
                // console.log('THE NEXT DATA IS: ', nextData);
-               queryClient.setQueryData<CommentPayload[]>(
+               queryClient.setQueryData<CommentPayload>(
                   queryKeys.commentsByBook(bookId, pageIndex),
-                  nextData
+                  prevCommentsData
                );
             }
 
@@ -66,10 +70,10 @@ export default function useMutateUpvote({
 }
 
 function setOptimisticData(
-   comments: CommentPayload[],
+   comments: CommentData[],
    commentId: number,
    userId: string
-): CommentPayload[] {
+): CommentData[] {
    // if (!comments) return;  // no comments
 
    return comments.map((comment) => {

@@ -86,8 +86,8 @@ const ModalOpener = <T extends boolean | ObjectType>({
                      enterFrom='opacity-0 scale-95'
                      enterTo='opacity-100 scale-100'
                      leave='ease-in duration-200'
-                     leaveFrom='opacity-100 scale-100'
-                     leaveTo='opacity-0 scale-95'
+                     leaveFrom='opacity-100'
+                     leaveTo='opacity-0'
                   >
                      <Dialog.Panel className='overflow-y-hidden w-full h-auto max-w-md transform rounded-2xl bg-white dark:bg-slate-500 p-6 text-left align-middle shadow-xl transition-all'>
                         <Dialog.Title

@@ -1,6 +1,8 @@
 import prisma from '@/lib/prisma';
 import { Book, UserBook } from '@prisma/client';
 import { RefinedBookState, Library } from '@/lib/types/models/books';
+import { MultipleRatingData, RatingInfo } from '@/lib/types/serverTypes';
+import { CommentData } from '@/lib/types/response';
 
 type AllUserBooks = (UserBook & {
    book: Book;
@@ -57,6 +59,7 @@ export class RefineData {
     */
    async getCommentsByBookId(bookId: string, page: number, limit: number = 10) {
       const skip = (page - 1) * limit;
+      // contains total number of comments by `bookId` and all books associated with the `bookId`
       const [totalCount, comments] = await Promise.all([
          prisma.comment.count({
             where: { bookId: bookId },
@@ -75,7 +78,7 @@ export class RefineData {
                },
                upvote: true,
                _count: true,
-               user: { select: { name: true, username: true } },
+               user: { select: { name: true, username: true, image: true } },
             },
          }),
       ]);
@@ -90,6 +93,36 @@ export class RefineData {
          total: totalCount,
          comments: refinedComments,
       };
+   }
+   /**
+    *
+    * @param {Array}ratingData
+    * @param {Array}commentData
+    * @returns {Array}CommentData
+    */
+   addRatingToComments(
+      ratingData: RatingInfo[] | undefined | null,
+      commentData: CommentData[] | undefined
+   ) {
+      if (!commentData) return;
+      if (!ratingData) {
+         // early return of commentData
+         return commentData;
+      }
+
+      const userIdToRating = new Map<string, number>();
+      ratingData.forEach((ratingInfo) => {
+         userIdToRating.set(ratingInfo.userId, ratingInfo.ratingValue);
+      });
+
+      const refinedComments = commentData.map((comment) => {
+         if (userIdToRating.has(comment.userId)) {
+            return { ...comment, rating: userIdToRating.get(comment.userId) };
+         }
+         return comment;
+      });
+
+      return refinedComments;
    }
 }
 

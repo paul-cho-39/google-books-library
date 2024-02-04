@@ -93,6 +93,7 @@ export type CommentData = {
    };
    userId: string;
    upvoteCount: number; // Added based on your mapping
+   rating?: number;
 };
 
 export type CommentPayload = {
