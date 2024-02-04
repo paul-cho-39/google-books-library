@@ -97,7 +97,7 @@ const Comment = ({
                {/* stars and date */}
                <CommentInfo
                   className='mb-2 py-2'
-                  rating={rating}
+                  rating={comment.rating}
                   dateAdded={formatDate(comment.dateAdded)}
                />
 

@@ -81,15 +81,15 @@ export const CommentName = ({ name, className, ...props }: CommentNameProps) => 
 };
 
 interface CommentInfoProps<T extends string | Date> {
-   rating: number;
    dateAdded: T;
+   rating?: number;
    className?: string;
 }
 
 export const CommentInfo = ({ dateAdded, rating, className }: CommentInfoProps<string>) => {
    return (
       <div className={classNames(className, 'w-full flex justify-between')}>
-         <DisplayRating averageRating={rating} size='medium' displayText={false} />
+         {rating && <DisplayRating averageRating={rating} size='medium' displayText={false} />}
          <span className='text-xs text-gray-400 '>{dateAdded}</span>
       </div>
    );

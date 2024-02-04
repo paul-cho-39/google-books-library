@@ -18,6 +18,11 @@ interface CreateCommentProps<CType extends NewCommentBody | AddCommentBody> {
    className?: string;
 }
 
+/**
+ * @Component
+ * @description Component designd specifically for handling comments for replying to a comment or adding a new comment.
+ * It handles all the response payload and submitting the data to the API. It still has to pass `mutate` and `bookData`.
+ */
 const CreateComment = <CType extends NewCommentBody | AddCommentBody>({
    mutate,
    bookData,

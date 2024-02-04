@@ -5,19 +5,22 @@ import { UserAvatarProps } from '@/components/icons/avatar';
 import { useDisableBreakPoints } from '@/lib/hooks/useDisableBreakPoints';
 import { BaseIdParams, MutationCommentParams } from '@/lib/types/models/books';
 import Spinner from '@/components/loaders/spinner';
+import { RatingInfo } from '@/lib/types/serverTypes';
 
 const LazyDisplayReviewSection = lazy(() => import('./displayReviewSection'));
 
 interface ReviewSectionProps extends Omit<PostReviewSectionProps<BaseIdParams>, 'scrollToDisplay'> {
-   // rating: number;
    avatarUrl: UserAvatarProps['avatarUrl'];
    currentUserName: string;
+   allRatingInfo: RatingInfo[] | undefined;
 }
 
 const ReviewSection = ({
-   // rating,
+   currentRatingValue,
+   handleRatingMutation,
    avatarUrl,
    currentUserName,
+   allRatingInfo,
    ...props
 }: ReviewSectionProps) => {
    const [pageIndex, setPageIndex] = useState(1); // pagination for comments
@@ -42,6 +45,7 @@ const ReviewSection = ({
       }
    };
 
+   // pagination for comments
    const handlePageChange = (newPage: number, type?: 'next' | 'prev') => {
       const apiPageIndex = newPage;
 
@@ -71,15 +75,15 @@ const ReviewSection = ({
          {/* reply, upvote, update, delete */}
          <Suspense fallback={<Spinner />}>
             <LazyDisplayReviewSection
+               params={params} // mutation params
                ref={displayReviewRef}
                currentUserName={currentUserName}
                avatarUrl={avatarUrl}
                size={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
                scrollToComment={() => scrollToComment('post')}
-               params={params}
                handlePageChange={handlePageChange}
+               allRatingInfo={allRatingInfo}
                pageIndex={pageIndex}
-               // rating={rating}
             />
          </Suspense>
 
@@ -88,6 +92,8 @@ const ReviewSection = ({
             ref={postReviewRef}
             scrollToDisplay={() => scrollToComment('display')}
             bookData={props.bookData}
+            handleRatingMutation={handleRatingMutation}
+            currentRatingValue={currentRatingValue}
             params={params}
          />
       </div>
@@ -99,3 +105,6 @@ export default ReviewSection;
 // 1) set rating
 // 2) add pagination
 // 3) change description length
+// 4) authenticate user before
+
+// test it out

@@ -1,17 +1,20 @@
 import Comment, { CommentProps } from '@/components/comments/comment';
-import { ForwardRefRenderFunction, forwardRef, useState } from 'react';
+import { ForwardRefRenderFunction, forwardRef, useMemo, useState } from 'react';
 import getMutationParams from '@/lib/helper/getCommentMutationParams';
 import { BaseIdParams } from '@/lib/types/models/books';
 import useGetReviews from '@/lib/hooks/useGetReviews';
 
 import Pagination, { PaginationProps } from '@/components/headers/pagination';
 import LoadingPage from '@/components/layout/loadingPage';
+import { RatingInfo } from '@/lib/types/serverTypes';
+import addRatingToComments from '@/lib/helper/addRatingsToComment';
 
 interface DisplayReviewSectionProps extends Omit<CommentProps<BaseIdParams>, 'comment'> {
    pageIndex: number;
    scrollToComment: () => void;
    currentUserName: string;
    handlePageChange: PaginationProps['onPageChange'];
+   allRatingInfo: RatingInfo[] | undefined;
 }
 
 /**
@@ -36,7 +39,13 @@ const DisplayReviewSection: ForwardRefRenderFunction<HTMLDivElement, DisplayRevi
 
    const ITEMS_PER_PAGE = 10;
    const totalComments = reviewData?.total || 0;
-   const reviews = reviewData?.comments;
+
+   // const reviews = reviewData?.comments;
+
+   const reviews = useMemo(
+      () => addRatingToComments(props.allRatingInfo, reviewData?.comments),
+      [props.allRatingInfo, reviewData?.comments]
+   );
 
    if (isLoading) {
       return <LoadingPage />;
