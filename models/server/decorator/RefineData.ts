@@ -57,54 +57,39 @@ export class RefineData {
     */
    async getCommentsByBookId(bookId: string, page: number, limit: number = 10) {
       const skip = (page - 1) * limit;
-      const comments = await prisma.comment.findMany({
-         where: {
-            bookId: bookId,
-         },
-         take: limit,
-         skip: skip,
-         orderBy: {
-            dateAdded: 'desc',
-         },
-         include: {
-            // NOTE: there is no take or limit here as the project is unlikely to exceed this
-            replies: {
-               include: {
-                  replies: true,
-                  user: {
-                     select: {
-                        name: true,
-                        username: true,
-                        image: true,
-                     },
+      const [totalCount, comments] = await Promise.all([
+         prisma.comment.count({
+            where: { bookId: bookId },
+         }),
+         prisma.comment.findMany({
+            where: { bookId: bookId },
+            take: limit,
+            skip: skip,
+            orderBy: { dateAdded: 'desc' },
+            include: {
+               replies: {
+                  include: {
+                     replies: true,
+                     user: { select: { name: true, username: true, image: true } },
                   },
                },
+               upvote: true,
+               _count: true,
+               user: { select: { name: true, username: true } },
             },
-            upvote: true,
-            _count: true,
-            user: {
-               select: {
-                  name: true,
-                  username: true,
-               },
-            },
-         },
-      });
-      // since wrapping inside Promise.all, running 'async' inside map is ok
-      const refinedComments = await Promise.all(
-         comments.map(async (comment) => {
-            const upvoteCount = await prisma.upvotes.count({
-               where: { upvoteId: comment.id },
-            });
+         }),
+      ]);
 
-            return {
-               ...comment,
-               upvoteCount: upvoteCount,
-            };
-         })
-      );
+      // refine comments with upvoteCount for each comment
+      const refinedComments = comments.map((comment) => ({
+         ...comment,
+         upvoteCount: comment.upvote.length,
+      }));
 
-      return refinedComments;
+      return {
+         total: totalCount,
+         comments: refinedComments,
+      };
    }
 }
 

@@ -33,7 +33,6 @@ export default function useMutateComment<AType extends ActionCommentType>(
       if (action === 'review') {
          // type asserting so that it can recognize 'MutationCommentParams'
          const reviewParams = params as MutationCommentParams;
-         console.log('THE COMMENT ID IS : ', reviewParams.commentId);
          return API_ROUTES.COMMENTS.REPLY(userId, bookId, reviewParams.commentId.toString());
       } else {
          return API_ROUTES.COMMENTS.ADD(userId, bookId);
@@ -47,7 +46,6 @@ export default function useMutateComment<AType extends ActionCommentType>(
    } = useMutation(
       async (data: CommentDataType<AType>) => {
          const res = (await apiRequest({
-            // apiUrl: API_ROUTES.COMMENTS.ADD(userId, bookId),
             apiUrl: getUrl(),
             method: 'POST',
             data: data,

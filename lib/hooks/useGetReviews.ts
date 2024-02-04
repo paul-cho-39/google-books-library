@@ -14,7 +14,7 @@ export default function useGetReviews(bookId: string, page: number) {
    }
    const idx = page.toString();
 
-   return useQuery<CommentResponseData, ErrorResponse, CommentPayload[]>(
+   return useQuery<CommentResponseData, ErrorResponse, CommentPayload>(
       queryKeys.commentsByBook(bookId, page),
       async () => {
          console.log('FETCHING AGAIN');
@@ -39,4 +39,4 @@ export default function useGetReviews(bookId: string, page: number) {
 // bookId
 
 // ensure that the page number is not equal to 0
-function checkPageNumber() {}
+// function checkPageNumber() {}

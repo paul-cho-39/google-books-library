@@ -48,7 +48,7 @@ const poll = {
             return;
          }
 
-         const reviewData = queryClient.getQueryData<CommentPayload[]>(
+         const reviewData = queryClient.getQueryData<CommentPayload>(
             queryKeys.commentsByBook(bookId, pageIndex)
          );
 
@@ -59,7 +59,7 @@ const poll = {
          }
 
          console.log('THE REVIEW DATA HERE IS: ', reviewData);
-         const reviewValidated = reviewData?.some((comment) => comment.id === commentId);
+         const reviewValidated = reviewData?.comments?.some((comment) => comment.id === commentId);
 
          // when found clear intervals
          // and react-query manages invaldiating the current query

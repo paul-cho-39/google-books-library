@@ -1,15 +1,17 @@
-import { CommentPayload, ErrorResponse } from '@/lib/types/response';
 import Comment, { CommentProps } from '@/components/comments/comment';
 import { ForwardRefRenderFunction, forwardRef, useState } from 'react';
-import { UseQueryResult } from '@tanstack/react-query';
 import getMutationParams from '@/lib/helper/getCommentMutationParams';
 import { BaseIdParams } from '@/lib/types/models/books';
+import useGetReviews from '@/lib/hooks/useGetReviews';
+
+import Pagination, { PaginationProps } from '@/components/headers/pagination';
+import LoadingPage from '@/components/layout/loadingPage';
 
 interface DisplayReviewSectionProps extends Omit<CommentProps<BaseIdParams>, 'comment'> {
-   reviewsReuslt: UseQueryResult<CommentPayload[], ErrorResponse>;
    pageIndex: number;
    scrollToComment: () => void;
    currentUserName: string;
+   handlePageChange: PaginationProps['onPageChange'];
 }
 
 /**
@@ -23,14 +25,27 @@ const DisplayReviewSection: ForwardRefRenderFunction<HTMLDivElement, DisplayRevi
    props,
    ref
 ) => {
-   const { scrollToComment, reviewsReuslt, pageIndex, ...rest } = props;
-   // TODO: add isLoading & isError for more responsive state
-   //    TODO: add total number of comments
-   const { data: reviews, isLoading, isError } = reviewsReuslt;
+   const { scrollToComment, pageIndex, handlePageChange, ...rest } = props;
+
+   const {
+      data: reviewData,
+      status,
+      isLoading,
+      isError,
+   } = useGetReviews(props.params.bookId, pageIndex);
+
+   const ITEMS_PER_PAGE = 10;
+   const totalComments = reviewData?.total || 0;
+   const reviews = reviewData?.comments;
+
+   if (isLoading) {
+      return <LoadingPage />;
+   }
 
    return (
       <section id='display_review'>
          <div ref={ref} className='py-2'>
+            {/* No Comments here */}
             {!reviews ? (
                <NoCommentToDisplay scrollToComment={scrollToComment} />
             ) : (
@@ -51,6 +66,12 @@ const DisplayReviewSection: ForwardRefRenderFunction<HTMLDivElement, DisplayRevi
                   ))}
                </ul>
             )}
+            <Pagination
+               currentPage={pageIndex}
+               totalItems={totalComments}
+               itemsPerPage={ITEMS_PER_PAGE}
+               onPageChange={handlePageChange}
+            />
          </div>
       </section>
    );

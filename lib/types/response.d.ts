@@ -1,5 +1,6 @@
 import refiner, { RefineData, RefineData } from '@/models/server/decorator/RefineData';
 import BookService from '@/models/server/service/BookService';
+import { CommentDataType } from './models/books';
 
 // for creating apiResponseError that will return 'ErrorResponse'
 export interface ResponseErrorParams {
@@ -73,7 +74,7 @@ export type Upvote = {
 };
 
 // export type CommentPayload = GetResponseData<RefineData['getCommentsByBookId']>;
-export type CommentPayload = {
+export type CommentData = {
    _count: { upvote: number; replies: number };
    bookId: string;
    content: string;
@@ -82,7 +83,7 @@ export type CommentPayload = {
    id: number;
    likes: number;
    parentId: number | null;
-   replies: CommentPayload[] | undefined;
+   replies: CommentData[] | undefined;
    upvote: Upvote[];
    upvoteCount: number;
    user: {
@@ -94,8 +95,13 @@ export type CommentPayload = {
    upvoteCount: number; // Added based on your mapping
 };
 
+export type CommentPayload = {
+   total: number;
+   comments: CommentData[];
+};
+
 type UpvotePayload = CommentPayload['upvote'];
-export type CommentResponseData = PostApiResponse<CommentPayload[]>;
+export type CommentResponseData = PostApiResponse<CommentPayload>;
 export type AddedCommentResponseData = PostApiResponse<
    GetResponseData<BookService['handleCreateCommentAndBook']>
 >;

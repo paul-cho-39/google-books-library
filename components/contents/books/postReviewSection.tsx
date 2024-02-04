@@ -1,12 +1,7 @@
 import { FormEvent, ForwardRefRenderFunction, forwardRef, useEffect, useState } from 'react';
-import debounce from 'lodash.debounce';
 import useMutateComment, { CustomStateType } from '@/lib/hooks/useMutateComment';
 import { BaseIdParams, MutationAddCommentParams, NewCommentBody } from '@/lib/types/models/books';
-import { getBodyFromFilteredGoogleFields } from '@/lib/helper/books/getBookBody';
 import { Items } from '@/lib/types/googleBookTypes';
-import { MAXIMUM_CONTENT_LENGTH } from '@/constants/inputs';
-import DisplayWordCount from '@/components/comments/wordCount';
-import Spinner from '@/components/loaders/spinner';
 import CreateComment from '@/components/comments/createComment';
 
 export interface PostReviewSectionProps<TParam extends MutationAddCommentParams | BaseIdParams> {

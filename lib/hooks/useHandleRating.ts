@@ -52,4 +52,7 @@ function useHandleRating(
    return { handleMutation, handleRemoveMutation, currentRatingData };
 }
 
+type HandleRatingResult = ReturnType<typeof useHandleRating>;
+
+export type { HandleRatingResult };
 export default useHandleRating;

@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 
-import { CommentPayload } from '@/lib/types/response';
+import { CommentData, CommentPayload } from '@/lib/types/response';
 import { UserAvatarProps } from '../icons/avatar';
 import CommentContent, { CommentInfo, CommentName } from './commentContent';
 import { getUserName } from '@/lib/helper/getUserId';
@@ -22,8 +22,8 @@ import MyToaster from '../bookcards/toaster';
 
 export interface CommentProps<TParams extends BaseIdParams | MutationCommentParams>
    extends UserAvatarProps {
-   rating: number;
-   comment: CommentPayload;
+   // rating: number;
+   comment: CommentData;
    currentUserName: string;
    params: TParams;
 }
@@ -32,7 +32,7 @@ const Comment = ({
    comment,
    params,
    currentUserName,
-   rating,
+   // rating,
    ...props
 }: CommentProps<MutationCommentParams>) => {
    const { avatarUrl: currentUserAvatar, ...rest } = props;

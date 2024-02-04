@@ -64,21 +64,6 @@ const BookPage: NextPageWithLayout<
       [allRatingData]
    );
 
-   // console.log('---------INSIDE THE MAIN PAGE-----------');
-   // console.log('INSIDE THE MAIN, the data will be: ', allRatingData);
-
-   // const userRatingData = findId(allRatingData, userId as string);
-
-   // const [selectedRating, setSelectedRating] = useState<null | number>(
-   //    userRatingData?.ratingInfo?.ratingValue || 0
-   // );
-
-   console.log('---------INSIDE THE MAIN PAGE-----------');
-   // console.log('For the book', id, 'THE SELECTED RATING IS: ', selectedRating);
-   // console.log('USER RATING DATA', id, '(not useState but the value for) IS: ', selectedRating);
-   // console.log('IS THE BOOK IN LIBRARY AFTER THE COMMENT?: ', allRatingData);
-   // console.log('THE DATA SHOULD BE DEFINED: ', data);
-
    // ALTER THIS IF THE LIBRARY DOES NOT CHANGE
    const params = {
       bookId: id,
@@ -86,25 +71,6 @@ const BookPage: NextPageWithLayout<
       inLibrary: allRatingData?.inLibrary!,
       prevRatingData: userRatingData,
    };
-
-   // console.log('the data currently is: ', data);
-
-   // const { handleMutation, handleRemoveMutation, currentRatingData } = useHandleRating(
-   //    {
-   //       // bookId: id,
-   //       // userId: userId as string,
-   //       // inLibrary: allRatingData?.inLibrary!,
-   //       ...params,
-   //       prevRatingData: userRatingData,
-   //    },
-   //    data,
-   //    allRatingData
-   // );
-
-   // const { data: reviews } = useGetReviews(id, 1);
-   // console.log('HERE IS THE DATA: ', reviews.data);
-
-   // const ratingTitle = !userRatingData ? 'Rate this book' : 'Rating saved';
 
    return (
       <PageLayout isLoading={isLoading} title={data?.volumeInfo?.title}>
@@ -129,18 +95,6 @@ const BookPage: NextPageWithLayout<
                      />
                   )}
                </div>
-               {/* <ActiveRating
-                  // ratingTitle={ratingTitle}
-                  // selectedRating={selectedRating}
-                  // handleMutation={handleMutation}
-                  // handleRemoveMutation={handleRemoveMutation}
-                  // setSelectedRating={setSelectedRating}
-                  // display remove rating
-                  // userId={userId}
-                  shouldDisplay={!!userRatingData}
-                  router={router}
-                  size='large'
-               /> */}
                <Suspense fallback={<Spinner size='md' />}>
                   <ActiveRatingLazy
                      params={params}

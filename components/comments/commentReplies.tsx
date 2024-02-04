@@ -1,6 +1,6 @@
 import { Fragment, useRef, useState } from 'react';
 
-import { CommentPayload } from '@/lib/types/response';
+import { CommentData, CommentPayload } from '@/lib/types/response';
 import UserAvatar, { UserAvatarProps } from '../icons/avatar';
 import CommentContent, { CommentName } from './commentContent';
 import { getUserName } from '@/lib/helper/getUserId';
@@ -12,7 +12,7 @@ import useMutateComment, { CustomStateType } from '@/lib/hooks/useMutateComment'
 interface ReplyProps extends UserAvatarProps {
    params: MutationCommentParams;
    currentUserName: string;
-   replies: CommentPayload[] | undefined;
+   replies: CommentData[] | undefined;
 }
 
 const AVATAR_REPLY_SIZE = 20;
@@ -76,7 +76,7 @@ const CommentReplies = ({ params, replies, currentUserName, ...props }: ReplyPro
    );
 };
 
-const Reply = ({ reply }: { reply: CommentPayload }) => {
+const Reply = ({ reply }: { reply: CommentData }) => {
    const repliedUser = getUserName.byComment(reply);
    return (
       <div className='flex flex-col px-1'>

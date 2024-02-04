@@ -97,6 +97,7 @@ const ActiveRating = ({
    return (
       <div className='flex flex-col items-center'>
          <div className='flex flex-row cursor-pointer'>
+            {/* rating the book here */}
             {Array.from({ length: 5 }).map((_, index) => (
                <div
                   key={index}

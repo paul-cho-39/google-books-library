@@ -1,16 +1,14 @@
-import SectionHeader from '@/components/headers/sectionHeader';
-import { useRef, useState } from 'react';
+import { Suspense, lazy, useRef, useState } from 'react';
 import PreviewReviewSection from './prevReviewSection';
 import PostReviewSection, { PostReviewSectionProps } from './postReviewSection';
 import { UserAvatarProps } from '@/components/icons/avatar';
 import { useDisableBreakPoints } from '@/lib/hooks/useDisableBreakPoints';
-import DisplayReviewSection from './displayReviewSection';
 import { BaseIdParams, MutationCommentParams } from '@/lib/types/models/books';
-import useHandleComments from '@/lib/hooks/useHandleComments';
-import useGetReviews from '@/lib/hooks/useGetReviews';
+import Spinner from '@/components/loaders/spinner';
+
+const LazyDisplayReviewSection = lazy(() => import('./displayReviewSection'));
 
 interface ReviewSectionProps extends Omit<PostReviewSectionProps<BaseIdParams>, 'scrollToDisplay'> {
-   // bookId: string;
    // rating: number;
    avatarUrl: UserAvatarProps['avatarUrl'];
    currentUserName: string;
@@ -30,11 +28,6 @@ const ReviewSection = ({
    const params = { ...props.params, pageIndex };
    const AVATAR_SIZE = !isScreenMid ? 30 : 35;
 
-   // notifyOnChanges whenever the pageIndex is changed(?) -- but why?
-
-   // this is required in order for it to assign mutationParams(?)
-   const reviewResult = useGetReviews(props.params.bookId, pageIndex);
-
    // TODO: rewrite this function so that once the comment is posted it will scroll to the comment section
    // scroll to comment from previewReviewSection to postReviewSection
    const scrollToComment = (action: 'post' | 'display') => {
@@ -48,6 +41,25 @@ const ReviewSection = ({
          window.scrollTo({ top, behavior: 'smooth' });
       }
    };
+
+   const handlePageChange = (newPage: number, type?: 'next' | 'prev') => {
+      const apiPageIndex = newPage;
+
+      setPageIndex(newPage);
+
+      switch (type) {
+         case 'next':
+            setPageIndex((prev) => prev + 1);
+            break;
+         case 'prev':
+            setPageIndex((prev) => prev - 1);
+            break;
+         default:
+            setPageIndex(apiPageIndex * 1);
+            break;
+      }
+   };
+
    return (
       <div className='lg:my-6 my-4' id='reviews'>
          <PreviewReviewSection
@@ -57,17 +69,19 @@ const ReviewSection = ({
          />
          {/* lazy load this component */}
          {/* reply, upvote, update, delete */}
-         <DisplayReviewSection
-            ref={displayReviewRef}
-            reviewsReuslt={reviewResult}
-            currentUserName={currentUserName}
-            avatarUrl={avatarUrl}
-            size={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
-            scrollToComment={() => scrollToComment('post')}
-            params={params}
-            pageIndex={pageIndex}
-            // rating={rating}
-         />
+         <Suspense fallback={<Spinner />}>
+            <LazyDisplayReviewSection
+               ref={displayReviewRef}
+               currentUserName={currentUserName}
+               avatarUrl={avatarUrl}
+               size={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
+               scrollToComment={() => scrollToComment('post')}
+               params={params}
+               handlePageChange={handlePageChange}
+               pageIndex={pageIndex}
+               // rating={rating}
+            />
+         </Suspense>
 
          {/* add comment here */}
          <PostReviewSection
@@ -81,3 +95,7 @@ const ReviewSection = ({
 };
 
 export default ReviewSection;
+
+// 1) set rating
+// 2) add pagination
+// 3) change description length

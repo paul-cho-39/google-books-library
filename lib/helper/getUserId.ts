@@ -1,6 +1,6 @@
 import { Session } from 'next-auth';
 import { UserInfo } from '../types/providers';
-import { CommentPayload } from '../types/response';
+import { CommentData, CommentPayload } from '../types/response';
 
 /**
  * Helper function to return user info from nested object. The object differs from credential and OAuth
@@ -64,7 +64,7 @@ export const getUserName = {
    },
    // for credential provider username is always defined
    // for OAuth the name is defined as well and always be returning a string
-   byComment: (comment: CommentPayload): { name: string; userImage: string | null } => {
+   byComment: (comment: CommentData): { name: string; userImage: string | null } => {
       const name = comment.user.name;
       const username = comment.user.username;
 
