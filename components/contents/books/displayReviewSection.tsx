@@ -75,12 +75,14 @@ const DisplayReviewSection: ForwardRefRenderFunction<HTMLDivElement, DisplayRevi
                   ))}
                </ul>
             )}
-            <Pagination
-               currentPage={pageIndex}
-               totalItems={totalComments}
-               itemsPerPage={ITEMS_PER_PAGE}
-               onPageChange={handlePageChange}
-            />
+            {reviews && totalComments > 10 && (
+               <Pagination
+                  currentPage={pageIndex}
+                  totalItems={totalComments}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  onPageChange={handlePageChange}
+               />
+            )}
          </div>
       </section>
    );
