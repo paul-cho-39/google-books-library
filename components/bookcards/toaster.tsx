@@ -31,7 +31,15 @@ const MyToaster = ({ shouldDisplayIcon = true, isAdded }: MyToastProps) => {
                },
                icon: getIcon(),
             },
-            duration: 1500,
+            error: {
+               style: {
+                  color: 'CaptionText',
+                  marginTop: '-0.55rem',
+                  fontSize: '16px',
+                  height: '3.4rem',
+               },
+            },
+            duration: 1700,
             ariaProps: {
                role: 'status',
                'aria-live': 'assertive',

@@ -1,22 +1,9 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Dispatch, Fragment, SetStateAction, useState } from 'react';
 
-// interface ModalProps {
-//    // isOpen: boolean | {[key: string]: unknown}
-//    // setIsOpen: (Dispatch<SetStateAction<boolean | { [key: string]: unknown }>>);
-//    isOpen: boolean | { [key: string]: any; displayModal: boolean };
-//    setIsOpen:
-//       | Dispatch<SetStateAction<boolean>>
-//       | Dispatch<SetStateAction<{ [key: string]: any; displayModal: boolean }>>;
-//    DialogTitle: string;
-//    children: React.ReactNode;
-// }
-
 type ObjectType = { [key: string]: any; displayModal: boolean };
 
 interface ModalProps<T extends boolean | ObjectType> {
-   // isOpen: boolean | {[key: string]: unknown}
-   // setIsOpen: (Dispatch<SetStateAction<boolean | { [key: string]: unknown }>>);
    isOpen: T;
    setIsOpen: Dispatch<SetStateAction<T>>;
    DialogTitle: string;
@@ -37,11 +24,6 @@ const ModalOpener = <T extends boolean | ObjectType>({
    children,
    isLoading = false,
 }: ModalProps<T>) => {
-   // function closeModal() {
-
-   //    // setIsOpen(false);
-   // }
-
    function validateModalState(state: boolean | { displayModal?: boolean }) {
       // throw error if the object key does not contain 'displayModal'
       if (typeof state === 'object' && !('displayModal' in state)) {
@@ -67,17 +49,6 @@ const ModalOpener = <T extends boolean | ObjectType>({
       <Transition appear show={shouldShow} as={Fragment}>
          {/* maybe set z-highest z-higher z-high */}
          <Dialog as='div' className='relative z-50 dark:bg-slate-700' onClose={closeModal}>
-            <Transition.Child
-               as={Fragment}
-               enter='ease-out duration-150'
-               enterFrom='opacity-0'
-               enterTo='opacity-100'
-               leave='ease-in duration-200'
-               leaveFrom='opacity-100'
-               leaveTo='opacity-0'
-            >
-               <div className='fixed inset-0 bg-black bg-opacity-25' />
-            </Transition.Child>
             <div className='fixed inset-0 overflow-y-auto'>
                <div className='mx-auto flex min-h-full items-center justify-center p-4 text-center'>
                   <Transition.Child

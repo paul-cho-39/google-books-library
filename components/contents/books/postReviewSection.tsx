@@ -5,6 +5,7 @@ import { Items } from '@/lib/types/googleBookTypes';
 import CreateComment from '@/components/comments/createComment';
 import ActiveRating from '@/components/rating/activeRating';
 import { UseHandleRatingResult } from '@/lib/hooks/useHandleRating';
+import MyToaster from '@/components/bookcards/toaster';
 
 export interface PostReviewSectionProps<TParam extends MutationAddCommentParams | BaseIdParams> {
    params: TParam;
@@ -20,6 +21,8 @@ const PostReviewSection: ForwardRefRenderFunction<
 > = (props, ref) => {
    const [rating, setRating] = useState<null | number>(null);
    const [resetFlag, setResetFlag] = useState(false);
+
+   const { bookId, pageIndex } = props.params;
 
    const { mutate, isLoading, isError } = useMutateComment(
       props.params,

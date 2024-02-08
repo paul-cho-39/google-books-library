@@ -6,6 +6,7 @@ import { useDisableBreakPoints } from '@/lib/hooks/useDisableBreakPoints';
 import { BaseIdParams, MutationCommentParams } from '@/lib/types/models/books';
 import Spinner from '@/components/loaders/spinner';
 import { RatingInfo } from '@/lib/types/serverTypes';
+import MyToaster from '@/components/bookcards/toaster';
 
 const LazyDisplayReviewSection = lazy(() => import('./displayReviewSection'));
 
@@ -65,38 +66,41 @@ const ReviewSection = ({
    };
 
    return (
-      <div className='lg:my-6 my-4' id='reviews'>
-         <PreviewReviewSection
-            scrollToElement={() => scrollToComment('post')}
-            avatarUrl={avatarUrl}
-            size={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
-         />
-         {/* lazy load this component */}
-         {/* reply, upvote, update, delete */}
-         <Suspense fallback={<Spinner />}>
-            <LazyDisplayReviewSection
-               params={params} // mutation params
-               ref={displayReviewRef}
-               currentUserName={currentUserName}
+      <>
+         <MyToaster shouldDisplayIcon={false} />
+         <div className='lg:my-6 my-4' id='reviews'>
+            <PreviewReviewSection
+               scrollToElement={() => scrollToComment('post')}
                avatarUrl={avatarUrl}
                size={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
-               scrollToComment={() => scrollToComment('post')}
-               handlePageChange={handlePageChange}
-               allRatingInfo={allRatingInfo}
-               pageIndex={pageIndex}
             />
-         </Suspense>
+            {/* lazy load this component */}
+            {/* reply, upvote, update, delete */}
+            <Suspense fallback={<Spinner />}>
+               <LazyDisplayReviewSection
+                  params={params} // mutation params
+                  ref={displayReviewRef}
+                  currentUserName={currentUserName}
+                  avatarUrl={avatarUrl}
+                  size={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
+                  scrollToComment={() => scrollToComment('post')}
+                  handlePageChange={handlePageChange}
+                  allRatingInfo={allRatingInfo}
+                  pageIndex={pageIndex}
+               />
+            </Suspense>
 
-         {/* add comment here */}
-         <PostReviewSection
-            ref={postReviewRef}
-            scrollToDisplay={() => scrollToComment('display')}
-            bookData={props.bookData}
-            handleRatingMutation={handleRatingMutation}
-            currentRatingValue={currentRatingValue}
-            params={params}
-         />
-      </div>
+            {/* add comment here */}
+            <PostReviewSection
+               ref={postReviewRef}
+               scrollToDisplay={() => scrollToComment('display')}
+               bookData={props.bookData}
+               handleRatingMutation={handleRatingMutation}
+               currentRatingValue={currentRatingValue}
+               params={params}
+            />
+         </div>
+      </>
    );
 };
 

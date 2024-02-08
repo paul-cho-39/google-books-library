@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState, useTransition } from 'react';
 
 import { CommentData, CommentPayload } from '@/lib/types/response';
 import { UserAvatarProps } from '../icons/avatar';
@@ -18,7 +18,6 @@ import { Divider } from '../layout/dividers';
 import ModalOpener from '../modal/openModal';
 import { DeleteContent } from '../modal/deleteContent';
 import Button from '../buttons/button';
-import MyToaster from '../bookcards/toaster';
 
 export interface CommentProps<TParams extends BaseIdParams | MutationCommentParams>
    extends UserAvatarProps {
@@ -40,6 +39,7 @@ const Comment = ({
    const userByComment = getUserName.byComment(comment);
 
    const [displayReply, setDiplayReply] = useState(false);
+   const [isPending, startTransition] = useTransition();
    const [showDelete, setDelete] = useState({
       displayIcon: comment.userId === params.userId,
       displayModal: false,
@@ -51,7 +51,9 @@ const Comment = ({
 
    // if replies are to be shown by event-based the logic should be included here to display replies
    const showDisplayReply = () => {
-      setDiplayReply(true);
+      startTransition(() => {
+         setDiplayReply(true);
+      });
    };
 
    const handleUpvote = () => {
@@ -84,7 +86,6 @@ const Comment = ({
 
    return (
       <>
-         <MyToaster shouldDisplayIcon={false} />
          <div className='px-2 py-2 flex '>
             <div className='flex-1 sm:px-6 leading-relaxed dark:text-gray-300'>
                {/* display avatar and name */}
