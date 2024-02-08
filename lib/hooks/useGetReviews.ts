@@ -17,7 +17,6 @@ export default function useGetReviews(bookId: string, page: number) {
    return useQuery<CommentResponseData, ErrorResponse, CommentPayload>(
       queryKeys.commentsByBook(bookId, page),
       async () => {
-         console.log('FETCHING AGAIN');
          const res = await fetcher(API_ROUTES.COMMENTS.GET_COMMENTS(bookId, idx), {
             method: 'GET',
          });

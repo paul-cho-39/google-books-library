@@ -10,8 +10,12 @@ import {
 import apiRequest from '@/utils/fetchData';
 import API_ROUTES from '@/utils/apiRoutes';
 import queryKeys from '@/utils/queryKeys';
-import { AddedCommentResponseData } from '../types/response';
+import { AddedCommentResponseData, CommentPayload } from '../types/response';
 import poll from '../helper/poll';
+import toast from 'react-hot-toast';
+import TOAST_MESSAGE from '@/constants/toast';
+
+import { UserAlreadyCommentedError } from '@/models/errors';
 
 export type CustomStateType = 'idle' | 'error' | 'loading' | 'success';
 
@@ -22,9 +26,16 @@ export default function useMutateComment<AType extends ActionCommentType>(
    scrollToDisplaySection: () => void,
    action: AType
 ) {
-   const queryClient = useQueryClient();
-   const [customState, setCustomState] = useState<CustomStateType>('idle');
    const { bookId, userId, pageIndex } = params;
+   const queryClient = useQueryClient();
+
+   const currentCommentData = queryClient.getQueryData<CommentPayload>(
+      queryKeys.commentsByBook(params.bookId, params.pageIndex)
+   );
+
+   const [customState, setCustomState] = useState<CustomStateType>('idle');
+   const containsComment = hasUserId(userId, currentCommentData);
+   console.log('DOES IT CONTAIN COMMENTS: ', containsComment);
 
    // TODO: if the user has already left a comment the user is only allowed to leave replies(?)
    //    if the user already left the comment then ask the user if they want to update the comment
@@ -45,6 +56,12 @@ export default function useMutateComment<AType extends ActionCommentType>(
       isError: isMutateError,
    } = useMutation(
       async (data: CommentDataType<AType>) => {
+         // the user has already commented
+         // this does not pertain to replies
+         if (hasUserId(userId, currentCommentData)) {
+            throw new UserAlreadyCommentedError('User has already made a comment.');
+         }
+
          const res = (await apiRequest({
             apiUrl: getUrl(),
             method: 'POST',
@@ -71,6 +88,13 @@ export default function useMutateComment<AType extends ActionCommentType>(
                scrollToDisplaySection();
             }
          },
+         onError: (error: Error) => {
+            if (error instanceof UserAlreadyCommentedError) {
+               toast.error(TOAST_MESSAGE.comment.duplicate.error);
+            } else {
+               toast.error(TOAST_MESSAGE.comment.add.error);
+            }
+         },
          onSettled: (data) => {
             queryClient.invalidateQueries(queryKeys.commentsByBook(bookId, pageIndex));
          },
@@ -81,4 +105,16 @@ export default function useMutateComment<AType extends ActionCommentType>(
    const isError = customState === 'error' || isMutateError;
 
    return { mutate, isLoading, isError };
+}
+
+// helper function for finding the current userId
+function hasUserId(userId: string, currentCommentData: CommentPayload | undefined) {
+   // it returns false since there are no data
+   if (!currentCommentData || !currentCommentData.comments) return false;
+   const comments = currentCommentData.comments;
+   return comments.some(
+      (comment) =>
+         // check it is not a reply
+         !comment.parentId && comment.userId === userId
+   );
 }
