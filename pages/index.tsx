@@ -106,6 +106,9 @@ const Home: NextPageWithLayout<
       return id + cat;
    };
 
+   console.log('are images completed?: ', areImagesLoadComplete);
+   console.log('here are the images: ');
+
    return (
       <main>
          {combinedData.map(({ category, data, isLoading, isError }, index) => (
@@ -134,7 +137,7 @@ const Home: NextPageWithLayout<
                                     largeEnabled
                                  ),
                               }}
-                              className='absolute z-50 rounded-lg'
+                              className='absolute z-40 rounded-lg'
                            >
                               {/* the description wont be ready until images are fully loaded */}
                               {areImagesLoadComplete && (
@@ -157,7 +160,7 @@ const Home: NextPageWithLayout<
                      return (
                         <>
                            <BookImage
-                              key={book.id}
+                              key={book.id + 'image'}
                               id={book.id}
                               title={book.volumeInfo.title}
                               width={getBookWidth(HEIGHT)}
@@ -174,6 +177,7 @@ const Home: NextPageWithLayout<
                               onLoadComplete={() => handleImageLoad(book.id, category)}
                               routeQuery={encodeRoutes.home(category, meta)}
                               className={classNames(
+                                 // the description is shown and book image is hovered
                                  isHovered.hovered &&
                                     isHovered.id === getUniqueId(book.id, category)
                                     ? 'opacity-70'

@@ -171,15 +171,17 @@ interface DescriptionProps extends LinkProps {
 type ButtonStateType = 'link' | 'toggle' | 'none';
 type DescriptionStateType = 'expanded' | 'collapsed' | 'link' | 'none';
 
-const BookDescription: React.FC<DescriptionProps> = ({
+const BookDescription = ({
    description,
    descriptionLimit = 200,
    textSize,
    isLink = false,
    className,
    ...props
-}) => {
+}: DescriptionProps) => {
    const filteredDescription = removeHtmlTags(description);
+   const htmlDesc = { __html: description as string };
+   const linkDesc = sliceDescription(filteredDescription, descriptionLimit);
 
    const descriptionRef = useRef<HTMLDivElement>(null);
    const [descType, setDescType] = useState<DescriptionStateType>(
@@ -210,8 +212,6 @@ const BookDescription: React.FC<DescriptionProps> = ({
          setDescType('collapsed');
       }
    };
-
-   const linkDesc = sliceDescription(filteredDescription, descriptionLimit);
 
    const buttonMapper = {
       link: () => (
@@ -247,8 +247,12 @@ const BookDescription: React.FC<DescriptionProps> = ({
    const descriptionMapper = {
       expanded: () => (
          // fully expanded version
-         <div className='' id='expanded-desc' aria-expanded>
+         <div className='dark:text-slate-100' id='expanded-desc' aria-expanded>
             <p className={classNames(textSize, 'dark:text-slate-100')}>{filteredDescription}</p>
+            {/* <div
+               className={classNames(textSize, 'dark:text-slate-100')}
+               dangerouslySetInnerHTML={htmlDesc}
+            ></div> */}
             {buttonMapper['toggle']('expand')}
          </div>
       ),
@@ -256,7 +260,8 @@ const BookDescription: React.FC<DescriptionProps> = ({
       collapsed: () => (
          <div
             ref={descriptionRef}
-            // id='collapsed-desc'
+            id='collapsed-desc'
+            // dangerouslySetInnerHTML={htmlDesc}
             className={classNames('relative max-h-48 py-2 dark:text-slate-100', className)}
          >
             <p className={classNames(textSize, 'max-h-[10rem] overflow-hidden')}>
