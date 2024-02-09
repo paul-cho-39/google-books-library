@@ -52,7 +52,7 @@ const PopOverButtons = ({ userId, book }: UserActionButtonProps) => {
                         <div className='w-full'>
                            <div className='w-full flex flex-row'>
                               <h2 className='pl-12 text-xl flex-grow text-center p-2 font-medium dark:text-slate-200 text-slate-800'>
-                                 Delete Book
+                                 Choose book shelf
                               </h2>
                               <button
                                  onClick={() => close()}
