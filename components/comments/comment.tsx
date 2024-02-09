@@ -131,7 +131,7 @@ const Comment = ({
             </div>
          )}
 
-         {/* modal for deleting the book */}
+         {/* modal opens when deleting the book */}
          <ModalOpener
             isOpen={showDelete}
             setIsOpen={setDelete}
